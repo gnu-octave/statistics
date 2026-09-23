@@ -36,10 +36,10 @@ crosstab
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 848
+# length: 838
 statistics: t = crosstab (x1, x2)
-statistics: t = crosstab (x1, &hellip;, xn)
-statistics: [t, chisq, p, labels] = crosstab (&hellip;)
+statistics: t = crosstab (x1, ..., xn)
+statistics: [t, chisq, p, labels] = crosstab (...)
 Create a cross-tabulation (contingency table) t from data vectors.
 
 The inputs x1, x2, ... xn must be vectors of equal length
@@ -79,11 +79,11 @@ datasample
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1017
+# length: 1007
 statistics: y = datasample (data, k)
 statistics: y = datasample (data, k, dim)
-statistics: y = datasample (&hellip;, Name, Value)
-statistics: [y idcs] = datasample (&hellip;)
+statistics: y = datasample (..., Name, Value)
+statistics: [y idcs] = datasample (...)
 Randomly sample data.
 
 Return k observations randomly sampled from data. data can
@@ -130,7 +130,7 @@ dummyvar
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1595
+# length: 1589
 statistics: D = dummyvar (group)
 Create dummy variables.
 
@@ -149,7 +149,7 @@ the ordered range 1:max (group).
 a positive integer matrix with each column corresponding to a separate
 grouping variable and the integer values representing the group levels within
 that grouping variable in the ordered range 1:max (group). A
-NaN in a column produces a row of NaN values in that column&rsquo;s
+NaN in a column produces a row of NaN values in that column's
 own block of dummy variables in D, without affecting the columns
 produced by any other grouping variable. A column that is entirely
 NaN has no levels, so it produces no dummy variables at all and a
@@ -187,18 +187,18 @@ fillmissing
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 7449
+# length: 7374
 statistics: B = fillmissing (A, "constant", v)
 statistics: B = fillmissing (A, method)
 statistics: B = fillmissing (A, move_method, window_size)
 statistics: B = fillmissing (A, fill_function, window_size)
-statistics: B = fillmissing (&hellip;, dim)
-statistics: B = fillmissing (&hellip;, PropertyName, PropertyValue)
-statistics: [B, idx] = fillmissing (&hellip;)
+statistics: B = fillmissing (..., dim)
+statistics: B = fillmissing (..., PropertyName, PropertyValue)
+statistics: [B, idx] = fillmissing (...)
 Fill missing data in arrays.
 
 Replace missing entries of array A either with values in v or
-as determined by other specified methods. &rsquo;missing&rsquo; values are determined
+as determined by other specified methods. 'missing' values are determined
 by the data type of A as identified by the function ismissing,
 currently defined as:
 
@@ -226,7 +226,7 @@ along dim = 2 requires v to contain either 1 or 3x4=12
 elements.
 
 If requested, the optional output idx will contain a logical array
-the same shape as A indicating with 1&rsquo;s which locations in A
+the same shape as A indicating with 1's which locations in A
 were filled.
 
 Alternate Input Arguments and Values:
@@ -243,7 +243,7 @@ linear interpolation of neighboring, non-missing values
 spline
 piecewise cubic spline interpolation of neighboring, non-missing values
 pchip
-&rsquo;shape preserving&rsquo; piecewise cubic spline interpolation of neighboring,
+'shape preserving' piecewise cubic spline interpolation of neighboring,
 non-missing values
 
 move_method - moving window calculated replacement values:
@@ -291,7 +291,7 @@ A one-sided window_size, [nb, 0] or
 [0, na], leaves the gap at the corresponding end of the data
 with no values in its window. The fill function is still called there, with
 empty value and location arguments, as MATLAB calls it: a fill function may
-depend only on the gap&rsquo;s own sample points. One that cannot take empty
+depend only on the gap's own sample points. One that cannot take empty
 arguments is reported as such.
 
 Along a dimension in which A is singleton, every element is a vector
@@ -341,16 +341,16 @@ Compatibility Notes:
 Numerical and logical inputs for A and v may be specified
 in any combination. The output will be the same class as A, with the
 v converted to that data type for filling. Only single and
-double have defined &rsquo;missing&rsquo; values, so except for when the
+double have defined 'missing' values, so except for when the
 missinglocations option specifies the missing value identification of
 logical and other numeric data types, the output will always be
 B = A with idx = false(size(A)).
 
 All interpolation methods can be individually applied to EndValues.
 
-MATLAB&rsquo;s fill_function method currently has several
+MATLAB's fill_function method currently has several
 inconsistencies with the other methods (tested against version 2022a), and
-Octave&rsquo;s implementation has chosen the following consistent behavior over
+Octave's implementation has chosen the following consistent behavior over
 compatibility: (1) a column full of missing data is considered part of
 EndValues, (2) such columns are then excluded from
 fill_function processing because the moving window is always empty.
@@ -517,14 +517,14 @@ isoutlier
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6552
+# length: 6527
 statistics: TF = isoutlier (x)
 statistics: TF = isoutlier (x, method)
 statistics: TF = isoutlier (x, 'percentiles', threshold)
 statistics: TF = isoutlier (x, movmethod, window)
-statistics: TF = isoutlier (&hellip;, dim)
-statistics: TF = isoutlier (&hellip;, Name, Value)
-statistics: [TF, L, U, C] = isoutlier (&hellip;)
+statistics: TF = isoutlier (..., dim)
+statistics: TF = isoutlier (..., Name, Value)
+statistics: [TF, L, U, C] = isoutlier (...)
 Find outliers in data
 
 isoutlier (x) returns a logical array whose elements are true
@@ -603,7 +603,7 @@ paired arguments.
 with equal length as the operating dimension. The sample points represent
 the x-axis location of the data and must be sorted and contain unique
 elements. Sample points do not need to be uniformly sampled. By default,
-the vector is [1, 2, 3, &hellip;, n], where
+the vector is [1, 2, 3, ..., n], where
 n = size (x, dim). You can use unequally spaced
 'SamplePoints' to define a variable-length window for one of the
 moving methods available.
@@ -626,7 +626,7 @@ data is sampled from an approximate normal distribution. When the data is
 not sampled in this way, the number of returned outliers might exceed the
 MaxNumOutliers value.
 
-[TF, L, U, C] = isoutlier (&hellip;) returns
+[TF, L, U, C] = isoutlier (...) returns
 up to 4 output arguments as described below.
 
 TF is the outlier indicator with the same size a x.
@@ -676,11 +676,11 @@ multiway
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1839
+# length: 1829
 statistics: groupindex = multiway (numbers, num_parts)
 statistics: groupindex = multiway (numbers, num_parts, method)
-statistics: [groupindex, partition] = multiway (&hellip;)
-statistics: [groupindex, partition, groupsizes] = multiway (&hellip;)
+statistics: [groupindex, partition] = multiway (...)
+statistics: [groupindex, partition, groupsizes] = multiway (...)
 Solve the multiway number partitioning problem.
 
 groupindex = multiway (numbers, num_parts) splits
@@ -743,7 +743,7 @@ normalise_distribution
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1882
+# length: 1874
 statistics: NORMALISED = normalise_distribution (DATA)
 statistics: NORMALISED = normalise_distribution (DATA, DISTRIBUTION)
 statistics: NORMALISED = normalise_distribution (DATA, DISTRIBUTION, DIMENSION)
@@ -775,10 +775,10 @@ having the same size and their ties in the same places after sorting
 to some permutation of the same normalised data:
 
 normalise_distribution([1 2 2 3 4])
-&rArr; -1.28 0.00 0.00 0.52 1.28
+=> -1.28 0.00 0.00 0.52 1.28
 
 normalise_distribution([1 10 100 10 1000])
-&rArr; -1.28 0.00 0.52 0.00 1.28
+=> -1.28 0.00 0.52 0.00 1.28
 
 Original source:
 S.J. van Albada, P.A. Robinson
@@ -809,7 +809,7 @@ randsample
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 652
+# length: 646
 statistics: y = randsample (v, k)
 statistics: y = randsample (v, k, replacement=false)
 statistics: y = randsample (v, k, replacement=false, [w=[]])
@@ -822,7 +822,7 @@ If v is a scalar, samples from 1:v.
 
 If a weight vector w of the same size as v is specified, the
 probability of each element being sampled is proportional to w.
-Unlike Matlab&rsquo;s function of the same name, this can be done for sampling with
+Unlike Matlab's function of the same name, this can be done for sampling with
 or without replacement.
 
 Randomization is performed using rand().
@@ -850,11 +850,11 @@ rmmissing
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1893
+# length: 1878
 statistics: R = rmmissing (A)
 statistics: R = rmmissing (A, dim)
-statistics: R = rmmissing (&hellip;, Name, Value)
-statistics: [R, TF] = rmmissing (&hellip;)
+statistics: R = rmmissing (..., Name, Value)
+statistics: [R, TF] = rmmissing (...)
 Remove missing data from arrays.
 
 Given an input vector or matrix (2-D array) A, R =
@@ -885,7 +885,7 @@ dim, which must be either 1 or 0.
 
 2: remove columns.
 
-R = rmmissing (&hellip;, Name, Value) also accepts
+R = rmmissing (..., Name, Value) also accepts
 the following paired arguments.
 
 Name Value
@@ -925,7 +925,7 @@ standardizeMissing
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1918
+# length: 1912
 statistics: B = standardizeMissing (A, indicator)
 Replace selected values by standard missing values.
 
@@ -966,7 +966,7 @@ table class. Use help table.standardizeMissing to find more
 information about the functional specialization on tables.
 
 Standardizing a category of a categorical array removes that category
-from the array&rsquo;s type, as MATLAB removes it: no element carries it once the
+from the array's type, as MATLAB removes it: no element carries it once the
 values are missing, so leaving it in the category list would be stale
 metadata, and the codes of the remaining categories shift down accordingly.
 Only the standardized categories are removed; one that is declared but
@@ -996,7 +996,7 @@ tiedrank
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1785
+# length: 1773
 statistics: [r, tieadj] = tiedrank (x)
 statistics: [r, tieadj] = tiedrank (x, tieflag)
 statistics: [r, tieadj] = tiedrank (x, tieflag, bidir)
@@ -1013,11 +1013,11 @@ Compute rank adjusted for ties.
 values in vector x. If any values in x are tied, tiedrank
 computes their average rank. The return value tieadj is an adjustment
 for ties required by the nonparametric tests signrank and
-ranksum, and for the computation of Spearman&rsquo;s rank correlation.
+ranksum, and for the computation of Spearman's rank correlation.
 
 [r, tieadj] = tiedrank (x, 1) computes the ranks of
 the values in the vector x. tieadj is a vector of three
-adjustments for ties required in the computation of Kendall&rsquo;s tau.
+adjustments for ties required in the computation of Kendall's tau.
 tiedrank (x, 0) is the same as tiedrank (x).
 
 [r, tieadj] = tiedrank (x, 0, 1) computes the ranks

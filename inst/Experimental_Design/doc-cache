@@ -79,12 +79,12 @@ parseWilkinsonFormula
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6785
+# length: 6751
 statistics: terms = parseWilkinsonFormula (formula)
 statistics: result = parseWilkinsonFormula (formula, mode)
 statistics: [X, y, names] = parseWilkinsonFormula (formula, "model_matrix", data)
 statistics: S = parseWilkinsonFormula (formula, "mixed")
-statistics: &hellip; = parseWilkinsonFormula (&hellip;, setOrder)
+statistics: ... = parseWilkinsonFormula (..., setOrder)
 Parse and expand statistical model formulae using the Wilkinson notation.
 
 This function implements the recursive-descent parser and expansion logic
@@ -163,7 +163,7 @@ a mode reports variable names, which is 'matrix' and
 'model_matrix', and the order carries into ResponseIdx and
 into the columns of Terms and of X beside it.
 
-Data Handling (&rsquo;model_matrix&rsquo; mode)
+Data Handling ('model_matrix' mode)
 When using the 'model_matrix' mode, a data argument must be
 provided as an Octave table.
 
@@ -175,7 +175,7 @@ continuous predictors or responses.
 Missing Data: Rows containing NaN values in any of the
 active variables are automatically omitted from the final matrices.
 
-Mixed-Effects Formulae (&rsquo;mixed&rsquo; mode)
+Mixed-Effects Formulae ('mixed' mode)
 A random-effects term is written (expr | group), where
 expr is a Wilkinson design expression for the random intercept and
 slopes and group is the grouping factor (or an interaction of factors
@@ -253,13 +253,13 @@ sampsizepwr
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5190
+# length: 5175
 statistics: n = sampsizepwr (testtype, params, p1)
 statistics: n = sampsizepwr (testtype, params, p1, power)
 statistics: power = sampsizepwr (testtype, params, p1, [], n)
 statistics: p1 = sampsizepwr (testtype, params, [], power, n)
 statistics: [n1, n2] = sampsizepwr ('t2', params, p1, power)
-statistics: [&hellip;] = sampsizepwr (testtype, params, p1, power, n, name, value)
+statistics: [...] = sampsizepwr (testtype, params, p1, power, n, name, value)
 Sample size and power calculation for hypothesis test.
 
 sampsizepwr computes the sample size, power, or alternative parameter
@@ -333,7 +333,7 @@ the smaller one of the two sample sizes. When computing p1 for the "p"
 test, if no alternative can be rejected for a given params, n and
 power value, the function displays a warning message and returns NaN.
 
-[&hellip;] = sampsizepwr (&hellip;, n, name, value)
+[...] = sampsizepwr (..., n, name, value)
 specifies one or more of the following name / value pairs:
 
 Name Value

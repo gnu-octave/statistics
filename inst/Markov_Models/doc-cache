@@ -13,11 +13,11 @@ hmmdecode
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2453
+# length: 2433
 statistics: pstates = hmmdecode (sequence, transprob, outprob)
-statistics: [pstates, logpseq] = hmmdecode (&hellip;)
-statistics: [pstates, logpseq, fs, bs, s] = hmmdecode (&hellip;)
-statistics: [&hellip;] = hmmdecode (&hellip;, "symbols", symbols)
+statistics: [pstates, logpseq] = hmmdecode (...)
+statistics: [pstates, logpseq, fs, bs, s] = hmmdecode (...)
+statistics: [...] = hmmdecode (..., "symbols", symbols)
 Posterior state probabilities of a hidden Markov model.
 
 Calculate the posterior state probabilities of the sequence sequence
@@ -99,12 +99,12 @@ hmmestimate
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3697
+# length: 3657
 statistics: [transprobest, outprobest] = hmmestimate (sequence, states)
-statistics: [&hellip;] = hmmestimate (&hellip;, "statenames", statenames)
-statistics: [&hellip;] = hmmestimate (&hellip;, "symbols", symbols)
-statistics: [&hellip;] = hmmestimate (&hellip;, "pseudotransitions", pseudotransitions)
-statistics: [&hellip;] = hmmestimate (&hellip;, "pseudoemissions", pseudoemissions)
+statistics: [...] = hmmestimate (..., "statenames", statenames)
+statistics: [...] = hmmestimate (..., "symbols", symbols)
+statistics: [...] = hmmestimate (..., "pseudotransitions", pseudotransitions)
+statistics: [...] = hmmestimate (..., "pseudoemissions", pseudoemissions)
 Estimation of a hidden Markov model for a given sequence.
 
 Estimate the matrix of transition probabilities and the matrix of output
@@ -210,10 +210,10 @@ hmmgenerate
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2071
+# length: 2051
 statistics: [sequence, states] = hmmgenerate (len, transprob, outprob)
-statistics: [&hellip;] = hmmgenerate (&hellip;, "symbols", symbols)
-statistics: [&hellip;] = hmmgenerate (&hellip;, "statenames", statenames)
+statistics: [...] = hmmgenerate (..., "symbols", symbols)
+statistics: [...] = hmmgenerate (..., "statenames", statenames)
 Output sequence and hidden states of a hidden Markov model.
 
 Generate an output sequence and hidden states of a hidden Markov model.
@@ -293,15 +293,15 @@ hmmtrain
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4302
+# length: 4226
 statistics: [esttr, estout] = hmmtrain (sequence, transguess, outguess)
-statistics: [&hellip;] = hmmtrain (&hellip;, "algorithm", algorithm)
-statistics: [&hellip;] = hmmtrain (&hellip;, "symbols", symbols)
-statistics: [&hellip;] = hmmtrain (&hellip;, "tolerance", tol)
-statistics: [&hellip;] = hmmtrain (&hellip;, "maxiterations", maxiter)
-statistics: [&hellip;] = hmmtrain (&hellip;, "pseudotransitions", pseudotransitions)
-statistics: [&hellip;] = hmmtrain (&hellip;, "pseudoemissions", pseudoemissions)
-statistics: [&hellip;] = hmmtrain (&hellip;, "verbose", vflag)
+statistics: [...] = hmmtrain (..., "algorithm", algorithm)
+statistics: [...] = hmmtrain (..., "symbols", symbols)
+statistics: [...] = hmmtrain (..., "tolerance", tol)
+statistics: [...] = hmmtrain (..., "maxiterations", maxiter)
+statistics: [...] = hmmtrain (..., "pseudotransitions", pseudotransitions)
+statistics: [...] = hmmtrain (..., "pseudoemissions", pseudoemissions)
+statistics: [...] = hmmtrain (..., "verbose", vflag)
 Estimate the parameters of a hidden Markov model from emitted sequences.
 
 Given one or more observed output sequences and initial guesses for the
@@ -369,7 +369,7 @@ transguess = [0.6, 0.4; 0.5, 0.5];
 outguess = [0.3, 0.3, 0.4; 0.5, 0.3, 0.2];
 [esttr, estout] = hmmtrain (sequence, transguess, outguess);
 
-Two results of Viterbi training differ from MATLAB&rsquo;s, deliberately.
+Two results of Viterbi training differ from MATLAB's, deliberately.
 
 Given several sequences, the counts of every sequence are pooled and
 normalized once, so a sequence contributes in proportion to its length.
@@ -414,10 +414,10 @@ hmmviterbi
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2184
+# length: 2174
 statistics: vpath = hmmviterbi (sequence, transprob, outprob)
-statistics: vpath = hmmviterbi (&hellip;, "symbols", symbols)
-statistics: vpath = hmmviterbi (&hellip;, "statenames", statenames)
+statistics: vpath = hmmviterbi (..., "symbols", symbols)
+statistics: vpath = hmmviterbi (..., "statenames", statenames)
 Viterbi path of a hidden Markov model.
 
 Use the Viterbi algorithm to find the Viterbi path of a hidden Markov

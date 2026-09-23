@@ -110,9 +110,9 @@ ConfusionMatrixChart.ConfusionMatrixChart
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2762
+# length: 2752
 statistics: cmc = ConfusionMatrixChart (hax, cm, cl)
-statistics: cmc = ConfusionMatrixChart (&hellip;, name, value)
+statistics: cmc = ConfusionMatrixChart (..., name, value)
 Create a ConfusionMatrixChart object for visualizing
 classification performance.
 
@@ -129,7 +129,7 @@ classes.
 cl must be a cell array of character vectors containing the class
 labels. The number of labels must match the size of the confusion matrix.
 
-cmc = ConfusionMatrixChart (&hellip;, name,
+cmc = ConfusionMatrixChart (..., name,
 value)
 returns a ConfusionMatrixChart object with additional parameters
 specified by name, value paired arguments:
@@ -308,11 +308,11 @@ ConfusionMatrixChart.HandleVisibility
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 191
+# length: 185
 ConfusionMatrixChart: property HandleVisibility
 Handle visibility
 
-A character vector specifying the visibility of the object&rsquo;s handle.
+A character vector specifying the visibility of the object's handle.
 Supported values are 'on', 'off', and 'callback'.
 
 
@@ -678,13 +678,13 @@ confusionchart
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1644
+# length: 1624
 statistics: confusionchart (trueLabels, predictedLabels)
 statistics: confusionchart (m)
 statistics: confusionchart (m, classLabels)
-statistics: confusionchart (parent, &hellip;)
-statistics: confusionchart (&hellip;, prop, val, &hellip;)
-statistics: cm = confusionchart (&hellip;)
+statistics: confusionchart (parent, ...)
+statistics: confusionchart (..., prop, val, ...)
+statistics: cm = confusionchart (...)
 Display a chart of a confusion matrix.
 
 The two vectors of values trueLabels and predictedLabels, which
@@ -1114,7 +1114,7 @@ cvpartition.cvpartition
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 7321
+# length: 7303
 cvpartition: C = cvpartition (n, 'KFold')
 cvpartition: C = cvpartition (n, 'KFold', k)
 cvpartition: C = cvpartition (n, 'KFold', k, 'GroupingVariables', grpvars)
@@ -1166,7 +1166,7 @@ A numeric matrix or cell array containing two or more grouping
 variables. Each column in the matrix or array must correspond to one
 grouping variable.
 
-'GroupingVariables' is an Octave extension: MATLAB&rsquo;s
+'GroupingVariables' is an Octave extension: MATLAB's
 cvpartition has no such option. It follows the group-aware
 splitters of scikit-learn, and each partition type takes the analogue of
 its ungrouped self:
@@ -1186,7 +1186,7 @@ follow 'Stratify', as in cvpartition (y,
 'KFold', k, 'Stratify', true,
 'GroupingVariables', grpvars). Each group is then
 kept whole while the classes of y are spread as evenly over
-the folds as the groups allow, which is scikit-learn&rsquo;s
+the folds as the groups allow, which is scikit-learn's
 StratifiedGroupKFold. The two demands conflict, since a
 group carries whatever class mix it has, so the balance is
 approximate: groups are placed largest first, each into the fold
@@ -1269,7 +1269,7 @@ true elements correspond to the test set and the false
 elements correspond to the training set.
 A logical matrix with K columns will specify a K-fold
 cross-validation partition, in which each column corresponds to a fold
-and each row to an observation. Alternatively, an N&times;N logical
+and each row to an observation. Alternatively, an NxN logical
 matrix will specify a leave-one-out cross-validation, where N is
 the number of observations. true elements correspond to the
 test set and the false elements correspond to the training set.
@@ -1526,10 +1526,10 @@ perfcurve
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2444
+# length: 2402
 statistics: [X, Y] = perfcurve (labels, scores, posclass)
-statistics: [X, Y, T, AUC, OPTROCPT] = perfcurve (&hellip;)
-statistics: [&hellip;] = perfcurve (&hellip;, Name, Value)
+statistics: [X, Y, T, AUC, OPTROCPT] = perfcurve (...)
+statistics: [...] = perfcurve (..., Name, Value)
 Receiver operating characteristic (ROC) and other classifier performance
 curves.
 
@@ -1542,7 +1542,7 @@ larger values indicate stronger evidence for the positive class. By default
 X is the false positive rate and Y the true positive rate.
 
 [X, Y, T, AUC, OPTROCPT] = perfcurve
-(&hellip;) also returns the thresholds T on the scores, the area
+(...) also returns the thresholds T on the scores, the area
 AUC under the (X, Y) curve, and the optimal operating point
 OPTROCPT = [FPR, TPR] of the ROC curve.
 
@@ -1560,7 +1560,7 @@ Name Value
 'NegClass' The negative class(es). The default,
 'all', treats every label other than posclass as negative.
 'Weights' A vector of non-negative observation weights.
-'Cost' A 2&times;2 misclassification-cost matrix
+'Cost' A 2x2 misclassification-cost matrix
 [C(P|P) C(N|P); C(P|N) C(N|N)] used for OPTROCPT. The default
 is [0 1; 1 0].
 'XVals' Values of the X criterion at which to return
@@ -1575,10 +1575,10 @@ bias-corrected and accelerated), 'percentile', or 'normal'.
 confidence level is 1 - Alpha. The default is 0.05.
 
 With 'NBoot' greater than zero, Y is returned as an
-m&times;3 array [Y, Ylow, Yhigh] and AUC as
+mx3 array [Y, Ylow, Yhigh] and AUC as
 [AUC, AUClow, AUChigh]. The bootstrap uses an
 independent random stream, so the bounds do not match MATLAB numerically.
-[&hellip;, SUBY, SUBYNAMES] = perfcurve (&hellip;) returns
+[..., SUBY, SUBYNAMES] = perfcurve (...) returns
 the Y values for each negative subclass and their names.
 
 When called with no output arguments the curve is plotted.
@@ -1607,11 +1607,11 @@ rocmetrics
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 785
+# length: 773
 statistics: rocmetrics
 Receiver operating characteristic (ROC) metrics for classifier output.
 
-The rocmetrics class evaluates a classifier&rsquo;s performance by
+The rocmetrics class evaluates a classifier's performance by
 computing, for each class, a one-versus-all ROC curve together with a set
 of threshold-dependent performance metrics. It stores the results in the
 Metrics table and the per-class area under the curve in AUC,
@@ -1622,7 +1622,7 @@ For a problem with K classes and scores supplied as an
 N-by-K matrix, the discriminant score used for class
 k is the one-versus-all margin
 Scores(:,k) - max (Scores(:,j)) over j != k, matching
-MATLAB&rsquo;s rocmetrics. Every metric is evaluated at each distinct
+MATLAB's rocmetrics. Every metric is evaluated at each distinct
 value of that margin.
 
 See also:
@@ -1956,9 +1956,9 @@ rocmetrics.rocmetrics
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1832
+# length: 1827
 rocmetrics: obj = rocmetrics (labels, scores, classnames)
-rocmetrics: obj = rocmetrics (&hellip;, Name, Value)
+rocmetrics: obj = rocmetrics (..., Name, Value)
 Create a rocmetrics object from labels and classification scores.
 
 labels is a vector of true class labels with one element per

@@ -292,10 +292,10 @@ paretotails.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 221
+# length: 216
 paretotails: r = random (pt)
 paretotails: r = random (pt, sz)
-paretotails: r = random (pt, m, n, &hellip;)
+paretotails: r = random (pt, m, n, ...)
 Random values drawn from the paretotails object pt, by
 inverse transform sampling. The size arguments follow rand.
 
@@ -572,11 +572,11 @@ prob.BetaDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 617
+# length: 611
 prob.BetaDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 2&times;2 numeric matrix containing the variance-covariance of the
+A 2x2 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only
@@ -604,11 +604,11 @@ prob.BetaDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 229
+# length: 223
 prob.BetaDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -631,11 +631,11 @@ prob.BetaDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 285
+# length: 279
 prob.BetaDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;2 logical vector specifying which parameters are fixed and
+A 1x2 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -659,11 +659,11 @@ prob.BetaDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 206
+# length: 200
 prob.BetaDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -685,11 +685,11 @@ prob.BetaDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 281
+# length: 275
 prob.BetaDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the a and b
 properties.
@@ -713,11 +713,11 @@ prob.BetaDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 349
+# length: 343
 prob.BetaDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -796,7 +796,7 @@ prob.BetaDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 383
+# length: 378
 prob.BetaDistribution: p = cdf (pd, x)
 prob.BetaDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -805,7 +805,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -1032,10 +1032,10 @@ prob.BetaDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1520
+# length: 1510
 prob.BetaDistribution: plot (pd)
 prob.BetaDistribution: plot (pd, Name, Value)
-prob.BetaDistribution: h = plot (&hellip;)
+prob.BetaDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -1065,7 +1065,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -1087,13 +1087,13 @@ prob.BetaDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2023
+# length: 2013
 prob.BetaDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.BetaDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.BetaDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.BetaDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.BetaDistribution: [nlogL, param] = proflik (pd)
-prob.BetaDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.BetaDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -1119,7 +1119,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -1152,10 +1152,10 @@ prob.BetaDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 680
+# length: 675
 prob.BetaDistribution: r = random (pd)
 prob.BetaDistribution: r = random (pd, rows)
-prob.BetaDistribution: r = random (pd, rows, cols, &hellip;)
+prob.BetaDistribution: r = random (pd, rows, cols, ...)
 prob.BetaDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -1502,11 +1502,11 @@ prob.BinomialDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 621
+# length: 615
 prob.BinomialDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 2&times;2 numeric matrix containing the variance-covariance of the
+A 2x2 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only
@@ -1534,11 +1534,11 @@ prob.BinomialDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 233
+# length: 227
 prob.BinomialDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -1561,11 +1561,11 @@ prob.BinomialDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 289
+# length: 283
 prob.BinomialDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;2 logical vector specifying which parameters are fixed and
+A 1x2 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -1589,11 +1589,11 @@ prob.BinomialDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 210
+# length: 204
 prob.BinomialDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -1615,11 +1615,11 @@ prob.BinomialDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 285
+# length: 279
 prob.BinomialDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the N and p
 properties.
@@ -1643,11 +1643,11 @@ prob.BinomialDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 353
+# length: 347
 prob.BinomialDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -1672,7 +1672,7 @@ prob.BinomialDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 391
+# length: 386
 prob.BinomialDistribution: p = cdf (pd, x)
 prob.BinomialDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -1681,7 +1681,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -1935,10 +1935,10 @@ prob.BinomialDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1532
+# length: 1522
 prob.BinomialDistribution: plot (pd)
 prob.BinomialDistribution: plot (pd, Name, Value)
-prob.BinomialDistribution: h = plot (&hellip;)
+prob.BinomialDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -1968,7 +1968,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -1990,13 +1990,13 @@ prob.BinomialDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2051
+# length: 2041
 prob.BinomialDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.BinomialDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.BinomialDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.BinomialDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.BinomialDistribution: [nlogL, param] = proflik (pd)
-prob.BinomialDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.BinomialDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -2022,7 +2022,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -2056,10 +2056,10 @@ prob.BinomialDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 696
+# length: 691
 prob.BinomialDistribution: r = random (pd)
 prob.BinomialDistribution: r = random (pd, rows)
-prob.BinomialDistribution: r = random (pd, rows, cols, &hellip;)
+prob.BinomialDistribution: r = random (pd, rows, cols, ...)
 prob.BinomialDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -2386,11 +2386,11 @@ prob.BirnbaumSaundersDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 630
+# length: 624
 prob.BirnbaumSaundersDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 2&times;2 numeric matrix containing the variance-covariance of the
+A 2x2 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter, and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only meaningful
@@ -2418,11 +2418,11 @@ prob.BirnbaumSaundersDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 241
+# length: 235
 prob.BirnbaumSaundersDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -2445,11 +2445,11 @@ prob.BirnbaumSaundersDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 297
+# length: 291
 prob.BirnbaumSaundersDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;2 logical vector specifying which parameters are fixed and
+A 1x2 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -2473,11 +2473,11 @@ prob.BirnbaumSaundersDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 218
+# length: 212
 prob.BirnbaumSaundersDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -2499,11 +2499,11 @@ prob.BirnbaumSaundersDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 300
+# length: 294
 prob.BirnbaumSaundersDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the beta and gamma
 properties.
@@ -2527,11 +2527,11 @@ prob.BirnbaumSaundersDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 361
+# length: 355
 prob.BirnbaumSaundersDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -2583,7 +2583,7 @@ prob.BirnbaumSaundersDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 407
+# length: 402
 prob.BirnbaumSaundersDistribution: p = cdf (pd, x)
 prob.BirnbaumSaundersDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -2592,7 +2592,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -2845,10 +2845,10 @@ prob.BirnbaumSaundersDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1556
+# length: 1546
 prob.BirnbaumSaundersDistribution: plot (pd)
 prob.BirnbaumSaundersDistribution: plot (pd, Name, Value)
-prob.BirnbaumSaundersDistribution: h = plot (&hellip;)
+prob.BirnbaumSaundersDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -2878,7 +2878,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -2900,13 +2900,13 @@ prob.BirnbaumSaundersDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2115
+# length: 2105
 prob.BirnbaumSaundersDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.BirnbaumSaundersDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.BirnbaumSaundersDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.BirnbaumSaundersDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.BirnbaumSaundersDistribution: [nlogL, param] = proflik (pd)
-prob.BirnbaumSaundersDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.BirnbaumSaundersDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -2932,7 +2932,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -2966,10 +2966,10 @@ prob.BirnbaumSaundersDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 728
+# length: 723
 prob.BirnbaumSaundersDistribution: r = random (pd)
 prob.BirnbaumSaundersDistribution: r = random (pd, rows)
-prob.BirnbaumSaundersDistribution: r = random (pd, rows, cols, &hellip;)
+prob.BirnbaumSaundersDistribution: r = random (pd, rows, cols, ...)
 prob.BirnbaumSaundersDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -3291,11 +3291,11 @@ prob.BurrDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 618
+# length: 612
 prob.BurrDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 3&times;3 numeric matrix containing the variance-covariance of the
+A 3x3 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter, and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only meaningful
@@ -3323,11 +3323,11 @@ prob.BurrDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 229
+# length: 223
 prob.BurrDistribution: property ParameterDescription
 Description of parameters
 
-A 3&times;1 cell array of character vectors with each element containing
+A 3x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -3350,11 +3350,11 @@ prob.BurrDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 285
+# length: 279
 prob.BurrDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;3 logical vector specifying which parameters are fixed and
+A 1x3 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -3378,11 +3378,11 @@ prob.BurrDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 206
+# length: 200
 prob.BurrDistribution: property ParameterNames
 Names of parameters
 
-A 3&times;1 cell array of character vectors with each element containing
+A 3x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -3404,11 +3404,11 @@ prob.BurrDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 289
+# length: 283
 prob.BurrDistribution: property ParameterValues
 Distribution parameter values
 
-A 3&times;1 numeric vector containing the values of the distribution
+A 3x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the alpha, c, and
 k properties.
@@ -3432,11 +3432,11 @@ prob.BurrDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 349
+# length: 343
 prob.BurrDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -3515,7 +3515,7 @@ prob.BurrDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 383
+# length: 378
 prob.BurrDistribution: p = cdf (pd, x)
 prob.BurrDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -3524,7 +3524,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -3777,10 +3777,10 @@ prob.BurrDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1520
+# length: 1510
 prob.BurrDistribution: plot (pd)
 prob.BurrDistribution: plot (pd, Name, Value)
-prob.BurrDistribution: h = plot (&hellip;)
+prob.BurrDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -3810,7 +3810,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -3832,13 +3832,13 @@ prob.BurrDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2062
+# length: 2052
 prob.BurrDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.BurrDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.BurrDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.BurrDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.BurrDistribution: [nlogL, param] = proflik (pd)
-prob.BurrDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.BurrDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -3864,7 +3864,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -3898,10 +3898,10 @@ prob.BurrDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 680
+# length: 675
 prob.BurrDistribution: r = random (pd)
 prob.BurrDistribution: r = random (pd, rows)
-prob.BurrDistribution: r = random (pd, rows, cols, &hellip;)
+prob.BurrDistribution: r = random (pd, rows, cols, ...)
 prob.BurrDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -4252,11 +4252,11 @@ prob.ExponentialDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 236
+# length: 230
 prob.ExponentialDistribution: property ParameterDescription
 Description of parameters
 
-A 1&times;1 cell array of character vectors with each element containing
+A 1x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -4279,11 +4279,11 @@ prob.ExponentialDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 283
+# length: 277
 prob.ExponentialDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;1 logical vector specifying whether the parameter is fixed or
+A 1x1 logical vector specifying whether the parameter is fixed or
 estimated. true value corresponds to fixed parameter,
 false value corresponds to parameter estimate. This property is
 read-only.
@@ -4307,11 +4307,11 @@ prob.ExponentialDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 213
+# length: 207
 prob.ExponentialDistribution: property ParameterNames
 Names of parameters
 
-A 1&times;1 cell array of character vectors with each element containing
+A 1x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -4333,11 +4333,11 @@ prob.ExponentialDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 279
+# length: 273
 prob.ExponentialDistribution: property ParameterValues
 Distribution parameter values
 
-A 1&times;1 numeric vector containing the value of the distribution
+A 1x1 numeric vector containing the value of the distribution
 parameter. This property is read-only. You can change the distribution
 parameter by assigning a new value to the mu
 property.
@@ -4361,11 +4361,11 @@ prob.ExponentialDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 356
+# length: 350
 prob.ExponentialDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -4390,7 +4390,7 @@ prob.ExponentialDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 397
+# length: 392
 prob.ExponentialDistribution: p = cdf (pd, x)
 prob.ExponentialDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -4399,7 +4399,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -4652,10 +4652,10 @@ prob.ExponentialDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1541
+# length: 1531
 prob.ExponentialDistribution: plot (pd)
 prob.ExponentialDistribution: plot (pd, Name, Value)
-prob.ExponentialDistribution: h = plot (&hellip;)
+prob.ExponentialDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -4685,7 +4685,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -4707,13 +4707,13 @@ prob.ExponentialDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2036
+# length: 2026
 prob.ExponentialDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.ExponentialDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.ExponentialDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.ExponentialDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.ExponentialDistribution: [nlogL, param] = proflik (pd)
-prob.ExponentialDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.ExponentialDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -4739,7 +4739,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -4772,10 +4772,10 @@ prob.ExponentialDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 708
+# length: 703
 prob.ExponentialDistribution: r = random (pd)
 prob.ExponentialDistribution: r = random (pd, rows)
-prob.ExponentialDistribution: r = random (pd, rows, cols, &hellip;)
+prob.ExponentialDistribution: r = random (pd, rows, cols, ...)
 prob.ExponentialDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -5099,11 +5099,11 @@ prob.ExtremeValueDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 626
+# length: 620
 prob.ExtremeValueDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 2&times;2 numeric matrix containing the variance-covariance of the
+A 2x2 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter, and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only meaningful
@@ -5131,11 +5131,11 @@ prob.ExtremeValueDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 237
+# length: 231
 prob.ExtremeValueDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -5158,11 +5158,11 @@ prob.ExtremeValueDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 293
+# length: 287
 prob.ExtremeValueDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;2 logical vector specifying which parameters are fixed and
+A 1x2 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -5186,11 +5186,11 @@ prob.ExtremeValueDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 214
+# length: 208
 prob.ExtremeValueDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -5212,11 +5212,11 @@ prob.ExtremeValueDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 294
+# length: 288
 prob.ExtremeValueDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the mu and sigma
 properties.
@@ -5240,11 +5240,11 @@ prob.ExtremeValueDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 357
+# length: 351
 prob.ExtremeValueDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -5269,7 +5269,7 @@ prob.ExtremeValueDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 399
+# length: 394
 prob.ExtremeValueDistribution: p = cdf (pd, x)
 prob.ExtremeValueDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -5278,7 +5278,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -5531,10 +5531,10 @@ prob.ExtremeValueDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1544
+# length: 1534
 prob.ExtremeValueDistribution: plot (pd)
 prob.ExtremeValueDistribution: plot (pd, Name, Value)
-prob.ExtremeValueDistribution: h = plot (&hellip;)
+prob.ExtremeValueDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -5564,7 +5564,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -5586,13 +5586,13 @@ prob.ExtremeValueDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2085
+# length: 2075
 prob.ExtremeValueDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.ExtremeValueDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.ExtremeValueDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.ExtremeValueDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.ExtremeValueDistribution: [nlogL, param] = proflik (pd)
-prob.ExtremeValueDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.ExtremeValueDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -5618,7 +5618,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -5652,10 +5652,10 @@ prob.ExtremeValueDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 712
+# length: 707
 prob.ExtremeValueDistribution: r = random (pd)
 prob.ExtremeValueDistribution: r = random (pd, rows)
-prob.ExtremeValueDistribution: r = random (pd, rows, cols, &hellip;)
+prob.ExtremeValueDistribution: r = random (pd, rows, cols, ...)
 prob.ExtremeValueDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -6005,11 +6005,11 @@ prob.GammaDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 619
+# length: 613
 prob.GammaDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 2&times;2 numeric matrix containing the variance-covariance of the
+A 2x2 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter, and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only meaningful
@@ -6037,11 +6037,11 @@ prob.GammaDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 230
+# length: 224
 prob.GammaDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -6064,11 +6064,11 @@ prob.GammaDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 286
+# length: 280
 prob.GammaDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;2 logical vector specifying which parameters are fixed and
+A 1x2 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -6092,11 +6092,11 @@ prob.GammaDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 207
+# length: 201
 prob.GammaDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -6118,11 +6118,11 @@ prob.GammaDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 282
+# length: 276
 prob.GammaDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the a and b
 properties.
@@ -6146,11 +6146,11 @@ prob.GammaDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 350
+# length: 344
 prob.GammaDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -6229,7 +6229,7 @@ prob.GammaDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 385
+# length: 380
 prob.GammaDistribution: p = cdf (pd, x)
 prob.GammaDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -6238,7 +6238,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -6464,10 +6464,10 @@ prob.GammaDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1523
+# length: 1513
 prob.GammaDistribution: plot (pd)
 prob.GammaDistribution: plot (pd, Name, Value)
-prob.GammaDistribution: h = plot (&hellip;)
+prob.GammaDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -6497,7 +6497,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -6519,13 +6519,13 @@ prob.GammaDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2030
+# length: 2020
 prob.GammaDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.GammaDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.GammaDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.GammaDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.GammaDistribution: [nlogL, param] = proflik (pd)
-prob.GammaDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.GammaDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -6551,7 +6551,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -6584,10 +6584,10 @@ prob.GammaDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 683
+# length: 678
 prob.GammaDistribution: r = random (pd)
 prob.GammaDistribution: r = random (pd, rows)
-prob.GammaDistribution: r = random (pd, rows, cols, &hellip;)
+prob.GammaDistribution: r = random (pd, rows, cols, ...)
 prob.GammaDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -6914,11 +6914,11 @@ prob.GeneralizedExtremeValueDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 637
+# length: 631
 prob.GeneralizedExtremeValueDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 3&times;3 numeric matrix containing the variance-covariance of the
+A 3x3 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter, and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only meaningful
@@ -6946,11 +6946,11 @@ prob.GeneralizedExtremeValueDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 248
+# length: 242
 prob.GeneralizedExtremeValueDistribution: property ParameterDescription
 Description of parameters
 
-A 3&times;1 cell array of character vectors with each element containing
+A 3x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -6973,11 +6973,11 @@ prob.GeneralizedExtremeValueDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 304
+# length: 298
 prob.GeneralizedExtremeValueDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;3 logical vector specifying which parameters are fixed and
+A 1x3 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -7001,11 +7001,11 @@ prob.GeneralizedExtremeValueDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 225
+# length: 219
 prob.GeneralizedExtremeValueDistribution: property ParameterNames
 Names of parameters
 
-A 3&times;1 cell array of character vectors with each element containing
+A 3x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -7027,11 +7027,11 @@ prob.GeneralizedExtremeValueDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 309
+# length: 303
 prob.GeneralizedExtremeValueDistribution: property ParameterValues
 Distribution parameter values
 
-A 3&times;1 numeric vector containing the values of the distribution
+A 3x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the k, sigma, and
 mu properties.
@@ -7055,11 +7055,11 @@ prob.GeneralizedExtremeValueDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 368
+# length: 362
 prob.GeneralizedExtremeValueDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -7084,7 +7084,7 @@ prob.GeneralizedExtremeValueDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 421
+# length: 416
 prob.GeneralizedExtremeValueDistribution: p = cdf (pd, x)
 prob.GeneralizedExtremeValueDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -7093,7 +7093,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -7373,10 +7373,10 @@ prob.GeneralizedExtremeValueDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1577
+# length: 1567
 prob.GeneralizedExtremeValueDistribution: plot (pd)
 prob.GeneralizedExtremeValueDistribution: plot (pd, Name, Value)
-prob.GeneralizedExtremeValueDistribution: h = plot (&hellip;)
+prob.GeneralizedExtremeValueDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -7406,7 +7406,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -7428,13 +7428,13 @@ prob.GeneralizedExtremeValueDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2198
+# length: 2188
 prob.GeneralizedExtremeValueDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.GeneralizedExtremeValueDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.GeneralizedExtremeValueDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.GeneralizedExtremeValueDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.GeneralizedExtremeValueDistribution: [nlogL, param] = proflik (pd)
-prob.GeneralizedExtremeValueDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.GeneralizedExtremeValueDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -7460,7 +7460,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -7495,10 +7495,10 @@ prob.GeneralizedExtremeValueDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 755
+# length: 750
 prob.GeneralizedExtremeValueDistribution: r = random (pd)
 prob.GeneralizedExtremeValueDistribution: r = random (pd, rows)
-prob.GeneralizedExtremeValueDistribution: r = random (pd, rows, cols, &hellip;)
+prob.GeneralizedExtremeValueDistribution: r = random (pd, rows, cols, ...)
 prob.GeneralizedExtremeValueDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -7852,11 +7852,11 @@ prob.GeneralizedParetoDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 631
+# length: 625
 prob.GeneralizedParetoDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 3&times;3 numeric matrix containing the variance-covariance of the
+A 3x3 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter, and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only meaningful
@@ -7884,11 +7884,11 @@ prob.GeneralizedParetoDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 242
+# length: 236
 prob.GeneralizedParetoDistribution: property ParameterDescription
 Description of parameters
 
-A 3&times;1 cell array of character vectors with each element containing
+A 3x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -7911,11 +7911,11 @@ prob.GeneralizedParetoDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 298
+# length: 292
 prob.GeneralizedParetoDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;3 logical vector specifying which parameters are fixed and
+A 1x3 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -7939,11 +7939,11 @@ prob.GeneralizedParetoDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 219
+# length: 213
 prob.GeneralizedParetoDistribution: property ParameterNames
 Names of parameters
 
-A 3&times;1 cell array of character vectors with each element containing
+A 3x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -7965,11 +7965,11 @@ prob.GeneralizedParetoDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 306
+# length: 300
 prob.GeneralizedParetoDistribution: property ParameterValues
 Distribution parameter values
 
-A 3&times;1 numeric vector containing the values of the distribution
+A 3x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the k, sigma, and
 theta properties.
@@ -7993,11 +7993,11 @@ prob.GeneralizedParetoDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 362
+# length: 356
 prob.GeneralizedParetoDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -8022,7 +8022,7 @@ prob.GeneralizedParetoDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 409
+# length: 404
 prob.GeneralizedParetoDistribution: p = cdf (pd, x)
 prob.GeneralizedParetoDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -8031,7 +8031,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -8284,10 +8284,10 @@ prob.GeneralizedParetoDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1559
+# length: 1549
 prob.GeneralizedParetoDistribution: plot (pd)
 prob.GeneralizedParetoDistribution: plot (pd, Name, Value)
-prob.GeneralizedParetoDistribution: h = plot (&hellip;)
+prob.GeneralizedParetoDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -8317,7 +8317,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -8339,13 +8339,13 @@ prob.GeneralizedParetoDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2158
+# length: 2148
 prob.GeneralizedParetoDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.GeneralizedParetoDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.GeneralizedParetoDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.GeneralizedParetoDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.GeneralizedParetoDistribution: [nlogL, param] = proflik (pd)
-prob.GeneralizedParetoDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.GeneralizedParetoDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -8371,7 +8371,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -8406,10 +8406,10 @@ prob.GeneralizedParetoDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 731
+# length: 726
 prob.GeneralizedParetoDistribution: r = random (pd)
 prob.GeneralizedParetoDistribution: r = random (pd, rows)
-prob.GeneralizedParetoDistribution: r = random (pd, rows, cols, &hellip;)
+prob.GeneralizedParetoDistribution: r = random (pd, rows, cols, ...)
 prob.GeneralizedParetoDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -8785,11 +8785,11 @@ prob.HalfNormalDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 624
+# length: 618
 prob.HalfNormalDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 2&times;2 numeric matrix containing the variance-covariance of the
+A 2x2 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter, and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only
@@ -8817,11 +8817,11 @@ prob.HalfNormalDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 235
+# length: 229
 prob.HalfNormalDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -8844,11 +8844,11 @@ prob.HalfNormalDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 291
+# length: 285
 prob.HalfNormalDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;2 logical vector specifying which parameters are fixed and
+A 1x2 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -8872,11 +8872,11 @@ prob.HalfNormalDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 212
+# length: 206
 prob.HalfNormalDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -8898,11 +8898,11 @@ prob.HalfNormalDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 292
+# length: 286
 prob.HalfNormalDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the mu and sigma
 properties.
@@ -8926,11 +8926,11 @@ prob.HalfNormalDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 355
+# length: 349
 prob.HalfNormalDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -8955,7 +8955,7 @@ prob.HalfNormalDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 395
+# length: 390
 prob.HalfNormalDistribution: p = cdf (pd, x)
 prob.HalfNormalDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -8964,7 +8964,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -9216,10 +9216,10 @@ prob.HalfNormalDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1538
+# length: 1528
 prob.HalfNormalDistribution: plot (pd)
 prob.HalfNormalDistribution: plot (pd, Name, Value)
-prob.HalfNormalDistribution: h = plot (&hellip;)
+prob.HalfNormalDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -9249,7 +9249,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -9271,13 +9271,13 @@ prob.HalfNormalDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2071
+# length: 2061
 prob.HalfNormalDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.HalfNormalDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.HalfNormalDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.HalfNormalDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.HalfNormalDistribution: [nlogL, param] = proflik (pd)
-prob.HalfNormalDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.HalfNormalDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -9303,7 +9303,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -9337,10 +9337,10 @@ prob.HalfNormalDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 702
+# length: 697
 prob.HalfNormalDistribution: r = random (pd)
 prob.HalfNormalDistribution: r = random (pd, rows)
-prob.HalfNormalDistribution: r = random (pd, rows, cols, &hellip;)
+prob.HalfNormalDistribution: r = random (pd, rows, cols, ...)
 prob.HalfNormalDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -9691,11 +9691,11 @@ prob.InverseGaussianDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 629
+# length: 623
 prob.InverseGaussianDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 2&times;2 numeric matrix containing the variance-covariance of the
+A 2x2 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter, and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only meaningful
@@ -9723,11 +9723,11 @@ prob.InverseGaussianDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 240
+# length: 234
 prob.InverseGaussianDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -9750,11 +9750,11 @@ prob.InverseGaussianDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 296
+# length: 290
 prob.InverseGaussianDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;2 logical vector specifying which parameters are fixed and
+A 1x2 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -9778,11 +9778,11 @@ prob.InverseGaussianDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 217
+# length: 211
 prob.InverseGaussianDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -9804,11 +9804,11 @@ prob.InverseGaussianDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 298
+# length: 292
 prob.InverseGaussianDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the mu and lambda
 properties.
@@ -9832,11 +9832,11 @@ prob.InverseGaussianDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 360
+# length: 354
 prob.InverseGaussianDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -9861,7 +9861,7 @@ prob.InverseGaussianDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 405
+# length: 400
 prob.InverseGaussianDistribution: p = cdf (pd, x)
 prob.InverseGaussianDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -9870,7 +9870,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -10150,10 +10150,10 @@ prob.InverseGaussianDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1553
+# length: 1543
 prob.InverseGaussianDistribution: plot (pd)
 prob.InverseGaussianDistribution: plot (pd, Name, Value)
-prob.InverseGaussianDistribution: h = plot (&hellip;)
+prob.InverseGaussianDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -10183,7 +10183,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -10205,13 +10205,13 @@ prob.InverseGaussianDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2107
+# length: 2097
 prob.InverseGaussianDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.InverseGaussianDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.InverseGaussianDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.InverseGaussianDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.InverseGaussianDistribution: [nlogL, param] = proflik (pd)
-prob.InverseGaussianDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.InverseGaussianDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -10237,7 +10237,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -10271,10 +10271,10 @@ prob.InverseGaussianDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 724
+# length: 719
 prob.InverseGaussianDistribution: r = random (pd)
 prob.InverseGaussianDistribution: r = random (pd, rows)
-prob.InverseGaussianDistribution: r = random (pd, rows, cols, &hellip;)
+prob.InverseGaussianDistribution: r = random (pd, rows, cols, ...)
 prob.InverseGaussianDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -10640,11 +10640,11 @@ prob.KernelDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 351
+# length: 345
 prob.KernelDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -10669,7 +10669,7 @@ prob.KernelDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 469
+# length: 464
 prob.KernelDistribution: p = cdf (pd, x)
 prob.KernelDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -10678,7 +10678,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -10868,10 +10868,10 @@ prob.KernelDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1018
+# length: 1008
 prob.KernelDistribution: plot (pd)
 prob.KernelDistribution: plot (pd, Name, Value)
-prob.KernelDistribution: h = plot (&hellip;)
+prob.KernelDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -10892,7 +10892,7 @@ data and a CDF of the fitted probability distribution.
 specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -10914,10 +10914,10 @@ prob.KernelDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 687
+# length: 682
 prob.KernelDistribution: r = random (pd)
 prob.KernelDistribution: r = random (pd, rows)
-prob.KernelDistribution: r = random (pd, rows, cols, &hellip;)
+prob.KernelDistribution: r = random (pd, rows, cols, ...)
 prob.KernelDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -11237,11 +11237,11 @@ prob.LogisticDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 622
+# length: 616
 prob.LogisticDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 2&times;2 numeric matrix containing the variance-covariance of the
+A 2x2 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter, and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only meaningful
@@ -11269,11 +11269,11 @@ prob.LogisticDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 233
+# length: 227
 prob.LogisticDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -11296,11 +11296,11 @@ prob.LogisticDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 289
+# length: 283
 prob.LogisticDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;2 logical vector specifying which parameters are fixed and
+A 1x2 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -11324,11 +11324,11 @@ prob.LogisticDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 210
+# length: 204
 prob.LogisticDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -11350,11 +11350,11 @@ prob.LogisticDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 290
+# length: 284
 prob.LogisticDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the mu and sigma
 properties.
@@ -11378,11 +11378,11 @@ prob.LogisticDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 353
+# length: 347
 prob.LogisticDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -11407,7 +11407,7 @@ prob.LogisticDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 391
+# length: 386
 prob.LogisticDistribution: p = cdf (pd, x)
 prob.LogisticDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -11416,7 +11416,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -11669,10 +11669,10 @@ prob.LogisticDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1532
+# length: 1522
 prob.LogisticDistribution: plot (pd)
 prob.LogisticDistribution: plot (pd, Name, Value)
-prob.LogisticDistribution: h = plot (&hellip;)
+prob.LogisticDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -11702,7 +11702,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -11724,13 +11724,13 @@ prob.LogisticDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2056
+# length: 2046
 prob.LogisticDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.LogisticDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.LogisticDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.LogisticDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.LogisticDistribution: [nlogL, param] = proflik (pd)
-prob.LogisticDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.LogisticDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -11756,7 +11756,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -11790,10 +11790,10 @@ prob.LogisticDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 696
+# length: 691
 prob.LogisticDistribution: r = random (pd)
 prob.LogisticDistribution: r = random (pd, rows)
-prob.LogisticDistribution: r = random (pd, rows, cols, &hellip;)
+prob.LogisticDistribution: r = random (pd, rows, cols, ...)
 prob.LogisticDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -12143,11 +12143,11 @@ prob.LoglogisticDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 625
+# length: 619
 prob.LoglogisticDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 2&times;2 numeric matrix containing the variance-covariance of the
+A 2x2 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter, and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only
@@ -12175,11 +12175,11 @@ prob.LoglogisticDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 236
+# length: 230
 prob.LoglogisticDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -12202,11 +12202,11 @@ prob.LoglogisticDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 292
+# length: 286
 prob.LoglogisticDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;2 logical vector specifying which parameters are fixed and
+A 1x2 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -12230,11 +12230,11 @@ prob.LoglogisticDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 213
+# length: 207
 prob.LoglogisticDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -12256,11 +12256,11 @@ prob.LoglogisticDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 293
+# length: 287
 prob.LoglogisticDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the mu and sigma
 properties.
@@ -12284,11 +12284,11 @@ prob.LoglogisticDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 356
+# length: 350
 prob.LoglogisticDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -12313,7 +12313,7 @@ prob.LoglogisticDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 397
+# length: 392
 prob.LoglogisticDistribution: p = cdf (pd, x)
 prob.LoglogisticDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -12322,7 +12322,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -12574,10 +12574,10 @@ prob.LoglogisticDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1541
+# length: 1531
 prob.LoglogisticDistribution: plot (pd)
 prob.LoglogisticDistribution: plot (pd, Name, Value)
-prob.LoglogisticDistribution: h = plot (&hellip;)
+prob.LoglogisticDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -12607,7 +12607,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -12629,13 +12629,13 @@ prob.LoglogisticDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2078
+# length: 2068
 prob.LoglogisticDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.LoglogisticDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.LoglogisticDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.LoglogisticDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.LoglogisticDistribution: [nlogL, param] = proflik (pd)
-prob.LoglogisticDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.LoglogisticDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -12661,7 +12661,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -12695,10 +12695,10 @@ prob.LoglogisticDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 707
+# length: 702
 prob.LoglogisticDistribution: r = random (pd)
 prob.LoglogisticDistribution: r = random (pd, rows)
-prob.LoglogisticDistribution: r = random (pd, rows, cols, &hellip;)
+prob.LoglogisticDistribution: r = random (pd, rows, cols, ...)
 prob.LoglogisticDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -13048,11 +13048,11 @@ prob.LognormalDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 623
+# length: 617
 prob.LognormalDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 2&times;2 numeric matrix containing the variance-covariance of the
+A 2x2 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter, and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only
@@ -13080,11 +13080,11 @@ prob.LognormalDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 234
+# length: 228
 prob.LognormalDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -13107,11 +13107,11 @@ prob.LognormalDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 290
+# length: 284
 prob.LognormalDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;2 logical vector specifying which parameters are fixed and
+A 1x2 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -13135,11 +13135,11 @@ prob.LognormalDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 211
+# length: 205
 prob.LognormalDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -13161,11 +13161,11 @@ prob.LognormalDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 291
+# length: 285
 prob.LognormalDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the mu and sigma
 properties.
@@ -13189,11 +13189,11 @@ prob.LognormalDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 354
+# length: 348
 prob.LognormalDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -13218,7 +13218,7 @@ prob.LognormalDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 393
+# length: 388
 prob.LognormalDistribution: p = cdf (pd, x)
 prob.LognormalDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -13227,7 +13227,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -13479,10 +13479,10 @@ prob.LognormalDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1535
+# length: 1525
 prob.LognormalDistribution: plot (pd)
 prob.LognormalDistribution: plot (pd, Name, Value)
-prob.LognormalDistribution: h = plot (&hellip;)
+prob.LognormalDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -13512,7 +13512,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -13534,13 +13534,13 @@ prob.LognormalDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2063
+# length: 2053
 prob.LognormalDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.LognormalDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.LognormalDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.LognormalDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.LognormalDistribution: [nlogL, param] = proflik (pd)
-prob.LognormalDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.LognormalDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -13566,7 +13566,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -13600,10 +13600,10 @@ prob.LognormalDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 700
+# length: 695
 prob.LognormalDistribution: r = random (pd)
 prob.LognormalDistribution: r = random (pd, rows)
-prob.LognormalDistribution: r = random (pd, rows, cols, &hellip;)
+prob.LognormalDistribution: r = random (pd, rows, cols, ...)
 prob.LognormalDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -13929,11 +13929,11 @@ prob.LoguniformDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 235
+# length: 229
 prob.LoguniformDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -13956,11 +13956,11 @@ prob.LoguniformDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 212
+# length: 206
 prob.LoguniformDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -13982,11 +13982,11 @@ prob.LoguniformDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 295
+# length: 289
 prob.LoguniformDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the Lower and Upper
 properties.
@@ -14010,11 +14010,11 @@ prob.LoguniformDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 355
+# length: 349
 prob.LoguniformDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -14066,7 +14066,7 @@ prob.LoguniformDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 477
+# length: 472
 prob.LoguniformDistribution: p = cdf (pd, x)
 prob.LoguniformDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -14075,7 +14075,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -14239,10 +14239,10 @@ prob.LoguniformDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1111
+# length: 1101
 prob.LoguniformDistribution: plot (pd)
 prob.LoguniformDistribution: plot (pd, Name, Value)
-prob.LoguniformDistribution: h = plot (&hellip;)
+prob.LoguniformDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -14265,7 +14265,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -14287,10 +14287,10 @@ prob.LoguniformDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 703
+# length: 698
 prob.LoguniformDistribution: r = random (pd)
 prob.LoguniformDistribution: r = random (pd, rows)
-prob.LoguniformDistribution: r = random (pd, rows, cols, &hellip;)
+prob.LoguniformDistribution: r = random (pd, rows, cols, ...)
 prob.LoguniformDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -14562,11 +14562,11 @@ prob.MultinomialDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 236
+# length: 230
 prob.MultinomialDistribution: property ParameterDescription
 Description of parameters
 
-A 1&times;1 cell array of character vectors with each element containing
+A 1x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -14589,11 +14589,11 @@ prob.MultinomialDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 213
+# length: 207
 prob.MultinomialDistribution: property ParameterNames
 Names of parameters
 
-A 1&times;1 cell array of character vectors with each element containing
+A 1x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -14669,11 +14669,11 @@ prob.MultinomialDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 356
+# length: 350
 prob.MultinomialDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -14698,7 +14698,7 @@ prob.MultinomialDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 563
+# length: 558
 prob.MultinomialDistribution: p = cdf (pd, x)
 prob.MultinomialDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -14707,7 +14707,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -14873,10 +14873,10 @@ prob.MultinomialDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1540
+# length: 1530
 prob.MultinomialDistribution: plot (pd)
 prob.MultinomialDistribution: plot (pd, Name, Value)
-prob.MultinomialDistribution: h = plot (&hellip;)
+prob.MultinomialDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd plots a probability density function (PDF) of the
@@ -14906,7 +14906,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -14928,10 +14928,10 @@ prob.MultinomialDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 706
+# length: 701
 prob.MultinomialDistribution: y = random (pd)
 prob.MultinomialDistribution: y = random (pd, rows)
-prob.MultinomialDistribution: y = random (pd, rows, cols, &hellip;)
+prob.MultinomialDistribution: y = random (pd, rows, cols, ...)
 prob.MultinomialDistribution: y = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -15252,11 +15252,11 @@ prob.NakagamiDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 622
+# length: 616
 prob.NakagamiDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 2&times;2 numeric matrix containing the variance-covariance of the
+A 2x2 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter, and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only
@@ -15284,11 +15284,11 @@ prob.NakagamiDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 233
+# length: 227
 prob.NakagamiDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -15311,11 +15311,11 @@ prob.NakagamiDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 289
+# length: 283
 prob.NakagamiDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;2 logical vector specifying which parameters are fixed and
+A 1x2 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -15339,11 +15339,11 @@ prob.NakagamiDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 210
+# length: 204
 prob.NakagamiDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -15365,11 +15365,11 @@ prob.NakagamiDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 290
+# length: 284
 prob.NakagamiDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the mu and omega
 properties.
@@ -15393,11 +15393,11 @@ prob.NakagamiDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 353
+# length: 347
 prob.NakagamiDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -15422,7 +15422,7 @@ prob.NakagamiDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 391
+# length: 386
 prob.NakagamiDistribution: p = cdf (pd, x)
 prob.NakagamiDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -15431,7 +15431,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -15710,10 +15710,10 @@ prob.NakagamiDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1532
+# length: 1522
 prob.NakagamiDistribution: plot (pd)
 prob.NakagamiDistribution: plot (pd, Name, Value)
-prob.NakagamiDistribution: h = plot (&hellip;)
+prob.NakagamiDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -15743,7 +15743,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -15765,13 +15765,13 @@ prob.NakagamiDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2056
+# length: 2046
 prob.NakagamiDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.NakagamiDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.NakagamiDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.NakagamiDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.NakagamiDistribution: [nlogL, param] = proflik (pd)
-prob.NakagamiDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.NakagamiDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -15797,7 +15797,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -15831,10 +15831,10 @@ prob.NakagamiDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 696
+# length: 691
 prob.NakagamiDistribution: r = random (pd)
 prob.NakagamiDistribution: r = random (pd, rows)
-prob.NakagamiDistribution: r = random (pd, rows, cols, &hellip;)
+prob.NakagamiDistribution: r = random (pd, rows, cols, ...)
 prob.NakagamiDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -16188,11 +16188,11 @@ prob.NegativeBinomialDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 630
+# length: 624
 prob.NegativeBinomialDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 2&times;2 numeric matrix containing the variance-covariance of the
+A 2x2 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter, and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only
@@ -16220,11 +16220,11 @@ prob.NegativeBinomialDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 241
+# length: 235
 prob.NegativeBinomialDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -16247,11 +16247,11 @@ prob.NegativeBinomialDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 297
+# length: 291
 prob.NegativeBinomialDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;2 logical vector specifying which parameters are fixed and
+A 1x2 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -16275,11 +16275,11 @@ prob.NegativeBinomialDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 218
+# length: 212
 prob.NegativeBinomialDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -16301,11 +16301,11 @@ prob.NegativeBinomialDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 293
+# length: 287
 prob.NegativeBinomialDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the R and P
 properties.
@@ -16356,11 +16356,11 @@ prob.NegativeBinomialDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 361
+# length: 355
 prob.NegativeBinomialDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -16385,7 +16385,7 @@ prob.NegativeBinomialDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 407
+# length: 402
 prob.NegativeBinomialDistribution: p = cdf (pd, x)
 prob.NegativeBinomialDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -16394,7 +16394,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -16619,10 +16619,10 @@ prob.NegativeBinomialDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1556
+# length: 1546
 prob.NegativeBinomialDistribution: plot (pd)
 prob.NegativeBinomialDistribution: plot (pd, Name, Value)
-prob.NegativeBinomialDistribution: h = plot (&hellip;)
+prob.NegativeBinomialDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -16652,7 +16652,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -16674,13 +16674,13 @@ prob.NegativeBinomialDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2108
+# length: 2098
 prob.NegativeBinomialDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.NegativeBinomialDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.NegativeBinomialDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.NegativeBinomialDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.NegativeBinomialDistribution: [nlogL, param] = proflik (pd)
-prob.NegativeBinomialDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.NegativeBinomialDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -16706,7 +16706,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -16740,10 +16740,10 @@ prob.NegativeBinomialDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 729
+# length: 724
 prob.NegativeBinomialDistribution: r = random (pd)
 prob.NegativeBinomialDistribution: r = random (pd, rows)
-prob.NegativeBinomialDistribution: r = random (pd, rows, cols, &hellip;)
+prob.NegativeBinomialDistribution: r = random (pd, rows, cols, ...)
 prob.NegativeBinomialDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -17067,11 +17067,11 @@ prob.NormalDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 620
+# length: 614
 prob.NormalDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 2&times;2 numeric matrix containing the variance-covariance of the
+A 2x2 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter, and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only meaningful
@@ -17099,11 +17099,11 @@ prob.NormalDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 231
+# length: 225
 prob.NormalDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -17126,11 +17126,11 @@ prob.NormalDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 287
+# length: 281
 prob.NormalDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;2 logical vector specifying which parameters are fixed and
+A 1x2 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -17154,11 +17154,11 @@ prob.NormalDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 208
+# length: 202
 prob.NormalDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -17180,11 +17180,11 @@ prob.NormalDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 288
+# length: 282
 prob.NormalDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the mu and sigma
 properties.
@@ -17208,11 +17208,11 @@ prob.NormalDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 351
+# length: 345
 prob.NormalDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -17237,7 +17237,7 @@ prob.NormalDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 387
+# length: 382
 prob.NormalDistribution: p = cdf (pd, x)
 prob.NormalDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -17246,7 +17246,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -17497,10 +17497,10 @@ prob.NormalDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1526
+# length: 1516
 prob.NormalDistribution: plot (pd)
 prob.NormalDistribution: plot (pd, Name, Value)
-prob.NormalDistribution: h = plot (&hellip;)
+prob.NormalDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -17530,7 +17530,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -17552,13 +17552,13 @@ prob.NormalDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2042
+# length: 2032
 prob.NormalDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.NormalDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.NormalDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.NormalDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.NormalDistribution: [nlogL, param] = proflik (pd)
-prob.NormalDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.NormalDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -17584,7 +17584,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -17618,10 +17618,10 @@ prob.NormalDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 688
+# length: 683
 prob.NormalDistribution: r = random (pd)
 prob.NormalDistribution: r = random (pd, rows)
-prob.NormalDistribution: r = random (pd, rows, cols, &hellip;)
+prob.NormalDistribution: r = random (pd, rows, cols, ...)
 prob.NormalDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -17926,11 +17926,11 @@ prob.PiecewiseLinearDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 240
+# length: 234
 prob.PiecewiseLinearDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -17953,11 +17953,11 @@ prob.PiecewiseLinearDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 217
+# length: 211
 prob.PiecewiseLinearDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -17979,11 +17979,11 @@ prob.PiecewiseLinearDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 293
+# length: 287
 prob.PiecewiseLinearDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the x and Fx
 properties.
@@ -18037,11 +18037,11 @@ prob.PiecewiseLinearDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 360
+# length: 354
 prob.PiecewiseLinearDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -18066,7 +18066,7 @@ prob.PiecewiseLinearDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 405
+# length: 400
 prob.PiecewiseLinearDistribution: p = cdf (pd, x)
 prob.PiecewiseLinearDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -18075,7 +18075,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -18230,10 +18230,10 @@ prob.PiecewiseLinearDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1553
+# length: 1543
 prob.PiecewiseLinearDistribution: plot (pd)
 prob.PiecewiseLinearDistribution: plot (pd, Name, Value)
-prob.PiecewiseLinearDistribution: h = plot (&hellip;)
+prob.PiecewiseLinearDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -18263,7 +18263,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -18285,10 +18285,10 @@ prob.PiecewiseLinearDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 724
+# length: 719
 prob.PiecewiseLinearDistribution: r = random (pd)
 prob.PiecewiseLinearDistribution: r = random (pd, rows)
-prob.PiecewiseLinearDistribution: r = random (pd, rows, cols, &hellip;)
+prob.PiecewiseLinearDistribution: r = random (pd, rows, cols, ...)
 prob.PiecewiseLinearDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -18605,11 +18605,11 @@ prob.PoissonDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 421
+# length: 415
 prob.PoissonDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 1&times;1 numeric matrix containing the variance of the parameter
+A 1x1 numeric matrix containing the variance of the parameter
 estimate. This matrix is only meaningful when the distribution was fitted
 to data. If the distribution object was created with fixed parameters,
 or a parameter of a fitted distribution is modified, then the
@@ -18634,11 +18634,11 @@ prob.PoissonDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 232
+# length: 226
 prob.PoissonDistribution: property ParameterDescription
 Description of parameters
 
-A 1&times;1 cell array of character vectors with each element containing
+A 1x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -18688,11 +18688,11 @@ prob.PoissonDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 209
+# length: 203
 prob.PoissonDistribution: property ParameterNames
 Names of parameters
 
-A 1&times;1 cell array of character vectors with each element containing
+A 1x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -18714,11 +18714,11 @@ prob.PoissonDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 281
+# length: 275
 prob.PoissonDistribution: property ParameterValues
 Distribution parameter values
 
-A 1&times;1 numeric vector containing the values of the distribution
+A 1x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the lambda property.
 
@@ -18771,11 +18771,11 @@ prob.PoissonDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 360
+# length: 354
 prob.PoissonDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. The first element contains the lower boundary,
 the second element contains the upper boundary. This property is
 read-only. You can only truncate a probability distribution with the
@@ -18800,7 +18800,7 @@ prob.PoissonDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 389
+# length: 384
 prob.PoissonDistribution: p = cdf (pd, x)
 prob.PoissonDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -18809,7 +18809,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -19061,10 +19061,10 @@ prob.PoissonDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1469
+# length: 1459
 prob.PoissonDistribution: plot (pd)
 prob.PoissonDistribution: plot (pd, Name, Value)
-prob.PoissonDistribution: h = plot (&hellip;)
+prob.PoissonDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -19094,7 +19094,7 @@ If
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -19116,13 +19116,13 @@ prob.PoissonDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2012
+# length: 2002
 prob.PoissonDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.PoissonDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.PoissonDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.PoissonDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.PoissonDistribution: [nlogL, param] = proflik (pd)
-prob.PoissonDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.PoissonDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -19148,7 +19148,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -19181,10 +19181,10 @@ prob.PoissonDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 693
+# length: 688
 prob.PoissonDistribution: r = random (pd)
 prob.PoissonDistribution: r = random (pd, rows)
-prob.PoissonDistribution: r = random (pd, rows, cols, &hellip;)
+prob.PoissonDistribution: r = random (pd, rows, cols, ...)
 prob.PoissonDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -19301,13 +19301,13 @@ prob.ProbabilityDistribution
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 767
+# length: 757
 statistics: prob.ProbabilityDistribution
 Abstract base class of the probability distribution objects.
 
-It holds the behaviour every distribution object shares &ndash; how it is
+It holds the behaviour every distribution object shares -- how it is
 displayed, how its parameter confidence intervals are computed, how it is
-plotted and how a profile likelihood is taken &ndash; as protected methods, so
+plotted and how a profile likelihood is taken -- as protected methods, so
 the 29 distribution classes inherit one implementation and no part of it is
 reachable from outside them.
 
@@ -19712,11 +19712,11 @@ prob.RayleighDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 353
+# length: 347
 prob.RayleighDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -19741,7 +19741,7 @@ prob.RayleighDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 391
+# length: 386
 prob.RayleighDistribution: p = cdf (pd, x)
 prob.RayleighDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -19750,7 +19750,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -19975,10 +19975,10 @@ prob.RayleighDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1532
+# length: 1522
 prob.RayleighDistribution: plot (pd)
 prob.RayleighDistribution: plot (pd, Name, Value)
-prob.RayleighDistribution: h = plot (&hellip;)
+prob.RayleighDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -20008,7 +20008,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -20030,13 +20030,13 @@ prob.RayleighDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2014
+# length: 2004
 prob.RayleighDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.RayleighDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.RayleighDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.RayleighDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.RayleighDistribution: [nlogL, param] = proflik (pd)
-prob.RayleighDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.RayleighDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -20062,7 +20062,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -20095,10 +20095,10 @@ prob.RayleighDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 696
+# length: 691
 prob.RayleighDistribution: r = random (pd)
 prob.RayleighDistribution: r = random (pd, rows)
-prob.RayleighDistribution: r = random (pd, rows, cols, &hellip;)
+prob.RayleighDistribution: r = random (pd, rows, cols, ...)
 prob.RayleighDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -20389,11 +20389,11 @@ prob.RicianDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 620
+# length: 614
 prob.RicianDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 2&times;2 numeric matrix containing the variance-covariance of the
+A 2x2 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter, and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only
@@ -20421,11 +20421,11 @@ prob.RicianDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 231
+# length: 225
 prob.RicianDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -20448,11 +20448,11 @@ prob.RicianDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 287
+# length: 281
 prob.RicianDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;2 logical vector specifying which parameters are fixed and
+A 1x2 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -20476,11 +20476,11 @@ prob.RicianDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 208
+# length: 202
 prob.RicianDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -20502,11 +20502,11 @@ prob.RicianDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 287
+# length: 281
 prob.RicianDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the s and sigma
 properties.
@@ -20560,11 +20560,11 @@ prob.RicianDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 351
+# length: 345
 prob.RicianDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -20589,7 +20589,7 @@ prob.RicianDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 387
+# length: 382
 prob.RicianDistribution: p = cdf (pd, x)
 prob.RicianDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -20598,7 +20598,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -20823,10 +20823,10 @@ prob.RicianDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1526
+# length: 1516
 prob.RicianDistribution: plot (pd)
 prob.RicianDistribution: plot (pd, Name, Value)
-prob.RicianDistribution: h = plot (&hellip;)
+prob.RicianDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -20856,7 +20856,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -20878,13 +20878,13 @@ prob.RicianDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2041
+# length: 2031
 prob.RicianDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.RicianDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.RicianDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.RicianDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.RicianDistribution: [nlogL, param] = proflik (pd)
-prob.RicianDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.RicianDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -20910,7 +20910,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -20944,10 +20944,10 @@ prob.RicianDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 688
+# length: 683
 prob.RicianDistribution: r = random (pd)
 prob.RicianDistribution: r = random (pd, rows)
-prob.RicianDistribution: r = random (pd, rows, cols, &hellip;)
+prob.RicianDistribution: r = random (pd, rows, cols, ...)
 prob.RicianDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -21291,11 +21291,11 @@ prob.StableDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 221
+# length: 215
 prob.StableDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 4&times;4 numeric matrix containing the variance-covariance of the
+A 4x4 numeric matrix containing the variance-covariance of the
 distribution parameters. This property is read-only.
 
 
@@ -21317,11 +21317,11 @@ prob.StableDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 231
+# length: 225
 prob.StableDistribution: property ParameterDescription
 Description of parameters
 
-A 4&times;1 cell array of character vectors with each element containing
+A 4x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -21344,11 +21344,11 @@ prob.StableDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 199
+# length: 193
 prob.StableDistribution: property ParameterIsFixed
 Flags for fixed parameters
 
-A 4&times;1 logical vector specifying which parameters are held fixed
+A 4x1 logical vector specifying which parameters are held fixed
 rather than estimated. This property is read-only.
 
 
@@ -21370,11 +21370,11 @@ prob.StableDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 208
+# length: 202
 prob.StableDistribution: property ParameterNames
 Names of parameters
 
-A 4&times;1 cell array of character vectors with each element containing
+A 4x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -21396,11 +21396,11 @@ prob.StableDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 298
+# length: 292
 prob.StableDistribution: property ParameterValues
 Distribution parameter values
 
-A 4&times;1 numeric vector containing the values of the distribution
+A 4x1 numeric vector containing the values of the distribution
 parameters, matching the order in ParameterNames. This property
 is read-only; use dot name assignment on the alpha, beta,
 gam, and delta properties.
@@ -21821,10 +21821,10 @@ prob.StableDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 367
+# length: 362
 prob.StableDistribution: plot (pd)
 prob.StableDistribution: plot (pd, Name, Value)
-prob.StableDistribution: h = plot (&hellip;)
+prob.StableDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots the probability density function (PDF) of
@@ -21851,13 +21851,13 @@ prob.StableDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1824
+# length: 1814
 prob.StableDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.StableDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.StableDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.StableDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.StableDistribution: [nlogL, param] = proflik (pd)
-prob.StableDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.StableDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -21883,7 +21883,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -21912,10 +21912,10 @@ prob.StableDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 379
+# length: 374
 prob.StableDistribution: r = random (pd)
 prob.StableDistribution: r = random (pd, rows)
-prob.StableDistribution: r = random (pd, rows, cols, &hellip;)
+prob.StableDistribution: r = random (pd, rows, cols, ...)
 prob.StableDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -22237,11 +22237,11 @@ prob.TriangularDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 235
+# length: 229
 prob.TriangularDistribution: property ParameterDescription
 Description of parameters
 
-A 3&times;1 cell array of character vectors with each element containing
+A 3x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -22264,11 +22264,11 @@ prob.TriangularDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 212
+# length: 206
 prob.TriangularDistribution: property ParameterNames
 Names of parameters
 
-A 3&times;1 cell array of character vectors with each element containing
+A 3x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -22290,11 +22290,11 @@ prob.TriangularDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 291
+# length: 285
 prob.TriangularDistribution: property ParameterValues
 Distribution parameter values
 
-A 3&times;1 numeric vector containing the values of the distribution
+A 3x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the A, B, and
 C properties.
@@ -22348,11 +22348,11 @@ prob.TriangularDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 355
+# length: 349
 prob.TriangularDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -22377,7 +22377,7 @@ prob.TriangularDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 395
+# length: 390
 prob.TriangularDistribution: p = cdf (pd, x)
 prob.TriangularDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -22386,7 +22386,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -22541,10 +22541,10 @@ prob.TriangularDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1120
+# length: 1110
 prob.TriangularDistribution: plot (pd)
 prob.TriangularDistribution: plot (pd, Name, Value)
-prob.TriangularDistribution: h = plot (&hellip;)
+prob.TriangularDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -22568,7 +22568,7 @@ If
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -22590,10 +22590,10 @@ prob.TriangularDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 703
+# length: 698
 prob.TriangularDistribution: r = random (pd)
 prob.TriangularDistribution: r = random (pd, rows)
-prob.TriangularDistribution: r = random (pd, rows, cols, &hellip;)
+prob.TriangularDistribution: r = random (pd, rows, cols, ...)
 prob.TriangularDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -22868,11 +22868,11 @@ prob.UniformDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 232
+# length: 226
 prob.UniformDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -22895,11 +22895,11 @@ prob.UniformDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 209
+# length: 203
 prob.UniformDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -22921,11 +22921,11 @@ prob.UniformDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 292
+# length: 286
 prob.UniformDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the Lower and Upper
 properties.
@@ -22949,11 +22949,11 @@ prob.UniformDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 352
+# length: 346
 prob.UniformDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -23035,7 +23035,7 @@ prob.UniformDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 389
+# length: 384
 prob.UniformDistribution: p = cdf (pd, x)
 prob.UniformDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -23044,7 +23044,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -23199,10 +23199,10 @@ prob.UniformDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1529
+# length: 1519
 prob.UniformDistribution: plot (pd)
 prob.UniformDistribution: plot (pd, Name, Value)
-prob.UniformDistribution: h = plot (&hellip;)
+prob.UniformDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -23232,7 +23232,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -23254,10 +23254,10 @@ prob.UniformDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 692
+# length: 687
 prob.UniformDistribution: r = random (pd)
 prob.UniformDistribution: r = random (pd, rows)
-prob.UniformDistribution: r = random (pd, rows, cols, &hellip;)
+prob.UniformDistribution: r = random (pd, rows, cols, ...)
 prob.UniformDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -23608,11 +23608,11 @@ prob.WeibullDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 621
+# length: 615
 prob.WeibullDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 2&times;2 numeric matrix containing the variance-covariance of the
+A 2x2 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter, and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only
@@ -23640,11 +23640,11 @@ prob.WeibullDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 232
+# length: 226
 prob.WeibullDistribution: property ParameterDescription
 Description of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -23667,11 +23667,11 @@ prob.WeibullDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 288
+# length: 282
 prob.WeibullDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;2 logical vector specifying which parameters are fixed and
+A 1x2 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -23695,11 +23695,11 @@ prob.WeibullDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 209
+# length: 203
 prob.WeibullDistribution: property ParameterNames
 Names of parameters
 
-A 2&times;1 cell array of character vectors with each element containing
+A 2x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -23721,11 +23721,11 @@ prob.WeibullDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 284
+# length: 278
 prob.WeibullDistribution: property ParameterValues
 Distribution parameter values
 
-A 2&times;1 numeric vector containing the values of the distribution
+A 2x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the A and B
 properties.
@@ -23749,11 +23749,11 @@ prob.WeibullDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 352
+# length: 346
 prob.WeibullDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -23808,7 +23808,7 @@ prob.WeibullDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 389
+# length: 384
 prob.WeibullDistribution: p = cdf (pd, x)
 prob.WeibullDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -23817,7 +23817,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -24042,10 +24042,10 @@ prob.WeibullDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1529
+# length: 1519
 prob.WeibullDistribution: plot (pd)
 prob.WeibullDistribution: plot (pd, Name, Value)
-prob.WeibullDistribution: h = plot (&hellip;)
+prob.WeibullDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -24075,7 +24075,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -24097,13 +24097,13 @@ prob.WeibullDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2044
+# length: 2034
 prob.WeibullDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.WeibullDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.WeibullDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.WeibullDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.WeibullDistribution: [nlogL, param] = proflik (pd)
-prob.WeibullDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.WeibullDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -24129,7 +24129,7 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
@@ -24163,10 +24163,10 @@ prob.WeibullDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 691
+# length: 686
 prob.WeibullDistribution: r = random (pd)
 prob.WeibullDistribution: r = random (pd, rows)
-prob.WeibullDistribution: r = random (pd, rows, cols, &hellip;)
+prob.WeibullDistribution: r = random (pd, rows, cols, ...)
 prob.WeibullDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -24283,16 +24283,16 @@ prob.tLocationScaleDistribution
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1572
+# length: 1536
 statistics: prob.tLocationScaleDistribution
-Location-Scale Student&rsquo;s T probability distribution object.
+Location-Scale Student's T probability distribution object.
 
 A prob.tLocationScaleDistribution object consists of parameters, a model
-description, and sample data for a location-scale Student&rsquo;s T probability
+description, and sample data for a location-scale Student's T probability
 distribution.
 
-The location-scale Student&rsquo;s T distribution is a continuous probability
-distribution that generalizes the standard Student&rsquo;s T distribution by
+The location-scale Student's T distribution is a continuous probability
+distribution that generalizes the standard Student's T distribution by
 including location and scale parameters. It is defined by location
 parameter
 mu, scale parameter sigma, and degrees of freedom nu.
@@ -24304,7 +24304,7 @@ Fit a distribution to data using the fitdist function.
 Create a distribution with fixed parameter values using the
 makedist function.
 Use the constructor prob.tLocationScaleDistribution (mu,
-sigma, nu) to create a location-scale Student&rsquo;s T distribution
+sigma, nu) to create a location-scale Student's T distribution
 with fixed parameter values mu, sigma, and nu.
 Use the static method prob.tLocationScaleDistribution.fit (x,
 censor, freq, options) to fit a distribution to the data
@@ -24314,7 +24314,7 @@ It is highly recommended to use fitdist and makedist
 functions to create probability distribution objects, instead of the class
 constructor or the aforementioned static method.
 
-Further information about the location-scale Student&rsquo;s T distribution can
+Further information about the location-scale Student's T distribution can
 be found at
 https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution
 
@@ -24462,11 +24462,11 @@ prob.tLocationScaleDistribution.ParameterCovariance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 628
+# length: 622
 prob.tLocationScaleDistribution: property ParameterCovariance
 Covariance matrix of the parameter estimates
 
-A 3&times;3 numeric matrix containing the variance-covariance of the
+A 3x3 numeric matrix containing the variance-covariance of the
 parameter estimates. Diagonal elements contain the variance of each
 estimated parameter, and non-diagonal elements contain the covariance
 between the parameter estimates. The covariance matrix is only
@@ -24494,11 +24494,11 @@ prob.tLocationScaleDistribution.ParameterDescription
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 239
+# length: 233
 prob.tLocationScaleDistribution: property ParameterDescription
 Description of parameters
 
-A 3&times;1 cell array of character vectors with each element containing
+A 3x1 cell array of character vectors with each element containing
 a short description of a distribution parameter. This property is
 read-only.
 
@@ -24521,11 +24521,11 @@ prob.tLocationScaleDistribution.ParameterIsFixed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 295
+# length: 289
 prob.tLocationScaleDistribution: property ParameterIsFixed
 Flag for fixed parameters
 
-A 1&times;3 logical vector specifying which parameters are fixed and
+A 1x3 logical vector specifying which parameters are fixed and
 which are estimated. true values correspond to fixed parameters,
 false values correspond to parameter estimates. This property is
 read-only.
@@ -24549,11 +24549,11 @@ prob.tLocationScaleDistribution.ParameterNames
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 216
+# length: 210
 prob.tLocationScaleDistribution: property ParameterNames
 Names of parameters
 
-A 3&times;1 cell array of character vectors with each element containing
+A 3x1 cell array of character vectors with each element containing
 the name of a distribution parameter. This property is read-only.
 
 
@@ -24575,11 +24575,11 @@ prob.tLocationScaleDistribution.ParameterValues
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 301
+# length: 295
 prob.tLocationScaleDistribution: property ParameterValues
 Distribution parameter values
 
-A 3&times;1 numeric vector containing the values of the distribution
+A 3x1 numeric vector containing the values of the distribution
 parameters. This property is read-only. You can change the distribution
 parameters by assigning new values to the mu, sigma, and
 nu properties.
@@ -24603,11 +24603,11 @@ prob.tLocationScaleDistribution.Truncation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 359
+# length: 353
 prob.tLocationScaleDistribution: property Truncation
 Truncation interval
 
-A 1&times;2 numeric vector specifying the truncation interval for the
+A 1x2 numeric vector specifying the truncation interval for the
 probability distribution. First element contains the lower boundary,
 second element contains the upper boundary. This property is read-only.
 You can only truncate a probability distribution with the
@@ -24632,7 +24632,7 @@ prob.tLocationScaleDistribution.cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 403
+# length: 398
 prob.tLocationScaleDistribution: p = cdf (pd, x)
 prob.tLocationScaleDistribution: p = cdf (pd, x, 'upper')
 Compute the cumulative distribution function (CDF).
@@ -24641,7 +24641,7 @@ p = cdf (pd, x) computes the CDF of the
 probability distribution object, pd, evaluated at the values in
 x.
 
-p = cdf (&hellip;, 'upper') returns the complement of
+p = cdf (..., 'upper') returns the complement of
 the CDF of the probability distribution object, pd, evaluated at
 the values in x.
 
@@ -24769,12 +24769,12 @@ prob.tLocationScaleDistribution.mu
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 219
+# length: 213
 prob.tLocationScaleDistribution: property mu
 Location parameter
 
 A scalar value characterizing the location of the
-location-scale Student&rsquo;s T distribution. You can access the mu
+location-scale Student's T distribution. You can access the mu
 property using dot name assignment.
 
 
@@ -24822,12 +24822,12 @@ prob.tLocationScaleDistribution.nu
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 238
+# length: 232
 prob.tLocationScaleDistribution: property nu
 Degrees of freedom
 
 A positive scalar value characterizing the degrees of freedom of the
-location-scale Student&rsquo;s T distribution. You can access the nu
+location-scale Student's T distribution. You can access the nu
 property using dot name assignment.
 
 
@@ -24920,10 +24920,10 @@ prob.tLocationScaleDistribution.plot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1550
+# length: 1540
 prob.tLocationScaleDistribution: plot (pd)
 prob.tLocationScaleDistribution: plot (pd, Name, Value)
-prob.tLocationScaleDistribution: h = plot (&hellip;)
+prob.tLocationScaleDistribution: h = plot (...)
 Plot a probability distribution object.
 
 plot (pd) plots a probability density function (PDF) of the
@@ -24953,7 +24953,7 @@ object, option is ignored.
 not specified, the plot function plots into the current axes or
 creates a new axes object if one does not exist.
 
-h = plot (&hellip;) returns a graphics handle to the plotted
+h = plot (...) returns a graphics handle to the plotted
 objects.
 
 
@@ -24975,13 +24975,13 @@ prob.tLocationScaleDistribution.proflik
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2152
+# length: 2136
 prob.tLocationScaleDistribution: [nlogL, param] = proflik (pd, pnum)
 prob.tLocationScaleDistribution: [nlogL, param] = proflik (pd, pnum, 'Display', display)
 prob.tLocationScaleDistribution: [nlogL, param] = proflik (pd, pnum, setparam)
 prob.tLocationScaleDistribution: [nlogL, param] = proflik (pd, pnum, setparam, 'Display', display)
 prob.tLocationScaleDistribution: [nlogL, param] = proflik (pd)
-prob.tLocationScaleDistribution: [nlogL, param, other] = proflik (&hellip;)
+prob.tLocationScaleDistribution: [nlogL, param, other] = proflik (...)
 Profile likelihood function for a probability distribution object.
 
 [nlogL, param] = proflik (pd, pnum)
@@ -25007,12 +25007,12 @@ likelihood against the user-defined range of the selected parameter.
 [nlogL, param] = proflik (pd) selects the
 first parameter that is not fixed.
 
-[nlogL, param, other] = proflik (&hellip;) also
+[nlogL, param, other] = proflik (...) also
 returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
 
-For the location-scale Student&rsquo;s T distribution, pnum = 1
+For the location-scale Student's T distribution, pnum = 1
 selects the parameter mu, pnum = 2 selects the
 parameter sigma, and pnum = 3 selects the
 parameter nu.
@@ -25042,10 +25042,10 @@ prob.tLocationScaleDistribution.random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 719
+# length: 714
 prob.tLocationScaleDistribution: r = random (pd)
 prob.tLocationScaleDistribution: r = random (pd, rows)
-prob.tLocationScaleDistribution: r = random (pd, rows, cols, &hellip;)
+prob.tLocationScaleDistribution: r = random (pd, rows, cols, ...)
 prob.tLocationScaleDistribution: r = random (pd, [sz])
 Generate random arrays from the probability distribution object.
 
@@ -25078,12 +25078,12 @@ prob.tLocationScaleDistribution.sigma
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 228
+# length: 222
 prob.tLocationScaleDistribution: property sigma
 Scale parameter
 
 A positive scalar value characterizing the scale of the location-scale
-Student&rsquo;s T distribution. You can access the sigma property using
+Student's T distribution. You can access the sigma property using
 dot name assignment.
 
 

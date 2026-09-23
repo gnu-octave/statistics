@@ -13,7 +13,7 @@ betafit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2049
+# length: 2039
 statistics: paramhat = betafit (x)
 statistics: [paramhat, paramci] = betafit (x)
 statistics: [paramhat, paramci] = betafit (x, alpha)
@@ -31,12 +31,12 @@ ignored.
 [paramhat, paramci] = betafit (x) returns the 95%
 confidence intervals for the parameter estimates.
 
-[&hellip;] = betafit (x, alpha) also returns the
+[...] = betafit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals of the estimated
 parameter. By default, the optional argument alpha is 0.05
 corresponding to 95% confidence intervals.
 
-[&hellip;] = betafit (params, x, freq) accepts a
+[...] = betafit (params, x, freq) accepts a
 frequency vector, freq, of the same size as x. freq
 must contain non-negative integer frequencies for the corresponding elements
 in x. By default, or if left empty,
@@ -88,7 +88,7 @@ betalike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1478
+# length: 1467
 statistics: nlogL = betalike (params, x)
 statistics: [nlogL, avar] = betalike (params, x)
 Negative log-likelihood for the Beta distribution.
@@ -101,11 +101,11 @@ numbers and the data in the range [0,1]. Out of range parameters or
 data return NaN.
 
 [nlogL, avar] = betalike (params, x) returns
-the inverse of Fisher&rsquo;s information matrix, avar. If the input
+the inverse of Fisher's information matrix, avar. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of params are their asymptotic variances.
 
-[&hellip;] = betalike (params, x, freq) accepts a
+[...] = betalike (params, x, freq) accepts a
 frequency vector, freq, of the same size as x. freq
 must contain non-negative integer frequencies for the corresponding elements
 in x. By default, or if left empty,
@@ -204,10 +204,10 @@ binolike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1336
+# length: 1320
 statistics: nlogL = binolike (params, x)
 statistics: [nlogL, acov] = binolike (params, x)
-statistics: [&hellip;] = binolike (params, x, freq)
+statistics: [...] = binolike (params, x, freq)
 Negative log-likelihood for the binomial distribution.
 
 nlogL = binolike (params, x) returns the negative
@@ -219,11 +219,11 @@ handles each element in x independently, binolike returns the
 negative log likelihood of the entire vector x.
 
 [nlogL, acov] = binolike (params, x) also
-returns the inverse of Fisher&rsquo;s information matrix, acov. If the input
+returns the inverse of Fisher's information matrix, acov. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of params are their asymptotic variances.
 
-[&hellip;] = binolike (params, x, freq) accepts a
+[...] = binolike (params, x, freq) accepts a
 frequency vector, freq, of the same size as x. freq
 typically contains integer frequencies for the corresponding elements in
 x, but it can contain any non-integer non-negative values. By default,
@@ -259,13 +259,13 @@ bisafit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2071
+# length: 2031
 statistics: paramhat = bisafit (x)
 statistics: [paramhat, paramci] = bisafit (x)
 statistics: [paramhat, paramci] = bisafit (x, alpha)
-statistics: [&hellip;] = bisafit (x, alpha, censor)
-statistics: [&hellip;] = bisafit (x, alpha, censor, freq)
-statistics: [&hellip;] = bisafit (x, alpha, censor, freq, options)
+statistics: [...] = bisafit (x, alpha, censor)
+statistics: [...] = bisafit (x, alpha, censor, freq)
+statistics: [...] = bisafit (x, alpha, censor, freq, options)
 Estimate mean and confidence intervals for the Birnbaum-Saunders
 distribution.
 
@@ -278,25 +278,25 @@ gamma.
 [paramhat, paramci] = bisafit (x) returns the 95%
 confidence intervals for the parameter estimates.
 
-[&hellip;] = bisafit (x, alpha) also returns the
+[...] = bisafit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals for the
 parameter estimates. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = bisafit (x, alpha, censor) accepts a
+[...] = bisafit (x, alpha, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = bisafit (x, alpha, censor, freq)
+[...] = bisafit (x, alpha, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
 By default, or if left empty, freq = ones (size (x)).
 
-[&hellip;] = bisafit (&hellip;, options) specifies control
+[...] = bisafit (..., options) specifies control
 parameters for the iterative algorithm used to compute ML estimates with the
 fminsearch function. options is a structure with the following
 fields and their default values:
@@ -336,11 +336,11 @@ bisalike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1516
+# length: 1490
 statistics: nlogL = bisalike (params, x)
 statistics: [nlogL, acov] = bisalike (params, x)
-statistics: [&hellip;] = bisalike (params, x, censor)
-statistics: [&hellip;] = bisalike (params, x, censor, freq)
+statistics: [...] = bisalike (params, x, censor)
+statistics: [...] = bisalike (params, x, censor, freq)
 Negative log-likelihood for the Birnbaum-Saunders distribution.
 
 nlogL = bisalike (params, x) returns the negative
@@ -349,17 +349,17 @@ distribution with (1) scale parameter beta and (2) shape parameter
 gamma given in the two-element vector params.
 
 [nlogL, acov] = bisalike (params, x) also
-returns the inverse of Fisher&rsquo;s information matrix, acov. If the input
+returns the inverse of Fisher's information matrix, acov. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of params are their asymptotic variances.
 
-[&hellip;] = bisalike (params, x, censor) accepts a
+[...] = bisalike (params, x, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = bisalike (params, x, censor, freq)
+[...] = bisalike (params, x, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
@@ -395,13 +395,13 @@ burrfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2074
+# length: 2034
 statistics: paramhat = burrfit (x)
 statistics: [paramhat, paramci] = burrfit (x)
 statistics: [paramhat, paramci] = burrfit (x, alpha)
-statistics: [&hellip;] = burrfit (x, alpha, censor)
-statistics: [&hellip;] = burrfit (x, alpha, censor, freq)
-statistics: [&hellip;] = burrfit (x, alpha, censor, freq, options)
+statistics: [...] = burrfit (x, alpha, censor)
+statistics: [...] = burrfit (x, alpha, censor, freq)
+statistics: [...] = burrfit (x, alpha, censor, freq, options)
 Estimate mean and confidence intervals for the Burr type XII distribution.
 
 muhat = burrfit (x) returns the maximum likelihood
@@ -413,25 +413,25 @@ paramhat(3) is the second shape parameter, k
 [paramhat, paramci] = burrfit (x) returns the 95%
 confidence intervals for the parameter estimates.
 
-[&hellip;] = burrfit (x, alpha) also returns the
+[...] = burrfit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals for the
 parameter estimates. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = burrfit (x, alpha, censor) accepts a
+[...] = burrfit (x, alpha, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = burrfit (x, alpha, censor, freq)
+[...] = burrfit (x, alpha, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
 By default, or if left empty, freq = ones (size (x)).
 
-[&hellip;] = burrfit (&hellip;, options) specifies control
+[...] = burrfit (..., options) specifies control
 parameters for the iterative algorithm used to compute the maximum likelihood
 estimates. options is a structure with the following field and its
 default value:
@@ -471,11 +471,11 @@ burrlike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1518
+# length: 1492
 statistics: nlogL = burrlike (params, x)
 statistics: [nlogL, acov] = burrlike (params, x)
-statistics: [&hellip;] = burrlike (params, x, censor)
-statistics: [&hellip;] = burrlike (params, x, censor, freq)
+statistics: [...] = burrlike (params, x, censor)
+statistics: [...] = burrlike (params, x, censor, freq)
 Negative log-likelihood for the Burr type XII distribution.
 
 nlogL = burrlike (params, x) returns the negative
@@ -485,17 +485,17 @@ c, and (3) second shape parameter k given in the three-element
 vector params.
 
 [nlogL, acov] = burrlike (params, x) also
-returns the inverse of Fisher&rsquo;s information matrix, acov. If the input
+returns the inverse of Fisher's information matrix, acov. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of acov are their asymptotic variances.
 
-[&hellip;] = burrlike (params, x, censor) accepts a
+[...] = burrlike (params, x, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = burrlike (params, x, censor, freq)
+[...] = burrlike (params, x, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
@@ -531,11 +531,11 @@ copulafit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1890
+# length: 1869
 statistics: rho = copulafit ("Gaussian", u)
 statistics: [rho, nu] = copulafit ("t", u)
 statistics: [param, ci] = copulafit (family, u)
-statistics: [&hellip;] = copulafit (&hellip;, "alpha", a)
+statistics: [...] = copulafit (..., "alpha", a)
 Fit a copula to data.
 
 copulafit (family, u) returns the maximum-likelihood
@@ -546,7 +546,7 @@ variables; all entries must lie strictly inside the unit interval
 by ecdf/ksdensity.
 
 family is the copula family name. It can be "Gaussian" for the
-Gaussian family, "t" for the Student&rsquo;s t family, "Clayton"
+Gaussian family, "t" for the Student's t family, "Clayton"
 for the Clayton family, "Gumbel" for the Gumbel-Hougaard family, or
 "Frank" for the Frank family.
 
@@ -566,7 +566,7 @@ u) returns the scalar copula parameter param and, optionally, a
 two-element vector ci with the lower and upper confidence bounds. Only
 bivariate data are supported.
 
-copulafit (&hellip;, "alpha", a) sets the significance
+copulafit (..., "alpha", a) sets the significance
 level for the confidence interval to a, so that ci has coverage
 100 * (1 - a) percent. The default is a = 0.05.
 The confidence interval is a Wald interval whose standard error is obtained
@@ -598,13 +598,13 @@ evfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2348
+# length: 2308
 statistics: paramhat = evfit (x)
 statistics: [paramhat, paramci] = evfit (x)
 statistics: [paramhat, paramci] = evfit (x, alpha)
-statistics: [&hellip;] = evfit (x, alpha, censor)
-statistics: [&hellip;] = evfit (x, alpha, censor, freq)
-statistics: [&hellip;] = evfit (x, alpha, censor, freq, options)
+statistics: [...] = evfit (x, alpha, censor)
+statistics: [...] = evfit (x, alpha, censor, freq)
+statistics: [...] = evfit (x, alpha, censor, freq, options)
 Estimate parameters and confidence intervals for the extreme value
 distribution.
 
@@ -617,25 +617,25 @@ mu, and paramhat(2) is the scale parameter, sigma.
 [paramhat, paramci] = evfit (x) returns the 95%
 confidence intervals for the parameter estimates.
 
-[&hellip;] = evfit (x, alpha) also returns the
+[...] = evfit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals for the
 parameter estimates. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = evfit (x, alpha, censor) accepts a
+[...] = evfit (x, alpha, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = evfit (x, alpha, censor, freq)
+[...] = evfit (x, alpha, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
 By default, or if left empty, freq = ones (size (x)).
 
-[&hellip;] = evfit (&hellip;, options) specifies control
+[...] = evfit (..., options) specifies control
 parameters for the iterative algorithm used to compute the maximum likelihood
 estimates. options is a structure with the following field and its
 default value:
@@ -681,11 +681,11 @@ evlike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1808
+# length: 1782
 statistics: nlogL = evlike (params, x)
 statistics: [nlogL, acov] = evlike (params, x)
-statistics: [&hellip;] = evlike (params, x, censor)
-statistics: [&hellip;] = evlike (params, x, censor, freq)
+statistics: [...] = evlike (params, x, censor)
+statistics: [...] = evlike (params, x, censor, freq)
 Negative log-likelihood for the extreme value distribution.
 
 nlogL = evlike (params, x) returns the negative
@@ -695,17 +695,17 @@ value distribution) with (1) location parameter mu and (2) scale
 parameter sigma given in the two-element vector params.
 
 [nlogL, acov] = evlike (params, x) also
-returns the inverse of Fisher&rsquo;s information matrix, acov. If the input
+returns the inverse of Fisher's information matrix, acov. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of acov are their asymptotic variances.
 
-[&hellip;] = evlike (params, x, censor) accepts a
+[...] = evlike (params, x, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = evlike (params, x, censor, freq)
+[...] = evlike (params, x, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
@@ -747,48 +747,48 @@ expfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2672
+# length: 2623
 statistics: muhat = expfit (x)
 statistics: [muhat, muci] = expfit (x)
 statistics: [muhat, muci] = expfit (x, alpha)
-statistics: [&hellip;] = expfit (x, alpha, censor)
-statistics: [&hellip;] = expfit (x, alpha, censor, freq)
+statistics: [...] = expfit (x, alpha, censor)
+statistics: [...] = expfit (x, alpha, censor, freq)
 Estimate mean and confidence intervals for the exponential distribution.
 
 muhat = expfit (x) returns the maximum likelihood estimate
 of the mean parameter, muhat, of the exponential distribution given the
 data in x. x is expected to be a non-negative vector. If x
 is an array, the mean will be computed for each column of x. If any
-elements of x are NaN, that vector&rsquo;s mean will be returned as NaN.
+elements of x are NaN, that vector's mean will be returned as NaN.
 
 [muhat, muci] = expfit (x) returns the 95%
 confidence intervals for the parameter estimate. If x is a vector,
 muci is a two element column vector. If x is an array, each
 column of data will have a confidence interval returned as a two-row array.
 
-[&hellip;] = evfit (x, alpha) also returns the
+[...] = evfit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals for the
 parameter estimates. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values. Any invalid values for alpha
 will return NaN for both CI bounds.
 
-[&hellip;] = expfit (x, alpha, censor) accepts a
+[...] = expfit (x, alpha, censor) accepts a
 logical or numeric array, censor, of the same size as x with
 1s for observations that are right-censored and 0s for
 observations that are observed exactly. Any non-zero elements are regarded
 as 1s. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = expfit (x, alpha, censor, freq)
+[...] = expfit (x, alpha, censor, freq)
 accepts a frequency array, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
 By default, or if left empty, freq = ones (size (x)).
 
-Matlab incompatibility: Matlab&rsquo;s expfit produces unpredictable results
+Matlab incompatibility: Matlab's expfit produces unpredictable results
 for some cases with higher dimensions (specifically 1 x m x n x ... arrays).
-Octave&rsquo;s implementation allows for n&times;D arrays, consistently performing
+Octave's implementation allows for nxD arrays, consistently performing
 calculations on individual column vectors. Additionally, censor and
 freq can be used with arrays of any size, whereas Matlab only allows
 their use when x is a vector.
@@ -829,11 +829,11 @@ explike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1670
+# length: 1644
 statistics: nlogL = explike (mu, x)
 statistics: [nlogL, avar] = explike (mu, x)
-statistics: [&hellip;] = explike (mu, x, censor)
-statistics: [&hellip;] = explike (mu, x, censor, freq)
+statistics: [...] = explike (mu, x, censor)
+statistics: [...] = explike (mu, x, censor, freq)
 Negative log-likelihood for the exponential distribution.
 
 nlogL = explike (mu, x) returns the negative
@@ -842,17 +842,17 @@ distribution with mean parameter mu. x must be a vector of
 non-negative values, otherwise NaN is returned.
 
 [nlogL, avar] = explike (mu, x) also
-returns the inverse of Fisher&rsquo;s information matrix, avar. If the input
+returns the inverse of Fisher's information matrix, avar. If the input
 mean parameter, mu, is the maximum likelihood estimate, avar is
 its asymptotic variance.
 
-[&hellip;] = explike (mu, x, censor) accepts a
+[...] = explike (mu, x, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = explike (mu, x, censor, freq)
+[...] = explike (mu, x, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
@@ -894,13 +894,13 @@ gamfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2370
+# length: 2330
 statistics: paramhat = gamfit (x)
 statistics: [paramhat, paramci] = gamfit (x)
 statistics: [paramhat, paramci] = gamfit (x, alpha)
-statistics: [&hellip;] = gamfit (x, alpha, censor)
-statistics: [&hellip;] = gamfit (x, alpha, censor, freq)
-statistics: [&hellip;] = gamfit (x, alpha, censor, freq, options)
+statistics: [...] = gamfit (x, alpha, censor)
+statistics: [...] = gamfit (x, alpha, censor, freq)
+statistics: [...] = gamfit (x, alpha, censor, freq, options)
 Estimate parameters and confidence intervals for the Gamma distribution.
 
 paramhat = gamfit (x) returns the maximum likelihood
@@ -911,25 +911,25 @@ paramhat(2) is the scale parameter, b.
 [paramhat, paramci] = gamfit (x) returns the 95%
 confidence intervals for the parameter estimates.
 
-[&hellip;] = gamfit (x, alpha) also returns the
+[...] = gamfit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals for the
 parameter estimates. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = gamfit (x, alpha, censor) accepts a
+[...] = gamfit (x, alpha, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = gamfit (x, alpha, censor, freq)
+[...] = gamfit (x, alpha, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
 By default, or if left empty, freq = ones (size (x)).
 
-[&hellip;] = gamfit (&hellip;, options) specifies control
+[...] = gamfit (..., options) specifies control
 parameters for the iterative algorithm used to compute the maximum likelihood
 estimates. options is a structure with the following field and its
 default value:
@@ -975,11 +975,11 @@ gamlike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1821
+# length: 1795
 statistics: nlogL = gamlike (params, x)
 statistics: [nlogL, acov] = gamlike (params, x)
-statistics: [&hellip;] = gamlike (params, x, censor)
-statistics: [&hellip;] = gamlike (params, x, censor, freq)
+statistics: [...] = gamlike (params, x, censor)
+statistics: [...] = gamlike (params, x, censor, freq)
 Negative log-likelihood for the Gamma distribution.
 
 nlogL = gamlike (params, x) returns the negative
@@ -988,17 +988,17 @@ with (1) shape parameter a and (2) scale parameter b given in the
 two-element vector params.
 
 [nlogL, acov] = gamlike (params, x) also
-returns the inverse of Fisher&rsquo;s information matrix, acov. If the input
+returns the inverse of Fisher's information matrix, acov. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of acov are their asymptotic variances.
 
-[&hellip;] = gamlike (params, x, censor) accepts a
+[...] = gamlike (params, x, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = gamlike (params, x, censor, freq)
+[...] = gamlike (params, x, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
@@ -1040,7 +1040,7 @@ geofit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1246
+# length: 1241
 statistics: pshat = geofit (x)
 statistics: [pshat, psci] = geofit (x)
 statistics: [pshat, psci] = geofit (x, alpha)
@@ -1057,7 +1057,7 @@ estimated parameter. By default, the optional argument alpha is 0.05
 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = geofit (x, alpha, freq) accepts a
+[...] = geofit (x, alpha, freq) accepts a
 frequency vector, freq, of the same size as x. freq
 typically contains integer frequencies for the corresponding elements in
 x, but it can contain any non-integer non-negative values. By default,
@@ -1095,7 +1095,7 @@ gevfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2491
+# length: 2481
 statistics: paramhat = gevfit (x)
 statistics: [paramhat, paramci] = gevfit (x)
 statistics: [paramhat, paramci] = gevfit (x, alpha)
@@ -1114,13 +1114,13 @@ paramhat(3) is the location parameter, mu.
 [paramhat, paramci] = gevfit (x) returns the 95%
 confidence intervals for the parameter estimates.
 
-[&hellip;] = gevfit (x, alpha) also returns the
+[...] = gevfit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals for the
 parameter estimates. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = gevfit (params, x, freq) accepts a
+[...] = gevfit (params, x, freq) accepts a
 frequency vector, freq, of the same size as x. freq
 must contain non-negative integer frequencies for the corresponding elements
 in x. By default, or if left empty,
@@ -1235,7 +1235,7 @@ gevlike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2338
+# length: 2315
 statistics: nlogL = gevlike (params, x)
 statistics: [nlogL, acov] = gevlike (params, x)
 statistics: [nlogL, acov] = gevlike (params, x, freq)
@@ -1247,11 +1247,11 @@ with (1) shape parameter k, (2) scale parameter sigma, and (3)
 location parameter mu given in the three-element vector params.
 
 [nlogL, acov] = gevlike (params, x) also
-returns the inverse of Fisher&rsquo;s information matrix, acov. If the input
+returns the inverse of Fisher's information matrix, acov. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of acov are their asymptotic variances.
 
-[&hellip;] = gevlike (params, x, freq) accepts a
+[...] = gevlike (params, x, freq) accepts a
 frequency vector, freq, of the same size as x. freq
 must contain non-negative integer frequencies for the corresponding elements
 in x. By default, or if left empty,
@@ -1267,10 +1267,10 @@ mirror image of the type I extreme value distribution as computed by the
 evcdf function.
 
 MATLAB compatibility. At exactly k = 0 the returned
-ACOV deviates from MATLAB&rsquo;s deliberately. Both implementations agree
+ACOV deviates from MATLAB's deliberately. Both implementations agree
 to thirteen digits for any k != 0, and both their
 k != 0 expressions converge on the values returned here as
-k approaches 0; MATLAB&rsquo;s own k = 0 branch
+k approaches 0; MATLAB's own k = 0 branch
 returns something else entirely, which its k != 0 branch
 therefore contradicts. The Gumbel-limit expressions used here are the
 limits of the general ones, so ACOV is continuous at 0. This
@@ -1312,7 +1312,7 @@ gpfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3153
+# length: 3132
 statistics: paramhat = gpfit (x)
 statistics: [paramhat, paramci] = gpfit (x)
 statistics: [paramhat, paramci] = gpfit (x, alpha)
@@ -1337,13 +1337,13 @@ confidence intervals for the estimated parameters k and sigma as
 a 2-by-2 matrix whose first row holds the lower bounds and
 whose second row holds the upper bounds.
 
-[&hellip;] = gpfit (x, alpha) also returns the
+[...] = gpfit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals for the
 parameter estimates. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = gpfit (x, alpha, options)
+[...] = gpfit (x, alpha, options)
 specifies control parameters for the iterative algorithm used to compute ML
 estimates with the fminsearch function. options is a structure
 with the following fields and their default values:
@@ -1353,10 +1353,10 @@ options.MaxFunEvals = 400
 options.MaxIter = 200
 options.TolX = 1e-6
 
-[&hellip;] = gpfit (x, alpha, options, freq)
+[...] = gpfit (x, alpha, options, freq)
 accepts a vector of the same size as x giving the number of times each
 element of x was observed. This fourth argument is an Octave
-extension; MATLAB&rsquo;s gpfit takes three inputs at most.
+extension; MATLAB's gpfit takes three inputs at most.
 
 When the shape parameter falls below -1 the likelihood is unbounded:
 the density at the upper endpoint of the support diverges as that endpoint
@@ -1409,10 +1409,10 @@ gplike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1920
+# length: 1892
 statistics: nlogL = gplike (params, x)
 statistics: [nlogL, acov] = gplike (params, x)
-statistics: [&hellip;] = gplike (params, x, freq)
+statistics: [...] = gplike (params, x, freq)
 Negative log-likelihood for the generalized Pareto distribution.
 
 nlogL = gplike (params, x) returns the negative
@@ -1425,18 +1425,18 @@ to be zero. If the location is known to be nonzero, subtract it from
 x before calling gplike.
 
 [nlogL, acov] = gplike (params, x) returns
-the inverse of Fisher&rsquo;s information matrix, acov, a
+the inverse of Fisher's information matrix, acov, a
 2-by-2 matrix. If the input parameter values in params
 are the maximum likelihood estimates, the diagonal elements of acov are
-their asymptotic variances. acov is based on the observed Fisher&rsquo;s
+their asymptotic variances. acov is based on the observed Fisher's
 information, not the expected information.
 
-[&hellip;] = gplike (params, x, freq) accepts a
+[...] = gplike (params, x, freq) accepts a
 frequency vector, freq, of the same size as x. freq
 typically contains integer frequencies for the corresponding elements in
 x, but it can contain any non-integer non-negative values. By default,
 or if left empty, freq = ones (size (x)). This third
-argument is an Octave extension; MATLAB&rsquo;s gplike takes two inputs.
+argument is an Octave extension; MATLAB's gplike takes two inputs.
 
 When k = 0 and mu = 0, the Generalized Pareto CDF
 is equivalent to the exponential distribution. When k > 0 and
@@ -1478,13 +1478,13 @@ gumbelfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2398
+# length: 2358
 statistics: paramhat = gumbelfit (x)
 statistics: [paramhat, paramci] = gumbelfit (x)
 statistics: [paramhat, paramci] = gumbelfit (x, alpha)
-statistics: [&hellip;] = gumbelfit (x, alpha, censor)
-statistics: [&hellip;] = gumbelfit (x, alpha, censor, freq)
-statistics: [&hellip;] = gumbelfit (x, alpha, censor, freq, options)
+statistics: [...] = gumbelfit (x, alpha, censor)
+statistics: [...] = gumbelfit (x, alpha, censor, freq)
+statistics: [...] = gumbelfit (x, alpha, censor, freq, options)
 Estimate parameters and confidence intervals for Gumbel distribution.
 
 paramhat = gumbelfit (x) returns the maximum likelihood
@@ -1496,25 +1496,25 @@ and paramhat(2) is the scale parameter, beta.
 [paramhat, paramci] = gumbelfit (x) returns the 95%
 confidence intervals for the parameter estimates.
 
-[&hellip;] = gumbelfit (x, alpha) also returns the
+[...] = gumbelfit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals for the
 parameter estimates. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = gumbelfit (x, alpha, censor) accepts a
+[...] = gumbelfit (x, alpha, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = gumbelfit (x, alpha, censor, freq)
+[...] = gumbelfit (x, alpha, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
 By default, or if left empty, freq = ones (size (x)).
 
-[&hellip;] = gumbelfit (&hellip;, options) specifies control
+[...] = gumbelfit (..., options) specifies control
 parameters for the iterative algorithm used to compute the maximum likelihood
 estimates. options is a structure with the following field and its
 default value:
@@ -1560,11 +1560,11 @@ gumbellike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1862
+# length: 1836
 statistics: nlogL = gumbellike (params, x)
 statistics: [nlogL, avar] = gumbellike (params, x)
-statistics: [&hellip;] = gumbellike (params, x, censor)
-statistics: [&hellip;] = gumbellike (params, x, censor, freq)
+statistics: [...] = gumbellike (params, x, censor)
+statistics: [...] = gumbellike (params, x, censor, freq)
 Negative log-likelihood for the extreme value distribution.
 
 nlogL = gumbellike (params, x) returns the negative
@@ -1574,17 +1574,17 @@ extreme value distribution) with (1) location parameter mu and (2)
 scale parameter beta given in the two-element vector params.
 
 [nlogL, acov] = gumbellike (params, x) also
-returns the inverse of Fisher&rsquo;s information matrix, acov. If the input
+returns the inverse of Fisher's information matrix, acov. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of acov are their asymptotic variances.
 
-[&hellip;] = gumbellike (params, x, censor) accepts a
+[...] = gumbellike (params, x, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = gumbellike (params, x, censor,
+[...] = gumbellike (params, x, censor,
 freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
@@ -1627,7 +1627,7 @@ hnfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1591
+# length: 1581
 statistics: [paramhat, paramci] = hnfit (x, mu)
 statistics: [paramhat, paramci] = hnfit (x, mu, alpha)
 statistics: [paramhat, paramci] = hnfit (x, mu, alpha, freq)
@@ -1648,12 +1648,12 @@ the 95% confidence intervals for the estimated scale parameter sigma.
 The first column of paramci includes the location parameter mu
 without any confidence bounds.
 
-[&hellip;] = hnfit (x, alpha) also returns the
+[...] = hnfit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals of the estimated
 scale parameter. By default, the optional argument alpha is 0.05
 corresponding to 95% confidence intervals.
 
-[&hellip;] = hnfit (params, x, freq) accepts a
+[...] = hnfit (params, x, freq) accepts a
 frequency vector, freq, of the same size as x. freq
 must contain non-negative integer frequencies for the corresponding elements
 in x. By default, or if left empty,
@@ -1691,7 +1691,7 @@ hnlike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1181
+# length: 1170
 statistics: nlogL = hnlike (params, x)
 statistics: [nlogL, acov] = hnlike (params, x)
 statistics: [nlogL, acov] = hnlike (params, x, freq)
@@ -1703,11 +1703,11 @@ distribution with (1) location parameter mu and (2) scale parameter
 sigma given in the two-element vector params.
 
 [nlogL, acov] = hnlike (params, x) returns
-the inverse of Fisher&rsquo;s information matrix, acov. If the input
+the inverse of Fisher's information matrix, acov. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of acov are their asymptotic variances.
 
-[&hellip;] = hnlike (params, x, freq) accepts a
+[...] = hnlike (params, x, freq) accepts a
 frequency vector, freq, of the same size as x. freq
 typically contains integer frequencies for the corresponding elements in
 x, but it can contain any non-integer non-negative values. By default,
@@ -1745,13 +1745,13 @@ invgfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2056
+# length: 2016
 statistics: paramhat = invgfit (x)
 statistics: [paramhat, paramci] = invgfit (x)
 statistics: [paramhat, paramci] = invgfit (x, alpha)
-statistics: [&hellip;] = invgfit (x, alpha, censor)
-statistics: [&hellip;] = invgfit (x, alpha, censor, freq)
-statistics: [&hellip;] = invgfit (x, alpha, censor, freq, options)
+statistics: [...] = invgfit (x, alpha, censor)
+statistics: [...] = invgfit (x, alpha, censor, freq)
+statistics: [...] = invgfit (x, alpha, censor, freq, options)
 Estimate mean and confidence intervals for the inverse Gaussian distribution.
 
 mu0 = invgfit (x) returns the maximum likelihood
@@ -1762,25 +1762,25 @@ and paramhat(2) is the shape parameter, lambda.
 [paramhat, paramci] = invgfit (x) returns the 95%
 confidence intervals for the parameter estimates.
 
-[&hellip;] = invgfit (x, alpha) also returns the
+[...] = invgfit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals for the
 parameter estimates. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = invgfit (x, alpha, censor) accepts a
+[...] = invgfit (x, alpha, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = invgfit (x, alpha, censor, freq)
+[...] = invgfit (x, alpha, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
 By default, or if left empty, freq = ones (size (x)).
 
-[&hellip;] = invgfit (&hellip;, options) specifies control
+[...] = invgfit (..., options) specifies control
 parameters for the iterative algorithm used to compute ML estimates with the
 fminsearch function. options is a structure with the following
 fields and their default values:
@@ -1820,11 +1820,11 @@ invglike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1503
+# length: 1477
 statistics: nlogL = invglike (params, x)
 statistics: [nlogL, acov] = invglike (params, x)
-statistics: [&hellip;] = invglike (params, x, censor)
-statistics: [&hellip;] = invglike (params, x, censor, freq)
+statistics: [...] = invglike (params, x, censor)
+statistics: [...] = invglike (params, x, censor, freq)
 Negative log-likelihood for the inverse Gaussian distribution.
 
 nlogL = invglike (params, x) returns the negative
@@ -1833,17 +1833,17 @@ distribution with (1) scale parameter mu and (2) shape parameter
 lambda given in the two-element vector params.
 
 [nlogL, acov] = invglike (params, x) also
-returns the inverse of Fisher&rsquo;s information matrix, acov. If the input
+returns the inverse of Fisher's information matrix, acov. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of params are their asymptotic variances.
 
-[&hellip;] = invglike (params, x, censor) accepts a
+[...] = invglike (params, x, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = invglike (params, x, censor, freq)
+[...] = invglike (params, x, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
@@ -1879,13 +1879,13 @@ logifit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2019
+# length: 1979
 statistics: paramhat = logifit (x)
 statistics: [paramhat, paramci] = logifit (x)
 statistics: [paramhat, paramci] = logifit (x, alpha)
-statistics: [&hellip;] = logifit (x, alpha, censor)
-statistics: [&hellip;] = logifit (x, alpha, censor, freq)
-statistics: [&hellip;] = logifit (x, alpha, censor, freq, options)
+statistics: [...] = logifit (x, alpha, censor)
+statistics: [...] = logifit (x, alpha, censor, freq)
+statistics: [...] = logifit (x, alpha, censor, freq, options)
 Estimate mean and confidence intervals for the logistic distribution.
 
 mu0 = logifit (x) returns the maximum likelihood
@@ -1896,25 +1896,25 @@ paramhat(2) is the shape parameter, s.
 [paramhat, paramci] = logifit (x) returns the 95%
 confidence intervals for the parameter estimates.
 
-[&hellip;] = logifit (x, alpha) also returns the
+[...] = logifit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals for the
 parameter estimates. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = logifit (x, alpha, censor) accepts a
+[...] = logifit (x, alpha, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = logifit (x, alpha, censor, freq)
+[...] = logifit (x, alpha, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
 By default, or if left empty, freq = ones (size (x)).
 
-[&hellip;] = logifit (&hellip;, options) specifies control
+[...] = logifit (..., options) specifies control
 parameters for the iterative algorithm used to compute ML estimates with the
 fminsearch function. options is a structure with the following
 fields and their default values:
@@ -1954,11 +1954,11 @@ logilike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1473
+# length: 1447
 statistics: nlogL = logilike (params, x)
 statistics: [nlogL, acov] = logilike (params, x)
-statistics: [&hellip;] = logilike (params, x, censor)
-statistics: [&hellip;] = logilike (params, x, censor, freq)
+statistics: [...] = logilike (params, x, censor)
+statistics: [...] = logilike (params, x, censor, freq)
 Negative log-likelihood for the logistic distribution.
 
 nlogL = logilike (params, x) returns the negative
@@ -1967,17 +1967,17 @@ distribution with (1) location parameter mu and (2) scale parameter
 sigma given in the two-element vector params.
 
 [nlogL, acov] = logilike (params, x) also
-returns the inverse of Fisher&rsquo;s information matrix, acov. If the input
+returns the inverse of Fisher's information matrix, acov. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of params are their asymptotic variances.
 
-[&hellip;] = logilike (params, x, censor) accepts a
+[...] = logilike (params, x, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = logilike (params, x, censor, freq)
+[...] = logilike (params, x, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
@@ -2013,13 +2013,13 @@ loglfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2281
+# length: 2241
 statistics: paramhat = loglfit (x)
 statistics: [paramhat, paramci] = loglfit (x)
 statistics: [paramhat, paramci] = loglfit (x, alpha)
-statistics: [&hellip;] = loglfit (x, alpha, censor)
-statistics: [&hellip;] = loglfit (x, alpha, censor, freq)
-statistics: [&hellip;] = loglfit (x, alpha, censor, freq, options)
+statistics: [...] = loglfit (x, alpha, censor)
+statistics: [...] = loglfit (x, alpha, censor, freq)
+statistics: [...] = loglfit (x, alpha, censor, freq, options)
 Estimate mean and confidence intervals for the log-logistic distribution.
 
 mu0 = loglfit (x) returns the maximum likelihood
@@ -2030,25 +2030,25 @@ paramhat(2) is the scale parameter, sigma.
 [paramhat, paramci] = loglfit (x) returns the 95%
 confidence intervals for the parameter estimates.
 
-[&hellip;] = loglfit (x, alpha) also returns the
+[...] = loglfit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals for the
 parameter estimates. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = loglfit (x, alpha, censor) accepts a
+[...] = loglfit (x, alpha, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = loglfit (x, alpha, censor, freq)
+[...] = loglfit (x, alpha, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
 By default, or if left empty, freq = ones (size (x)).
 
-[&hellip;] = loglfit (&hellip;, options) specifies control
+[...] = loglfit (..., options) specifies control
 parameters for the iterative algorithm used to compute ML estimates with the
 fminsearch function. options is a structure with the following
 fields and their default values:
@@ -2096,11 +2096,11 @@ logllike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1724
+# length: 1698
 statistics: nlogL = logllike (params, x)
 statistics: [nlogL, acov] = logllike (params, x)
-statistics: [&hellip;] = logllike (params, x, censor)
-statistics: [&hellip;] = logllike (params, x, censor, freq)
+statistics: [...] = logllike (params, x, censor)
+statistics: [...] = logllike (params, x, censor, freq)
 Negative log-likelihood for the log-logistic distribution.
 
 nlogL = logllike (params, x) returns the negative
@@ -2109,17 +2109,17 @@ distribution with (1) scale parameter a and (2) shape parameter b
 given in the two-element vector params.
 
 [nlogL, acov] = logllike (params, x) also
-returns the inverse of Fisher&rsquo;s information matrix, acov. If the input
+returns the inverse of Fisher's information matrix, acov. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of params are their asymptotic variances.
 
-[&hellip;] = logllike (params, x, censor) accepts a
+[...] = logllike (params, x, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = logllike (params, x, censor, freq)
+[...] = logllike (params, x, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
@@ -2163,13 +2163,13 @@ lognfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2414
+# length: 2374
 statistics: paramhat = lognfit (x)
 statistics: [paramhat, paramci] = lognfit (x)
 statistics: [paramhat, paramci] = lognfit (x, alpha)
-statistics: [&hellip;] = lognfit (x, alpha, censor)
-statistics: [&hellip;] = lognfit (x, alpha, censor, freq)
-statistics: [&hellip;] = lognfit (x, alpha, censor, freq, options)
+statistics: [...] = lognfit (x, alpha, censor)
+statistics: [...] = lognfit (x, alpha, censor, freq)
+statistics: [...] = lognfit (x, alpha, censor, freq, options)
 Estimate parameters and confidence intervals for the lognormal distribution.
 
 paramhat = lognfit (x) returns the maximum likelihood
@@ -2183,25 +2183,25 @@ distributed with mean mu and standard deviation sigma.
 [paramhat, paramci] = lognfit (x) returns the 95%
 confidence intervals for the parameter estimates.
 
-[&hellip;] = lognfit (x, alpha) also returns the
+[...] = lognfit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals for the
 parameter estimates. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = lognfit (x, alpha, censor) accepts a
+[...] = lognfit (x, alpha, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = lognfit (x, alpha, censor, freq)
+[...] = lognfit (x, alpha, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
 By default, or if left empty, freq = ones (size (x)).
 
-[&hellip;] = lognfit (&hellip;, options) specifies control
+[...] = lognfit (..., options) specifies control
 parameters for the iterative algorithm used to compute ML estimates with the
 fminsearch function. options is a structure with the following
 fields and their default values:
@@ -2246,11 +2246,11 @@ lognlike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1867
+# length: 1835
 statistics: nlogL = lognlike (params, x)
 statistics: [nlogL, avar] = lognlike (params, x)
-statistics: [&hellip;] = lognlike (params, x, censor)
-statistics: [&hellip;] = lognlike (params, x, censor, freq)
+statistics: [...] = lognlike (params, x, censor)
+statistics: [...] = lognlike (params, x, censor, freq)
 Negative log-likelihood for the lognormal distribution.
 
 nlogL = lognlike (params, x) returns the negative
@@ -2265,18 +2265,18 @@ If a random variable follows this distribution, its logarithm is normally
 distributed with mean mu and standard deviation sigma.
 
 [nlogL, avar] = lognlike (params, x)
-returns the inverse of Fisher&rsquo;s information matrix, avar. If the input
+returns the inverse of Fisher's information matrix, avar. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of avar are their asymptotic variances. avar
-is based on the observed Fisher&rsquo;s information, not the expected information.
+is based on the observed Fisher's information, not the expected information.
 
-[&hellip;] = lognlike (params, x, censor) accepts a
+[...] = lognlike (params, x, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = lognlike (params, x, censor, freq)
+[...] = lognlike (params, x, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
@@ -2312,13 +2312,13 @@ nakafit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1976
+# length: 1936
 statistics: paramhat = nakafit (x)
 statistics: [paramhat, paramci] = nakafit (x)
 statistics: [paramhat, paramci] = nakafit (x, alpha)
-statistics: [&hellip;] = nakafit (x, alpha, censor)
-statistics: [&hellip;] = nakafit (x, alpha, censor, freq)
-statistics: [&hellip;] = nakafit (x, alpha, censor, freq, options)
+statistics: [...] = nakafit (x, alpha, censor)
+statistics: [...] = nakafit (x, alpha, censor, freq)
+statistics: [...] = nakafit (x, alpha, censor, freq, options)
 Estimate mean and confidence intervals for the Nakagami distribution.
 
 mu0 = nakafit (x) returns the maximum likelihood
@@ -2329,25 +2329,25 @@ paramhat(2) is the spread parameter, omega.
 [paramhat, paramci] = nakafit (x) returns the 95%
 confidence intervals for the parameter estimates.
 
-[&hellip;] = nakafit (x, alpha) also returns the
+[...] = nakafit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals for the
 parameter estimates. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = nakafit (x, alpha, censor) accepts a
+[...] = nakafit (x, alpha, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = nakafit (params, x, censor, freq)
+[...] = nakafit (params, x, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq must contain non-negative integer frequencies for the
 corresponding elements in x. By default, or if left empty,
 freq = ones (size (x)).
 
-[&hellip;] = nakafit (&hellip;, options) specifies control
+[...] = nakafit (..., options) specifies control
 parameters for the iterative algorithm used to compute ML estimates with the
 fminsearch function. options is a structure with the following
 fields and their default values:
@@ -2387,11 +2387,11 @@ nakalike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1422
+# length: 1396
 statistics: nlogL = nakalike (params, x)
 statistics: [nlogL, acov] = nakalike (params, x)
-statistics: [&hellip;] = nakalike (params, x, censor)
-statistics: [&hellip;] = nakalike (params, x, censor, freq)
+statistics: [...] = nakalike (params, x, censor)
+statistics: [...] = nakalike (params, x, censor, freq)
 Negative log-likelihood for the Nakagami distribution.
 
 nlogL = nakalike (params, x) returns the negative
@@ -2400,17 +2400,17 @@ distribution with (1) shape parameter mu and (2) spread parameter
 omega given in the two-element vector params.
 
 [nlogL, acov] = nakalike (params, x) also
-returns the inverse of Fisher&rsquo;s information matrix, acov. If the input
+returns the inverse of Fisher's information matrix, acov. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of params are their asymptotic variances.
 
-[&hellip;] = nakalike (params, x, censor) accepts a
+[...] = nakalike (params, x, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = nakalike (params, x, censor, freq)
+[...] = nakalike (params, x, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq must contain non-negative integer frequencies for the
 corresponding elements in x. By default, or if left empty,
@@ -2446,7 +2446,7 @@ nbinfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2909
+# length: 2904
 statistics: paramhat = nbinfit (x)
 statistics: [paramhat, paramci] = nbinfit (x)
 statistics: [paramhat, paramci] = nbinfit (x, alpha)
@@ -2470,7 +2470,7 @@ returns the 100 * (1 - alpha) percent confidence intervals of
 the estimated parameter. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals.
 
-[&hellip;] = nbinlike (params, x, freq) accepts a
+[...] = nbinlike (params, x, freq) accepts a
 frequency vector, freq, of the same size as x. freq
 must contain non-negative integer frequencies for the corresponding elements
 in x. By default, or if left empty,
@@ -2534,7 +2534,7 @@ nbinlike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2350
+# length: 2339
 statistics: nlogL = nbinlike (params, x)
 statistics: [nlogL, avar] = nbinlike (params, x)
 statistics: [nlogL, avar] = nbinlike (params, x, freq)
@@ -2548,11 +2548,11 @@ is stopped and ps is the probability of success in each experiment,
 given the number of failures in x.
 
 [nlogL, avar] = nbinlike (params, x) also
-returns the inverse of Fisher&rsquo;s information matrix, avar. If the input
+returns the inverse of Fisher's information matrix, avar. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of params are their asymptotic variances.
 
-[&hellip;] = nbinlike (params, x, freq) accepts a
+[...] = nbinlike (params, x, freq) accepts a
 frequency vector, freq, of the same size as x. freq
 must contain non-negative integer frequencies for the corresponding elements
 in x. By default, or if left empty,
@@ -2606,15 +2606,15 @@ normfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3222
+# length: 3196
 statistics: muhat = normfit (x)
 statistics: [muhat, sigmahat] = normfit (x)
 statistics: [muhat, sigmahat, muci] = normfit (x)
 statistics: [muhat, sigmahat, muci, sigmaci] = normfit (x)
-statistics: [&hellip;] = normfit (x, alpha)
-statistics: [&hellip;] = normfit (x, alpha, censor)
-statistics: [&hellip;] = normfit (x, alpha, censor, freq)
-statistics: [&hellip;] = normfit (x, alpha, censor, freq, options)
+statistics: [...] = normfit (x, alpha)
+statistics: [...] = normfit (x, alpha, censor)
+statistics: [...] = normfit (x, alpha, censor, freq)
+statistics: [...] = normfit (x, alpha, censor, freq, options)
 Estimate parameters and confidence intervals for the normal distribution.
 
 [muhat, sigmahat] = normfit (x) estimates the
@@ -2634,7 +2634,7 @@ can be used only when x is a vector.
 
 alpha is a scalar value in the range (0,1) specifying the
 confidence level for the confidence intervals calculated as
-100&times;(1 - alpha)%. By default, the optional argument alpha is
+100x(1 - alpha)%. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
@@ -2700,11 +2700,11 @@ normlike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1443
+# length: 1411
 statistics: nlogL = normlike (params, x)
 statistics: [nlogL, avar] = normlike (params, x)
-statistics: [&hellip;] = normlike (params, x, censor)
-statistics: [&hellip;] = normlike (params, x, censor, freq)
+statistics: [...] = normlike (params, x, censor)
+statistics: [...] = normlike (params, x, censor, freq)
 Negative log-likelihood for the normal distribution.
 
 nlogL = normlike (params, x) returns the negative
@@ -2713,16 +2713,16 @@ params(1) = mean and params(2) = standard deviation, given
 x. nlogL is a scalar.
 
 [nlogL, avar] = normlike (params, x)
-returns the inverse of Fisher&rsquo;s information matrix, avar. If the input
+returns the inverse of Fisher's information matrix, avar. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of avar are their asymptotic variances. avar
-is based on the observed Fisher&rsquo;s information, not the expected information.
+is based on the observed Fisher's information, not the expected information.
 
-[&hellip;] = normlike (params, x, censor) accepts
+[...] = normlike (params, x, censor) accepts
 a boolean vector of the same size as x that is 1 for observations
 that are right-censored and 0 for observations that are observed exactly.
 
-[&hellip;] = normlike (params, x, censor,
+[...] = normlike (params, x, censor,
 freq) accepts a frequency vector of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it may contain any non-integer non-negative
@@ -2758,7 +2758,7 @@ poissfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1260
+# length: 1255
 statistics: lambdahat = poissfit (x)
 statistics: [lambdahat, lambdaci] = poissfit (x)
 statistics: [lambdahat, lambdaci] = poissfit (x, alpha)
@@ -2778,7 +2778,7 @@ of the estimated parameter. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = poissfit (x, alpha, freq) accepts a
+[...] = poissfit (x, alpha, freq) accepts a
 frequency vector or matrix, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x. freq cannot contain negative values.
@@ -2813,10 +2813,10 @@ poisslike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1088
+# length: 1072
 statistics: nlogL = poisslike (lambda, x)
 statistics: [nlogL, avar] = poisslike (lambda, x)
-statistics: [&hellip;] = poisslike (lambda, x, freq)
+statistics: [...] = poisslike (lambda, x, freq)
 Negative log-likelihood for the Poisson distribution.
 
 nlogL = poisslike (lambda, x) returns the negative
@@ -2825,11 +2825,11 @@ distribution with rate parameter lambda. x must be a vector of
 non-negative values.
 
 [nlogL, avar] = poisslike (lambda, x) also
-returns the inverse of Fisher&rsquo;s information matrix, avar. If the input
+returns the inverse of Fisher's information matrix, avar. If the input
 rate parameter, lambda, is the maximum likelihood estimate, avar
 is its asymptotic variance.
 
-[&hellip;] = poisslike (lambda, x, freq) accepts a
+[...] = poisslike (lambda, x, freq) accepts a
 frequency vector, freq, of the same size as x. freq
 typically contains integer frequencies for the corresponding elements in
 x, but it can contain any non-integer non-negative values. By default,
@@ -2865,7 +2865,7 @@ raylfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1634
+# length: 1624
 statistics: sigmaA = raylfit (x)
 statistics: [sigmaA, sigmaci] = raylfit (x)
 statistics: [sigmaA, sigmaci] = raylfit (x, alpha)
@@ -2886,13 +2886,13 @@ of the estimated parameter. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = raylfit (x, alpha, censor) accepts a
+[...] = raylfit (x, alpha, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = raylfit (x, alpha, censor, freq)
+[...] = raylfit (x, alpha, censor, freq)
 accepts a frequency vector or matrix, freq, of the same size as
 x.
 freq typically contains integer frequencies for the corresponding
@@ -2931,10 +2931,10 @@ rayllike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1153
+# length: 1137
 statistics: nlogL = rayllike (sigma, x)
 statistics: [nlogL, acov] = rayllike (sigma, x)
-statistics: [&hellip;] = rayllike (sigma, x, freq)
+statistics: [...] = rayllike (sigma, x, freq)
 Negative log-likelihood for the Rayleigh distribution.
 
 nlogL = rayllike (sigma, x) returns the negative
@@ -2943,11 +2943,11 @@ distribution with rate parameter sigma. x must be a vector of
 non-negative values.
 
 [nlogL, acov] = rayllike (sigma, x) also
-returns the inverse of Fisher&rsquo;s information matrix, acov. If the input
+returns the inverse of Fisher's information matrix, acov. If the input
 rate parameter, sigma, is the maximum likelihood estimate, acov
 is its asymptotic variance.
 
-[&hellip;] = rayllike (sigma, x, freq) accepts a
+[...] = rayllike (sigma, x, freq) accepts a
 frequency vector, freq, of the same size as x. freq
 typically contains integer frequencies for the corresponding elements in
 x, but it can contain any non-integer non-negative values. By default,
@@ -2986,13 +2986,13 @@ ricefit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2031
+# length: 1991
 statistics: paramhat = ricefit (x)
 statistics: [paramhat, paramci] = ricefit (x)
 statistics: [paramhat, paramci] = ricefit (x, alpha)
-statistics: [&hellip;] = ricefit (x, alpha, censor)
-statistics: [&hellip;] = ricefit (x, alpha, censor, freq)
-statistics: [&hellip;] = ricefit (x, alpha, censor, freq, options)
+statistics: [...] = ricefit (x, alpha, censor)
+statistics: [...] = ricefit (x, alpha, censor, freq)
+statistics: [...] = ricefit (x, alpha, censor, freq, options)
 Estimate parameters and confidence intervals for the Rician distribution.
 
 paramhat = ricefit (x) returns the maximum likelihood
@@ -3004,25 +3004,25 @@ sigma.
 [paramhat, paramci] = ricefit (x) returns the 95%
 confidence intervals for the parameter estimates.
 
-[&hellip;] = ricefit (x, alpha) also returns the
+[...] = ricefit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals for the
 parameter estimates. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = ricefit (x, alpha, censor) accepts a
+[...] = ricefit (x, alpha, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = ricefit (x, alpha, censor, freq)
+[...] = ricefit (x, alpha, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
 By default, or if left empty, freq = ones (size (x)).
 
-[&hellip;] = ricefit (&hellip;, options) specifies control
+[...] = ricefit (..., options) specifies control
 parameters for the iterative algorithm used to compute the maximum likelihood
 estimates. options is a structure with the following field and its
 default value:
@@ -3062,11 +3062,11 @@ ricelike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1479
+# length: 1453
 statistics: nlogL = ricelike (params, x)
 statistics: [nlogL, acov] = ricelike (params, x)
-statistics: [&hellip;] = ricelike (params, x, censor)
-statistics: [&hellip;] = ricelike (params, x, censor, freq)
+statistics: [...] = ricelike (params, x, censor)
+statistics: [...] = ricelike (params, x, censor, freq)
 Negative log-likelihood for the Rician distribution.
 
 nlogL = ricelike (params, x) returns the negative
@@ -3075,17 +3075,17 @@ distribution with (1) non-centrality (distance) parameter s and (2)
 scale parameter sigma given in the two-element vector params.
 
 [nlogL, acov] = ricelike (params, x) also
-returns the inverse of Fisher&rsquo;s information matrix, acov. If the input
+returns the inverse of Fisher's information matrix, acov. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of params are their asymptotic variances.
 
-[&hellip;] = ricelike (params, x, censor) accepts a
+[...] = ricelike (params, x, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = ricelike (params, x, censor, freq)
+[...] = ricelike (params, x, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
@@ -3121,7 +3121,7 @@ stblfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2486
+# length: 2476
 statistics: paramhat = stblfit (x)
 statistics: [paramhat, paramci] = stblfit (x)
 statistics: [paramhat, paramci] = stblfit (x, alpha)
@@ -3142,13 +3142,13 @@ delta.
 confidence intervals for the parameter estimates. The intervals are Wald
 intervals from the observed Fisher information.
 
-[&hellip;] = stblfit (x, alpha) also returns the
+[...] = stblfit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals for the
 parameter estimates. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default value.
 
-[&hellip;] = stblfit (x, alpha, freq) accepts a
+[...] = stblfit (x, alpha, freq) accepts a
 frequency vector, freq, of the same size as x. freq
 must contain non-negative integer frequencies for the corresponding elements
 in x. By default, or if left empty,
@@ -3206,7 +3206,7 @@ stbllike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1273
+# length: 1268
 statistics: nlogL = stbllike (params, x)
 statistics: [nlogL, acov] = stbllike (params, x)
 statistics: [nlogL, acov] = stbllike (params, x, freq)
@@ -3225,7 +3225,7 @@ estimates, the diagonal elements of acov are their asymptotic
 variances. acov is based on the numerically evaluated Hessian of the
 negative log-likelihood, since the stable density has no closed form.
 
-[&hellip;] = stbllike (params, x, freq) accepts a
+[...] = stbllike (params, x, freq) accepts a
 frequency vector, freq, of the same size as x. freq must
 contain non-negative integer frequencies for the corresponding elements in
 x. By default, or if left empty, freq = ones (size
@@ -3260,14 +3260,14 @@ tlsfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2150
+# length: 2098
 statistics: paramhat = tlsfit (x)
 statistics: [paramhat, paramci] = tlsfit (x)
 statistics: [paramhat, paramci] = tlsfit (x, alpha)
-statistics: [&hellip;] = tlsfit (x, alpha, censor)
-statistics: [&hellip;] = tlsfit (x, alpha, censor, freq)
-statistics: [&hellip;] = tlsfit (x, alpha, censor, freq, options)
-Estimate parameters and confidence intervals for the Location-scale Student&rsquo;s
+statistics: [...] = tlsfit (x, alpha, censor)
+statistics: [...] = tlsfit (x, alpha, censor, freq)
+statistics: [...] = tlsfit (x, alpha, censor, freq, options)
+Estimate parameters and confidence intervals for the Location-scale Student's
 T distribution.
 
 muhat = tlsfit (x) returns the maximum likelihood
@@ -3280,25 +3280,25 @@ nu.
 [paramhat, paramci] = tlsfit (x) returns the 95%
 confidence intervals for the parameter estimates.
 
-[&hellip;] = tlsfit (x, alpha) also returns the
+[...] = tlsfit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals for the
 parameter estimates. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = tlsfit (x, alpha, censor) accepts a
+[...] = tlsfit (x, alpha, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = tlsfit (x, alpha, censor, freq)
+[...] = tlsfit (x, alpha, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
 By default, or if left empty, freq = ones (size (x)).
 
-[&hellip;] = tlsfit (&hellip;, options) specifies control
+[...] = tlsfit (..., options) specifies control
 parameters for the iterative algorithm used to compute ML estimates with the
 fminsearch function. options is a structure with the following
 fields and their default values:
@@ -3308,7 +3308,7 @@ options.MaxFunEvals = 400
 options.MaxIter = 200
 options.TolX = 1e-6
 
-Further information about the location-scale Student&rsquo;s T distribution can be
+Further information about the location-scale Student's T distribution can be
 found at
 https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution
 
@@ -3339,12 +3339,12 @@ tlslike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1673
+# length: 1629
 statistics: nlogL = tlslike (params, x)
 statistics: [nlogL, acov] = tlslike (params, x)
-statistics: [&hellip;] = tlslike (params, x, alpha, censor)
-statistics: [&hellip;] = tlslike (params, x, alpha, censor, freq)
-Negative log-likelihood for the location-scale Student&rsquo;s T distribution.
+statistics: [...] = tlslike (params, x, alpha, censor)
+statistics: [...] = tlslike (params, x, alpha, censor, freq)
+Negative log-likelihood for the location-scale Student's T distribution.
 
 nlogL = tlslike (params, x) returns the negative
 log-likelihood of the x in x corresponding to the location-scale T
@@ -3353,25 +3353,25 @@ sigma and (3) degrees of freedom nu given in the three-element
 vector params.
 
 [nlogL, acov] = tlslike (params, x) also
-returns the inverse of Fisher&rsquo;s information matrix, acov. If the input
+returns the inverse of Fisher's information matrix, acov. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of acov are their asymptotic variances. acov
-is based on the observed Fisher&rsquo;s information, not the expected information.
+is based on the observed Fisher's information, not the expected information.
 
-[&hellip;] = tlslike (params, x, censor) accepts a
+[...] = tlslike (params, x, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = tlslike (params, x, censor,
+[...] = tlslike (params, x, censor,
 freq) accepts a frequency vector, freq, of the same size as
 x. freq typically contains integer frequencies for the
 corresponding elements in x, but may contain any non-integer
 non-negative values. By default, or if left empty,
 freq = ones (size (x)).
 
-Further information about the location-scale Student&rsquo;s T distribution can be
+Further information about the location-scale Student's T distribution can be
 found at
 https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution
 
@@ -3402,7 +3402,7 @@ unidfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1149
+# length: 1144
 statistics: Nhat = unidfit (x)
 statistics: [Nhat, Nci] = unidfit (x)
 statistics: [Nhat, Nci] = unidfit (x, alpha)
@@ -3420,7 +3420,7 @@ the estimated parameter. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = unidfit (x, alpha, freq) accepts a
+[...] = unidfit (x, alpha, freq) accepts a
 frequency vector, freq, of the same size as x. freq
 typically contains integer frequencies for the corresponding elements in
 x, but it can contain any non-integer non-negative values. By default,
@@ -3455,12 +3455,12 @@ unifit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1904
+# length: 1878
 statistics: ahat = unifit (x)
 statistics: [ahat, bhat] = unifit (x)
 statistics: [ahat, bhat, aci, bci] = unifit (x)
-statistics: [&hellip;] = unifit (x, alpha)
-statistics: [&hellip;] = unifit (x, alpha, freq)
+statistics: [...] = unifit (x, alpha)
+statistics: [...] = unifit (x, alpha, freq)
 Estimate parameters and confidence intervals for the continuous uniform
 distribution.
 
@@ -3480,18 +3480,18 @@ column of x, with the lower bound in the first row and the upper bound
 in the second. ahat is the upper bound of aci and bhat the
 lower bound of bci, since no sample can fall outside the fitted range.
 
-[&hellip;] = unifit (x, alpha) also returns the
+[...] = unifit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals of the
 estimated parameters. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = unifit (x, alpha, freq) accepts a
+[...] = unifit (x, alpha, freq) accepts a
 frequency vector, freq, of the same size as x. freq
 typically contains integer frequencies for the corresponding elements in
 x, but it can contain any non-integer non-negative values. By default,
 or if left empty, freq = ones (size (x)). This third
-argument is an Octave extension; MATLAB&rsquo;s unifit takes two inputs at
+argument is an Octave extension; MATLAB's unifit takes two inputs at
 most, and freq is accepted for a vector x only.
 
 Further information about the continuous uniform distribution can be found at
@@ -3523,13 +3523,13 @@ wblfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2119
+# length: 2079
 statistics: paramhat = wblfit (x)
 statistics: [paramhat, paramci] = wblfit (x)
 statistics: [paramhat, paramci] = wblfit (x, alpha)
-statistics: [&hellip;] = wblfit (x, alpha, censor)
-statistics: [&hellip;] = wblfit (x, alpha, censor, freq)
-statistics: [&hellip;] = wblfit (x, alpha, censor, freq, options)
+statistics: [...] = wblfit (x, alpha, censor)
+statistics: [...] = wblfit (x, alpha, censor, freq)
+statistics: [...] = wblfit (x, alpha, censor, freq, options)
 Estimate parameters and confidence intervals for the Weibull distribution.
 
 muhat = wblfit (x) returns the maximum likelihood
@@ -3540,25 +3540,25 @@ and paramhat(2) is the shape parameter, k.
 [paramhat, paramci] = wblfit (x) returns the 95%
 confidence intervals for the parameter estimates.
 
-[&hellip;] = wblfit (x, alpha) also returns the
+[...] = wblfit (x, alpha) also returns the
 100 * (1 - alpha) percent confidence intervals for the
 parameter estimates. By default, the optional argument alpha is
 0.05 corresponding to 95% confidence intervals. Pass in [] for
 alpha to use the default values.
 
-[&hellip;] = wblfit (x, alpha, censor) accepts a
+[...] = wblfit (x, alpha, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = wblfit (x, alpha, censor, freq)
+[...] = wblfit (x, alpha, censor, freq)
 accepts a frequency vector, freq, of the same size as x.
 freq typically contains integer frequencies for the corresponding
 elements in x, but it can contain any non-integer non-negative values.
 By default, or if left empty, freq = ones (size (x)).
 
-[&hellip;] = wblfit (&hellip;, options) specifies control
+[...] = wblfit (..., options) specifies control
 parameters for the iterative algorithm used to compute the maximum likelihood
 estimates. options is a structure with the following field and its
 default value:
@@ -3602,11 +3602,11 @@ wbllike
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1684
+# length: 1652
 statistics: nlogL = wbllike (params, x)
 statistics: [nlogL, acov] = wbllike (params, x)
-statistics: [&hellip;] = wbllike (params, x, alpha, censor)
-statistics: [&hellip;] = wbllike (params, x, alpha, censor, freq)
+statistics: [...] = wbllike (params, x, alpha, censor)
+statistics: [...] = wbllike (params, x, alpha, censor, freq)
 Negative log-likelihood for the Weibull distribution.
 
 nlogL = wbllike (params, data) returns the negative
@@ -3615,18 +3615,18 @@ distribution with (1) scale parameter lambda and (2) shape parameter
 k given in the two-element vector params.
 
 [nlogL, acov] = wbllike (params, data) also
-returns the inverse of Fisher&rsquo;s information matrix, acov. If the input
+returns the inverse of Fisher's information matrix, acov. If the input
 parameter values in params are the maximum likelihood estimates, the
 diagonal elements of acov are their asymptotic variances. acov
-is based on the observed Fisher&rsquo;s information, not the expected information.
+is based on the observed Fisher's information, not the expected information.
 
-[&hellip;] = wbllike (params, data, censor) accepts a
+[...] = wbllike (params, data, censor) accepts a
 boolean vector, censor, of the same size as x with 1s for
 observations that are right-censored and 0s for observations that are
 observed exactly. By default, or if left empty,
 censor = zeros (size (x)).
 
-[&hellip;] = wbllike (params, data, censor,
+[...] = wbllike (params, data, censor,
 freq) accepts a frequency vector, freq, of the same size as
 x. freq typically contains integer frequencies for the
 corresponding elements in x, but may contain any non-integer

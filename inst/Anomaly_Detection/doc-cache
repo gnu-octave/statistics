@@ -13,7 +13,7 @@ IsolationForest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 619
+# length: 613
 statistics: Mdl = IsolationForest (X)
 statistics: Mdl = IsolationForest (X, name, value)
 Isolation Forest model for anomaly detection.
@@ -25,7 +25,7 @@ calling this constructor directly.
 
 Anomalies are easier to isolate, so they sit closer to the root of a random
 isolation tree; the shorter its average path length across the ensemble, the
-higher an observation&rsquo;s anomaly score.
+higher an observation's anomaly score.
 
 See also:
 iforest,
@@ -167,10 +167,10 @@ IsolationForest.isanomaly
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 490
+# length: 480
 IsolationForest: tf = isanomaly (Mdl, Xnew)
 IsolationForest: [tf, scores] = isanomaly (Mdl, Xnew)
-IsolationForest: [&hellip;] = isanomaly (&hellip;, 'ScoreThreshold', t)
+IsolationForest: [...] = isanomaly (..., 'ScoreThreshold', t)
 Detect anomalies in the new observations Xnew using the fitted
 model Mdl. Returns the logical vector tf flagging anomalies
 and the anomaly scores, each obtained by dropping Xnew
@@ -352,10 +352,10 @@ LocalOutlierFactor.isanomaly
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 523
+# length: 513
 LocalOutlierFactor: tf = isanomaly (Mdl, Xnew)
 LocalOutlierFactor: [tf, scores] = isanomaly (Mdl, Xnew)
-LocalOutlierFactor: [&hellip;] = isanomaly (&hellip;, 'ScoreThreshold', t)
+LocalOutlierFactor: [...] = isanomaly (..., 'ScoreThreshold', t)
 Detect anomalies in the new observations Xnew using the fitted
 model Mdl. Returns the logical vector tf flagging anomalies
 and the Local Outlier Factor scores, each computed from the nearest
@@ -605,10 +605,10 @@ OneClassSVM.isanomaly
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 418
+# length: 408
 OneClassSVM: tf = isanomaly (Mdl, Xnew)
 OneClassSVM: [tf, scores] = isanomaly (Mdl, Xnew)
-OneClassSVM: [&hellip;] = isanomaly (&hellip;, 'ScoreThreshold', t)
+OneClassSVM: [...] = isanomaly (..., 'ScoreThreshold', t)
 Detect anomalies in the new observations Xnew using the fitted
 model Mdl. Returns the logical vector tf flagging anomalies
 and the anomaly scores. The threshold defaults to
@@ -634,11 +634,11 @@ iforest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1947
+# length: 1937
 statistics: Mdl = iforest (X)
 statistics: [Mdl, tf] = iforest (X)
 statistics: [Mdl, tf, scores] = iforest (X)
-statistics: [&hellip;] = iforest (&hellip;, name, value)
+statistics: [...] = iforest (..., name, value)
 Detect anomalies with an isolation forest.
 
 Mdl = iforest (X) fits an isolation forest to the
@@ -703,11 +703,11 @@ lof
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1950
+# length: 1940
 statistics: Mdl = lof (X)
 statistics: [Mdl, tf] = lof (X)
 statistics: [Mdl, tf, scores] = lof (X)
-statistics: [&hellip;] = lof (&hellip;, name, value)
+statistics: [...] = lof (..., name, value)
 Detect anomalies with the Local Outlier Factor (LOF) method.
 
 Mdl = lof (X) fits a Local Outlier Factor model to the
@@ -771,11 +771,11 @@ ocsvm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2559
+# length: 2543
 statistics: Mdl = ocsvm (X)
 statistics: [Mdl, tf] = ocsvm (X)
 statistics: [Mdl, tf, scores] = ocsvm (X)
-statistics: [&hellip;] = ocsvm (&hellip;, name, value)
+statistics: [...] = ocsvm (..., name, value)
 Detect anomalies with a one-class support vector machine.
 
 Mdl = ocsvm (X) fits a one-class support vector machine to
@@ -815,7 +815,7 @@ score and no training observation is flagged.
 The feature expansion uses random projections, so the scores depend on the
 state of the random number generator and are not reproducible across runs
 unless the generator is seeded. The 'auto' selections and the fitted
-model differ from MATLAB&rsquo;s implementation, which uses a different feature
+model differ from MATLAB's implementation, which uses a different feature
 expansion and solver.
 
 For a deterministic, classic one-class support vector machine (a
@@ -853,25 +853,25 @@ robustcov
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2357
+# length: 2306
 statistics: sig = robustcov (X)
 statistics: [sig, mu] = robustcov (X)
 statistics: [sig, mu, mah] = robustcov (X)
 statistics: [sig, mu, mah, outliers] = robustcov (X)
 statistics: [sig, mu, mah, outliers, s] = robustcov (X)
-statistics: [&hellip;] = robustcov (&hellip;, name, value)
+statistics: [...] = robustcov (..., name, value)
 Robust multivariate covariance and mean estimate.
 
 sig = robustcov (X) returns a robust estimate sig of
-the covariance matrix of the N&times;P data matrix X, computed so that
+the covariance matrix of the NxP data matrix X, computed so that
 it is not distorted by outlying observations. Rows of X are
 observations and columns are variables. Rows containing NaN values
 are removed.
 
 [sig, mu, mah, outliers, s] = robustcov
-(&hellip;) also returns the robust mean mu (1&times;P), the robust
-Mahalanobis distances mah (N&times;1) of each observation from the
-estimated distribution, a logical vector outliers (N&times;1) flagging
+(...) also returns the robust mean mu (1xP), the robust
+Mahalanobis distances mah (Nx1) of each observation from the
+estimated distribution, a logical vector outliers (Nx1) flagging
 observations whose distance exceeds sqrt (chi2inv (0.975, P)),
 and a structure s holding the estimate metadata.
 
@@ -897,10 +897,10 @@ location/scale estimator used by 'ogk', either 'tauscale'
 
 Note on reproducibility. 'fmcd' draws random subsets, so its
 exact estimate depends on the random number generator and is not identical to
-MATLAB&rsquo;s on data where the optimal subset is ambiguous; on well-separated
+MATLAB's on data where the optimal subset is ambiguous; on well-separated
 data both converge to the same estimate. For 'fmcd' with
 'BiasCorrection' enabled, the small-sample factor uses the published
-Pison-Van Aelst-Willems asymptotic formula, which differs from MATLAB&rsquo;s
+Pison-Van Aelst-Willems asymptotic formula, which differs from MATLAB's
 tabulated simulation values by up to about 1.6% for very small samples.
 
 See also:

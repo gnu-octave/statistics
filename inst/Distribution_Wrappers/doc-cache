@@ -13,15 +13,15 @@ cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3489
+# length: 3467
 statistics: p = cdf (name, x, A)
 statistics: p = cdf (name, x, A, B)
 statistics: p = cdf (name, x, A, B, C)
-statistics: p = cdf (&hellip;, 'upper')
+statistics: p = cdf (..., 'upper')
 Return the CDF of a univariate distribution evaluated at x.
 
 cdf is a wrapper for the univariate cumulative distribution functions
-available in the statistics package. See the corresponding functions&rsquo; help
+available in the statistics package. See the corresponding functions' help
 to learn the signification of the parameters after x.
 
 p = cdf (name, x, A) returns the CDF for the
@@ -38,7 +38,7 @@ the CDF for the three-parameter distribution family specified by name
 and the distribution parameters A, B, and C, evaluated at
 the values in x.
 
-p = cdf (&hellip;, 'upper') returns the complement of the
+p = cdf (..., 'upper') returns the complement of the
 CDF using an algorithm that more accurately computes the extreme upper-tail
 probabilities. 'upper' can follow any of the input arguments in the
 previous syntaxes.
@@ -100,7 +100,7 @@ squashed spelling but refuses the hyphenated one, so
 Octave has always accepted them and continues to. MATLAB also accepts
 'tLocationScale' in makedist while refusing it in
 cdf for the same distribution; Octave accepts it, and
-'location-scale T', everywhere. Code written against MATLAB&rsquo;s
+'location-scale T', everywhere. Code written against MATLAB's
 names therefore runs unchanged, but code relying on these names will not
 port back.
 
@@ -165,7 +165,7 @@ fitdist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3101
+# length: 3095
 statistics: pd = fitdist (x, distname)
 statistics: pd = fitdist (x, distname, Name, Value)
 statistics: [pdca, gn, gl] = fitdist (x, distname, 'By', groupvar)
@@ -230,7 +230,7 @@ squashed spelling but refuses the hyphenated one, so
 Octave has always accepted them and continues to. MATLAB also accepts
 'tLocationScale' in makedist while refusing it in
 cdf for the same distribution; Octave accepts it, and
-'location-scale T', everywhere. Code written against MATLAB&rsquo;s
+'location-scale T', everywhere. Code written against MATLAB's
 names therefore runs unchanged, but code relying on these names will not
 port back.
 
@@ -256,14 +256,14 @@ icdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3163
+# length: 3151
 statistics: x = icdf (name, p, A)
 statistics: x = icdf (name, p, A, B)
 statistics: x = icdf (name, p, A, B, C)
 Return the inverse CDF of a univariate distribution evaluated at p.
 
 icdf is a wrapper for the univariate quantile distribution functions
-(iCDF) available in the statistics package. See the corresponding functions&rsquo;
+(iCDF) available in the statistics package. See the corresponding functions'
 help to learn the signification of the parameters after p.
 
 x = icdf (name, p, A) returns the iCDF for the
@@ -336,7 +336,7 @@ squashed spelling but refuses the hyphenated one, so
 Octave has always accepted them and continues to. MATLAB also accepts
 'tLocationScale' in makedist while refusing it in
 cdf for the same distribution; Octave accepts it, and
-'location-scale T', everywhere. Code written against MATLAB&rsquo;s
+'location-scale T', everywhere. Code written against MATLAB's
 names therefore runs unchanged, but code relying on these names will not
 port back.
 
@@ -401,7 +401,7 @@ makedist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1375
+# length: 1369
 statistics: pd = makedist (distname)
 statistics: pd = makedist (distname, Name, Value)
 statistics: list = makedist
@@ -430,7 +430,7 @@ squashed spelling but refuses the hyphenated one, so
 Octave has always accepted them and continues to. MATLAB also accepts
 'tLocationScale' in makedist while refusing it in
 cdf for the same distribution; Octave accepts it, and
-'location-scale T', everywhere. Code written against MATLAB&rsquo;s
+'location-scale T', everywhere. Code written against MATLAB's
 names therefore runs unchanged, but code relying on these names will not
 port back.
 
@@ -456,10 +456,10 @@ mle
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4310
+# length: 4294
 statistics: phat = mle (x)
 statistics: phat = mle (x, Name, Value)
-statistics: [phat, pci] = mle (&hellip;)
+statistics: [phat, pci] = mle (...)
 Compute maximum likelihood estimates.
 
 phat = mle (x) returns the maximum likelihood estimates
@@ -494,7 +494,7 @@ significance level for the confidence interval pci. By default it is
 parameters for the iterative algorithm used to compute ML estimates with the
 fminsearch function.
 'pdf' A function handle
-@(data, p1, p2, &hellip;) to the probability density
+@(data, p1, p2, ...) to the probability density
 of a custom distribution, whose parameters are then estimated by
 maximum likelihood. Requires 'start'. It is mutually exclusive with
 'distribution' and with 'logpdf'/'nloglf'.
@@ -547,7 +547,7 @@ squashed spelling but refuses the hyphenated one, so
 Octave has always accepted them and continues to. MATLAB also accepts
 'tLocationScale' in makedist while refusing it in
 cdf for the same distribution; Octave accepts it, and
-'location-scale T', everywhere. Code written against MATLAB&rsquo;s
+'location-scale T', everywhere. Code written against MATLAB's
 names therefore runs unchanged, but code relying on these names will not
 port back.
 
@@ -575,17 +575,17 @@ mlecov
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3672
+# length: 3651
 statistics: acov = mlecov (params, data, Name, Value)
 Asymptotic covariance matrix of maximum likelihood estimators.
 
-acov = mlecov (params, data, &hellip;)
+acov = mlecov (params, data, ...)
 returns an approximation to the asymptotic covariance matrix of the maximum
 likelihood estimators of the parameters of a distribution, evaluated at the
 parameter values in params for the sample data in data.
 params is a numeric vector of parameter values (typically the estimates
 returned by mle or fitdist) and data is a numeric vector
-of the sample observations. acov is a p&times;p matrix, where
+of the sample observations. acov is a pxp matrix, where
 p = numel (params).
 
 The distribution is not identified by name; instead it is supplied through
@@ -595,12 +595,12 @@ one of the following three arguments must be specified:
 
 Name Value
 'pdf' A function handle,
-f(data, p1, p2, &hellip;), that accepts the
+f(data, p1, p2, ...), that accepts the
 sample data as its first argument and the distribution parameters as
 subsequent scalar arguments, and returns a vector of probability density
 values, one per observation.
 'logpdf' A function handle,
-f(data, p1, p2, &hellip;), with the same
+f(data, p1, p2, ...), with the same
 calling convention as 'pdf' but returning the logarithm of
 the density.
 'nloglf' A function handle,
@@ -672,14 +672,14 @@ pdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3141
+# length: 3129
 statistics: y = pdf (name, x, A)
 statistics: y = pdf (name, x, A, B)
 statistics: y = pdf (name, x, A, B, C)
 Return the PDF of a univariate distribution evaluated at x.
 
 pdf is a wrapper for the univariate cumulative distribution functions
-available in the statistics package. See the corresponding functions&rsquo; help
+available in the statistics package. See the corresponding functions' help
 to learn the signification of the parameters after x.
 
 y = pdf (name, x, A) returns the CDF for the
@@ -752,7 +752,7 @@ squashed spelling but refuses the hyphenated one, so
 Octave has always accepted them and continues to. MATLAB also accepts
 'tLocationScale' in makedist while refusing it in
 cdf for the same distribution; Octave accepts it, and
-'location-scale T', everywhere. Code written against MATLAB&rsquo;s
+'location-scale T', everywhere. Code written against MATLAB's
 names therefore runs unchanged, but code relying on these names will not
 port back.
 
@@ -817,13 +817,13 @@ random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3325
+# length: 3299
 statistics: r = random (name, A)
 statistics: r = random (name, A, B)
 statistics: r = random (name, A, B, C)
-statistics: r = random (name, &hellip;, rows, cols)
-statistics: r = random (name, &hellip;, rows, cols, &hellip;)
-statistics: r = random (name, &hellip;, [sz])
+statistics: r = random (name, ..., rows, cols)
+statistics: r = random (name, ..., rows, cols, ...)
+statistics: r = random (name, ..., [sz])
 Random arrays from a given one-, two-, or three-parameter distribution.
 
 The variable name must be a string with the name of the distribution to
@@ -895,7 +895,7 @@ squashed spelling but refuses the hyphenated one, so
 Octave has always accepted them and continues to. MATLAB also accepts
 'tLocationScale' in makedist while refusing it in
 cdf for the same distribution; Octave accepts it, and
-'location-scale T', everywhere. Code written against MATLAB&rsquo;s
+'location-scale T', everywhere. Code written against MATLAB's
 names therefore runs unchanged, but code relying on these names will not
 port back.
 

@@ -44,7 +44,7 @@ ReconstructionICA.FitInfo
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 774
+# length: 750
 ReconstructionICA: property FitInfo
 History of the fit
 
@@ -54,13 +54,13 @@ Iteration counts from zero and Objective(1) is the
 objective at the starting weights, so the last entry of each is the
 solution the fit returned. This property is read-only.
 
-The trajectory is this implementation&rsquo;s own. The default
-'quasinewton' solver minimises through Octave&rsquo;s fminunc,
+The trajectory is this implementation's own. The default
+'quasinewton' solver minimises through Octave's fminunc,
 and 'Solver', 'lbfgs' selects the limited-memory BFGS solver
 MATLAB uses. Either way the steps taken from the same starting weights
-differ from MATLAB&rsquo;s, so the length of the history and the iteration
+differ from MATLAB's, so the length of the history and the iteration
 counts differ, and on an objective this far from convex the optimum
-reached need not be MATLAB&rsquo;s either.
+reached need not be MATLAB's either.
 
 
 # name: <cell-element>
@@ -166,14 +166,14 @@ ReconstructionICA.NonGaussianityIndicator
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 467
+# length: 461
 ReconstructionICA: property NonGaussianityIndicator
 Non-Gaussianity of each learned feature
 
 A Q-by-1 vector of +1 and -1, one per learned
 feature: +1 where the feature is taken to be super-Gaussian and
 -1 where it is taken to be sub-Gaussian. The entry sets the
-sign its feature&rsquo;s contrast term carries in the objective, so the fit
+sign its feature's contrast term carries in the objective, so the fit
 seeks a sparse feature where the entry is +1 and a spread one
 where it is -1. The default is all +1. This property is
 read-only.
@@ -249,8 +249,8 @@ ReconstructionICA.ReconstructionICA
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 154
-statistics: Mdl = ReconstructionICA (X, Q, &hellip;)
+# length: 149
+statistics: Mdl = ReconstructionICA (X, Q, ...)
 Fit a reconstruction ICA model. This constructor is invoked by
 rica; see help rica for the arguments.
 
@@ -327,10 +327,10 @@ ReconstructionICA.transform
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 131
+# length: 125
 statistics: Z = transform (Mdl, X)
 Transform data X into the learned feature space, returning the
-N &times; Q matrix Z of features.
+N x Q matrix Z of features.
 
 
 # name: <cell-element>
@@ -382,7 +382,7 @@ SparseFiltering.FitInfo
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 772
+# length: 748
 SparseFiltering: property FitInfo
 History of the fit
 
@@ -392,13 +392,13 @@ Iteration counts from zero and Objective(1) is the
 objective at the starting weights, so the last entry of each is the
 solution the fit returned. This property is read-only.
 
-The trajectory is this implementation&rsquo;s own. The default
-'quasinewton' solver minimises through Octave&rsquo;s fminunc,
+The trajectory is this implementation's own. The default
+'quasinewton' solver minimises through Octave's fminunc,
 and 'Solver', 'lbfgs' selects the limited-memory BFGS solver
 MATLAB uses. Either way the steps taken from the same starting weights
-differ from MATLAB&rsquo;s, so the length of the history and the iteration
+differ from MATLAB's, so the length of the history and the iteration
 counts differ, and on an objective this far from convex the optimum
-reached need not be MATLAB&rsquo;s either.
+reached need not be MATLAB's either.
 
 
 # name: <cell-element>
@@ -582,8 +582,8 @@ SparseFiltering.SparseFiltering
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 162
-statistics: Mdl = SparseFiltering (X, Q, &hellip;)
+# length: 157
+statistics: Mdl = SparseFiltering (X, Q, ...)
 Fit a sparse filtering model. This constructor is invoked by
 sparsefilt; see help sparsefilt for the arguments.
 
@@ -632,10 +632,10 @@ SparseFiltering.transform
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 138
+# length: 132
 statistics: Z = transform (Mdl, X)
 Transform data X into the learned feature space, returning the
-N &times; Q matrix Z of sparse features.
+N x Q matrix Z of sparse features.
 
 
 # name: <cell-element>
@@ -656,7 +656,7 @@ canoncorr
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 501
+# length: 489
 statistics: [A, B, r, U, V] = canoncorr (X, Y)
 Canonical correlation analysis.
 
@@ -666,7 +666,7 @@ where d is the smallest of m, n, d) and B
 (size m*d); the canonical correlations r (1*d,
 arranged in decreasing order); the canonical variables U, V
 (both k*d, with orthonormal columns); and stats,
-a structure containing results from Bartlett&rsquo;s chi-square and Rao&rsquo;s F tests
+a structure containing results from Bartlett's chi-square and Rao's F tests
 of significance.
 
 See also:
@@ -781,13 +781,13 @@ factoran
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4788
+# length: 4746
 statistics: lambda = factoran (X, m)
 statistics: [lambda, psi] = factoran (X, m)
 statistics: [lambda, psi, T] = factoran (X, m)
 statistics: [lambda, psi, T, stats] = factoran (X, m)
 statistics: [lambda, psi, T, stats, F] = factoran (X, m)
-statistics: [&hellip;] = factoran (&hellip;, Name, Value)
+statistics: [...] = factoran (..., Name, Value)
 Common factor analysis.
 
 lambda = factoran (X, m) fits the common factor
@@ -800,17 +800,17 @@ x = mu + lambda * f + e
 where f are the common factors and e the variable-specific
 errors, uncorrelated with each other and with f. The analysis is
 carried out on the correlation matrix, so the loadings are in standardized
-units and a variable&rsquo;s communality sum (lambda(i,:) .^ 2) and
+units and a variable's communality sum (lambda(i,:) .^ 2) and
 its specific variance psi(i) sum to one.
 
-[lambda, psi] = factoran (&hellip;) also returns the
+[lambda, psi] = factoran (...) also returns the
 P-by-1 vector psi of specific variances.
 
-[lambda, psi, T] = factoran (&hellip;) also returns
+[lambda, psi, T] = factoran (...) also returns
 the m-by-m rotation matrix T that was applied to the
 loadings. It is the identity when 'Rotate' is 'none'.
 
-[lambda, psi, T, stats] = factoran (&hellip;)
+[lambda, psi, T, stats] = factoran (...)
 also returns a structure stats with the fields
 
 Field Description
@@ -828,7 +828,7 @@ boundary), and for the 'paf' extraction, which does not maximize a
 likelihood. Test for them with isfield before using them.
 
 [lambda, psi, T, stats, F] = factoran
-(&hellip;) also returns the N-by-m matrix F of predicted
+(...) also returns the N-by-m matrix F of predicted
 factor scores. Scores are not available from a covariance matrix, only from
 data.
 
@@ -870,7 +870,7 @@ The two extractions fit the same model but estimate it differently, and they
 answer to different circumstances.
 
 'ml' maximizes the likelihood of a multivariate normal, and is what
-MATLAB&rsquo;s factoran does. Use it when you want the likelihood ratio
+MATLAB's factoran does. Use it when you want the likelihood ratio
 test in stats to decide how many factors the data support, and when
 the data are plausibly normal. It can fail to converge, or push a specific
 variance to zero, when the model asks for more factors than the data hold.
@@ -927,22 +927,22 @@ mdscale
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3348
+# length: 3303
 statistics: Y = mdscale (D, p)
 statistics: [Y, stress] = mdscale (D, p)
 statistics: [Y, stress, disparities] = mdscale (D, p)
-statistics: [&hellip;] = mdscale (&hellip;, Name, Value)
+statistics: [...] = mdscale (..., Name, Value)
 Nonclassical (metric and nonmetric) multidimensional scaling.
 
 Y = mdscale (D, p) takes a matrix of dissimilarities
 D and returns a configuration Y of n points in p
-dimensions (an n &times; p matrix) whose interpoint distances
+dimensions (an n x p matrix) whose interpoint distances
 approximate D, by minimizing a stress criterion. D may be given
-either as a full n &times; n symmetric matrix with zero diagonal,
+either as a full n x n symmetric matrix with zero diagonal,
 or as the vector of the n (n - 1) / 2 upper-triangle
 dissimilarities returned by pdist.
 
-[Y, stress, disparities] = mdscale (&hellip;) also
+[Y, stress, disparities] = mdscale (...) also
 returns the final value of the stress criterion and the
 disparities (the transformed dissimilarities the distances are fitted
 to). For the nonmetric criteria the disparities are the monotone
@@ -955,7 +955,7 @@ Name/Value pairs:
 The goodness-of-fit criterion to minimize, one of:
 
 'stress' (default)
-Kruskal&rsquo;s normalized stress-1, sqrt (sum ((d - dhat)^2) / sum (d^2)),
+Kruskal's normalized stress-1, sqrt (sum ((d - dhat)^2) / sum (d^2)),
 computed from disparities dhat (nonmetric).
 'sstress'
 Squared stress, sqrt (sum ((d^2 - dhat^2)^2) / sum (d^4)) (nonmetric).
@@ -965,7 +965,7 @@ dissimilarities delta directly.
 'metricsstress'
 Metric squared stress, sqrt (sum ((d^2 - delta^2)^2) / sum (delta^4)).
 'sammon'
-Sammon&rsquo;s nonlinear mapping criterion,
+Sammon's nonlinear mapping criterion,
 (1 / sum (delta)) sum ((d - delta)^2 / delta).
 'strain'
 The classical scaling criterion; equivalent to cmdscale.
@@ -975,7 +975,7 @@ A matrix or vector of nonnegative weights, the same size as D, weighting
 each dissimilarity in the criterion.
 'Start'
 The initial configuration: 'cmdscale' (default, classical scaling),
-'random', or an explicit n &times; p matrix.
+'random', or an explicit n x p matrix.
 'Replicates'
 The number of times to repeat the minimization from different starting points,
 keeping the best (lowest-stress) result. The default is 1.
@@ -1030,20 +1030,20 @@ nnmf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1667
+# length: 1622
 statistics: [W, H] = nnmf (A, K)
 statistics: [W, H, D] = nnmf (A, K)
-statistics: [&hellip;] = nnmf (&hellip;, Name, Value)
+statistics: [...] = nnmf (..., Name, Value)
 Nonnegative matrix factorization.
 
 [W, H] = nnmf (A, K) factors the nonnegative
-N &times; M matrix A into nonnegative factors W (N &times;
-K) and H (K &times; M) whose product approximates
+N x M matrix A into nonnegative factors W (N x
+K) and H (K x M) whose product approximates
 A, by minimizing the root-mean-square residual between A and
 W * H. K, the number of factors, is typically
 smaller than N and M.
 
-[W, H, D] = nnmf (&hellip;) also returns the
+[W, H, D] = nnmf (...) also returns the
 root-mean-square residual D, that is norm (A - W *
 H, "fro") / sqrt (N * M).
 
@@ -1062,9 +1062,9 @@ multiplicative updates. Alternating least squares usually converges faster
 and more reliably; multiplicative updates are more sensitive to the starting
 point.
 'W0'
-An N &times; K initial value for W.
+An N x K initial value for W.
 'H0'
-A K &times; M initial value for H.
+A K x M initial value for H.
 'Replicates'
 The number of times to repeat the factorization from new random starting
 points, keeping the result with the smallest residual. The default is 1.
@@ -1097,22 +1097,22 @@ pca
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2848
+# length: 2761
 statistics: coeff = pca (x)
 statistics: coeff = pca (x, Name, Value)
-statistics: [coeff, score, latent] = pca (&hellip;)
-statistics: [coeff, score, latent, tsquared] = pca (&hellip;)
-statistics: [coeff, score, latent, tsquared, explained, mu] = pca (&hellip;)
+statistics: [coeff, score, latent] = pca (...)
+statistics: [coeff, score, latent, tsquared] = pca (...)
+statistics: [coeff, score, latent, tsquared, explained, mu] = pca (...)
 Performs a principal component analysis on a data matrix.
 
 A principal component analysis of a data matrix of N observations in a
-D dimensional space returns a D&times;D transformation matrix, to
+D dimensional space returns a DxD transformation matrix, to
 perform a change of basis on the data. The first component of the new basis
 is the direction that maximizes the variance of the projected data.
 
 Input argument:
 
-x : a N&times;D data matrix
+x : a NxD data matrix
 
 The following Name, Value pair arguments can be used:
 
@@ -1155,7 +1155,7 @@ the string 'variance' to use the sample variance as weights.
 
 Return values:
 
-coeff : the principal component coefficients, a D&times;D
+coeff : the principal component coefficients, a DxD
 transformation matrix
 
 score : the principal component scores, the representation of x
@@ -1164,7 +1164,7 @@ in the principal component space
 latent : the principal component variances, i.e., the eigenvalues of
 the covariance matrix of x
 
-tsquared : Hotelling&rsquo;s T-squared Statistic for each observation in
+tsquared : Hotelling's T-squared Statistic for each observation in
 x
 
 explained : the percentage of the variance explained by each principal
@@ -1173,8 +1173,8 @@ component
 mu : the estimated mean of each variable of x, it is zero if the
 data are not centered
 
-Matlab compatibility note: the alternating least square method &rsquo;als&rsquo; and
-associated options &rsquo;Coeff0&rsquo;, &rsquo;Score0&rsquo;, and &rsquo;Options&rsquo; are not yet implemented
+Matlab compatibility note: the alternating least square method 'als' and
+associated options 'Coeff0', 'Score0', and 'Options' are not yet implemented
 
 References
 
@@ -1261,13 +1261,13 @@ pcares
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1148
+# length: 1142
 statistics: residuals = pcares (x, ndim)
 statistics: [residuals, reconstructed] = pcares (x, ndim)
 Calculate residuals from principal component analysis.
 
 residuals = pcares (x, ndim) returns the residuals
-obtained by retaining ndim principal components of the N&times;D
+obtained by retaining ndim principal components of the NxD
 matrix x. Rows of x correspond to observations, columns of
 x correspond to variables. ndim is a scalar and must be less
 than or equal to D. residuals is a matrix of the same size as
@@ -1312,37 +1312,37 @@ ppca
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2200
+# length: 2149
 statistics: coeff = ppca (Y, K)
 statistics: [coeff, score] = ppca (Y, K)
 statistics: [coeff, score, pcvar] = ppca (Y, K)
 statistics: [coeff, score, pcvar, mu] = ppca (Y, K)
 statistics: [coeff, score, pcvar, mu, v] = ppca (Y, K)
 statistics: [coeff, score, pcvar, mu, v, S] = ppca (Y, K)
-statistics: [&hellip;] = ppca (&hellip;, Name, Value)
+statistics: [...] = ppca (..., Name, Value)
 Probabilistic principal component analysis.
 
 coeff = ppca (Y, K) fits a probabilistic principal
-component analysis (PPCA) model with K components to the N &times; P
+component analysis (PPCA) model with K components to the N x P
 data matrix Y (rows are observations, columns are variables) and returns
-the P &times; K matrix coeff of orthonormal principal component
+the P x K matrix coeff of orthonormal principal component
 coefficients, ordered by decreasing component variance. Y may contain
 NaN values marking missing observations; the model is fitted by an
 expectation-maximization algorithm that accounts for them. K must be a
 positive integer smaller than P.
 
 [coeff, score, pcvar, mu, v, S] =
-ppca (&hellip;) returns further outputs:
+ppca (...) returns further outputs:
 
 score
-The N &times; K principal component scores (the data projected onto the
+The N x K principal component scores (the data projected onto the
 components; missing entries are reconstructed from the model before
 projection).
 pcvar
-A K &times; 1 vector of the principal component variances (the variance
+A K x 1 vector of the principal component variances (the variance
 explained by each component).
 mu
-A 1 &times; P vector of the estimated mean of Y.
+A 1 x P vector of the estimated mean of Y.
 v
 The estimated residual (isotropic noise) variance.
 S
@@ -1353,7 +1353,7 @@ iterations NumIter, and the root-mean-square residual RMSResid.
 Name/Value pairs control the fit:
 
 'W0'
-A P &times; K initial value for the loadings used by the
+A P x K initial value for the loadings used by the
 expectation-maximization algorithm (missing-data case).
 'Options'
 A structure of algorithm options, as returned by statset, whose
@@ -1392,12 +1392,12 @@ princomp
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1064
+# length: 1041
 statistics: COEFF = princomp (X)
 statistics: [COEFF, SCORE] = princomp (X)
 statistics: [COEFF, SCORE, latent] = princomp (X)
 statistics: [COEFF, SCORE, latent, tsquare] = princomp (X)
-statistics: [&hellip;] = princomp (X, "econ")
+statistics: [...] = princomp (X, "econ")
 Performs a principal component analysis on a NxP data matrix X.
 
 COEFF : returns the principal component coefficients
@@ -1408,10 +1408,10 @@ in the principal component space
 LATENT : returns the principal component variances, i.e., the
 eigenvalues of the covariance matrix X.
 
-TSQUARE : returns Hotelling&rsquo;s T-squared Statistic for each observation
+TSQUARE : returns Hotelling's T-squared Statistic for each observation
 in X
 
-[...] = princomp(X,&rsquo;econ&rsquo;) returns only the elements of latent that are not
+[...] = princomp(X,'econ') returns only the elements of latent that are not
 necessarily zero, and the corresponding columns of COEFF and SCORE, that is,
 when n <= p, only the first n-1. This can be significantly faster when p is
 much larger than n. In this case the svd will be applied on the transpose of
@@ -1440,11 +1440,11 @@ procrustes
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2209
+# length: 2164
 statistics: d = procrustes (X, Y)
-statistics: d = procrustes (X, Y, param1, value1, &hellip;)
-statistics: [d, Z] = procrustes (&hellip;)
-statistics: [d, Z, transform] = procrustes (&hellip;)
+statistics: d = procrustes (X, Y, param1, value1, ...)
+statistics: [d, Z] = procrustes (...)
+statistics: [d, Z, transform] = procrustes (...)
 Procrustes Analysis.
 
 d = procrustes (X, Y) computes a linear
@@ -1485,18 +1485,18 @@ transform.T + transform.c
 
 procrustes can take two optional parameters as Name-Value pairs.
 
-[&hellip;] = procrustes (&hellip;, 'Scaling', false)
+[...] = procrustes (..., 'Scaling', false)
 computes a transformation that does not include scaling, that is
 transform.b = 1. Setting 'Scaling' to true
 includes a scaling component, which is the default.
 
-[&hellip;] = procrustes (&hellip;, 'Reflection', false)
+[...] = procrustes (..., 'Reflection', false)
 computes a transformation that does not include a reflection component, that
 is transform.T = 1. Setting 'Reflection' to
 true forces the solution to include a reflection component in the
 computed transformation, that is transform.T = -1.
 
-[&hellip;] = procrustes (&hellip;, 'Reflection', 'best')
+[...] = procrustes (..., 'Reflection', 'best')
 computes the best fit procrustes solution, which may or may not include a
 reflection component, which is the default.
 
@@ -1522,18 +1522,18 @@ rica
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2730
+# length: 2676
 statistics: Mdl = rica (X, Q)
 statistics: Mdl = rica (X, Q, Name, Value)
 Reconstruction independent component analysis (RICA) for feature extraction.
 
 Mdl = rica (X, Q) learns Q features from the
-N &times; P data matrix X (rows are observations, columns are
+N x P data matrix X (rows are observations, columns are
 predictors) and returns a ReconstructionICA object Mdl. Apply
 the learned transformation to data with transform (Mdl, X),
 which returns X * Mdl.TransformWeights.
 
-The P &times; Q weight matrix (with unit-length columns) minimizes the
+The P x Q weight matrix (with unit-length columns) minimizes the
 objective
 
 Lambda * ||X * W * W' - X||_F^2
@@ -1554,24 +1554,24 @@ Logical; center and scale each predictor before fitting (default
 false).
 'ContrastFcn'
 The sparsity contrast g applied to each element z of
-X &times; W: 'logcosh' (default), which is
-0.5 &times; log (cosh (2 &times; z)); 'exp', which is
+X x W: 'logcosh' (default), which is
+0.5 x log (cosh (2 x z)); 'exp', which is
 -exp (-z^2 / 2); or 'sqrt', which is
 sqrt (z^2 + 1e-8), a smooth stand-in for abs (z).
 'InitialTransformWeights'
-A P &times; Q initial value for the weights. The default is random.
+A P x Q initial value for the weights. The default is random.
 'NonGaussianityIndicator'
 A Q-element vector of +1 and -1, one per learned
 feature, setting the sign its contrast term carries in the objective:
 +1 seeks a super-Gaussian (sparse) feature and -1 a
 sub-Gaussian (spread) one. The default is all +1.
 'GradientTolerance', 'StepTolerance'
-Stop once the gradient&rsquo;s or the step&rsquo;s infinity norm falls to or below the
+Stop once the gradient's or the step's infinity norm falls to or below the
 given value (default 1e-6 each). They govern the fit only under
 'Solver', 'lbfgs'; the 'quasinewton' solver runs to its own
 tighter internal tolerances and records these without acting on them.
 'Solver'
-'quasinewton' (default) minimizes through Octave&rsquo;s fminunc,
+'quasinewton' (default) minimizes through Octave's fminunc,
 which carries a full inverse Hessian. 'lbfgs' selects the
 limited-memory BFGS solver MATLAB uses, holding as many curvature pairs as
 the transform has parameters, and is several times faster here. It stops
@@ -1611,19 +1611,19 @@ rotatefactors
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2750
+# length: 2717
 statistics: B = rotatefactors (A)
-statistics: B = rotatefactors (A, Name, Value, &hellip;)
-statistics: [B, T] = rotatefactors (&hellip;)
+statistics: B = rotatefactors (A, Name, Value, ...)
+statistics: [B, T] = rotatefactors (...)
 Rotate a factor-loading matrix.
 
-B = rotatefactors (A) rotates the D &times; M factor
+B = rotatefactors (A) rotates the D x M factor
 loadings matrix A (D observed variables, M factors) to
 the 'varimax' criterion and returns the rotated loadings B, the
 same size as A.
 
-[B, T] = rotatefactors (&hellip;) also returns the
-M &times; M rotation matrix T, so that B = A *
+[B, T] = rotatefactors (...) also returns the
+M x M rotation matrix T, so that B = A *
 T. For the orthogonal methods T is orthonormal
 (T' * T is the identity); for the oblique methods
 ('promax' and oblique 'procrustes') it is a general invertible
@@ -1682,7 +1682,7 @@ rotation follows the same successive-SVD iteration as MATLAB and stops at the
 same relative tolerance. For larger coefficients ('equamax',
 'parsimax') that iteration does not converge, so a monotonically
 convergent pairwise algorithm is used instead; it reaches the same optimum as
-MATLAB to that solution&rsquo;s own convergence precision.
+MATLAB to that solution's own convergence precision.
 
 See also:
 factoran,
@@ -1709,20 +1709,20 @@ sparsefilt
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2183
+# length: 2141
 statistics: Mdl = sparsefilt (X, Q)
 statistics: Mdl = sparsefilt (X, Q, Name, Value)
 Sparse filtering for feature extraction.
 
 Mdl = sparsefilt (X, Q) learns Q features from
-the N &times; P data matrix X (rows are observations, columns are
+the N x P data matrix X (rows are observations, columns are
 predictors) and returns a SparseFiltering object Mdl. Apply the
 learned transformation to data with transform (Mdl, X).
 
-The N &times; Q features returned by transform are the
+The N x Q features returned by transform are the
 soft-absolute activations sqrt ((X * W) .^ 2 + 1e-8),
 normalized first across observations (each feature) and then across features
-(each observation). The P &times; Q weight matrix W minimizes
+(each observation). The P x Q weight matrix W minimizes
 the sum of those features plus an L2 penalty Lambda * ||W
 ||_F^2, driving the features to be sparse.
 
@@ -1736,14 +1736,14 @@ Weight of the L2 penalty on the transform weights (default 1).
 Logical; center and scale each predictor before fitting (default
 false).
 'InitialTransformWeights'
-A P &times; Q initial value for the weights. The default is random.
+A P x Q initial value for the weights. The default is random.
 'GradientTolerance', 'StepTolerance'
-Stop once the gradient&rsquo;s or the step&rsquo;s infinity norm falls to or below the
+Stop once the gradient's or the step's infinity norm falls to or below the
 given value (default 1e-6 each). They govern the fit only under
 'Solver', 'lbfgs'; the 'quasinewton' solver runs to its own
 tighter internal tolerances and records these without acting on them.
 'Solver'
-'quasinewton' (default) minimizes through Octave&rsquo;s fminunc,
+'quasinewton' (default) minimizes through Octave's fminunc,
 which carries a full inverse Hessian. 'lbfgs' selects the
 limited-memory BFGS solver MATLAB uses, holding as many curvature pairs as
 the transform has parameters, and is several times faster here. It stops
@@ -1783,19 +1783,19 @@ tsne
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2919
+# length: 2874
 statistics: Y = tsne (X)
 statistics: [Y, loss] = tsne (X)
-statistics: [&hellip;] = tsne (&hellip;, Name, Value)
+statistics: [...] = tsne (..., Name, Value)
 t-distributed stochastic neighbor embedding (t-SNE).
 
-Y = tsne (X) embeds the N &times; P data matrix X
+Y = tsne (X) embeds the N x P data matrix X
 (rows are observations) into a low-dimensional space and returns the
-N &times; NumDimensions matrix Y of embedded points, whose
+N x NumDimensions matrix Y of embedded points, whose
 pairwise (Student-t) affinities approximate the Gaussian affinities of the
 rows of X.
 
-[Y, loss] = tsne (&hellip;) also returns the
+[Y, loss] = tsne (...) also returns the
 Kullback-Leibler divergence loss between the two affinity
 distributions at the returned embedding.
 
@@ -1805,7 +1805,7 @@ Name/Value pairs:
 'exact' (default) forms the affinities and the gradient over every
 pair of points, which costs O(N^2) in time and memory at each
 iteration. 'barneshut' approximates both: the high-dimensional
-affinities are kept only over each point&rsquo;s 3 &times; Perplexity nearest
+affinities are kept only over each point's 3 x Perplexity nearest
 neighbours, and the repulsive part of the gradient is summed over a
 space-partitioning tree of the embedding, giving O(N log N). Use it
 when N is large enough that the exact algorithm is slow or cannot
@@ -1843,7 +1843,7 @@ iterations (default 4, no less than 1).
 'LearnRate'
 The learning rate of the optimization (default 500).
 'InitialY'
-An N &times; NumDimensions initial embedding (default
+An N x NumDimensions initial embedding (default
 1e-4 * randn).
 'Options'
 A structure (as returned by statset) whose MaxIter (default

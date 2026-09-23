@@ -222,28 +222,28 @@ copulaparam
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2110
+# length: 2052
 statistics: param = copulaparam (family, r)
-statistics: param = copulaparam (&hellip;, "type", type)
+statistics: param = copulaparam (..., "type", type)
 Copula parameter as a function of rank correlation.
 
 param = copulaparam (family, r) returns the linear
 or copula parameter param corresponding to a copula of the family
-family that has Kendall&rsquo;s rank correlation r. It is the inverse
+family that has Kendall's rank correlation r. It is the inverse
 of copulastat.
 
 family is the copula family name. It can be "Gaussian" for the
-Gaussian family, "t" for the Student&rsquo;s t family, "Clayton"
+Gaussian family, "t" for the Student's t family, "Clayton"
 for the Clayton family, "Gumbel" for the Gumbel-Hougaard family,
 "Frank" for the Frank family, "AMH" for the Ali-Mikhail-Haq
 family, or "FGM" for the Farlie-Gumbel-Morgenstern family. The last
 two are Octave extensions that MATLAB does not provide, and are treated as
 bivariate. Neither reaches the whole range of either rank correlation: the
-Ali-Mikhail-Haq family covers a Kendall&rsquo;s tau in
+Ali-Mikhail-Haq family covers a Kendall's tau in
 [(5-8*log (2))/3, 1/3] and the Farlie-Gumbel-Morgenstern family one
 in [-2/9, 2/9].
 
-For the Gaussian and Student&rsquo;s t families, r is a scalar rank
+For the Gaussian and Student's t families, r is a scalar rank
 correlation or a matrix of pairwise rank correlations, and param is the
 corresponding linear correlation of the same size. For the Clayton,
 Gumbel-Hougaard, and Frank families, r is a scalar rank correlation and
@@ -251,12 +251,12 @@ param is the scalar copula parameter. The Gumbel-Hougaard family
 models positive dependence only, so r must be non-negative for that
 family.
 
-param = copulaparam (&hellip;, "type", type)
+param = copulaparam (..., "type", type)
 selects the measure of rank correlation given in r. type can be
-"Kendall" (the default) for Kendall&rsquo;s tau, or "Spearman" for
-Spearman&rsquo;s rho.
+"Kendall" (the default) for Kendall's tau, or "Spearman" for
+Spearman's rho.
 
-The Gaussian and Student&rsquo;s t families and the Kendall&rsquo;s tau of the Clayton
+The Gaussian and Student's t families and the Kendall's tau of the Clayton
 and Gumbel-Hougaard families are inverted in closed form. The remaining
 cases are inverted numerically from copulastat.
 
@@ -291,45 +291,45 @@ copulastat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2231
+# length: 2149
 statistics: r = copulastat (family, param)
-statistics: r = copulastat (&hellip;, "type", type)
+statistics: r = copulastat (..., "type", type)
 Rank correlation for a copula family.
 
-r = copulastat (family, param) returns Kendall&rsquo;s
+r = copulastat (family, param) returns Kendall's
 rank correlation r corresponding to a copula of the family
 family with linear or copula parameter param.
 
 family is the copula family name. It can be "Gaussian" for the
-Gaussian family, "t" for the Student&rsquo;s t family, "Clayton"
+Gaussian family, "t" for the Student's t family, "Clayton"
 for the Clayton family, "Gumbel" for the Gumbel-Hougaard family,
 "Frank" for the Frank family, "AMH" for the Ali-Mikhail-Haq
 family, or "FGM" for the Farlie-Gumbel-Morgenstern family. The last
 two are Octave extensions that MATLAB does not provide, and are treated as
 bivariate. Neither reaches the whole range of either rank correlation: the
-Ali-Mikhail-Haq family covers a Kendall&rsquo;s tau in
+Ali-Mikhail-Haq family covers a Kendall's tau in
 [(5-8*log (2))/3, 1/3] and the Farlie-Gumbel-Morgenstern family one
 in [-2/9, 2/9].
 
-For the Gaussian and Student&rsquo;s t families, param is a linear
+For the Gaussian and Student's t families, param is a linear
 correlation coefficient rho in the range [-1,1], or a
 p-by-p correlation matrix, in which case r has the same
 size and each element is computed elementwise. For the Clayton,
 Gumbel-Hougaard, and Frank families, param is the scalar copula
 parameter.
 
-r = copulastat (&hellip;, "type", type) selects the
+r = copulastat (..., "type", type) selects the
 measure of rank correlation. type can be "Kendall" (the
-default) for Kendall&rsquo;s tau, or "Spearman" for Spearman&rsquo;s rho.
+default) for Kendall's tau, or "Spearman" for Spearman's rho.
 
-The relationships are closed form for the Gaussian and Student&rsquo;s t families
-(r = 2 \arcsin(\rho) / \pi for Kendall&rsquo;s tau and
-r = 6 \arcsin(\rho/2) / \pi for Spearman&rsquo;s rho) and for the Kendall&rsquo;s
-tau of the Archimedean families. Spearman&rsquo;s rho of the Archimedean families
+The relationships are closed form for the Gaussian and Student's t families
+(r = 2 \arcsin(\rho) / \pi for Kendall's tau and
+r = 6 \arcsin(\rho/2) / \pi for Spearman's rho) and for the Kendall's
+tau of the Archimedean families. Spearman's rho of the Archimedean families
 has no closed form and is computed by accurate numerical integration of the
 copula.
 
-Note: MATLAB returns the Archimedean Spearman&rsquo;s rho by
+Note: MATLAB returns the Archimedean Spearman's rho by
 interpolating an internal precomputed table, whose values deviate from the
 true relationship by up to about 10^{-4}. This implementation returns
 the mathematically exact value instead, so results for
@@ -1371,12 +1371,12 @@ tlsstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 717
+# length: 699
 statistics: [m, v] = tlsstat (mu, sigma, nu)
-Compute statistics of the location-scale Student&rsquo;s T distribution.
+Compute statistics of the location-scale Student's T distribution.
 
 [m, v] = tlsstat (mu, sigma, nu) returns
-the mean and variance of the location-scale Student&rsquo;s T distribution with
+the mean and variance of the location-scale Student's T distribution with
 location parameter mu, scale parameter sigma, and nu
 degrees of freedom.
 
@@ -1384,7 +1384,7 @@ The size of m (mean) and v (variance) is the common size of the
 input arguments. A scalar input functions as a constant matrix of the
 same size as the other inputs.
 
-Further information about the location-scale Student&rsquo;s T distribution can be
+Further information about the location-scale Student's T distribution can be
 found at
 https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution
 
@@ -1464,17 +1464,17 @@ tstat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 454
+# length: 436
 statistics: [m, v] = tstat (df)
-Compute statistics of the Student&rsquo;s T distribution.
+Compute statistics of the Student's T distribution.
 
 [m, v] = tstat (df) returns the mean and variance of
-the Student&rsquo;s T distribution with df degrees of freedom.
+the Student's T distribution with df degrees of freedom.
 
 The size of m (mean) and v (variance) is the same size of the
 input argument.
 
-Further information about the Student&rsquo;s T distribution can be found at
+Further information about the Student's T distribution can be found at
 https://en.wikipedia.org/wiki/Student%27s_t-distribution
 
 See also:

@@ -116,7 +116,7 @@ ExhaustiveSearcher.ExhaustiveSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1483
+# length: 1471
 ExhaustiveSearcher: obj = ExhaustiveSearcher (X)
 ExhaustiveSearcher: obj = ExhaustiveSearcher (X, name, value)
 Create an ExhaustiveSearcher object for nearest neighbor
@@ -125,7 +125,7 @@ searches.
 obj = ExhaustiveSearcher (X) constructs an
 ExhaustiveSearcher object with training data X using the
 default 'euclidean' distance metric. X must be an
-N&times;P numeric matrix, where rows represent observations and columns
+NxP numeric matrix, where rows represent observations and columns
 represent features.
 
 obj = ExhaustiveSearcher (X, name, value)
@@ -149,7 +149,7 @@ Mahalanobis distance. Valid only when 'Distance' is
 'mahalanobis'. Default is cov (X).
 
 'Distance', 'P', 'Cov' and 'Scale' override
-the searcher&rsquo;s own metric for that call only; the Distance and
+the searcher's own metric for that call only; the Distance and
 DistParameter properties keep their values, as they do in MATLAB.
 
 See also:
@@ -177,11 +177,11 @@ ExhaustiveSearcher.X
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 343
+# length: 337
 ExhaustiveSearcher: property X
 Point data
 
-Point data, specified as an N&times;P numeric matrix where each row
+Point data, specified as an NxP numeric matrix where each row
 is an observation and each column is a feature. This property is private
 and cannot be modified after object creation.
 
@@ -207,7 +207,7 @@ ExhaustiveSearcher.knnsearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1325
+# length: 1319
 ExhaustiveSearcher: [idx, D] = knnsearch (obj, Y)
 ExhaustiveSearcher: [idx, D] = knnsearch (obj, Y, name, value)
 Find the K nearest neighbors in the training data to query points.
@@ -218,7 +218,7 @@ obj.X to each point in Y, using the distance metric specified
 in obj.Distance.
 
 obj is an ExhaustiveSearcher object.
-Y is an M&times;P numeric matrix of query points, where
+Y is an MxP numeric matrix of query points, where
 P must match the number of columns in obj.X.
 
 idx is always of class double. D is of class
@@ -266,7 +266,7 @@ ExhaustiveSearcher.rangesearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1104
+# length: 1093
 ExhaustiveSearcher: [idx, D] = rangesearch (obj, Y, r)
 ExhaustiveSearcher: [idx, D] = rangesearch (obj, Y, r, name, value)
 Find all neighbors within a specified radius of query points.
@@ -277,7 +277,7 @@ obj.X within radius r of each point in Y, using the
 distance metric specified in obj.Distance.
 
 obj is an ExhaustiveSearcher object.
-Y is an M&times;P numeric matrix of query points, where
+Y is an MxP numeric matrix of query points, where
 P must match the number of columns in obj.X.
 r is a nonnegative scalar specifying the search radius.
 
@@ -286,7 +286,7 @@ single when either obj.X or Y is single,
 in which case the distances are computed in single precision, and of
 class double otherwise.
 
-[idx, D] = rangesearch (&hellip;, name,
+[idx, D] = rangesearch (..., name,
 value) allows additional options via name-value pairs:
 
 Name Value
@@ -448,7 +448,7 @@ KDTreeSearcher.KDTreeSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1295
+# length: 1283
 KDTreeSearcher: obj = KDTreeSearcher (X)
 KDTreeSearcher: obj = KDTreeSearcher (X, name, value)
 Create a KDTreeSearcher object for nearest neighbor searches.
@@ -456,7 +456,7 @@ Create a KDTreeSearcher object for nearest neighbor searches.
 obj = KDTreeSearcher (X) constructs a
 KDTreeSearcher object with training data X using the
 default 'euclidean' distance metric. X must be an
-N&times;P numeric matrix, where rows represent observations and columns
+NxP numeric matrix, where rows represent observations and columns
 represent features.
 
 obj = KDTreeSearcher (X, name, value)
@@ -476,7 +476,7 @@ leaf node of the KD-tree, a positive integer. Default is 50.
 You can also create a KDTreeSearcher object using the
 createns function.
 
-'Distance' and 'P' override the searcher&rsquo;s own metric for
+'Distance' and 'P' override the searcher's own metric for
 that call only; the Distance and DistParameter
 properties keep their values. The tree is built from the data alone, so
 changing the metric does not rebuild it. 'Cov' and
@@ -508,11 +508,11 @@ KDTreeSearcher.X
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 339
+# length: 333
 KDTreeSearcher: property X
 Point data
 
-Point data, specified as an N&times;P numeric matrix where each row is
+Point data, specified as an NxP numeric matrix where each row is
 an observation and each column is a feature. This property is private
 and cannot be modified after object creation.
 
@@ -538,7 +538,7 @@ KDTreeSearcher.knnsearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1401
+# length: 1395
 KDTreeSearcher: [idx, D] = knnsearch (obj, Y)
 KDTreeSearcher: [idx, D] = knnsearch (obj, Y, name, value)
 Find the K nearest neighbors in the training data to query points.
@@ -549,7 +549,7 @@ nearest neighbors in obj.X to each point in Y, using the
 distance metric specified in obj.Distance.
 
 obj is a KDTreeSearcher object.
-Y is an M&times;P numeric matrix of query points, where
+Y is an MxP numeric matrix of query points, where
 P must match the number of columns in obj.X.
 idx contains the indices of the nearest neighbors in
 obj.X.
@@ -597,7 +597,7 @@ KDTreeSearcher.rangesearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1080
+# length: 1074
 KDTreeSearcher: [idx, D] = rangesearch (obj, Y, r)
 KDTreeSearcher: [idx, D] = rangesearch (obj, Y, r, name, value)
 Find all neighbors within a specified radius of query points.
@@ -608,7 +608,7 @@ obj.X within radius r of each point in Y, using the
 distance metric specified in obj.Distance.
 
 obj is a KDTreeSearcher object.
-Y is an M&times;P numeric matrix of query points, where
+Y is an MxP numeric matrix of query points, where
 P must match the number of columns in obj.X.
 r is a nonnegative scalar specifying the search radius.
 
@@ -652,16 +652,16 @@ createns
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2064
+# length: 2048
 statistics: obj = createns (X)
-statistics: obj = createns (X, name, value, &hellip;)
+statistics: obj = createns (X, name, value, ...)
 Create a nearest neighbor searcher object.
 
 obj = createns (X) creates a nearest neighbor searcher
 object using the training data X. By default, it constructs an
 ExhaustiveSearcher object with the Euclidean distance metric.
 
-obj = createns (X, name, value, &hellip;)
+obj = createns (X, name, value, ...)
 allows customization of the searcher type and its properties through
 name-value pairs. The following name-value pair is supported to specify
 the searcher type:
@@ -691,7 +691,7 @@ like 'Distance', 'P', 'Scale', 'Cov',
 
 Input Arguments:
 
-X - Training data, specified as an N&times;P numeric matrix
+X - Training data, specified as an NxP numeric matrix
 where rows represent observations and columns represent features. Must be
 finite and numeric.
 
@@ -899,11 +899,11 @@ hnswSearcher.X
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 337
+# length: 331
 hnswSearcher: property X
 Point data
 
-Point data, specified as an N&times;P numeric matrix where each row is
+Point data, specified as an NxP numeric matrix where each row is
 an observation and each column is a feature. This property is private
 and cannot be modified after object creation.
 
@@ -929,7 +929,7 @@ hnswSearcher.hnswSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1329
+# length: 1323
 hnswSearcher: obj = hnswSearcher (X)
 hnswSearcher: obj = hnswSearcher (X, name, value)
 Create an hnswSearcher object for approximate nearest neighbor
@@ -938,7 +938,7 @@ searches.
 obj = hnswSearcher (X) constructs an
 hnswSearcher object with training data X using the
 default 'euclidean' distance metric. X must be an
-N&times;P numeric matrix, where rows represent observations and columns
+NxP numeric matrix, where rows represent observations and columns
 represent features.
 
 obj = hnswSearcher (X, name, value)
@@ -988,7 +988,7 @@ hnswSearcher.knnsearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1435
+# length: 1429
 hnswSearcher: [idx, D] = knnsearch (obj, Y)
 hnswSearcher: [idx, D] = knnsearch (obj, Y, name, value)
 Find the nearest neighbors in the training data to query points.
@@ -999,7 +999,7 @@ obj.X to each point in Y, using the distance metric specified
 in obj.Distance.
 
 obj is an hnswSearcher object.
-Y is an M&times;P numeric matrix of query points, where
+Y is an MxP numeric matrix of query points, where
 P must match the number of columns in obj.X.
 idx contains the indices of the nearest neighbors in
 obj.X.
@@ -1049,18 +1049,18 @@ knnsearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5071
+# length: 5025
 statistics: idx = knnsearch (X, Y)
 statistics: [idx, D] = knnsearch (X, Y)
-statistics: [&hellip;] = knnsearch (&hellip;, name, value)
+statistics: [...] = knnsearch (..., name, value)
 Find k-nearest neighbors from input data.
 
 idx = knnsearch (X, Y) finds K nearest
 neighbors in X for Y. It returns idx which contains indices
 of K nearest neighbors of each row of Y, If not specified,
-K = 1. X must be an N&times;P numeric matrix of input
+K = 1. X must be an NxP numeric matrix of input
 data, where rows correspond to observations and columns correspond to
-features or variables. Y is an M&times;P numeric matrix with query
+features or variables. Y is an MxP numeric matrix with query
 points, which must have the same numbers of column as X.
 
 [idx, D] = knnsearch (X, Y) also returns the
@@ -1116,7 +1116,7 @@ matrix, use the 'Cov' name-value argument.
 'cosine' Cosine distance.
 'correlation' One minus the sample linear correlation
 between observations (treated as sequences of values).
-'spearman' One minus the sample Spearman&rsquo;s rank
+'spearman' One minus the sample Spearman's rank
 correlation between observations (treated as sequences of values).
 'hamming' Hamming distance, which is the percentage
 of coordinates that differ.
@@ -1124,10 +1124,10 @@ of coordinates that differ.
 the percentage of nonzero coordinates that differ.
 @distfun Custom distance function handle. A distance
 function of the form function D2 = distfun (XI, YI),
-where XI is a 1&times;P vector containing a single observation in
-P-dimensional space, YI is an N&times;P matrix containing an
+where XI is a 1xP vector containing a single observation in
+P-dimensional space, YI is an NxP matrix containing an
 arbitrary number of observations in the same P-dimensional space, and
-D2 is an N&times;P vector of distances, where (D2k) is
+D2 is an NxP vector of distances, where (D2k) is
 the distance between observations XI and (YIk,:).
 
 'NSMethod' is the nearest neighbor search method used
@@ -1179,11 +1179,11 @@ mahal
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 454
+# length: 442
 statistics: d = mahal (y, x)
-Mahalanobis&rsquo; D-square distance.
+Mahalanobis' D-square distance.
 
-Return the Mahalanobis&rsquo; D-square distance of the points in
+Return the Mahalanobis' D-square distance of the points in
 y from the distribution implied by points x.
 
 Specifically, it uses a Cholesky decomposition to set
@@ -1215,18 +1215,18 @@ pdist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3005
+# length: 2963
 statistics: D = pdist (X)
 statistics: D = pdist (X, Distance)
 statistics: D = pdist (X, Distance, DistParameter)
 Return the distance between any two rows in X.
 
 D = pdist (X calculates the euclidean distance between
-pairs of observations in X. X must be an M&times;P numeric
+pairs of observations in X. X must be an MxP numeric
 matrix representing M points in P-dimensional space. This
 function computes the pairwise distances returned in D as an
-M&times;(M-1)/P row vector. Use Z = squareform (D) to
-convert the row vector D into a an M&times;M symmetric matrix Z,
+Mx(M-1)/P row vector. Use Z = squareform (D) to
+convert the row vector D into a an MxM symmetric matrix Z,
 where Z(i,j) corresponds to the pairwise distance between
 points i and j.
 
@@ -1262,14 +1262,14 @@ between observations (treated as sequences of values).
 of coordinates that differ.
 'jaccard' One minus the Jaccard coefficient, which is
 the percentage of nonzero coordinates that differ.
-'spearman' One minus the sample Spearman&rsquo;s rank
+'spearman' One minus the sample Spearman's rank
 correlation between observations (treated as sequences of values).
 @distfun Custom distance function handle. A distance
 function of the form function D2 = distfun (XI, YI),
-where XI is a 1&times;P vector containing a single observation in
-P-dimensional space, YI is an N&times;P matrix containing an
+where XI is a 1xP vector containing a single observation in
+P-dimensional space, YI is an NxP matrix containing an
 arbitrary number of observations in the same P-dimensional space, and
-D2 is an N&times;P vector of distances, where (D2k) is
+D2 is an NxP vector of distances, where (D2k) is
 the distance between observations XI and (YIk,:).
 
 D = pdist (X, Y, Distance,
@@ -1303,19 +1303,19 @@ pdist2
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3902
+# length: 3840
 statistics: D = pdist2 (X, Y)
 statistics: D = pdist2 (X, Y, Distance)
 statistics: D = pdist2 (X, Y, Distance, DistParameter)
-statistics: D = pdist2 (&hellip;, Name, Value)
-statistics: [D, I] = pdist2 (&hellip;, Name, Value)
+statistics: D = pdist2 (..., Name, Value)
+statistics: [D, I] = pdist2 (..., Name, Value)
 Compute pairwise distance between two sets of vectors.
 
 D = pdist2 (X, Y) calculates the euclidean distance
 between each pair of observations in X and Y. Let X be an
-M&times;P matrix representing M points in P-dimensional space
-and Y be an N&times;P matrix representing another set of points in the
-same space. This function computes the M&times;N distance matrix D,
+MxP matrix representing M points in P-dimensional space
+and Y be an NxP matrix representing another set of points in the
+same space. This function computes the MxN distance matrix D,
 where D(i,j) is the distance between X(i,:) and
 Y(j,:).
 
@@ -1352,14 +1352,14 @@ between observations (treated as sequences of values).
 of coordinates that differ.
 'jaccard' One minus the Jaccard coefficient, which is
 the percentage of nonzero coordinates that differ.
-'spearman' One minus the sample Spearman&rsquo;s rank
+'spearman' One minus the sample Spearman's rank
 correlation between observations (treated as sequences of values).
 @distfun Custom distance function handle. A distance
 function of the form function D2 = distfun (XI, YI),
-where XI is a 1&times;P vector containing a single observation in
-P-dimensional space, YI is an N&times;P matrix containing an
+where XI is a 1xP vector containing a single observation in
+P-dimensional space, YI is an NxP matrix containing an
 arbitrary number of observations in the same P-dimensional space, and
-D2 is an N&times;P vector of distances, where (D2k) is
+D2 is an NxP vector of distances, where (D2k) is
 the distance between observations XI and (YIk,:).
 
 D = pdist2 (X, Y, Distance,
@@ -1369,7 +1369,7 @@ DistParameter. The latter one can only be specified when the selected
 Distance is 'seuclidean', 'minkowski', and
 'mahalanobis'.
 
-D = pdist2 (&hellip;, Name, Value) for any previous
+D = pdist2 (..., Name, Value) for any previous
 arguments, modifies the computation using Name-Value parameters.
 
 D = pdist2 (X, Y, Distance, 'Smallest',
@@ -1383,7 +1383,7 @@ DistParameter,
 by Distance and DistParameter and returns the K largest
 pairwise distances in descending order.
 
-[D, I] = pdist2 (&hellip;, Name, Value) also
+[D, I] = pdist2 (..., Name, Value) also
 returns the matrix I, which contains the indices of the observations in
 X corresponding to the distances in D. You must specify either
 'Smallest' or 'Largest' as an optional Name-Value
@@ -1413,20 +1413,20 @@ rangesearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4776
+# length: 4718
 statistics: idx = rangesearch (X, Y, r)
 statistics: [idx, D] = rangesearch (X, Y, r)
-statistics: [&hellip;] = rangesearch (&hellip;, name, value)
+statistics: [...] = rangesearch (..., name, value)
 Find all neighbors within specified distance from input data.
 
 idx = rangesearch (X, Y, r) returns all the
 points in X that are within distance r from the points in
 Y.
-X must be an N&times;P numeric matrix of input data, where rows
+X must be an NxP numeric matrix of input data, where rows
 correspond to observations and columns correspond to features or variables.
-Y is an M&times;P numeric matrix with query points, which must have
+Y is an MxP numeric matrix with query points, which must have
 the same numbers of column as X. r must be a nonnegative scalar
-value. idx is an M&times;1 cell array, where M is the number
+value. idx is an Mx1 cell array, where M is the number
 of observations in Y. The vector Idx{j} contains the
 indices of observations (rows) in X whose distances to
 Y(j,:) are not greater than r.
@@ -1434,7 +1434,7 @@ Y(j,:) are not greater than r.
 [idx, D] = rangesearch (X, Y, r) also
 returns the distances, D, which correspond to the points in X
 that are within distance r from the points in Y. D is an
-M&times;1 cell array, where M is the number of observations in
+Mx1 cell array, where M is the number of observations in
 Y. The vector D{j} contains the distances of
 observations (rows) in X whose distances to Y(j,:) are
 not greater than r.
@@ -1485,7 +1485,7 @@ matrix, use the 'Cov' name-value argument.
 'cosine' Cosine distance.
 'correlation' One minus the sample linear correlation
 between observations (treated as sequences of values).
-'spearman' One minus the sample Spearman&rsquo;s rank
+'spearman' One minus the sample Spearman's rank
 correlation between observations (treated as sequences of values).
 'hamming' Hamming distance, which is the percentage
 of coordinates that differ.
@@ -1493,10 +1493,10 @@ of coordinates that differ.
 the percentage of nonzero coordinates that differ.
 @distfun Custom distance function handle. A distance
 function of the form function D2 = distfun (XI, YI),
-where XI is a 1&times;P vector containing a single observation in
-P-dimensional space, YI is an N&times;P matrix containing an
+where XI is a 1xP vector containing a single observation in
+P-dimensional space, YI is an NxP matrix containing an
 arbitrary number of observations in the same P-dimensional space, and
-D2 is an N&times;P vector of distances, where (D2k) is
+D2 is an NxP vector of distances, where (D2k) is
 the distance between observations XI and (YIk,:).
 
 'NSMethod' is the nearest neighbor search method used

@@ -13,14 +13,14 @@ cholcov
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1271
+# length: 1250
 statistics: T = cholcov (sigma)
 statistics: [T, p] = cholcov (sigma)
-statistics: [&hellip;] = cholcov (sigma, flag)
+statistics: [...] = cholcov (sigma, flag)
 Cholesky-like decomposition for covariance matrix.
 
 T = cholcov (sigma) computes matrix T such that
-sigma = T&rsquo; T. sigma must be square, symmetric, and
+sigma = T' T. sigma must be square, symmetric, and
 positive semi-definite.
 
 If sigma is positive definite, then T is the square, upper
@@ -43,8 +43,8 @@ sigma is positive definite, in which case T is the Cholesky
 factor. If sigma is not positive definite, p is a positive
 integer and T is empty.
 
-[&hellip;] = cholcov (sigma, 1) is equivalent to
-[&hellip;] = cholcov (sigma).
+[...] = cholcov (sigma, 1) is equivalent to
+[...] = cholcov (sigma).
 
 See also:
 chov
@@ -135,10 +135,10 @@ makima
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1714
+# length: 1709
 statistics: yi = makima (x, y, xq)
 statistics: yi = makima (y, xq)
-statistics: yi = makima (&hellip;, 'extrap')
+statistics: yi = makima (..., 'extrap')
 Compute the 1-D Modified Akima piecewise cubic Hermite interpolant of
 sample data x and y.
 
@@ -272,11 +272,11 @@ statset
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4224
+# length: 4198
 statistics: options = statset ()
 statistics: options = statset (funcname)
-statistics: options = statset (name, value, &hellip;)
-statistics: options = statset (oldopts, name, value, &hellip;)
+statistics: options = statset (name, value, ...)
+statistics: options = statset (oldopts, name, value, ...)
 statistics: options = statset (oldopts, newopts)
 statistics: statset ()
 Create or modify an options structure for iterative statistics algorithms.
@@ -292,12 +292,12 @@ funcname must name a function of this package that documents an
 "Options" argument; see the list below. Unlike the name/value
 forms, this form takes no further arguments.
 
-options = statset (name, value, &hellip;) returns an
+options = statset (name, value, ...) returns an
 otherwise empty structure with the named options set. Option names are
 matched case-insensitively and must be given in full.
 
 options = statset (oldopts, name, value,
-&hellip;) copies oldopts and applies the given name/value pairs to the
+...) copies oldopts and applies the given name/value pairs to the
 copy. oldopts is left unchanged.
 
 options = statset (oldopts, newopts) merges two
@@ -370,7 +370,7 @@ Any function accepting an "Options" argument also accepts a plain
 structure carrying only the fields it needs, so statset is a
 convenience rather than a requirement.
 
-MATLAB&rsquo;s statset additionally accepts the names of functions this
+MATLAB's statset additionally accepts the names of functions this
 package does not provide. Those names are rejected here rather than
 answered, since returning options for an absent function would assert a
 capability that does not exist.

@@ -13,11 +13,11 @@ andrewsplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1501
+# length: 1470
 statistics: andrewsplot (x)
-statistics: andrewsplot (x, name, value, &hellip;)
-statistics: andrewsplot (ax, &hellip;)
-statistics: h = andrewsplot (&hellip;)
+statistics: andrewsplot (x, name, value, ...)
+statistics: andrewsplot (ax, ...)
+statistics: h = andrewsplot (...)
 Create an Andrews plot of the multivariate data in x.
 
 andrewsplot (x) plots each observation (row) of the
@@ -25,7 +25,7 @@ n-by-p matrix x as a smooth curve defined by the finite
 Fourier series
 
 f_i(t) = x_i1/sqrt(2) + x_i2 sin(2*pi*t) + x_i3 cos(2*pi*t)
-+ x_i4 sin(4*pi*t) + x_i5 cos(4*pi*t) + &hellip;
++ x_i4 sin(4*pi*t) + x_i5 cos(4*pi*t) + ...
 
 evaluated over t in the interval [0,1], where x_ij is the
 j-th variable of the i-th observation.
@@ -44,9 +44,9 @@ component scores of the standardized data.
 "Quantile"
 A scalar alpha in the interval (0,1). Instead of one curve per
 observation, only three curves per group are drawn: the pointwise median and
-the alpha and 1-alpha quantiles of the group&rsquo;s curves.
+the alpha and 1-alpha quantiles of the group's curves.
 
-andrewsplot (ax, &hellip;) plots into the axes ax.
+andrewsplot (ax, ...) plots into the axes ax.
 
 The optional output h is a vector of handles to the plotted lines: one
 per observation, or three per group when "Quantile" is used.
@@ -75,15 +75,15 @@ bar3
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3649
+# length: 3571
 statistics: bar3 (z)
 statistics: bar3 (y, z)
-statistics: bar3 (&hellip;, width)
-statistics: bar3 (&hellip;, style)
-statistics: bar3 (&hellip;, color)
-statistics: bar3 (&hellip;, name, value)
-statistics: bar3 (ax, &hellip;)
-statistics: p = bar3 (&hellip;)
+statistics: bar3 (..., width)
+statistics: bar3 (..., style)
+statistics: bar3 (..., color)
+statistics: bar3 (..., name, value)
+statistics: bar3 (ax, ...)
+statistics: p = bar3 (...)
 Plot a 3D bar graph.
 
 bar3 (z) plots 3D bar graph for the elements of z. Each
@@ -94,7 +94,7 @@ MATLAB, which plots it as a single series of bars, Octave discriminates
 between a row and column vector of z. Hence, when z is column
 vector, it is plotted as a single series of bars (same color), whereas when
 z is row vector, each bar is plotted as a different group (different
-colors). For an M&times;N matrix, the function plots the bars corresponding
+colors). For an MxN matrix, the function plots the bars corresponding
 to each row on the y-axis ranging from 1 to M and each
 column on the x-axis ranging from 1 to N.
 
@@ -104,7 +104,7 @@ that y only affects the tick names along the y-axis rather the
 actual values. If you want to specify non-numerical values for y, you
 can specify it with the paired name/value syntax shown below.
 
-bar3 (&hellip;, width) sets the width of the bars along the
+bar3 (..., width) sets the width of the bars along the
 x- and y-axes and controls the separation of bars among each
 other. width can take any value in the range (0,1]. By default,
 width is 0.8 and the bars have a small separation. If width is 1, the
@@ -112,16 +112,16 @@ bars touch one another. Alternatively, you can define width as a two-
 element vector using the paired name/value syntax shown below, in
 which case you can control the bar separation along each axis independently.
 
-bar3 (&hellip;, style) specifies the style of the bars, where
+bar3 (..., style) specifies the style of the bars, where
 style can be 'detached', 'grouped', or
 'stacked'. The default style is 'detached'.
 
-bar3 (&hellip;, color) displays all bars using the color
+bar3 (..., color) displays all bars using the color
 specified
 by color. For example, use 'red' or 'r' to specify all red
 bars. When you want to specify colors for several groups, color can be
 a cellstr vector with each element specifying the color of each group.
-color can also be specified as a numerical M&times;3 matrix, where
+color can also be specified as a numerical Mx3 matrix, where
 each row corresponds to a RGB value with its elements in the range
 [0,1]. If only one color is specified, then it applies to all bars.
 If the number of colors equals the number of groups, then each color is
@@ -130,7 +130,7 @@ in z, then each individual bar is assigned the particular color. You
 can also define color using the paired name/value syntax
 shown below.
 
-bar3 (&hellip;, name, value) specifies one or more of the
+bar3 (..., name, value) specifies one or more of the
 following name/value pairs:
 
 Name Value
@@ -138,20 +138,20 @@ Name Value
 of the bars along the x- and y-axes, respectively. Each
 element must be in the range (0,1].
 'color' A character or a cellstr vector, or a
-numerical M&times;3 matrix following the same conventions as the color
+numerical Mx3 matrix following the same conventions as the color
 input argument.
 'xlabel' A cellstr vector specifying the group names
 along the x-axis.
 'ylabel' A cellstr vector specifying the names of the
 bars in the same series along the y-axis.
 
-bar3 (ax, &hellip;) can also take an axes handle ax as a
+bar3 (ax, ...) can also take an axes handle ax as a
 first argument in which case it plots into the axes specified by ax
 instead of into the current axes specified by gca (). The optional
 argument ax can precede any of the input argument combinations in the
 previous syntaxes.
 
-p = bar3 (&hellip;) returns a patch handle p, which can be
+p = bar3 (...) returns a patch handle p, which can be
 used to set properties of the bars after displaying the 3D bar graph.
 
 See also:
@@ -177,15 +177,15 @@ bar3h
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3676
+# length: 3598
 statistics: bar3h (y)
 statistics: bar3h (z, y)
-statistics: bar3h (&hellip;, width)
-statistics: bar3h (&hellip;, style)
-statistics: bar3h (&hellip;, color)
-statistics: bar3h (&hellip;, name, value)
-statistics: bar3h (ax, &hellip;)
-statistics: p = bar3h (&hellip;)
+statistics: bar3h (..., width)
+statistics: bar3h (..., style)
+statistics: bar3h (..., color)
+statistics: bar3h (..., name, value)
+statistics: bar3h (ax, ...)
+statistics: p = bar3h (...)
 Plot a horizontal 3D bar graph.
 
 bar3h (y) plots 3D bar graph for the elements of y. Each
@@ -196,7 +196,7 @@ MATLAB, which plots it as a single series of bars, Octave distinguishes
 between a row and column vector of y. Hence, when y is column
 vector, it is plotted as a single series of bars (same color), whereas when
 y is row vector, each bar is plotted as a different group (different
-colors). For an M&times;N matrix, the function plots the bars corresponding
+colors). For an MxN matrix, the function plots the bars corresponding
 to each row on the z-axis ranging from 1 to M and each
 column on the x-axis ranging from 1 to N.
 
@@ -206,7 +206,7 @@ that z only affects the tick names along the z-axis rather the
 actual values. If you want to specify non-numerical values for z, you
 can specify it with the paired name/value syntax shown below.
 
-bar3h (&hellip;, width) sets the width of the bars along the
+bar3h (..., width) sets the width of the bars along the
 x- and z-axes and controls the separation of bars among each
 other. width can take any value in the range (0,1]. By default,
 width is 0.8 and the bars have a small separation. If width is 1, the
@@ -214,15 +214,15 @@ bars touch one another. Alternatively, you can define width as a two-
 element vector using the paired name/value syntax shown below, in
 which case you can control the bar separation along each axis independently.
 
-bar3h (&hellip;, style) specifies the style of the bars, where
+bar3h (..., style) specifies the style of the bars, where
 style can be 'detached', 'grouped', or
 'stacked'. The default style is 'detached'.
 
-bar3h (&hellip;, color) displays all bars using the color
+bar3h (..., color) displays all bars using the color
 specified by color. For example, use 'red' or 'r' to
 specify all red bars. When you want to specify colors for several groups,
 color can be a cellstr vector with each element specifying the color of
-each group. color can also be specified as a numerical M&times;3
+each group. color can also be specified as a numerical Mx3
 matrix, where each row corresponds to a RGB value with its elements in the
 range [0,1]. If only one color is specified, then it applies to all
 bars. If the number of colors equals the number of groups, then each color
@@ -231,7 +231,7 @@ elements in y, then each individual bar is assigned the particular
 color. You can also define color using the paired
 name/value syntax shown below.
 
-bar3h (&hellip;, name, value) specifies one or more of the
+bar3h (..., name, value) specifies one or more of the
 following name/value pairs:
 
 Name Value
@@ -239,20 +239,20 @@ Name Value
 of the bars along the x- and z-axes, respectively. Each
 element must be in the range (0,1].
 'color' A character or a cellstr vector, or a
-numerical M&times;3 matrix following the same conventions as the color
+numerical Mx3 matrix following the same conventions as the color
 input argument.
 'xlabel' A cellstr vector specifying the group names
 along the x-axis.
 'zlabel' A cellstr vector specifying the names of the
 bars in the same series along the z-axis.
 
-bar3h (ax, &hellip;) can also take an axes handle ax as a
+bar3h (ax, ...) can also take an axes handle ax as a
 first argument in which case it plots into the axes specified by ax
 instead of into the current axes specified by gca (). The optional
 argument ax can precede any of the input argument combinations in the
 previous syntaxes.
 
-p = bar3h (&hellip;) returns a patch handle p, which can be
+p = bar3h (...) returns a patch handle p, which can be
 used to set properties of the bars after displaying the 3D bar graph.
 
 See also:
@@ -278,11 +278,11 @@ biplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1834
+# length: 1814
 statistics: biplot (coefs)
-statistics: biplot (coefs, name, value, &hellip;)
-statistics: biplot (ax, &hellip;)
-statistics: h = biplot (&hellip;)
+statistics: biplot (coefs, name, value, ...)
+statistics: biplot (ax, ...)
+statistics: h = biplot (...)
 Create a biplot of the coefficients in coefs.
 
 biplot (coefs) plots the rows of coefs, typically the
@@ -314,7 +314,7 @@ For readability the sign of each column of coefs is chosen so that its
 largest-magnitude element is positive; the same sign change is applied to the
 corresponding column of the scores.
 
-biplot (ax, &hellip;) plots into the axes ax.
+biplot (ax, ...) plots into the axes ax.
 
 The optional output h is a column vector of handles to the plotted
 graphics objects, ordered as the variable vector lines, the variable markers,
@@ -346,15 +346,15 @@ boxchart
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1472
+# length: 1447
 statistics: boxchart (ydata)
 statistics: boxchart (xgroupdata, ydata)
-statistics: boxchart (&hellip;, 'GroupByColor', cgroupdata)
+statistics: boxchart (..., 'GroupByColor', cgroupdata)
 statistics: boxchart (tbl, yvar)
 statistics: boxchart (tbl, xvar, yvar)
-statistics: boxchart (&hellip;, name, value)
-statistics: boxchart (ax, &hellip;)
-statistics: b = boxchart (&hellip;)
+statistics: boxchart (..., name, value)
+statistics: boxchart (ax, ...)
+statistics: b = boxchart (...)
 Draw a box chart.
 
 boxchart (ydata) draws one box over the observations in
@@ -371,7 +371,7 @@ boxchart (tbl, xvar, yvar) take the observations,
 and where asked the grouping, from the named columns of a table. The
 chart keeps the table, so assigning SourceTable again re-reads it.
 
-b = boxchart (&hellip;) returns the
+b = boxchart (...) returns the
 stats.chart.BoxChart object drawn, whose properties may be set
 afterwards to redraw it; see stats.chart.BoxChart. Where
 'GroupByColor' names a grouping, one object is returned per
@@ -407,14 +407,14 @@ boxplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6464
+# length: 5924
 statistics: s = boxplot (data)
 statistics: s = boxplot (data, group)
-statistics: s = boxplot (data, notched, symbol, orientation, whisker, &hellip;)
-statistics: s = boxplot (data, group, notched, symbol, orientation, whisker, &hellip;)
+statistics: s = boxplot (data, notched, symbol, orientation, whisker, ...)
+statistics: s = boxplot (data, group, notched, symbol, orientation, whisker, ...)
 statistics: s = boxplot (data, options)
-statistics: s = boxplot (data, group, options, &hellip;)
-statistics: [&hellip;, h] = boxplot (data, &hellip;)
+statistics: s = boxplot (data, group, options, ...)
+statistics: [..., h] = boxplot (data, ...)
 Produce a box plot.
 
 A box plot is a graphical display that simultaneously describes several
@@ -436,19 +436,19 @@ notched within the interval (0,1) produces a notch of the specified
 depth. Notched values outside (0,1) are amusing if not exactly impractical.
 
 symbol sets the symbol for the outlier values. The default symbol
-for points that lie outside 3 times the interquartile range is &rsquo;o&rsquo;;
+for points that lie outside 3 times the interquartile range is 'o';
 the default symbol for points between 1.5 and 3 times the interquartile
-range is &rsquo;+&rsquo;.
+range is '+'.
 Alternative symbol settings:
-symbol = &rsquo;.&rsquo;: points between 1.5 and 3 times the IQR are marked with
-&rsquo;.&rsquo; and points outside 3 times IQR with &rsquo;o&rsquo;.
+symbol = '.': points between 1.5 and 3 times the IQR are marked with
+'.' and points outside 3 times IQR with 'o'.
 
-symbol = [&rsquo;x&rsquo;,&rsquo;*&rsquo;]: points between 1.5 and 3 times the IQR are marked
-with &rsquo;x&rsquo; and points outside 3 times IQR with &rsquo;*&rsquo;.
+symbol = ['x','*']: points between 1.5 and 3 times the IQR are marked
+with 'x' and points outside 3 times IQR with '*'.
 
 orientation = 0 makes the boxes horizontally.
 orientation = 1 plots the boxes vertically (default). Alternatively,
-orientation can be passed as a string, e.g., &rsquo;vertical&rsquo; or &rsquo;horizontal&rsquo;.
+orientation can be passed as a string, e.g., 'vertical' or 'horizontal'.
 
 whisker defines the length of the whiskers as a function of the IQR
 (default = 1.5). If whisker = 0 then boxplot displays all data
@@ -468,50 +468,50 @@ options are additional paired arguments passed with the formalism
 options can be passed at any order after the initial arguments and
 are case-insensitive.
 
-&rsquo;Notch&rsquo; &rsquo;on&rsquo; Notched by 0.25 of the boxes width.
-&rsquo;off&rsquo; Produces a straight box.
+'Notch' 'on' Notched by 0.25 of the boxes width.
+'off' Produces a straight box.
 scalar Proportional width of the notch.
-&rsquo;Symbol&rsquo; &rsquo;.&rsquo; Defines only outliers between 1.5 and 3 IQR.
-[&rsquo;x&rsquo;,&rsquo;*&rsquo;] 2nd character defines outliers > 3 IQR
-&rsquo;Orientation&rsquo; &rsquo;vertical&rsquo; Default value, can also be defined
+'Symbol' '.' Defines only outliers between 1.5 and 3 IQR.
+['x','*'] 2nd character defines outliers > 3 IQR
+'Orientation' 'vertical' Default value, can also be defined
 with numerical 1.
-&rsquo;horizontal&rsquo; Can also be defined with numerical 0.
-&rsquo;Whisker&rsquo; scalar Multiplier of IQR (default is 1.5).
-&rsquo;OutlierTags&rsquo; &rsquo;on&rsquo; or 1 Plot the vector index of the outlier
+'horizontal' Can also be defined with numerical 0.
+'Whisker' scalar Multiplier of IQR (default is 1.5).
+'OutlierTags' 'on' or 1 Plot the vector index of the outlier
 value next to its point.
-&rsquo;off&rsquo; or 0 No tags are plotted (default value).
-&rsquo;Sample_IDs&rsquo; &rsquo;cell&rsquo; A cell vector with one cell for each
-data set containing a nested cell vector with each sample&rsquo;s ID (should be
+'off' or 0 No tags are plotted (default value).
+'Sample_IDs' 'cell' A cell vector with one cell for each
+data set containing a nested cell vector with each sample's ID (should be
 a string). If this option is passed, then all outliers are tagged with
-their respective sample&rsquo;s ID string instead of their vector&rsquo;s index.
-&rsquo;BoxWidth&rsquo; &rsquo;proportional&rsquo; Create boxes with their width
+their respective sample's ID string instead of their vector's index.
+'BoxWidth' 'proportional' Create boxes with their width
 proportional to the number of samples in their respective dataset (default
 value).
-&rsquo;fixed&rsquo; Make all boxes with equal width.
-&rsquo;Widths&rsquo; scalar Scaling factor for box widths (default
+'fixed' Make all boxes with equal width.
+'Widths' scalar Scaling factor for box widths (default
 value is 0.4).
-&rsquo;CapWidths&rsquo; scalar Scaling factor for whisker cap widths
-(default value is 1, which results to &rsquo;Widths&rsquo;/8 halflength)
-&rsquo;BoxStyle&rsquo; &rsquo;outline&rsquo; Draw boxes as outlines (default value).
-&rsquo;filled&rsquo; Fill boxes with a color (outlines are still
+'CapWidths' scalar Scaling factor for whisker cap widths
+(default value is 1, which results to 'Widths'/8 halflength)
+'BoxStyle' 'outline' Draw boxes as outlines (default value).
+'filled' Fill boxes with a color (outlines are still
 plotted).
-&rsquo;Positions&rsquo; vector Numerical vector that defines the
+'Positions' vector Numerical vector that defines the
 position of each data set. It must have the same length as the number of
 groups in a desired manner. This vector merely defines the points along
 the group axis, which by default is [1:number of groups].
-&rsquo;Labels&rsquo; cell A cell vector of strings containing the names
+'Labels' cell A cell vector of strings containing the names
 of each group. By default each group is labeled numerically. If multiple
 grouping variables are provided, default labels are automatically generated
 by joining the category names and stacked hierarchically.
-&rsquo;Colors&rsquo; character string or Nx3 numerical matrix If just
+'Colors' character string or Nx3 numerical matrix If just
 one character or 1x3 vector of RGB values, specify the fill color of all
-boxes when BoxStyle = &rsquo;filled&rsquo;. If a character string or Nx3 matrix is
-entered, box #1&rsquo;s fill color corresponds to the first character or first
-matrix row, and the next boxes&rsquo; fill colors corresponds to the next
+boxes when BoxStyle = 'filled'. If a character string or Nx3 matrix is
+entered, box #1's fill color corresponds to the first character or first
+matrix row, and the next boxes' fill colors corresponds to the next
 characters or rows. If the char string or Nx3 array is exhausted the color
 selection wraps around.
 
-Supplemental arguments not described above (&hellip;) are concatenated and
+Supplemental arguments not described above (...) are concatenated and
 passed to the plot() function.
 
 The returned matrix s has one column for each data set as follows:
@@ -559,7 +559,7 @@ cdfplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1029
+# length: 1017
 statistics: hCDF = cdfplot (x)
 statistics: [hCDF, stats] = cdfplot (x)
 Display an empirical cumulative distribution function.
@@ -575,7 +575,7 @@ observations in x. The empirical CDF, F(x), is defined as follows:
 F(x) = (Number of observations <= x) / (Total number of observations)
 
 for all values in the sample vector x. NaNs are ignored. hCDF
-is the handle of the empirical CDF curve (a handle graphics &rsquo;line&rsquo; object).
+is the handle of the empirical CDF curve (a handle graphics 'line' object).
 
 [hCDF, stats] = cdfplot (x) also returns a structure
 with the following fields as a statistical summary.
@@ -609,13 +609,13 @@ dendrogram
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1971
+# length: 1961
 statistics: dendrogram (tree)
 statistics: dendrogram (tree, p)
 statistics: dendrogram (tree, prop, val)
 statistics: dendrogram (tree, p, prop, val )
-statistics: h = dendrogram (&hellip;)
-statistics: [h, t, perm] = dendrogram (&hellip;)
+statistics: h = dendrogram (...)
+statistics: [h, t, perm] = dendrogram (...)
 Plot a dendrogram of a hierarchical binary cluster tree.
 
 Given tree, a hierarchical binary cluster tree as the output of
@@ -684,12 +684,12 @@ ecdfhist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1264
+# length: 1244
 statistics: [n, c] = ecdfhist (f, x)
 statistics: [n, c] = ecdfhist (f, x, m)
 statistics: [n, c] = ecdfhist (f, x, centers)
-statistics: ecdfhist (&hellip;)
-statistics: ecdfhist (ax, &hellip;)
+statistics: ecdfhist (...)
+statistics: ecdfhist (ax, ...)
 Create a histogram from the output of ecdf.
 
 [n, c] = ecdfhist (f, x) takes the empirical
@@ -707,9 +707,9 @@ equally spaced bins.
 bins with the specified centers, given as a vector of monotonically
 increasing values.
 
-ecdfhist (&hellip;) without output arguments plots the histogram.
+ecdfhist (...) without output arguments plots the histogram.
 
-ecdfhist (ax, &hellip;) plots into the axes ax instead of
+ecdfhist (ax, ...) plots into the axes ax instead of
 the current axes.
 
 The probability mass assigned to each bin is the sum of the increments of the
@@ -790,10 +790,10 @@ glyphplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1544
+# length: 1534
 statistics: glyphplot (x)
-statistics: glyphplot (x, name, value, &hellip;)
-statistics: g = glyphplot (&hellip;)
+statistics: glyphplot (x, name, value, ...)
+statistics: g = glyphplot (...)
 Create a star (glyph) plot of the multivariate data in x.
 
 glyphplot (x) draws each observation (row) of the
@@ -853,14 +853,14 @@ gplotmatrix
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2579
+# length: 2559
 statistics: gplotmatrix (x, y, group)
 statistics: gplotmatrix (x, [], group)
 statistics: gplotmatrix (x, y, group, clr, sym, siz)
-statistics: gplotmatrix (&hellip;, doleg, dispopt)
-statistics: gplotmatrix (&hellip;, doleg, dispopt, xnam, ynam)
-statistics: gplotmatrix (parent, &hellip;)
-statistics: [h, ax, bigax] = gplotmatrix (&hellip;)
+statistics: gplotmatrix (..., doleg, dispopt)
+statistics: gplotmatrix (..., doleg, dispopt, xnam, ynam)
+statistics: gplotmatrix (parent, ...)
+statistics: [h, ax, bigax] = gplotmatrix (...)
 Create a matrix of scatter plots grouped by a categorical variable.
 
 gplotmatrix (x, y, group) creates a matrix of
@@ -938,11 +938,11 @@ gscatter
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1542
+# length: 1532
 statistics: gscatter (x, y, g)
 statistics: gscatter (x, y, g, clr, sym, siz)
-statistics: gscatter (&hellip;, doleg, xnam, ynam)
-statistics: h = gscatter (&hellip;)
+statistics: gscatter (..., doleg, xnam, ynam)
+statistics: h = gscatter (...)
 Draw a scatter plot with grouped data.
 
 gscatter is a utility function to draw a scatter plot of x and
@@ -1000,16 +1000,16 @@ hist3
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1837
+# length: 1817
 statistics: hist3 (X)
 statistics: hist3 (X, nbins)
 statistics: hist3 (X, "Nbins", nbins)
 statistics: hist3 (X, centers)
 statistics: hist3 (X, "Ctrs", centers)
 statistics: hist3 (X, "Edges", edges)
-statistics: [N, C] = hist3 (&hellip;)
-statistics: hist3 (&hellip;, prop, val, &hellip;)
-statistics: hist3 (hax, &hellip;)
+statistics: [N, C] = hist3 (...)
+statistics: hist3 (..., prop, val, ...)
+statistics: hist3 (hax, ...)
 Produce bivariate (2D) histogram counts or plots.
 
 The elements to produce the histogram are taken from the Nx2 matrix
@@ -1073,12 +1073,12 @@ histfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1304
+# length: 1284
 statistics: histfit (x)
 statistics: histfit (x, nbins)
 statistics: histfit (x, nbins, distname)
-statistics: histfit (ax, &hellip;)
-statistics: h = histfit (&hellip;)
+statistics: histfit (ax, ...)
+statistics: h = histfit (...)
 Plot histogram with superimposed distribution fit.
 
 histfit (x) plots a histogram of the values in the vector
@@ -1095,11 +1095,11 @@ the values in the vector x using nbins number of bins in the
 histogram and superimposes a fitted density function from the distribution
 specified by distname.
 
-histfit (ax, &hellip;) uses the axes handle ax to plot the
+histfit (ax, ...) uses the axes handle ax to plot the
 histogram and the fitted density function onto followed by any of the input
 argument combinations specified in the previous syntaxes.
 
-h = histfit (&hellip;) returns a vector of handles h, where
+h = histfit (...) returns a vector of handles h, where
 h(1) is the handle to the histogram and h(2) is
 the handle to the density curve.
 
@@ -1131,7 +1131,7 @@ manovacluster
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 832
+# length: 807
 statistics: manovacluster (stats)
 statistics: manovacluster (stats, method)
 statistics: h = manovacluster (stats)
@@ -1146,13 +1146,13 @@ dendrogram function for more information about the figure.
 manovacluster (stats, method) uses the method
 algorithm in place of single linkage. The available methods are:
 
-"single" &mdash; nearest distance
-"complete" &mdash; furthest distance
-"average" &mdash; average distance
-"centroid" &mdash; center of mass distance
-"ward" &mdash; inner squared distance
+"single" --- nearest distance
+"complete" --- furthest distance
+"average" --- average distance
+"centroid" --- center of mass distance
+"ward" --- inner squared distance
 
-h = manovacluster (&hellip;) returns a vector of line handles.
+h = manovacluster (...) returns a vector of line handles.
 
 See also:
 manova1
@@ -1176,10 +1176,10 @@ normplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 679
+# length: 674
 statistics: normplot (x)
 statistics: normplot (ax, x)
-statistics: h = normplot (&hellip;)
+statistics: h = normplot (...)
 Produce normal probability plot of the data in x. If x is a
 matrix, normplot plots the data for each column. NaN values are
 ignored.
@@ -1216,17 +1216,17 @@ parallelcoords
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1471
+# length: 1446
 statistics: parallelcoords (x)
-statistics: parallelcoords (x, name, value, &hellip;)
-statistics: parallelcoords (ax, &hellip;)
-statistics: h = parallelcoords (&hellip;)
+statistics: parallelcoords (x, name, value, ...)
+statistics: parallelcoords (ax, ...)
+statistics: h = parallelcoords (...)
 Create a parallel coordinates plot of the multivariate data in x.
 
 parallelcoords (x) plots each observation (row) of the
 n-by-p matrix x as a line connecting the values of its
 p coordinates, which are placed at the equally spaced horizontal
-positions 1, 2, &hellip;, p.
+positions 1, 2, ..., p.
 
 The following name/value pairs are accepted:
 
@@ -1247,7 +1247,7 @@ and the alpha and 1-alpha quantiles of the group.
 A character array or cell array of strings giving the tick labels for the
 coordinate axis.
 
-parallelcoords (ax, &hellip;) plots into the axes ax.
+parallelcoords (ax, ...) plots into the axes ax.
 
 The optional output h is a vector of handles to the plotted lines: one
 per observation, or three per group when "Quantile" is used.
@@ -1326,14 +1326,14 @@ probplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1966
+# length: 1941
 statistics: probplot (y)
 statistics: probplot (dist, y)
 statistics: probplot (dist, y, cens)
 statistics: probplot (dist, y, cens, freq)
-statistics: probplot (ax, &hellip;)
-statistics: probplot (&hellip;, "noref")
-statistics: h = probplot (&hellip;)
+statistics: probplot (ax, ...)
+statistics: probplot (..., "noref")
+statistics: h = probplot (...)
 Produce a probability plot of the data in y against the distribution
 dist.
 
@@ -1357,11 +1357,11 @@ positions of the remaining points follow the Kaplan-Meier estimate. freq
 is a vector of nonnegative integer frequencies (counts) the same size as
 y. Pass [] to omit either one.
 
-probplot (ax, &hellip;) plots into the axes ax instead of
+probplot (ax, ...) plots into the axes ax instead of
 the current axes. The trailing option "noref" suppresses the
 reference line.
 
-h = probplot (&hellip;) returns a column vector of handles to the
+h = probplot (...) returns a column vector of handles to the
 plotted line objects (the data markers, followed by the reference line unless
 "noref" was given).
 
@@ -1397,12 +1397,12 @@ qqplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1087
+# length: 1082
 statistics: [q, s] = qqplot (x)
 statistics: [q, s] = qqplot (x, y)
 statistics: [q, s] = qqplot (x, dist)
 statistics: [q, s] = qqplot (x, y, params)
-statistics: qqplot (&hellip;)
+statistics: qqplot (...)
 Perform a QQ-plot (quantile plot).
 
 If F is the CDF of the distribution dist with parameters
@@ -1452,10 +1452,10 @@ scatterhist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3409
+# length: 3371
 statistics: scatterhist (x, y)
-statistics: scatterhist (x, y, name, value, &hellip;)
-statistics: h = scatterhist (&hellip;)
+statistics: scatterhist (x, y, name, value, ...)
+statistics: h = scatterhist (...)
 Create a scatter plot of x and y with marginal histograms.
 
 scatterhist (x, y) draws a scatter plot of the vectors
@@ -1472,7 +1472,7 @@ strings) with one entry per point. The scatter points and the marginal
 histograms are separated and colored by group.
 "NBins"
 The number of bins for the marginal histograms, either a scalar applied to
-both or a two-element vector [nx ny]. The default is chosen by Scott&rsquo;s
+both or a two-element vector [nx ny]. The default is chosen by Scott's
 rule.
 "Kernel"
 "off" (default) draws histograms for the marginals; "on" or
@@ -1492,11 +1492,11 @@ The optional output h is a three-element vector of axes handles: the
 central scatter axes, the axes of the x (horizontal) histogram, and the
 axes of the y (vertical) histogram.
 
-The y histogram&rsquo;s axes is built differently from MATLAB&rsquo;s and its
+The y histogram's axes is built differently from MATLAB's and its
 properties read accordingly. We plot that marginal transposed, so its
 "XLim" is the density and "XDir" carries the bar direction.
-MATLAB plots it like the x one &ndash; data along "XLim", density
-along "YLim" &ndash; and rotates the whole axes by setting
+MATLAB plots it like the x one -- data along "XLim", density
+along "YLim" -- and rotates the whole axes by setting
 "View" to [270, 90], so there the direction is carried by
 "YDir" and "XDir" is always "normal". The picture
 is the same; code reading those properties off h(3) is not
@@ -1558,10 +1558,10 @@ silhouette
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1753
+# length: 1748
 statistics: silhouette (X, clust)
 statistics: [si, h] = silhouette (X, clust)
-statistics: [si, h] = silhouette (&hellip;, Metric, MetricArg)
+statistics: [si, h] = silhouette (..., Metric, MetricArg)
 Compute the silhouette values of clustered data and show them on a plot.
 
 X is a n-by-p matrix of n data points in a p-dimensional space. Each
@@ -1625,7 +1625,7 @@ stats.chart.BoxChart
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1563
+# length: 1557
 statistics: stats.chart.BoxChart
 A box chart, as boxchart draws it.
 
@@ -1651,7 +1651,7 @@ ranges of the box, and whatever lies beyond is drawn as a marker. These
 are the quartiles quantile computes and the rule
 isoutlier applies with 'quartiles'.
 
-MATLAB&rsquo;s object carries the properties every graphics object carries,
+MATLAB's object carries the properties every graphics object carries,
 Annotation and DataTipTemplate among them. This one is a
 handle class drawing with ordinary primitives rather than a graphics
 object of its own, so it carries what belongs to a box chart and leaves
@@ -2240,9 +2240,9 @@ stats.chart.BoxChart.XData
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 339
+# length: 333
 BoxChart: property XData
-Where each observation&rsquo;s box stands, one value per observation: a
+Where each observation's box stands, one value per observation: a
 grouping variable, numeric or categorical. Where no grouping was
 given every observation shares one position and this is a
 categorical of one level. Setting it is refused while
@@ -2392,14 +2392,14 @@ swarmchart
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1728
+# length: 1702
 statistics: swarmchart (x, y)
 statistics: swarmchart (x, y, sz)
 statistics: swarmchart (x, y, sz, c)
-statistics: swarmchart (&hellip;, 'filled')
-statistics: swarmchart (&hellip;, name, value)
-statistics: swarmchart (ax, &hellip;)
-statistics: s = swarmchart (&hellip;)
+statistics: swarmchart (..., 'filled')
+statistics: swarmchart (..., name, value)
+statistics: swarmchart (ax, ...)
+statistics: s = swarmchart (...)
 Draw a swarm chart.
 
 swarmchart (x, y) draws the points of y against
@@ -2428,7 +2428,7 @@ smallest gap between distinct values of x.
 'YJitterWidth' The same, upwards.
 
 MATLAB leaves XData as it was given and spreads the points as it
-draws them. Octave&rsquo;s scatter object has no such step, so this moves the
+draws them. Octave's scatter object has no such step, so this moves the
 values themselves: XData holds where each point was drawn rather
 than where it came from. The difference shows in XData and
 nowhere else, the chart being the same.
@@ -2457,12 +2457,12 @@ violin
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2309
+# length: 2289
 statistics: violin (x)
 statistics: h = violin (x)
-statistics: h = violin (&hellip;, property, value, &hellip;)
-statistics: h = violin (hax, &hellip;)
-statistics: h = violin (&hellip;, "horizontal")
+statistics: h = violin (..., property, value, ...)
+statistics: h = violin (hax, ...)
+statistics: h = violin (..., "horizontal")
 Produce a Violin plot of the data x.
 
 The input data x can be a N-by-m array containing N observations of m
@@ -2535,9 +2535,9 @@ wblplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1592
-statistics: wblplot (data, &hellip;)
-statistics: handle = wblplot (data, &hellip;)
+# length: 1582
+statistics: wblplot (data, ...)
+statistics: handle = wblplot (data, ...)
 statistics: [handle, param] = wblplot (data)
 statistics: [handle, param] = wblplot (data, censor)
 statistics: [handle, param] = wblplot (data, censor, freq)
