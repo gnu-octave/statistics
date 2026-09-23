@@ -1250,6 +1250,12 @@ classdef TreeBagger < PredictiveModel
     ## logical matrix saying which tree may answer for which row.
     ## @end multitable
     ##
+    ## @var{X} may also be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position: one
+    ## the model was not fitted on is passed over, one it needs and cannot
+    ## find is named, and a value holding a level is coded as that level was
+    ## coded at fitting.
+    ##
     ## @seealso{TreeBagger, TreeBagger.oobQuantilePredict,
     ## TreeBagger.quantileError, TreeBagger.predict}
     ## @end deftypefn
@@ -1258,6 +1264,10 @@ classdef TreeBagger < PredictiveModel
       if (nargin < 2)
         error ("TreeBagger.quantilePredict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      X = tableColumns (this, 'TreeBagger.quantilePredict', X);
+
       [tau, o] = quantileArgs (this, X, varargin, ...
                                {'Trees', 'TreeWeights', ...
                                 'UseInstanceForTree'}, ...
@@ -2972,3 +2982,14 @@ endfunction
 %! assert_equal (quantileError (Mdl, T, 'SL'), a);
 %! assert_equal (quantileError (Mdl, T), a);
 %! assert_equal (quantileError (Mdl, T(:,[3, 1, 2, 4])), a);
+
+## A table at quantilePredict
+%!test  # a table is matched to the predictors by name
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!           'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! Mdl = TreeBagger (20, T, 'SL', 'Method', 'regression');
+%! a = quantilePredict (Mdl, meas(:,2:4), 'Quantile', [0.25, 0.75]);
+%! assert_equal (quantilePredict (Mdl, T(:,1:3), 'Quantile', [0.25, 0.75]), a);
+%! assert_equal (quantilePredict (Mdl, T(:,[4, 3, 1, 2]), ...
+%!                                'Quantile', [0.25, 0.75]), a);

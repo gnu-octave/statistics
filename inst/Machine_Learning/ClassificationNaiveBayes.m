@@ -1151,12 +1151,22 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ## marks an observation the model finds unlike anything it was trained on,
     ## whatever class it would be assigned to.
     ##
+    ## @var{X} may also be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position: one
+    ## the model was not fitted on is passed over, one it needs and cannot
+    ## find is named, and a value holding a level is coded as that level was
+    ## coded at fitting.
+    ##
     ## @end deftypefn
     function lp = logp (this, X)
 
       if (nargin < 2)
         error ("ClassificationNaiveBayes.logp: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      X = tableColumns (this, 'ClassificationNaiveBayes.logp', X);
+
       if (isempty (X))
         error ("ClassificationNaiveBayes.logp: X is empty.");
       endif
@@ -2138,3 +2148,14 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## A table at logp
+%!test  # a table is matched to the predictors by name
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!           'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%! Mdl = fitcnb (T, 'Species');
+%! a = logp (Mdl, meas);
+%! assert_equal (logp (Mdl, T(:,1:4)), a);
+%! assert_equal (logp (Mdl, T(:,[5, 4, 2, 3, 1])), a);

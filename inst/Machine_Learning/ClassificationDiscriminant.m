@@ -2150,7 +2150,7 @@ classdef ClassificationDiscriminant < PredictiveModel
     ## @var{obj} must be a @qcode{ClassificationDiscriminant} object.
     ## @item
     ## @var{X} must be an @math{NxP} numeric matrix with one column per
-    ## predictor of the trained model.
+    ## predictor of the trained model, or a table holding them.
     ## @end itemize
     ##
     ## @code{@var{M} = mahal (@dots{}, @qcode{'ClassLabels'}, @var{labels})}
@@ -2163,6 +2163,11 @@ classdef ClassificationDiscriminant < PredictiveModel
     ## a regularized model is measured against its regularized covariance.
     ## The prior does not enter it.
     ##
+    ## A table's variables are matched to the predictors the model was
+    ## fitted on by name and not by position: one the model was not fitted on
+    ## is passed over, one it needs and cannot find is named, and a value
+    ## holding a level is coded as that level was coded at fitting.
+    ##
     ## @end deftypefn
     function M = mahal (this, X, varargin)
 
@@ -2171,6 +2176,9 @@ classdef ClassificationDiscriminant < PredictiveModel
         error (strcat ("ClassificationDiscriminant.mahal:", ...
                        " too few input arguments."));
       endif
+
+      ## A table is read by the names the model was fitted on
+      X = tableColumns (this, 'ClassificationDiscriminant.mahal', X);
 
       ## Check for valid X
       if (isempty (X))
@@ -2259,12 +2267,17 @@ classdef ClassificationDiscriminant < PredictiveModel
     ## @var{obj} must be a @qcode{ClassificationDiscriminant} object.
     ## @item
     ## @var{X} must be an @math{NxP} numeric matrix with one column per
-    ## predictor of the trained model.
+    ## predictor of the trained model, or a table holding them.
     ## @end itemize
     ##
     ## An unusually low value marks an observation the model finds unlikely
     ## under every class, which is what makes this an outlier test rather
     ## than a classification.
+    ##
+    ## A table's variables are matched to the predictors the model was
+    ## fitted on by name and not by position: one the model was not fitted on
+    ## is passed over, one it needs and cannot find is named, and a value
+    ## holding a level is coded as that level was coded at fitting.
     ##
     ## @end deftypefn
     function lp = logp (this, X)
@@ -2274,6 +2287,9 @@ classdef ClassificationDiscriminant < PredictiveModel
         error (strcat ("ClassificationDiscriminant.logp:", ...
                        " too few input arguments."));
       endif
+
+      ## A table is read by the names the model was fitted on
+      X = tableColumns (this, 'ClassificationDiscriminant.logp', X);
 
       ## Check for valid X
       if (isempty (X))
@@ -4347,3 +4363,23 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## A table at mahal and logp
+%!test  # a table is matched to the predictors by name
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!           'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%! Mdl = fitcdiscr (T, 'Species');
+%! a = mahal (Mdl, meas);
+%! assert_equal (mahal (Mdl, T(:,1:4)), a);
+%! assert_equal (mahal (Mdl, T(:,[5, 4, 2, 3, 1])), a);
+%!test  # a table is matched to the predictors by name
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!           'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%! Mdl = fitcdiscr (T, 'Species');
+%! a = logp (Mdl, meas);
+%! assert_equal (logp (Mdl, T(:,1:4)), a);
+%! assert_equal (logp (Mdl, T(:,[5, 4, 2, 3, 1])), a);

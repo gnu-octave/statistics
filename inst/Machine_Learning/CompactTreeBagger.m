@@ -546,6 +546,12 @@ classdef CompactTreeBagger < PredictiveModel
     ## trees that bring observations @math{i} and @math{j} to the same leaf.
     ## Its diagonal holds ones.
     ##
+    ## @var{X} may also be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position: one
+    ## the model was not fitted on is passed over, one it needs and cannot
+    ## find is named, and a value holding a level is coded as that level was
+    ## coded at fitting.
+    ##
     ## @seealso{CompactTreeBagger, CompactTreeBagger.outlierMeasure,
     ## CompactTreeBagger.mdsprox, TreeBagger.fillprox}
     ## @end deftypefn
@@ -586,6 +592,12 @@ classdef CompactTreeBagger < PredictiveModel
     ## @item @qcode{'Labels'} @tab @tab The class label of each observation,
     ## each one of @code{ClassNames}.  Classification only.
     ## @end multitable
+    ##
+    ## @var{X} holding predictor data may also be a table, whose variables
+    ## are matched to the predictors the model was fitted on by name and not
+    ## by position: one the model was not fitted on is passed over, one it
+    ## needs and cannot find is named, and a value holding a level is coded as
+    ## that level was coded at fitting.
     ##
     ## @seealso{CompactTreeBagger, CompactTreeBagger.proximity,
     ## TreeBagger.OutlierMeasure}
@@ -630,6 +642,12 @@ classdef CompactTreeBagger < PredictiveModel
     ## not exceed the number of columns of @var{S} even when nothing is drawn,
     ## as in MATLAB, whose documentation says otherwise.
     ## @end multitable
+    ##
+    ## @var{X} holding predictor data may also be a table, whose variables
+    ## are matched to the predictors the model was fitted on by name and not
+    ## by position: one the model was not fitted on is passed over, one it
+    ## needs and cannot find is named, and a value holding a level is coded as
+    ## that level was coded at fitting.
     ##
     ## @seealso{CompactTreeBagger, CompactTreeBagger.proximity, cmdscale,
     ## TreeBagger.mdsprox}
@@ -692,6 +710,8 @@ function o = proxArgs (M, X, args, allowed, caller)
     endif
     o.P = double (X);
   else
+    ## A table is read by the names the model was fitted on
+    X = tableToMatrix (M.PredictorNames, M.PredictorLevels, X, caller);
     if (! (isnumeric (X) && isreal (X) && ismatrix (X)))
       error ("%s: X must be a real numeric matrix.", caller);
     endif
@@ -1042,3 +1062,33 @@ endfunction
 %! assert_equal (meanMargin (Mdl, T(:,1:2), y), a);
 %! assert_equal (meanMargin (Mdl, T, 'Species'), a);
 %! assert_equal (meanMargin (Mdl, T), a);
+
+## A table at proximity, outlierMeasure and mdsprox
+%!test  # a table is matched to the predictors by name
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!           'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%! Mdl = compact (TreeBagger (20, T, 'Species'));
+%! a = proximity (Mdl, meas);
+%! assert_equal (proximity (Mdl, T(:,1:4)), a);
+%! assert_equal (proximity (Mdl, T(:,[5, 4, 2, 3, 1])), a);
+%!test  # a table is matched to the predictors by name
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!           'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%! Mdl = compact (TreeBagger (20, T, 'Species'));
+%! a = outlierMeasure (Mdl, meas, 'Labels', species);
+%! assert_equal (outlierMeasure (Mdl, T(:,1:4), 'Labels', species), a);
+%! assert_equal (outlierMeasure (Mdl, T(:,[5, 4, 2, 3, 1]), ...
+%!                               'Labels', species), a);
+%!test  # a table is matched to the predictors by name
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!           'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%! Mdl = compact (TreeBagger (20, T, 'Species'));
+%! a = mdsprox (Mdl, meas);
+%! assert_equal (mdsprox (Mdl, T(:,1:4)), a);
+%! assert_equal (mdsprox (Mdl, T(:,[5, 4, 2, 3, 1])), a);
