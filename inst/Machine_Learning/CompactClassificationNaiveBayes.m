@@ -489,7 +489,8 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
                                         nargin > 2);
       W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
                        'CompactClassificationNaiveBayes', 'edge');
-      e = sum (W .* margin (this, X, Y));
+      m = margin (this, X, Y);
+      e = sum (W .* m(:)) / sum (W);
 
     endfunction
 
@@ -794,6 +795,12 @@ endclassdef
 %! assert_equal (sum (margin (CMdl, meas, species)), ...
 %!               134.164589619731402, 1e-10);
 %! assert_equal (logp (CMdl, meas)(1), 1.026591235856343, 1e-12);
+
+%!test  # MATLAB parity: edge on a set missing a class
+%! load fisheriris
+%! CMdl = compact (fitcnb (meas, species));
+%! r = 51:150;
+%! assert_equal (edge (CMdl, meas(r,:), species(r)), 0.8416458962, 1e-10);
 
 %!test  # a kernel model compacts, densities and all
 %! load fisheriris

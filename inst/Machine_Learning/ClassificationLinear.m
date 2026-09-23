@@ -1055,7 +1055,7 @@ classdef ClassificationLinear < PredictiveModel
       W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
                        'ClassificationLinear', 'edge');
       m = margin (this, X, Y);
-      e = sum (W .* m, 1);
+      e = sum (W .* m, 1) / sum (W);
 
     endfunction
 
@@ -1421,6 +1421,13 @@ endclassdef
 %! sother(virg) = score(virg,1);
 %! assert_equal (margin (Mdl, X, Y), strue - sother, 1e-15);
 %! assert_equal (edge (Mdl, X, Y), mean (margin (Mdl, X, Y)), 1e-15);
+
+%!test  # MATLAB parity: edge on a set holding one class
+%! load fisheriris
+%! X = meas(51:end,:);
+%! Y = species(51:end);
+%! Mdl = ClassificationLinear (X, Y);
+%! assert_equal (edge (Mdl, X(1:50,:), Y(1:50)), 3.3451311639, 1e-10);
 
 %!test
 %! ## Every loss reproduces R2024a, and each is a function of the score the

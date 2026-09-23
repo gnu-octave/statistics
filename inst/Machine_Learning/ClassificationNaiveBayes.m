@@ -989,7 +989,8 @@ classdef ClassificationNaiveBayes < PredictiveModel
                                         nargin > 2);
       W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
                        'ClassificationNaiveBayes', 'edge');
-      e = sum (W .* margin (this, X, Y));
+      m = margin (this, X, Y);
+      e = sum (W .* m(:)) / sum (W);
 
     endfunction
 
@@ -1444,6 +1445,12 @@ endclassdef
 %! assert_equal (edge (Mdl, meas, species, 'Weights', w), ...
 %!               0.898902916457462, 1e-12);
 %! assert_equal (edge (Mdl, meas, species), 0.894430597464877, 1e-12);
+
+%!test  # MATLAB parity: edge on a set missing a class
+%! load fisheriris
+%! Mdl = fitcnb (meas, species);
+%! r = 51:150;
+%! assert_equal (edge (Mdl, meas(r,:), species(r)), 0.8416458962, 1e-10);
 
 %!test  # MATLAB parity: logp over all the classes
 %! load fisheriris

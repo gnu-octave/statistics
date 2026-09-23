@@ -1968,7 +1968,8 @@ classdef ClassificationTree < PredictiveModel
 
       W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
                        'ClassificationTree', 'edge');
-      e = sum (W .* margin (this, X, Y));
+      m = margin (this, X, Y);
+      e = sum (W .* m(:)) / sum (W);
 
     endfunction
 
@@ -2754,6 +2755,14 @@ endfunction
 %! assert_equal (edge (Mdl, meas, species), 0.853582991377224, 1e-14);
 %! assert_equal (loss (Mdl, meas, species, 'Weights', (1:150)'), ...
 %!               0.0384988962472406, 1e-14);
+
+%!test  # MATLAB parity: edge on a set missing a class
+%! load fisheriris
+%! Mdl = ClassificationTree (meas, species);
+%! r = 51:150;
+%! assert_equal (edge (Mdl, meas(r,:), species(r)), 0.9075362319, 1e-10);
+%! assert_equal (edge (Mdl, meas(r,:), species(r), 'Weights', (1:100)'), ...
+%!               0.9037275415, 1e-10);
 
 %!test  # MATLAB parity: the tree a weighted fit grows
 %! load fisheriris

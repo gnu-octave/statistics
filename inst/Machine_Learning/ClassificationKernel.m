@@ -856,7 +856,8 @@ classdef ClassificationKernel < PredictiveModel
                                         nargin > 2);
       W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
                        'ClassificationKernel', 'edge');
-      e = sum (W .* margin (this, X, Y));
+      m = margin (this, X, Y);
+      e = sum (W .* m(:)) / sum (W);
 
     endfunction
 
@@ -1376,6 +1377,14 @@ endclassdef
 %! Mdl = ClassificationKernel (X, Y);
 %! assert_equal (loss (Mdl, X, Y) < 0.15, true);
 %! assert_equal (edge (Mdl, X, Y) > 0, true);
+
+%!test
+%! ## On a set holding one class the edge is still the mean margin
+%! load fisheriris
+%! X = meas(51:100,:);
+%! Y = species(51:100);
+%! Mdl = ClassificationKernel (meas(51:end,:), species(51:end));
+%! assert_equal (edge (Mdl, X, Y), mean (margin (Mdl, X, Y)), 1e-14);
 
 %!test
 %! ## margin is the true class score less the other, and the labels follow

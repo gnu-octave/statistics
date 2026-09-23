@@ -922,7 +922,8 @@ classdef CompactClassificationTree < PredictiveModel
 
       W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
                        'CompactClassificationTree', 'edge');
-      e = sum (W .* margin (this, X, Y));
+      m = margin (this, X, Y);
+      e = sum (W .* m(:)) / sum (W);
 
     endfunction
 
@@ -1244,6 +1245,12 @@ endclassdef
 %! assert_equal (m', [1, 1, 1/3], 1e-14);
 %! assert_equal (loss (CMdl, meas, species, 'LossFun', 'hinge'), ...
 %!               0.0308212560386473, 1e-14);
+
+%!test  # MATLAB parity: edge on a set missing a class
+%! load fisheriris
+%! CMdl = compact (ClassificationTree (meas, species));
+%! r = 51:150;
+%! assert_equal (edge (CMdl, meas(r,:), species(r)), 0.9075362319, 1e-10);
 
 %!test  # MATLAB parity: predictorImportance and nodeVariableRange
 %! load fisheriris
