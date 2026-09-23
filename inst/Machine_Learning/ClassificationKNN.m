@@ -1892,8 +1892,8 @@ classdef ClassificationKNN < PredictiveModel
           case 'weights'
             if (isnumeric (Value) && isvector (Value))
               if (numel (Value) != size (X ,1))
-                error ("ClassificationKNN.loss: size of Weights must", ...
-                       ' be equal to the number of rows in X.');
+                error (strcat ("ClassificationKNN.loss: size of Weights", ...
+                               " must be equal to the number of rows in X."));
               elseif (numel (Value) == size (X, 1))
                 Weights = Value;
               endif
@@ -3859,6 +3859,9 @@ endfunction
 %!error<ClassificationKNN.loss: invalid Weights.> ...
 %! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ...
 %!        ones (4,1), 'Weights', 'w')
+%!error<ClassificationKNN.loss: size of Weights must be equal to the number of rows in X.> ...
+%! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ...
+%!        ones (4,1), 'Weights', ones (3,1))
 
 ## Test output for margin method
 %!test
