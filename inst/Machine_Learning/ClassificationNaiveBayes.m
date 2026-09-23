@@ -517,84 +517,45 @@ classdef ClassificationNaiveBayes < PredictiveModel
 
       nPred = columns (X);
 
-      ## Set default values before parsing optional parameters
-      CatPreds       = [];
-      ClassNames     = [];
-      Cost           = [];
-      DistNames      = [];
-      Kernel         = [];
-      PredictorNames = {};
-      Prior          = 'empirical';
-      ResponseName   = 'Y';
-      ScoreTransform = 'none';
-      Support        = [];
-      Width          = [];
+      ## Parse optional paired arguments
+      optNames = {'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', ...
+                  'Cost', 'ScoreTransform', 'CategoricalPredictors', ...
+                  'DistributionNames', 'Kernel', 'Support', 'Width'};
+      ## An empty default stands for one resolved once the data are known:
+      ## the distributions, kernels, supports and widths follow from the
+      ## predictors, the classes and 'Cost' from the response, and
+      ## 'PredictorNames' are x1, x2, ...
+      dfValues = {{}, 'Y', [], 'empirical', [], 'none', [], [], [], [], []};
+      [PredictorNames, ResponseName, ClassNames, Prior, Cost, ...
+       ScoreTransform, CatPreds, DistNames, Kernel, Support, Width, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      ## Parse optional parameters
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
+      ## Validate optional paired arguments
+      if (! isempty (PredictorNames) && ! iscellstr (PredictorNames))
+        error (strcat ("ClassificationNaiveBayes: 'PredictorNames' must be", ...
+                       " supplied as a cellstring array."));
+      elseif (! isempty (PredictorNames) && numel (PredictorNames) != nPred)
+        error (strcat ("ClassificationNaiveBayes: 'PredictorNames' must", ...
+                       " equal the number of columns in X."));
+      endif
+      if (! (ischar (ResponseName) && isrow (ResponseName)))
+        error (strcat ("ClassificationNaiveBayes: 'ResponseName' must be a", ...
+                       " character vector."));
+      endif
+      if (! isempty (ClassNames) &&
+          ! (iscellstr (ClassNames) || isnumeric (ClassNames)
+             || islogical (ClassNames) || ischar (ClassNames)
+             || isa (ClassNames, 'categorical')
+             || isa (ClassNames, 'string')))
+        error (strcat ("ClassificationNaiveBayes: 'ClassNames' must be a", ...
+                       " categorical array, a character array, a string", ...
+                       " array, a logical vector, a numeric vector, or a", ...
+                       " cell array of character vectors."));
+      endif
 
-          case 'predictornames'
-            PredictorNames = varargin{2};
-            if (! iscellstr (PredictorNames))
-              error (strcat ("ClassificationNaiveBayes: 'PredictorNames'", ...
-                             " must be supplied as a cellstring array."));
-            elseif (numel (PredictorNames) != nPred)
-              error (strcat ("ClassificationNaiveBayes: 'PredictorNames'", ...
-                             " must equal the number of columns in X."));
-            endif
-
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! (ischar (ResponseName) && isrow (ResponseName)))
-              error (strcat ("ClassificationNaiveBayes: 'ResponseName'", ...
-                             " must be a character vector."));
-            endif
-
-          case 'classnames'
-            ClassNames = varargin{2};
-            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
-                   || islogical (ClassNames) || ischar (ClassNames)
-                   || isa (ClassNames, 'categorical')
-                   || isa (ClassNames, 'string')))
-              error (strcat ("ClassificationNaiveBayes: 'ClassNames' must", ...
-                             " be a categorical array, a character array,", ...
-                             " a string array, a logical vector, a numeric", ...
-                             " vector, or a cell array of character", ...
-                             " vectors."));
-            endif
-
-          case 'prior'
-            Prior = varargin{2};
-
-          case 'cost'
-            Cost = varargin{2};
-
-          case 'scoretransform'
-            ScoreTransform = varargin{2};
-
-          case 'categoricalpredictors'
-            CatPreds = varargin{2};
-
-          case 'distributionnames'
-            DistNames = varargin{2};
-
-          case 'kernel'
-            Kernel = varargin{2};
-
-          case 'support'
-            Support = varargin{2};
-
-          case 'width'
-            Width = varargin{2};
-
-          otherwise
-            error (strcat ("ClassificationNaiveBayes: invalid parameter", ...
-                           sprintf (" name '%s'.", varargin{1})));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("ClassificationNaiveBayes: invalid optional paired argument.");
+      endif
 
       ## Resolve the categorical predictors and the distribution of every
       ## predictor.  The two are tied: naming a predictor categorical makes
@@ -1086,31 +1047,28 @@ classdef ClassificationNaiveBayes < PredictiveModel
                        " arguments must be in pairs."));
       endif
 
-      LossFun = 'mincost';
-      Weights = [];
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mincost', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
       lf_opt = {'binodeviance', 'classifcost', 'classiferror', ...
                 'exponential', 'hinge', 'logit', 'mincost', 'quadratic'};
+      if (! (ischar (LossFun) && any (strcmpi (LossFun, lf_opt))))
+        error ("ClassificationNaiveBayes.loss: invalid loss function.");
+      endif
+      LossFun = tolower (LossFun);
+      if (! isempty (Weights) && ! (isnumeric (Weights) && isvector (Weights)))
+        error ("ClassificationNaiveBayes.loss: invalid 'Weights'.");
+      endif
 
-      while (numel (varargin) > 0)
-        Value = varargin{2};
-        switch (tolower (varargin{1}))
-          case 'lossfun'
-            if (! (ischar (Value) && any (strcmpi (Value, lf_opt))))
-              error (strcat ("ClassificationNaiveBayes.loss: invalid", ...
-                             " loss function."));
-            endif
-            LossFun = tolower (Value);
-          case 'weights'
-            if (! (isnumeric (Value) && isvector (Value)))
-              error ("ClassificationNaiveBayes.loss: invalid 'Weights'.");
-            endif
-            Weights = Value;
-          otherwise
-            error (strcat ("ClassificationNaiveBayes.loss: invalid", ...
-                           " parameter name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("ClassificationNaiveBayes.loss: invalid optional", ...
+                       " paired argument."));
+      endif
 
       [gY, errmsg] = labelIndices (this.ClassNames, Y);
       if (! isempty (errmsg))
@@ -1998,7 +1956,7 @@ endclassdef
 %! ClassificationNaiveBayes ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'ResponseName', 5)
 %!error<ClassificationNaiveBayes: not all 'ClassNames' are present in Y.> ...
 %! ClassificationNaiveBayes ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'ClassNames', [1, 3])
-%!error<ClassificationNaiveBayes: invalid parameter name 'nope'.> ...
+%!error<ClassificationNaiveBayes: invalid optional paired argument.> ...
 %! ClassificationNaiveBayes ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'nope', 1)
 %!error<ClassificationNaiveBayes: unsupported distribution 'poisson'.> ...
 %! ClassificationNaiveBayes ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], ...
@@ -2023,6 +1981,9 @@ endclassdef
 %!error<ClassificationNaiveBayes.loss: invalid loss function.> ...
 %! loss (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), [1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], ...
 %!       'LossFun', 'nope')
+%!error<ClassificationNaiveBayes.loss: invalid optional paired argument.> ...
+%! loss (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), ...
+%!       [1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'Bogus', 1)
 %!error<ClassificationNaiveBayes.loss: 'Weights' must have one element per observation.> ...
 %! loss (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), [1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], ...
 %!       'Weights', [1, 2])

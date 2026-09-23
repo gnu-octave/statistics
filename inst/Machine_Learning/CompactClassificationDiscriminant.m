@@ -1440,22 +1440,14 @@ classdef CompactClassificationDiscriminant < PredictiveModel
                        " Name-Value arguments must be in pairs."));
       endif
 
-      labels = [];
-      while (numel (varargin) > 0)
-        if (! (ischar (varargin{1}) && isrow (varargin{1})))
-          error (strcat ("CompactClassificationDiscriminant.mahal:", ...
-                         " parameter name must be a character vector."));
-        endif
-        switch (tolower (varargin{1}))
-          case 'classlabels'
-            labels = varargin{2};
-          otherwise
-            error (strcat ("CompactClassificationDiscriminant.mahal:", ...
-                           " invalid parameter name in optional paired", ...
-                           " arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments; without 'ClassLabels' every class
+      ## mean is measured
+      [labels, args] = parsePairedArguments ({'ClassLabels'}, {[]}, ...
+                                             varargin(:));
+      if (! isempty (args))
+        error (strcat ("CompactClassificationDiscriminant.mahal: invalid optional", ...
+                       " paired argument."));
+      endif
 
       M = discrimmahal (X, this.Mu, this.Sigma, this.DiscrimType);
 
@@ -2231,11 +2223,11 @@ endclassdef
 %! load fisheriris
 %! Mdl = compact (fitcdiscr (meas, species));
 %! mahal (Mdl, meas(1:5,:), 'ClassLabels')
-%!error<CompactClassificationDiscriminant.mahal: parameter name must be a character vector.> ...
+%!error<CompactClassificationDiscriminant.mahal: invalid optional paired argument.> ...
 %! load fisheriris
 %! Mdl = compact (fitcdiscr (meas, species));
 %! mahal (Mdl, meas(1:5,:), 5, 1)
-%!error<CompactClassificationDiscriminant.mahal: invalid parameter name in optional paired arguments.> ...
+%!error<CompactClassificationDiscriminant.mahal: invalid optional paired argument.> ...
 %! load fisheriris
 %! Mdl = compact (fitcdiscr (meas, species));
 %! mahal (Mdl, meas(1:5,:), 'bogus', 1)

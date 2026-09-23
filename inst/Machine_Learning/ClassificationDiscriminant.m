@@ -952,141 +952,111 @@ classdef ClassificationDiscriminant < PredictiveModel
       ## Get groups in Y
       [gY, gnY, glY] = grp2idx (Y);
 
-      ## Set default values before parsing optional parameters
-      ClassNames     = [];
-      Cost           = [];
-      DiscrimType    = 'linear';
-      Gamma          = 0;
-      Delta          = 0;
-      NumPredictors  = [];
-      PredictorNames = {};
-      ResponseName   = 'Y';
-      Prior          = 'empirical';
-      FillCoeffs     = 'on';
-      Weights        = [];
+      ## Parse optional paired arguments
+      optNames = {'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', ...
+                  'Weights', 'Cost', 'ScoreTransform', 'DiscrimType', ...
+                  'FillCoeffs', 'Gamma', 'Delta', 'CategoricalPredictors'};
+      ## An empty default stands for one resolved once the data are known:
+      ## 'PredictorNames' are x1, x2, ...; the classes and 'Cost' come from
+      ## the response; 'Weights' are uniform; and no 'ScoreTransform' keeps
+      ## the one the class sets.
+      dfValues = {{}, 'Y', [], 'empirical', [], [], [], 'linear', 'on', 0, ...
+                  0, []};
+      [PredictorNames, ResponseName, ClassNames, Prior, Weights, Cost, STin, ...
+       DiscrimType, FillCoeffs, Gamma, Delta, CatPreds, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      ## Parse optional parameters
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
+      ## Validate optional paired arguments
+      if (! isempty (PredictorNames) && ! iscellstr (PredictorNames))
+        error (strcat ("ClassificationDiscriminant: 'PredictorNames' must", ...
+                       " be supplied as a cellstring array."));
+      elseif (! isempty (PredictorNames)
+              && numel (PredictorNames) != columns (X))
+        error (strcat ("ClassificationDiscriminant: 'PredictorNames' must", ...
+                       " equal the number of columns in X."));
+      endif
+      if (! ischar (ResponseName))
+        error (strcat ("ClassificationDiscriminant: 'ResponseName' must be", ...
+                       " a character vector."));
+      endif
+      if (! isempty (ClassNames) &&
+          ! (iscellstr (ClassNames) || isnumeric (ClassNames)
+             || islogical (ClassNames) || ischar (ClassNames)
+             || isa (ClassNames, 'categorical')
+             || isa (ClassNames, 'string')))
+        error (strcat ("ClassificationDiscriminant: 'ClassNames' must be a", ...
+                       " categorical array, a character array, a string", ...
+                       " array, a logical vector, a numeric vector, or a", ...
+                       " cell array of character vectors."));
+      endif
+      if (! isempty (ClassNames))
+        [~, errmsg] = namedClasses (glY, ClassNames);
+        if (! isempty (errmsg))
+          error ("ClassificationDiscriminant: %s", errmsg);
+        endif
+      endif
+      if (! (isstruct (Prior) || (isnumeric (Prior) && isvector (Prior))
+             || (ischar (Prior) && (strcmpi (Prior, 'empirical')
+                 || strcmpi (Prior, 'uniform')))))
+        error (strcat ("ClassificationDiscriminant: 'Prior' must be either", ...
+                       " a numeric or a character vector."));
+      endif
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isvector (Weights)
+             && isreal (Weights)))
+        error (strcat ("ClassificationDiscriminant: 'Weights' must be a", ...
+                       " real numeric vector."));
+      endif
+      if (! isempty (Weights) && numel (Weights) != rows (X))
+        error (strcat ("ClassificationDiscriminant: 'Weights' must have", ...
+                       " one element per row in X."));
+      endif
+      if (! isempty (Weights) && (any (Weights < 0) || ! (sum (Weights) > 0)))
+        error (strcat ("ClassificationDiscriminant: 'Weights' must be", ...
+                       " nonnegative and must not be all zero."));
+      endif
+      ## A struct carrying its own class order is a cost too,
+      ## and is resolved by the property's own set method.
+      if (! isempty (Cost) &&
+          ! (isstruct (Cost)
+             || (isnumeric (Cost) && issquare (Cost))))
+        error (strcat ("ClassificationDiscriminant: 'Cost' must be a", ...
+                       " numeric square matrix."));
+      endif
+      DiscrimType = discrimcanon (DiscrimType);
+      if (isempty (DiscrimType))
+        error (strcat ("ClassificationDiscriminant: 'DiscrimType' must be", ...
+                       " one of the following: linear, quadratic,", ...
+                       " diagLinear, diagQuadratic, pseudoLinear, or", ...
+                       " pseudoQuadratic."));
+      endif
+      FillCoeffs = tolower (FillCoeffs);
+      if (! any (strcmpi (FillCoeffs, {'on', 'off'})))
+        error (strcat ("ClassificationDiscriminant: 'FillCoeffs' must be", ...
+                       " 'on' or 'off'."));
+      endif
+      if (! (isnumeric (Gamma) && isscalar (Gamma)
+             && Gamma >= 0 && Gamma <= 1))
+        error (strcat ("ClassificationDiscriminant: 'Gamma' must be a", ...
+                       " scalar between 0 and 1."));
+      endif
+      if (! (isnumeric (Delta) && isscalar (Delta) && Delta >= 0))
+        error (strcat ("ClassificationDiscriminant: 'Delta' must be a", ...
+                       " nonnegative scalar."));
+      endif
+      ## Measured on R2024a, which refuses any categorical predictor.
+      if (! isempty (CatPreds))
+        error (strcat ("ClassificationDiscriminant: categorical predictors", ...
+                       " cannot be used for discriminant analysis."));
+      endif
 
-          case 'predictornames'
-            PredictorNames = varargin{2};
-            if (! iscellstr (PredictorNames))
-              error (strcat ("ClassificationDiscriminant: 'PredictorNames'", ...
-                             " must be supplied as a cellstring array."));
-            elseif (numel (PredictorNames) != columns (X))
-              error (strcat ("ClassificationDiscriminant: 'PredictorNames'", ...
-                             " must equal the number of columns in X."));
-            endif
+      if (! isempty (STin))
+        this.ScoreTransform = STin;
+      endif
 
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! ischar (ResponseName))
-              error (strcat ("ClassificationDiscriminant: 'ResponseName'", ...
-                             " must be a character vector."));
-            endif
-
-          case 'classnames'
-            ClassNames = varargin{2};
-            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
-                   || islogical (ClassNames) || ischar (ClassNames)
-                   || isa (ClassNames, 'categorical')
-                   || isa (ClassNames, 'string')))
-              error (strcat ("ClassificationDiscriminant: 'ClassNames'", ...
-                             " must be a categorical array, a character", ...
-                             " array, a string array, a logical vector, a", ...
-                             " numeric vector, or a cell array of", ...
-                             " character vectors."));
-            endif
-            [~, errmsg] = namedClasses (glY, ClassNames);
-            if (! isempty (errmsg))
-              error ("ClassificationDiscriminant: %s", errmsg);
-            endif
-
-          case 'prior'
-            Prior = varargin{2};
-            if (! (isstruct (Prior) || (isnumeric (Prior) && isvector (Prior))
-                   || (ischar (Prior) && (strcmpi (Prior, 'empirical')
-                       || strcmpi (Prior, 'uniform')))))
-              error (strcat ("ClassificationDiscriminant: 'Prior' must", ...
-                             " be either a numeric or a character vector."));
-            endif
-
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isvector (Weights)
-                   && isreal (Weights)))
-              error (strcat ("ClassificationDiscriminant: 'Weights' must", ...
-                             " be a real numeric vector."));
-            endif
-            if (numel (Weights) != rows (X))
-              error (strcat ("ClassificationDiscriminant: 'Weights' must", ...
-                             " have one element per row in X."));
-            endif
-            if (any (Weights < 0) || ! (sum (Weights) > 0))
-              error (strcat ("ClassificationDiscriminant: 'Weights' must", ...
-                             " be nonnegative and must not be all zero."));
-            endif
-
-          case 'cost'
-            Cost = varargin{2};
-            ## A struct carrying its own class order is a cost too,
-            ## and is resolved by the property's own set method.
-            if (! (isstruct (Cost)
-                   || (isnumeric (Cost) && issquare (Cost))))
-              error (strcat ("ClassificationDiscriminant: 'Cost'", ...
-                             " must be a numeric square matrix."));
-            endif
-
-          case 'scoretransform'
-            this.ScoreTransform = varargin{2};
-
-          case 'discrimtype'
-            DiscrimType = discrimcanon (varargin{2});
-            if (isempty (DiscrimType))
-              error (strcat ("ClassificationDiscriminant: 'DiscrimType'", ...
-                             " must be one of the following: linear,", ...
-                             " quadratic, diagLinear, diagQuadratic,", ...
-                             " pseudoLinear, or pseudoQuadratic."));
-            endif
-
-          case 'fillcoeffs'
-            FillCoeffs = tolower (varargin{2});
-            if (! any (strcmpi (FillCoeffs, {'on', 'off'})))
-              error (strcat ("ClassificationDiscriminant: 'FillCoeffs'", ...
-                             " must be 'on' or 'off'."));
-            endif
-
-          case 'gamma'
-            Gamma = varargin{2};
-            if (! (isnumeric (Gamma) && isscalar (Gamma)
-                   && Gamma >= 0 && Gamma <= 1))
-              error (strcat ("ClassificationDiscriminant: 'Gamma'", ...
-                             " must be a scalar between 0 and 1."));
-            endif
-
-          case 'delta'
-            Delta = varargin{2};
-            if (! (isnumeric (Delta) && isscalar (Delta) && Delta >= 0))
-              error (strcat ("ClassificationDiscriminant: 'Delta'", ...
-                             " must be a nonnegative scalar."));
-            endif
-
-
-          case 'categoricalpredictors'
-            ## Measured on R2024a, which refuses any categorical predictor.
-            if (! isempty (varargin{2}))
-              error (strcat ("ClassificationDiscriminant: categorical", ...
-                             " predictors cannot be used for discriminant", ...
-                             " analysis."));
-            endif
-
-          otherwise
-            error (strcat ("ClassificationDiscriminant: invalid", ...
-                           " parameter name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("ClassificationDiscriminant: invalid optional paired argument.");
+      endif
 
       ## Generate default predictors and response variable names (if necessary)
       NumPredictors = columns (X);
@@ -2198,22 +2168,14 @@ classdef ClassificationDiscriminant < PredictiveModel
                        " Name-Value arguments must be in pairs."));
       endif
 
-      labels = [];
-      while (numel (varargin) > 0)
-        if (! (ischar (varargin{1}) && isrow (varargin{1})))
-          error (strcat ("ClassificationDiscriminant.mahal:", ...
-                         " parameter name must be a character vector."));
-        endif
-        switch (tolower (varargin{1}))
-          case 'classlabels'
-            labels = varargin{2};
-          otherwise
-            error (strcat ("ClassificationDiscriminant.mahal:", ...
-                           " invalid parameter name in optional paired", ...
-                           " arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments; without 'ClassLabels' every class
+      ## mean is measured
+      [labels, args] = parsePairedArguments ({'ClassLabels'}, {[]}, ...
+                                             varargin(:));
+      if (! isempty (args))
+        error (strcat ("ClassificationDiscriminant.mahal: invalid optional", ...
+                       " paired argument."));
+      endif
 
       M = discrimmahal (X, this.Mu, this.Sigma, this.DiscrimType);
 
@@ -2506,45 +2468,39 @@ classdef ClassificationDiscriminant < PredictiveModel
                        " arguments must be given in pairs."));
       endif
 
-      NumGamma = 10;
-      NumDelta = 0;
-      Gamma = [];
-      Delta = [];
-      for k = 1:2:numel (varargin)
-        switch (lower (varargin{k}))
-          case 'numgamma'
-            NumGamma = varargin{k+1};
-            if (! (isnumeric (NumGamma) && isscalar (NumGamma)
-                   && NumGamma >= 1 && fix (NumGamma) == NumGamma))
-              error (strcat ("ClassificationDiscriminant.cvshrink:", ...
-                             " 'NumGamma' must be a positive integer."));
-            endif
-          case 'numdelta'
-            NumDelta = varargin{k+1};
-            if (! (isnumeric (NumDelta) && isscalar (NumDelta)
-                   && NumDelta >= 0 && fix (NumDelta) == NumDelta))
-              error (strcat ("ClassificationDiscriminant.cvshrink:", ...
-                             " 'NumDelta' must be a non-negative integer."));
-            endif
-          case 'gamma'
-            Gamma = varargin{k+1};
-            if (! (isnumeric (Gamma) && isvector (Gamma) && ! isempty (Gamma)
-                   && all (Gamma >= 0) && all (Gamma <= 1)))
-              error (strcat ("ClassificationDiscriminant.cvshrink:", ...
-                             " 'Gamma' must be a vector of values between", ...
-                             " 0 and 1."));
-            endif
-          case 'delta'
-            Delta = varargin{k+1};
-            if (! (isnumeric (Delta) && ! isempty (Delta) && all (Delta(:) >= 0)))
-              error (strcat ("ClassificationDiscriminant.cvshrink:", ...
-                             " 'Delta' must be non-negative."));
-            endif
-          otherwise
-            error (strcat ("ClassificationDiscriminant.cvshrink: unknown", ...
-                           " parameter name '%s'."), varargin{k});
-        endswitch
-      endfor
+      ## Parse optional paired arguments; empty 'Gamma' and 'Delta' stand
+      ## for the grids 'NumGamma' and 'NumDelta' describe
+      optNames = {'NumGamma', 'NumDelta', 'Gamma', 'Delta'};
+      dfValues = {10, 0, [], []};
+      [NumGamma, NumDelta, Gamma, Delta, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (isnumeric (NumGamma) && isscalar (NumGamma)
+             && NumGamma >= 1 && fix (NumGamma) == NumGamma))
+        error (strcat ("ClassificationDiscriminant.cvshrink: 'NumGamma'", ...
+                       " must be a positive integer."));
+      endif
+      if (! (isnumeric (NumDelta) && isscalar (NumDelta)
+             && NumDelta >= 0 && fix (NumDelta) == NumDelta))
+        error (strcat ("ClassificationDiscriminant.cvshrink: 'NumDelta'", ...
+                       " must be a non-negative integer."));
+      endif
+      if (! isempty (Gamma) &&
+          ! (isnumeric (Gamma) && isvector (Gamma)
+             && all (Gamma >= 0) && all (Gamma <= 1)))
+        error (strcat ("ClassificationDiscriminant.cvshrink: 'Gamma' must", ...
+                       " be a vector of values between 0 and 1."));
+      endif
+      if (! isempty (Delta) && ! (isnumeric (Delta) && all (Delta(:) >= 0)))
+        error (strcat ("ClassificationDiscriminant.cvshrink: 'Delta' must", ...
+                       " be non-negative."));
+      endif
+
+      if (! isempty (args))
+        error (strcat ("ClassificationDiscriminant.cvshrink: invalid", ...
+                       " optional paired argument."));
+      endif
 
       if (isempty (Gamma))
         gamma = linspace (0, 1, NumGamma + 1)';
@@ -2919,6 +2875,8 @@ endclassdef
 %! ClassificationDiscriminant (X, Y, 'PredictorNames', ['A'])
 %!error<ClassificationDiscriminant: 'PredictorNames' must be supplied as a cellstring array.> ...
 %! ClassificationDiscriminant (X, Y, 'PredictorNames', 'A')
+%!error<ClassificationDiscriminant: invalid optional paired argument.> ...
+%! ClassificationDiscriminant (X, Y, 'Bogus', 1)
 %!error<ClassificationDiscriminant: 'PredictorNames' must equal the number of columns in X.> ...
 %! ClassificationDiscriminant (X, Y, 'PredictorNames', {'A', 'B', 'C'})
 %!error<ClassificationDiscriminant: 'ResponseName' must be a character vector.> ...
@@ -4137,11 +4095,11 @@ endclassdef
 %! load fisheriris
 %! Mdl = fitcdiscr (meas, species);
 %! mahal (Mdl, meas(1:5,:), 'ClassLabels')
-%!error<ClassificationDiscriminant.mahal: parameter name must be a character vector.> ...
+%!error<ClassificationDiscriminant.mahal: invalid optional paired argument.> ...
 %! load fisheriris
 %! Mdl = fitcdiscr (meas, species);
 %! mahal (Mdl, meas(1:5,:), 5, 1)
-%!error<ClassificationDiscriminant.mahal: invalid parameter name in optional paired arguments.> ...
+%!error<ClassificationDiscriminant.mahal: invalid optional paired argument.> ...
 %! load fisheriris
 %! Mdl = fitcdiscr (meas, species);
 %! mahal (Mdl, meas(1:5,:), 'bogus', 1)
@@ -4246,7 +4204,7 @@ endclassdef
 %! cvshrink (fitcdiscr (ones (6, 2) + [1;2;3;4;5;6], [1;1;1;2;2;2]), "NumDelta", -1)
 %!error<ClassificationDiscriminant.cvshrink: 'Gamma' must be a vector of values between 0 and 1.> ...
 %! cvshrink (fitcdiscr (ones (6, 2) + [1;2;3;4;5;6], [1;1;1;2;2;2]), "Gamma", 2)
-%!error<ClassificationDiscriminant.cvshrink: unknown parameter name 'bogus'.> ...
+%!error<ClassificationDiscriminant.cvshrink: invalid optional paired argument.> ...
 %! cvshrink (fitcdiscr (ones (6, 2) + [1;2;3;4;5;6], [1;1;1;2;2;2]), "bogus", 1)
 
 ## HyperparameterOptimizationResults is declared for MATLAB compatibility and

@@ -532,32 +532,28 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
                        " arguments must be in pairs."));
       endif
 
-      LossFun = 'mincost';
-      Weights = [];
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mincost', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
       lf_opt = {'binodeviance', 'classifcost', 'classiferror', ...
                 'exponential', 'hinge', 'logit', 'mincost', 'quadratic'};
+      if (! (ischar (LossFun) && any (strcmpi (LossFun, lf_opt))))
+        error ("CompactClassificationNaiveBayes.loss: invalid loss function.");
+      endif
+      LossFun = tolower (LossFun);
+      if (! isempty (Weights) && ! (isnumeric (Weights) && isvector (Weights)))
+        error ("CompactClassificationNaiveBayes.loss: invalid 'Weights'.");
+      endif
 
-      while (numel (varargin) > 0)
-        Value = varargin{2};
-        switch (tolower (varargin{1}))
-          case 'lossfun'
-            if (! (ischar (Value) && any (strcmpi (Value, lf_opt))))
-              error (strcat ("CompactClassificationNaiveBayes.loss:", ...
-                             " invalid loss function."));
-            endif
-            LossFun = tolower (Value);
-          case 'weights'
-            if (! (isnumeric (Value) && isvector (Value)))
-              error (strcat ("CompactClassificationNaiveBayes.loss:", ...
-                             " invalid 'Weights'."));
-            endif
-            Weights = Value;
-          otherwise
-            error (strcat ("CompactClassificationNaiveBayes.loss: invalid", ...
-                           " parameter name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("CompactClassificationNaiveBayes.loss: invalid", ...
+                       " optional paired argument."));
+      endif
 
       [gY, errmsg] = labelIndices (this.ClassNames, Y);
       if (! isempty (errmsg))
@@ -900,6 +896,9 @@ endclassdef
 %!error<CompactClassificationNaiveBayes.loss: invalid loss function.> ...
 %! loss (compact (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2])), [1, 2; 2, 3; 3, 4; 4, 5], ...
 %!       [1; 1; 2; 2], 'LossFun', 'nope')
+%!error<CompactClassificationNaiveBayes.loss: invalid optional paired argument.> ...
+%! loss (compact (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2])), ...
+%!       [1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'Bogus', 1)
 %!error<CompactClassificationNaiveBayes.margin: too few input arguments.> ...
 %! margin (compact (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2])), [1, 2; 2, 3; 3, 4; 4, 5])
 %!error<CompactClassificationNaiveBayes.edge: too few input arguments.> ...
