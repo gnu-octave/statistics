@@ -2334,7 +2334,7 @@ classdef ClassificationKNN < PredictiveModel
               endif
               QueryPoints = Value;
             case 'useparallel'
-              if (! islogical (UseParallel))
+              if (! islogical (Value))
                 error (strcat ("ClassificationKNN.partialDependence:", ...
                                " UseParallel must be a logical value."));
               endif
@@ -4074,6 +4074,9 @@ endfunction
 %!error<ClassificationKNN.partialDependence: name-value arguments must be in pairs.> ...
 %! partialDependence (ClassificationKNN (ones (4,2), ones (4,1)), 1, ...
 %! ones (4,1), 2)
+%!error<ClassificationKNN.partialDependence: UseParallel must be a logical value.> ...
+%! partialDependence (ClassificationKNN (ones (4,2), ones (4,1)), 1, ...
+%! ones (4,1), 'UseParallel', 1)
 
 ## Test output for crossval method
 %!shared x, y, obj
