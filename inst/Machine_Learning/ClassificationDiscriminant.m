@@ -2221,27 +2221,25 @@ classdef ClassificationDiscriminant < PredictiveModel
         return;
       endif
 
-      ## One distance per observation, to the mean of the class named for it
-      if (ischar (labels))
-        labels = cellstr (labels);
-      elseif (isnumeric (labels) || islogical (labels))
-        labels = cellstr (num2str (labels(:)));
-      elseif (! iscellstr (labels))
+      ## One distance per observation, to the mean of the class named for it,
+      ## the labels matched to the classes as every other method matches them
+      if (! (isnumeric (labels) || islogical (labels) || ischar (labels)
+             || iscellstr (labels) || isa (labels, 'categorical')
+             || isa (labels, 'string')))
         error (strcat ("ClassificationDiscriminant.mahal:", ...
                        " 'ClassLabels' must be of a valid type."));
       endif
-      if (numel (labels) != rows (X))
+      if (ischar (labels))
+        nL = rows (labels);
+      else
+        nL = numel (labels);
+      endif
+      if (nL != rows (X))
         error (strcat ("ClassificationDiscriminant.mahal:", ...
                        " 'ClassLabels' must have one entry per row of X."));
       endif
-      classes = this.ClassNames;
-      if (isnumeric (classes) || islogical (classes))
-        classes = cellstr (num2str (classes(:)));
-      elseif (ischar (classes))
-        classes = cellstr (classes);
-      endif
-      [tf, idx] = ismember (strtrim (labels(:)), strtrim (classes));
-      if (! all (tf))
+      [idx, errmsg] = labelIndices (this.ClassNames, labels);
+      if (! isempty (errmsg))
         error (strcat ("ClassificationDiscriminant.mahal:", ...
                        " every 'ClassLabels' entry must be one of", ...
                        " ClassNames."));
@@ -4043,6 +4041,35 @@ endclassdef
 %!                   0.553281423559203; 2.086697905677364; ...
 %!                   0.595630039171744], 1e-12);
 
+## 'ClassLabels' of any label type, whatever type the classes are.
+%!test
+%! load fisheriris
+%! idx = [1; 51; 101];
+%! D = diag (mahal (fitcdiscr (meas, species), meas(idx,:)));
+%! Mdl = fitcdiscr (meas, categorical (species));
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', species(idx)), D);
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', ...
+%!                      categorical (species(idx))), D);
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', ...
+%!                      string (species(idx))), D);
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', ...
+%!                      char (species(idx))), D);
+%!test
+%! load fisheriris
+%! idx = [1; 51; 101];
+%! D = diag (mahal (fitcdiscr (meas, species), meas(idx,:)));
+%! Mdl = fitcdiscr (meas, species);
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', ...
+%!                      categorical (species(idx))), D);
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', ...
+%!                      string (species(idx))), D);
+%!test
+%! load fisheriris
+%! idx = [1; 51; 101];
+%! Mdl = fitcdiscr (meas, grp2idx (species));
+%! D = diag (mahal (Mdl, meas(idx,:)));
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', [1; 2; 3]), D);
+
 ## A quadratic model measures against each class's own covariance.
 %!test
 %! load fisheriris
@@ -4118,6 +4145,10 @@ endclassdef
 %! load fisheriris
 %! Mdl = fitcdiscr (meas, species);
 %! mahal (Mdl, meas(1:5,:), 'bogus', 1)
+%!error<ClassificationDiscriminant.mahal: 'ClassLabels' must be of a valid type.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! mahal (Mdl, meas(1:2,:), 'ClassLabels', {1; 2})
 %!error<ClassificationDiscriminant.mahal: 'ClassLabels' must have one entry per row of X.> ...
 %! load fisheriris
 %! Mdl = fitcdiscr (meas, species);
