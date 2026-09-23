@@ -21,7 +21,8 @@
 ## Normalized observation weights of an @code{edge} call.
 ##
 ## @var{args} is the @code{varargin} of the caller, which accepts a single
-## @qcode{'Weights'} Name-Value pair; without one the weights are uniform.
+## @qcode{'Weights'} Name-Value pair; without one, or with an empty one, the
+## weights are uniform.
 ##
 ## The weights are then normalized @strong{within each class to that class's
 ## prior}, which is what MATLAB does and is not the same as dividing by their
@@ -39,27 +40,30 @@
 function W = edgeWeights (args, Y, ClassNames, Prior, classname, caller)
 
   n = rows (Y);
-  W = ones (n, 1);
-  for i = 1:2:numel (args)
-    if (! (ischar (args{i}) && isrow (args{i})))
-      error ("%s.%s: parameter name must be a character vector.", ...
-             classname, caller);
-    endif
-    if (strcmpi (args{i}, 'weights'))
-      W = args{i+1};
-      if (! (isnumeric (W) && isvector (W)))
-        error ("%s.%s: 'Weights' must be a numeric vector.", ...
-               classname, caller);
-      endif
-      if (numel (W) != n)
-        error (strcat ("%s.%s: size of 'Weights' must equal the number", ...
-                       " of rows in X."), classname, caller);
-      endif
-    else
-      error (strcat ("%s.%s: invalid parameter name in optional paired", ...
-                     " arguments."), classname, caller);
-    endif
-  endfor
+  if (mod (numel (args), 2) != 0)
+    error ("%s.%s: optional arguments must be given in Name-Value pairs.", ...
+           classname, caller);
+  endif
+
+  ## Parse optional paired arguments; an empty 'Weights' stands for uniform
+  ## weights
+  [W, args] = parsePairedArguments ({'Weights'}, {[]}, args(:));
+
+  ## Validate optional paired arguments
+  if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
+    error ("%s.%s: 'Weights' must be a numeric vector.", classname, caller);
+  endif
+
+  if (! isempty (args))
+    error ("%s.%s: invalid optional paired argument.", classname, caller);
+  endif
+
+  if (isempty (W))
+    W = ones (n, 1);
+  elseif (numel (W) != n)
+    error (strcat ("%s.%s: size of 'Weights' must equal the number", ...
+                   " of rows in X."), classname, caller);
+  endif
   W = double (W(:));
 
   ## Which class each observation belongs to.  Matching against ClassNames is
