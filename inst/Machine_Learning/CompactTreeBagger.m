@@ -158,7 +158,7 @@ classdef CompactTreeBagger < PredictiveModel
 
   properties (GetAccess = public, SetAccess = protected, Hidden)
     ResponseName = 'Y';  # name the table gave the response, which
-                         # margin looks up; hidden because MATLAB's
+                         # a table call looks up; hidden as MATLAB's
                          # TreeBagger carries no ResponseName
     TreeClassIdx = {};   # columns of ClassNames each tree's scores fill
     DefaultIndex = 0;    # index of DefaultYfit into ClassNames, 0 if missing
@@ -298,6 +298,8 @@ classdef CompactTreeBagger < PredictiveModel
     ## -*- texinfo -*-
     ## @deftypefn  {CompactTreeBagger} {@var{err} =} error (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {CompactTreeBagger} {@var{err} =} error (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {CompactTreeBagger} {@var{err} =} error (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {CompactTreeBagger} {@var{err} =} error (@var{obj}, @var{Tbl})
     ##
     ## Misclassification probability or mean squared error of the ensemble.
     ##
@@ -328,14 +330,30 @@ classdef CompactTreeBagger < PredictiveModel
     ## per observation.  The default is uniform.
     ## @end multitable
     ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{error (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{error (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
+    ##
     ## @seealso{CompactTreeBagger, CompactTreeBagger.predict,
     ## CompactTreeBagger.meanMargin, TreeBagger.oobError}
     ## @end deftypefn
     function err = error (this, X, Y, varargin)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("CompactTreeBagger.error: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'error', X, Y, ...
+                                        varargin, nargin > 2);
       err = bagLoss ('error', this, X, Y, varargin, ...
                      'CompactTreeBagger.error', [], []);
 
@@ -391,6 +409,8 @@ classdef CompactTreeBagger < PredictiveModel
     ## -*- texinfo -*-
     ## @deftypefn  {CompactTreeBagger} {@var{mm} =} meanMargin (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {CompactTreeBagger} {@var{mm} =} meanMargin (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {CompactTreeBagger} {@var{mm} =} meanMargin (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {CompactTreeBagger} {@var{mm} =} meanMargin (@var{obj}, @var{Tbl})
     ##
     ## Weighted mean classification margin.
     ##
@@ -399,13 +419,29 @@ classdef CompactTreeBagger < PredictiveModel
     ## tree by default.  The Name-Value arguments are those of
     ## @code{CompactTreeBagger.error}, @qcode{'Weights'} included.
     ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{meanMargin (@var{obj}, @var{Tbl}, @var{ResponseVarName})}
+    ## takes the response from the variable @var{ResponseVarName} names, and
+    ## @code{meanMargin (@var{obj}, @var{Tbl})} from the variable the model
+    ## was fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
+    ##
     ## @seealso{CompactTreeBagger, CompactTreeBagger.margin}
     ## @end deftypefn
     function mm = meanMargin (this, X, Y, varargin)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("CompactTreeBagger.meanMargin: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'meanMargin', X, Y, ...
+                                        varargin, nargin > 2);
       mm = bagLoss ('meanMargin', this, X, Y, varargin, ...
                     'CompactTreeBagger.meanMargin', [], []);
 
@@ -982,3 +1018,27 @@ endfunction
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## A table at error and meanMargin
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,1:2);
+%! y = categorical (species);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = compact (TreeBagger (20, T, 'Species'));
+%! a = error (Mdl, X, y);
+%! assert_equal (error (Mdl, T(:,1:2), y), a);
+%! assert_equal (error (Mdl, T, 'Species'), a);
+%! assert_equal (error (Mdl, T), a);
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,1:2);
+%! y = categorical (species);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = compact (TreeBagger (20, T, 'Species'));
+%! a = meanMargin (Mdl, X, y);
+%! assert_equal (meanMargin (Mdl, T(:,1:2), y), a);
+%! assert_equal (meanMargin (Mdl, T, 'Species'), a);
+%! assert_equal (meanMargin (Mdl, T), a);
