@@ -761,31 +761,30 @@ classdef RegressionKernel < PredictiveModel
                        " be given in Name-Value pairs."));
       endif
 
-      LossFun = 'mse';
-      Weights = [];
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
-          case 'lossfun'
-            LossFun = varargin{2};
-            if (! (ischar (LossFun) && any (strcmpi (LossFun, ...
-                                     {'mse', 'epsiloninsensitive'}))))
-              error (strcat ("RegressionKernel.loss: 'LossFun' must be", ...
-                             " either 'mse' or 'epsiloninsensitive'."));
-            endif
-            LossFun = lower (LossFun);
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isreal (Weights)
-                   && isvector (Weights) && all (Weights >= 0)))
-              error (strcat ("RegressionKernel.loss: 'Weights' must be a", ...
-                             " vector of nonnegative values."));
-            endif
-          otherwise
-            error (strcat ("RegressionKernel.loss: invalid parameter", ...
-                           " name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments
+      optNames = {'LossFun', 'Weights'};
+      ## An empty 'Weights' stands for uniform weights
+      dfValues = {'mse', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (ischar (LossFun) && any (strcmpi (LossFun, ...
+                               {'mse', 'epsiloninsensitive'}))))
+        error (strcat ("RegressionKernel.loss: 'LossFun' must be", ...
+                       " either 'mse' or 'epsiloninsensitive'."));
+      endif
+      LossFun = lower (LossFun);
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isreal (Weights)
+             && isvector (Weights) && all (Weights >= 0)))
+        error (strcat ("RegressionKernel.loss: 'Weights' must be a", ...
+                       " vector of nonnegative values."));
+      endif
+
+      if (! isempty (args))
+        error ("RegressionKernel.loss: invalid optional paired argument.");
+      endif
 
       if (strcmp (LossFun, 'epsiloninsensitive') && isempty (this.Epsilon))
         error (strcat ("RegressionKernel.loss: the", ...
@@ -900,8 +899,7 @@ classdef RegressionKernel < PredictiveModel
       endif
 
       if (! isempty (args))
-        error (strcat ("RegressionKernel.resume: invalid parameter", ...
-                       " name in optional pair arguments."));
+        error ("RegressionKernel.resume: invalid optional paired argument.");
       endif
 
       if (! (isnumeric (X) && isreal (X) && ismatrix (X)))
@@ -1297,6 +1295,9 @@ endclassdef
 %!error<RegressionKernel.loss: 'LossFun' must be either 'mse' or 'epsiloninsensitive'.> ...
 %! loss (RegressionKernel (ones (10, 2), ones (10, 1)), ones (10, 2), ...
 %!                     ones (10, 1), 'LossFun', 'hinge')
+%!error<RegressionKernel.loss: invalid optional paired argument.> ...
+%! loss (RegressionKernel (ones (10, 2), ones (10, 1)), ones (10, 2), ...
+%!                     ones (10, 1), 'Bogus', 1)
 %!error<RegressionKernel.loss: the 'epsiloninsensitive' loss applies to a support vector machine only.> ...
 %! loss (RegressionKernel (ones (10, 2), ones (10, 1), 'Learner', ...
 %!                     'leastsquares'), ones (10, 2), ones (10, 1), ...
@@ -1306,7 +1307,7 @@ endclassdef
 %!error<RegressionKernel.resume: X must have the same number of predictors as the trained model.> ...
 %! resume (RegressionKernel (ones (10, 2), ones (10, 1)), ones (10, 5), ...
 %!                     ones (10, 1))
-%!error<RegressionKernel.resume: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionKernel.resume: invalid optional paired argument.> ...
 %! resume (RegressionKernel (ones (10, 2), ones (10, 1)), ones (10, 2), ...
 %!                     ones (10, 1), 'Nonsense', 1)
 %!error<RegressionKernel.resume: 'Weights' must be a vector of nonnegative values.> ...

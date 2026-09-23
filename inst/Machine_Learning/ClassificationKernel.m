@@ -904,35 +904,34 @@ classdef ClassificationKernel < PredictiveModel
                        " must be given in Name-Value pairs."));
       endif
 
-      LossFun = 'classiferror';
-      Weights = [];
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
-          case 'lossfun'
-            LossFun = varargin{2};
-            valid = {'binodeviance', 'classifcost', 'classiferror', ...
-                     'exponential', 'hinge', 'logit', 'mincost', ...
-                     'quadratic'};
-            if (! (ischar (LossFun) && any (strcmpi (LossFun, valid))))
-              error (strcat ("ClassificationKernel.loss: 'LossFun' must", ...
-                             " be 'binodeviance', 'classifcost',", ...
-                             " 'classiferror', 'exponential', 'hinge',", ...
-                             " 'logit', 'mincost', or 'quadratic'."));
-            endif
-            LossFun = lower (LossFun);
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isreal (Weights)
-                   && isvector (Weights) && all (Weights >= 0)))
-              error (strcat ("ClassificationKernel.loss: 'Weights' must", ...
-                             " be a vector of nonnegative values."));
-            endif
-          otherwise
-            error (strcat ("ClassificationKernel.loss: invalid parameter", ...
-                           " name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments
+      optNames = {'LossFun', 'Weights'};
+      ## An empty 'Weights' stands for uniform weights
+      dfValues = {'classiferror', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      valid = {'binodeviance', 'classifcost', 'classiferror', ...
+               'exponential', 'hinge', 'logit', 'mincost', ...
+               'quadratic'};
+      if (! (ischar (LossFun) && any (strcmpi (LossFun, valid))))
+        error (strcat ("ClassificationKernel.loss: 'LossFun' must", ...
+                       " be 'binodeviance', 'classifcost',", ...
+                       " 'classiferror', 'exponential', 'hinge',", ...
+                       " 'logit', 'mincost', or 'quadratic'."));
+      endif
+      LossFun = lower (LossFun);
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isreal (Weights)
+             && isvector (Weights) && all (Weights >= 0)))
+        error (strcat ("ClassificationKernel.loss: 'Weights' must", ...
+                       " be a vector of nonnegative values."));
+      endif
+
+      if (! isempty (args))
+        error ("ClassificationKernel.loss: invalid optional paired argument.");
+      endif
 
       [gY, errmsg] = labelIndices (this.ClassNames, Y);
       if (! isempty (errmsg))
@@ -1038,8 +1037,8 @@ classdef ClassificationKernel < PredictiveModel
       endif
 
       if (! isempty (args))
-        error (strcat ("ClassificationKernel.resume: invalid parameter", ...
-                       " name in optional pair arguments."));
+        error (strcat ("ClassificationKernel.resume: invalid optional", ...
+                       " paired argument."));
       endif
 
       [T, y, W] = resumeData (this, X, Y, Weights, 'resume');
@@ -1613,6 +1612,9 @@ endclassdef
 %!error<ClassificationKernel.loss: 'LossFun' must be 'binodeviance', 'classifcost', 'classiferror', 'exponential', 'hinge', 'logit', 'mincost', or 'quadratic'.> ...
 %! loss (ClassificationKernel (ones (10, 2), [ones(5,1); 2*ones(5,1)]), ...
 %!                     ones (10, 2), [ones(5,1); 2*ones(5,1)], 'LossFun', 'mse')
+%!error<ClassificationKernel.loss: invalid optional paired argument.> ...
+%! loss (ClassificationKernel (ones (10, 2), [ones(5,1); 2*ones(5,1)]), ...
+%!                     ones (10, 2), [ones(5,1); 2*ones(5,1)], 'Bogus', 1)
 %!error<ClassificationKernel.resume: too few input arguments.> ...
 %! resume (ClassificationKernel (ones (10, 2), [ones(5,1); 2*ones(5,1)]), ...
 %!                     ones (10, 2))
@@ -1620,7 +1622,7 @@ endclassdef
 %! resume (ClassificationKernel (ones (10, 2), [ones(5,1); 2*ones(5,1)]), ...
 %!                     ones (10, 2), [ones(5,1); 2*ones(5,1)], ...
 %!                     'IterationLimit', 0)
-%!error<ClassificationKernel.resume: invalid parameter name in optional pair arguments.> ...
+%!error<ClassificationKernel.resume: invalid optional paired argument.> ...
 %! resume (ClassificationKernel (ones (10, 2), [ones(5,1); 2*ones(5,1)]), ...
 %!                     ones (10, 2), [ones(5,1); 2*ones(5,1)], 'Nonsense', 1)
 %!error<ClassificationKernel.resume: 'Weights' must be a vector of nonnegative values.> ...
