@@ -1443,10 +1443,6 @@ classdef ClassificationNeuralNetwork < PredictiveModel
       endif
       [X, Y, varargin] = tableResponse (this, 'edge', X, Y, varargin, ...
                                         nargin > 2);
-      if (mod (numel (varargin), 2) != 0)
-        error (strcat ("ClassificationNeuralNetwork.edge: Name-Value", ...
-                       " arguments must be in pairs."));
-      endif
 
       [X, Y] = checkXY_ (this, X, Y, "edge");
 

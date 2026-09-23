@@ -792,10 +792,6 @@ classdef CompactClassificationGAM < PredictiveModel
       endif
       [X, Y, varargin] = tableResponse (this, 'edge', X, Y, varargin, ...
                                         nargin > 2);
-      if (mod (numel (varargin), 2) != 0)
-        error (strcat ("CompactClassificationGAM.edge: Name-Value", ...
-                       " arguments must be in pairs."));
-      endif
 
       [X, Y] = checkXY_ (this, X, Y, "edge");
 
@@ -1343,7 +1339,7 @@ endfunction
 %! margin (CM, x2)
 %!error<CompactClassificationGAM.margin: X is empty.> ...
 %! margin (CM, [], y2)
-%!error<CompactClassificationGAM.edge: Name-Value arguments must be in pairs.> ...
+%!error<CompactClassificationGAM.edge: optional arguments must be given in Name-Value pairs.> ...
 %! edge (CM, x2, y2, 'Weights')
 %!error<CompactClassificationGAM.loss: unsupported Loss function.> ...
 %! loss (CM, x2, y2, 'LossFun', 'nonsense')

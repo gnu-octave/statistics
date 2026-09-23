@@ -1892,10 +1892,6 @@ classdef ClassificationGAM < PredictiveModel
       endif
       [X, Y, varargin] = tableResponse (this, 'edge', X, Y, varargin, ...
                                         nargin > 2);
-      if (mod (numel (varargin), 2) != 0)
-        error (strcat ("ClassificationGAM.edge: Name-Value arguments", ...
-                       " must be in pairs."));
-      endif
 
       [X, Y] = checkXY_ (this, X, Y, "edge");
 
@@ -3839,7 +3835,7 @@ endfunction
 ## Test input validation for edge method
 %!error<ClassificationGAM.edge: too few input arguments.> ...
 %! edge (Mdl, x)
-%!error<ClassificationGAM.edge: Name-Value arguments must be in pairs.> ...
+%!error<ClassificationGAM.edge: optional arguments must be given in Name-Value pairs.> ...
 %! edge (Mdl, x, y, 'Weights')
 %!error<ClassificationGAM.edge: invalid optional paired argument.> ...
 %! edge (Mdl, x, y, 'LossFun', 'hinge')

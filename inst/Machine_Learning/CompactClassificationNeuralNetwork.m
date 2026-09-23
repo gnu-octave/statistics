@@ -617,10 +617,6 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
       endif
       [X, Y, varargin] = tableResponse (this, 'edge', X, Y, varargin, ...
                                         nargin > 2);
-      if (mod (numel (varargin), 2) != 0)
-        error (strcat ("CompactClassificationNeuralNetwork.edge:", ...
-                       " Name-Value arguments must be in pairs."));
-      endif
 
       [X, Y] = checkXY_ (this, X, Y, "edge");
 
@@ -1061,7 +1057,7 @@ endclassdef
 ## Test input validation for edge method
 %!error<CompactClassificationNeuralNetwork.edge: too few input arguments.> ...
 %! edge (CMdl, x)
-%!error<CompactClassificationNeuralNetwork.edge: Name-Value arguments must be in pairs.> ...
+%!error<CompactClassificationNeuralNetwork.edge: optional arguments must be given in Name-Value pairs.> ...
 %! edge (CMdl, x, y, 'Weights')
 %!error<CompactClassificationNeuralNetwork.edge: invalid optional paired argument.> ...
 %! edge (CMdl, x, y, 'LossFun', 'hinge')
