@@ -259,7 +259,7 @@ function Mdl = fitcsvm (X, Y, varargin)
         cv_opt = true;
 
       case 'leaveout'
-        Name = 'Holdout';
+        Name = 'Leaveout';
         Value = varargin{2};
         cv_arg += 1;
         cv_opt = true;
@@ -423,6 +423,12 @@ endfunction
 %! fitcsvm (ones (4,2), ones (4, 1), 'CrossVal', 'a')
 %!error <fitcsvm: You can use only one cross-validation name-value pair argument> ...
 %! fitcsvm (ones (4,2), ones (4, 1), 'KFold', 10, 'Holdout', 0.3)
+
+%!test  # 'Leaveout' leaves one observation out of each fold
+%! load fisheriris
+%! k = [51:70, 101:120];
+%! CVMdl = fitcsvm (meas(k,:), species(k), 'Leaveout', 'on');
+%! assert_equal (CVMdl.KFold, 40);
 
 %!test  # MATLAB parity: classes given as text are sorted
 %! load fisheriris

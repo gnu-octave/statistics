@@ -341,7 +341,7 @@ function Mdl = fitcknn (X, Y, varargin)
         cv_opt = true;
 
       case 'leaveout'
-        Name = 'Holdout';
+        Name = 'Leaveout';
         Value = varargin{2};
         cv_arg += 1;
         cv_opt = true;
@@ -638,6 +638,11 @@ endfunction
 %! fitcknn (ones (4,2), ones (4, 1), 'CrossVal', 'a')
 %!error <fitcknn: You can use only one cross-validation name-value pair argument> ...
 %! fitcknn (ones (4,2), ones (4, 1), 'KFold', 10, 'Holdout', 0.3)
+
+%!test  # 'Leaveout' leaves one observation out of each fold
+%! load fisheriris
+%! CVMdl = fitcknn (meas, species, 'Leaveout', 'on');
+%! assert_equal (CVMdl.KFold, 150);
 
 %!test  # MATLAB parity: classes given as text are sorted
 %! load fisheriris
