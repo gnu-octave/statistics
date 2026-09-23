@@ -334,44 +334,32 @@ classdef ClassificationECOC < PredictiveModel
         error ("ClassificationECOC: number of rows in X and Y must be equal.");
       endif
 
-      ClassNames = []; Cost = []; Prior = []; Weights = [];
-      PredictorNames = {}; ResponseName = 'Y'; ScoreTransform = 'none';
-      Coding = 'onevsone'; Learners = 'svm'; BinaryLoss = [];
-      CatPreds = [];
+      ## Parse optional paired arguments; the classes, prior, cost and
+      ## weights come from the response when left empty, and the binary loss
+      ## from the learners.
+      optNames = {'ClassNames', 'Cost', 'Prior', 'Weights', ...
+                  'PredictorNames', 'ResponseName', 'ScoreTransform', ...
+                  'Coding', 'Learners', 'BinaryLoss', ...
+                  'CategoricalPredictors', 'FitPosterior'};
+      dfValues = {[], [], [], [], {}, 'Y', 'none', 'onevsone', 'svm', [], ...
+                  [], []};
+      [ClassNames, Cost, Prior, Weights, PredictorNames, ResponseName, ...
+       ScoreTransform, Coding, Learners, BinaryLoss, CatPreds, ...
+       FitPosterior, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      for i = 1:2:numel (varargin)
-        switch (tolower (varargin{i}))
-          case 'classnames'
-            ClassNames = varargin{i+1};
-          case 'cost'
-            Cost = varargin{i+1};
-          case 'prior'
-            Prior = varargin{i+1};
-          case 'weights'
-            Weights = varargin{i+1};
-          case 'predictornames'
-            PredictorNames = varargin{i+1};
-          case 'responsename'
-            ResponseName = varargin{i+1};
-          case 'scoretransform'
-            ScoreTransform = varargin{i+1};
-          case 'coding'
-            Coding = varargin{i+1};
-          case 'learners'
-            Learners = varargin{i+1};
-          case 'binaryloss'
-            BinaryLoss = varargin{i+1};
-          case 'categoricalpredictors'
-            CatPreds = varargin{i+1};
-          case 'fitposterior'
-            error (strcat ("ClassificationECOC: 'FitPosterior' is not", ...
-                           " implemented, the binary learners having no", ...
-                           " fitted score transform to install."));
-          otherwise
-            error (strcat ("ClassificationECOC: invalid parameter name in", ...
-                           " optional pair arguments."));
-        endswitch
-      endfor
+      ## Validate optional paired arguments.  Asking for no posterior is
+      ## asking for nothing; asking for one is refused.
+      if (! (isempty (FitPosterior)
+             || (isscalar (FitPosterior) && ! FitPosterior)))
+        error (strcat ("ClassificationECOC: 'FitPosterior' is not", ...
+                       " implemented, the binary learners having no", ...
+                       " fitted score transform to install."));
+      endif
+
+      if (! isempty (args))
+        error ("ClassificationECOC: invalid optional paired argument.");
+      endif
 
       ## The learner, as a template or as a name.
       [tmpl, errmsg] = ClassificationECOC.ecocLearnerTemplate (Learners);
@@ -1254,3 +1242,9 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## Asking for no posterior is accepted; asking for one is refused
+%!test
+%! load fisheriris
+%! Mdl = ClassificationECOC (meas, species, 'FitPosterior', false);
+%! assert_equal (class (Mdl), 'ClassificationECOC');

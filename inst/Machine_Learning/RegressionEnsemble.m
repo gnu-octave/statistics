@@ -390,95 +390,88 @@ classdef RegressionEnsemble < PredictiveModel
         caller = 'RegressionEnsemble';
       endif
 
-      Method = 'LSBoost'; NLearn = 100; Learners = 'tree'; LearnRate = [];
-      NPrint = 0; Weights = []; PredictorNames = {}; ResponseName = 'Y';
-      CatPreds = [];
-      ResponseTransform = 'none'; FResample = []; Replace = [];
-      Resample = false;
+      ## Parse optional paired arguments.  'LearnRate', 'FResample' and
+      ## 'Replace' stay empty when not given, which is how the checks below
+      ## tell them apart from a value, and 'Resample' is off.
+      optNames = {'Method', 'NumLearningCycles', 'Learners', 'LearnRate', ...
+                  'NPrint', 'Weights', 'PredictorNames', 'ResponseName', ...
+                  'ResponseTransform', 'FResample', 'Replace', 'Resample', ...
+                  'CategoricalPredictors'};
+      dfValues = {'LSBoost', 100, 'tree', [], 'off', [], {}, 'Y', 'none', ...
+                  [], [], [], []};
+      [Method, NLearn, Learners, LearnRate, NPrint, Weights, ...
+       PredictorNames, ResponseName, ResponseTransform, FResample, ...
+       Replace, Resample, CatPreds, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      for i = 1:2:numel (varargin)
-        name = varargin{i};
-        val = varargin{i+1};
-        if (! ischar (name))
-          error (strcat ("%s: invalid parameter name in optional pair", ...
-                         " arguments."), caller);
+      ## Validate optional paired arguments
+      if (! (ischar (Method) && isrow (Method)))
+        error ("%s: 'Method' must be a character vector.", caller);
+      elseif (strcmpi (Method, 'LSBoost'))
+        Method = 'LSBoost';
+      elseif (strcmpi (Method, 'Bag'))
+        Method = 'Bag';
+      else
+        error ("%s: '%s' is not a valid ensemble method.", caller, Method);
+      endif
+      if (! (isnumeric (NLearn) && isscalar (NLearn) && isreal (NLearn)
+             && NLearn >= 1 && NLearn == fix (NLearn)))
+        error ("%s: 'NumLearningCycles' must be a positive integer.", caller);
+      endif
+      NLearn = double (NLearn);
+      if (! isempty (LearnRate)
+          && ! (isnumeric (LearnRate) && isscalar (LearnRate)
+                && isreal (LearnRate) && LearnRate > 0 && LearnRate <= 1))
+        error (strcat ("%s: 'LearnRate' must be a number greater than 0", ...
+                       " and no greater than 1."), caller);
+      endif
+      LearnRate = double (LearnRate);
+      if (ischar (NPrint) && strcmpi (NPrint, 'off'))
+        NPrint = 0;
+      elseif (isnumeric (NPrint) && isscalar (NPrint) && isreal (NPrint)
+              && NPrint >= 1 && NPrint == fix (NPrint))
+        NPrint = double (NPrint);
+      else
+        error ("%s: 'NPrint' must be a positive integer or 'off'.", caller);
+      endif
+      if (! (ischar (ResponseName) && isrow (ResponseName)))
+        error ("%s: 'ResponseName' must be a character vector.", caller);
+      endif
+      if (! isempty (FResample)
+          && ! (isnumeric (FResample) && isscalar (FResample)
+                && isreal (FResample) && FResample > 0 && FResample <= 1))
+        error (strcat ("%s: 'FResample' must be a number greater than 0", ...
+                       " and no greater than 1."), caller);
+      endif
+      FResample = double (FResample);
+      if (! isempty (Replace))
+        [Replace, ok] = onOff (Replace);
+        if (! ok)
+          error ("%s: 'Replace' must be 'on' or 'off'.", caller);
         endif
-        switch (tolower (name))
-          case 'method'
-            if (! (ischar (val) && isrow (val)))
-              error ("%s: 'Method' must be a character vector.", caller);
-            elseif (strcmpi (val, 'LSBoost'))
-              Method = 'LSBoost';
-            elseif (strcmpi (val, 'Bag'))
-              Method = 'Bag';
-            else
-              error ("%s: '%s' is not a valid ensemble method.", caller, val);
-            endif
-          case 'numlearningcycles'
-            if (! (isnumeric (val) && isscalar (val) && isreal (val)
-                   && val >= 1 && val == fix (val)))
-              error (strcat ("%s: 'NumLearningCycles' must be a positive", ...
-                             " integer."), caller);
-            endif
-            NLearn = double (val);
-          case 'learners'
-            Learners = val;
-          case 'learnrate'
-            if (! (isnumeric (val) && isscalar (val) && isreal (val)
-                   && val > 0 && val <= 1))
-              error (strcat ("%s: 'LearnRate' must be a number greater", ...
-                             " than 0 and no greater than 1."), caller);
-            endif
-            LearnRate = double (val);
-          case 'nprint'
-            if (ischar (val) && strcmpi (val, 'off'))
-              NPrint = 0;
-            elseif (isnumeric (val) && isscalar (val) && isreal (val)
-                    && val >= 1 && val == fix (val))
-              NPrint = double (val);
-            else
-              error ("%s: 'NPrint' must be a positive integer or 'off'.", ...
-                     caller);
-            endif
-          case 'weights'
-            Weights = val;
-          case 'predictornames'
-            PredictorNames = val;
-          case 'responsename'
-            if (! (ischar (val) && isrow (val)))
-              error ("%s: 'ResponseName' must be a character vector.", ...
-                     caller);
-            endif
-            ResponseName = val;
-          case 'responsetransform'
-            ResponseTransform = val;
-          case 'fresample'
-            if (! (isnumeric (val) && isscalar (val) && isreal (val)
-                   && val > 0 && val <= 1))
-              error (strcat ("%s: 'FResample' must be a number greater", ...
-                             " than 0 and no greater than 1."), caller);
-            endif
-            FResample = double (val);
-          case 'replace'
-            [Replace, ok] = onOff (val);
-            if (! ok)
-              error ("%s: 'Replace' must be 'on' or 'off'.", caller);
-            endif
-          case 'resample'
-            [Resample, ok] = onOff (val);
-            if (! ok)
-              error ("%s: 'Resample' must be 'on' or 'off'.", caller);
-            endif
-          case 'categoricalpredictors'
-            CatPreds = val;
-          case {'numbins', 'optimizehyperparameters', ...
-                'hyperparameteroptimizationoptions', 'options'}
-            error ("%s: '%s' is not implemented.", caller, name);
-          otherwise
-            error (strcat ("%s: invalid parameter name in optional pair", ...
-                           " arguments."), caller);
-        endswitch
+      endif
+      if (isempty (Resample))
+        Resample = false;
+      else
+        [Resample, ok] = onOff (Resample);
+        if (! ok)
+          error ("%s: 'Resample' must be 'on' or 'off'.", caller);
+        endif
+      endif
+
+      ## Options MATLAB takes that this class does not implement are named
+      ## one by one, so that asking for one is refused rather than quietly
+      ## doing nothing; anything else left over is unknown.
+      notImpl = {'NumBins', 'OptimizeHyperparameters', ...
+                 'HyperparameterOptimizationOptions', 'Options'};
+      for i = 1:2:numel (args)
+        if (ischar (args{i}) && any (strcmpi (args{i}, notImpl)))
+          error ("%s: '%s' is not implemented.", caller, args{i});
+        endif
       endfor
+      if (! isempty (args))
+        error ("%s: invalid optional paired argument.", caller);
+      endif
 
       if (ischar (Learners) && strcmpi (Learners, 'tree'))
         tmpl = templateTree ();
@@ -1333,9 +1326,9 @@ endfunction
 %!error<RegressionEnsemble: too few input arguments.> RegressionEnsemble (X)
 %!error<RegressionEnsemble: name-value arguments must be in pairs.> ...
 %! RegressionEnsemble (X, y, 'Method')
-%!error<RegressionEnsemble: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionEnsemble: invalid optional paired argument.> ...
 %! RegressionEnsemble (X, y, 'Foo', 1)
-%!error<RegressionEnsemble: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionEnsemble: invalid optional paired argument.> ...
 %! RegressionEnsemble (X, y, 1, 1)
 %!error<RegressionEnsemble: 'Method' must be a character vector.> ...
 %! RegressionEnsemble (X, y, 'Method', 1)
