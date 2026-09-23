@@ -822,356 +822,324 @@ classdef ClassificationGAM < PredictiveModel
       ## Get groups in Y
       [gY, gnY, glY] = grp2idx (Y);
 
-      ## Set default values before parsing optional parameters
-      PredictorNames = {};
-      ResponseName   = [];
-      Formula        = [];
-      Interactions   = [];
-      ClassNames     = [];
-      Prior          = 'empirical';
-      DoF            = ones (1, ndims_X) * 8;
-      Order          = ones (1, ndims_X) * 3;
-      Knots          = ones (1, ndims_X) * 5;
-      LearningRate   = 0.1;
-      NumIterations  = 100;
-      Cost           = [];
-      Weights        = [];
+      ## Parse optional paired arguments
+      optNames = {'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', ...
+                  'CategoricalPredictors', 'Weights', 'Cost', ...
+                  'ScoreTransform', 'Formula', 'Interactions', 'Knots', ...
+                  'Order', 'DoF', 'LearningRate', 'NumIterations', ...
+                  'FitMethod', 'NumTreesPerPredictor', ...
+                  'NumTreesPerInteraction', 'MaxNumSplitsPerPredictor', ...
+                  'MaxNumSplitsPerInteraction', ...
+                  'InitialLearnRateForPredictors', ...
+                  'InitialLearnRateForInteractions', 'Verbose', 'NumPrint', ...
+                  'MaxPValue'};
+      ## An empty default stands for one resolved once the options are
+      ## known, so that giving an option can be told apart from leaving it
+      ## out: 'Knots', 'Order' and 'DoF' are 5, 3 and 8 per predictor, any
+      ## two determining the third; 'LearningRate' is 0.1 and
+      ## 'NumIterations' 100.  The boosted-tree options take MATLAB's own
+      ## defaults, which ModelParameters reports and so are part of the
+      ## surface being matched: 300 and 100 trees, 1 and 4 splits, learning
+      ## rates of 1, a 'MaxPValue' of 1, 'Verbose' 0 and 'NumPrint' 10.
+      ## Every other boosted additive model shrinks far harder than a step of
+      ## 1, scikit-learn, gbm and mboost defaulting to 0.1 and the
+      ## Explainable Boosting Machine to 0.015; the docstring says so rather
+      ## than the default being quietly changed.
+      dfValues = {{}, [], [], 'empirical', [], [], [], [], [], [], [], [], ...
+                  [], [], [], 'boostedtrees', [], [], [], [], [], [], [], ...
+                  [], []};
+      [PredictorNames, ResponseName, ClassNames, Prior, ...
+       CategoricalPredictors, Weights, Cost, STin, Formula, Interactions, ...
+       Knots, Order, DoF, LearningRate, NumIterations, FitMethod, ...
+       NumTreesPerPredictor, NumTreesPerInteraction, ...
+       MaxNumSplitsPerPredictor, MaxNumSplitsPerInteraction, ...
+       InitialLearnRateForPredictors, InitialLearnRateForInteractions, ...
+       Verbose, NumPrint, MaxPValue, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      ## Boosted-tree defaults, MATLAB's own.  They are reported through
-      ## ModelParameters, so they are part of the surface being matched and
-      ## are not ours to improve: every other boosted additive model shrinks
-      ## far harder than a step of 1, scikit-learn, gbm and mboost defaulting
-      ## to 0.1 and the Explainable Boosting Machine to 0.015.  The docstring
-      ## says so rather than the default being quietly changed.
-      FitMethod                       = 'boostedtrees';
-      NumTreesPerPredictor            = 300;
-      NumTreesPerInteraction          = 100;
-      MaxNumSplitsPerPredictor        = 1;
-      MaxNumSplitsPerInteraction      = 4;
-      InitialLearnRateForPredictors   = 1;
-      InitialLearnRateForInteractions = 1;
-      MaxPValue                       = 1;
-      Verbose                         = 0;
-      NumPrint                        = 10;
+      ## Validate optional paired arguments
+      if (! isempty (PredictorNames) && ! iscellstr (PredictorNames))
+        error (strcat ("ClassificationGAM: 'PredictorNames'", ...
+                       " must be supplied as a cellstring array."));
+      elseif (! isempty (PredictorNames)
+              && (numel (PredictorNames) != columns (X)))
+        error (strcat ("ClassificationGAM: 'PredictorNames'", ...
+                       " must equal the number of columns in X."));
+      endif
+      if (! isempty (ResponseName) && ! ischar (ResponseName))
+        error (strcat ("ClassificationGAM: 'ResponseName'", ...
+                       " must be a character vector."));
+      endif
+      if (! isempty (ClassNames) &&
+          ! (iscellstr (ClassNames) || isnumeric (ClassNames)
+             || islogical (ClassNames) || ischar (ClassNames)
+             || isa (ClassNames, 'categorical')
+             || isa (ClassNames, 'string')))
+        error (strcat ("ClassificationGAM: 'ClassNames' must be a", ...
+                       " categorical array, a character array, a", ...
+                       " string array, a logical vector, a numeric", ...
+                       " vector, or a cell array of character", ...
+                       " vectors."));
+      endif
+      if (! isempty (ClassNames))
+        [~, errmsg] = namedClasses (glY, ClassNames);
+        if (! isempty (errmsg))
+          error ("ClassificationGAM: %s", errmsg);
+        endif
+      endif
+      if (! (isstruct (Prior) || isnumeric (Prior) || ischar (Prior)))
+        error (strcat ("ClassificationGAM: 'Prior' must be", ...
+                       " a numeric vector or a string."));
+      endif
+      if (ischar (Prior) && ! any (strcmpi (Prior, {'empirical', 'uniform'})))
+        error (strcat ("ClassificationGAM: 'Prior' must be", ...
+                       " 'empirical', 'uniform', or a numeric vector."));
+      endif
+      if (isnumeric (Prior) && numel (Prior) != 2 && ! isstruct (Prior))
+        error ("ClassificationGAM: 'Prior' must be a 2-element vector.");
+      endif
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isreal (Weights)
+             && isvector (Weights)))
+        error ("ClassificationGAM: 'Weights' must be a numeric vector.");
+      endif
+      if (! isempty (Weights) && numel (Weights) != rows (X))
+        error (strcat ("ClassificationGAM: 'Weights' must have one", ...
+                       " element per row of X."));
+      endif
+      if (! isempty (Weights)
+          && (any (Weights(:) < 0) || ! all (isfinite (Weights(:)))))
+        error (strcat ("ClassificationGAM: 'Weights' must hold", ...
+                       " finite non-negative values."));
+      endif
+      ## A struct carrying its own class order is a cost too,
+      ## and is resolved by the property's own set method.
+      if (! isempty (Cost) &&
+          ! (isstruct (Cost)
+             || (isnumeric (Cost) && issquare (Cost))))
+        error (strcat ("ClassificationGAM: 'Cost' must be", ...
+                       " a numeric square matrix."));
+      endif
+      if (! isempty (Formula) && ! ischar (Formula) && ! islogical (Formula))
+        error ("ClassificationGAM: 'Formula' must be a string.");
+      endif
+      if (! isempty (Interactions) &&
+          ! ((isnumeric (Interactions) && isscalar (Interactions)
+              && Interactions == fix (Interactions) && Interactions >= 0)
+             || islogical (Interactions)
+             || (ischar (Interactions) && strcmpi (Interactions, 'all'))))
+        error ("ClassificationGAM: invalid 'Interactions' parameter.");
+      endif
+      if (! isempty (Knots)
+          && (! isnumeric (Knots) || ! (isscalar (Knots) ||
+              isequal (size (Knots), [1, ndims_X]))))
+        error ("ClassificationGAM: invalid value for 'Knots'.");
+      endif
+      if (! isempty (Order)
+          && (! isnumeric (Order) || ! (isscalar (Order) ||
+              isequal (size (Order), [1, ndims_X]))))
+        error ("ClassificationGAM: invalid value for 'Order'.");
+      endif
+      if (! isempty (DoF)
+          && (! isnumeric (DoF) ||
+              ! (isscalar (DoF) || isequal (size (DoF), [1, ndims_X]))))
+        error ("ClassificationGAM: invalid value for 'DoF'.");
+      endif
+      if (! isempty (LearningRate) && (LearningRate > 1 || LearningRate <= 0))
+        error (strcat ("ClassificationGAM: 'LearningRate'", ...
+                       " must be between 0 and 1."));
+      endif
+      if (! isempty (NumIterations)
+          && (! isnumeric (NumIterations) || NumIterations <= 0))
+        error (strcat ("ClassificationGAM: 'NumIterations'", ...
+                       " must be a positive integer value."));
+      endif
+      if (! (ischar (FitMethod) && isrow (FitMethod)) ||
+          ! any (strcmpi (FitMethod, {'boostedtrees', 'splines'})))
+        error (strcat ("ClassificationGAM: 'FitMethod' must be", ...
+                       " 'boostedtrees' or 'splines'."));
+      endif
+      FitMethod = tolower (FitMethod);
+      if (! isempty (NumTreesPerPredictor)
+          && (! isnumeric (NumTreesPerPredictor) ||
+              ! isscalar (NumTreesPerPredictor) ||
+              NumTreesPerPredictor < 1 ||
+              fix (NumTreesPerPredictor) != NumTreesPerPredictor))
+        error (strcat ("ClassificationGAM:", ...
+                       " 'NumTreesPerPredictor' must be a positive", ...
+                       " integer value."));
+      endif
+      if (! isempty (NumTreesPerInteraction)
+          && (! isnumeric (NumTreesPerInteraction) ||
+              ! isscalar (NumTreesPerInteraction) ||
+              NumTreesPerInteraction < 1 ||
+              fix (NumTreesPerInteraction) != NumTreesPerInteraction))
+        error (strcat ("ClassificationGAM:", ...
+                       " 'NumTreesPerInteraction' must be a", ...
+                       " positive integer value."));
+      endif
+      if (! isempty (MaxNumSplitsPerPredictor)
+          && (! isnumeric (MaxNumSplitsPerPredictor) ||
+              ! isscalar (MaxNumSplitsPerPredictor) ||
+              MaxNumSplitsPerPredictor < 1 ||
+              fix (MaxNumSplitsPerPredictor) != MaxNumSplitsPerPredictor))
+        error (strcat ("ClassificationGAM:", ...
+                       " 'MaxNumSplitsPerPredictor' must be a", ...
+                       " positive integer value."));
+      endif
+      if (! isempty (MaxNumSplitsPerInteraction)
+          && (! isnumeric (MaxNumSplitsPerInteraction) ||
+              ! isscalar (MaxNumSplitsPerInteraction) ||
+              MaxNumSplitsPerInteraction < 1 ||
+              fix (MaxNumSplitsPerInteraction) != MaxNumSplitsPerInteraction))
+        error (strcat ("ClassificationGAM:", ...
+                       " 'MaxNumSplitsPerInteraction' must be a", ...
+                       " positive integer value."));
+      endif
+      if (! isempty (InitialLearnRateForPredictors)
+          && (! isnumeric (InitialLearnRateForPredictors) ||
+              ! isscalar (InitialLearnRateForPredictors) ||
+              InitialLearnRateForPredictors <= 0 ||
+              InitialLearnRateForPredictors > 1))
+        error (strcat ("ClassificationGAM:", ...
+                       " 'InitialLearnRateForPredictors' must be", ...
+                       " greater than 0 and at most 1."));
+      endif
+      if (! isempty (InitialLearnRateForInteractions)
+          && (! isnumeric (InitialLearnRateForInteractions) ||
+              ! isscalar (InitialLearnRateForInteractions) ||
+              InitialLearnRateForInteractions <= 0 ||
+              InitialLearnRateForInteractions > 1))
+        error (strcat ("ClassificationGAM:", ...
+                       " 'InitialLearnRateForInteractions' must be", ...
+                       " greater than 0 and at most 1."));
+      endif
+      if (! isempty (Verbose)
+          && (! isnumeric (Verbose) || ! isscalar (Verbose) || Verbose < 0
+              || fix (Verbose) != Verbose))
+        error (strcat ("ClassificationGAM: 'Verbose' must be a", ...
+                       " non-negative integer value."));
+      endif
+      if (! isempty (NumPrint)
+          && (! isnumeric (NumPrint) || ! isscalar (NumPrint)
+              || NumPrint < 1 || fix (NumPrint) != NumPrint))
+        error (strcat ("ClassificationGAM: 'NumPrint' must be a", ...
+                       " positive integer value."));
+      endif
+      if (! isempty (MaxPValue)
+          && (! isnumeric (MaxPValue) || ! isscalar (MaxPValue) ||
+              MaxPValue < 0 || MaxPValue > 1))
+        error (strcat ("ClassificationGAM: 'MaxPValue' must be", ...
+                       " between 0 and 1."));
+      endif
 
-      ## Every name the caller asked for, so an argument meant for the other
-      ## engine is refused instead of quietly doing nothing.
-      namesGiven = {};
+      if (! isempty (STin))
+        this.ScoreTransform = STin;
+      endif
 
-      ## Number of parameters for Knots, DoF, Order (maximum 2 allowed)
-      KOD = 0;
-      ## Number of parameters for Formula, Interactions (maximum 1 allowed)
-      F_I = 0;
-
-      ## Parse extra parameters
-      CategoricalPredictors = [];
-      while (numel (varargin) > 0)
-        namesGiven{end+1} = tolower (varargin{1});
-        switch (tolower (varargin {1}))
-
-          case 'predictornames'
-            PredictorNames = varargin{2};
-            if (! iscellstr (PredictorNames))
-              error (strcat ("ClassificationGAM: 'PredictorNames'", ...
-                             " must be supplied as a cellstring array."));
-            elseif (numel (PredictorNames) != columns (X))
-              error (strcat ("ClassificationGAM: 'PredictorNames'", ...
-                             " must equal the number of columns in X."));
-            endif
-
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! ischar (ResponseName))
-              error (strcat ("ClassificationGAM: 'ResponseName'", ...
-                             " must be a character vector."));
-            endif
-
-          case 'classnames'
-            ClassNames = varargin{2};
-            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
-                   || islogical (ClassNames) || ischar (ClassNames)
-                   || isa (ClassNames, 'categorical')
-                   || isa (ClassNames, 'string')))
-              error (strcat ("ClassificationGAM: 'ClassNames' must be a", ...
-                             " categorical array, a character array, a", ...
-                             " string array, a logical vector, a numeric", ...
-                             " vector, or a cell array of character", ...
-                             " vectors."));
-            endif
-            [~, errmsg] = namedClasses (glY, ClassNames);
-            if (! isempty (errmsg))
-              error ("ClassificationGAM: %s", errmsg);
-            endif
-
-          case 'prior'
-            Prior = varargin{2};
-            if (! (isstruct (Prior) || isnumeric (Prior) || ischar (Prior)))
-              error (strcat ("ClassificationGAM: 'Prior' must be", ...
-                             " a numeric vector or a string."));
-            endif
-            if (ischar (Prior) && ! any (strcmpi (Prior, {'empirical', 'uniform'})))
-              error (strcat ("ClassificationGAM: 'Prior' must be", ...
-                             " 'empirical', 'uniform', or a numeric vector."));
-            endif
-            if (isnumeric (Prior) && numel (Prior) != 2 && ! isstruct (Prior))
-              error ("ClassificationGAM: 'Prior' must be a 2-element vector.");
-            endif
-
-          case 'categoricalpredictors'
-            CategoricalPredictors = varargin{2};
-
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isreal (Weights)
-                   && isvector (Weights)))
-              error ("ClassificationGAM: 'Weights' must be a numeric vector.");
-            endif
-            if (numel (Weights) != rows (X))
-              error (strcat ("ClassificationGAM: 'Weights' must have one", ...
-                             " element per row of X."));
-            endif
-            if (any (Weights(:) < 0) || ! all (isfinite (Weights(:))))
-              error (strcat ("ClassificationGAM: 'Weights' must hold", ...
-                             " finite non-negative values."));
-            endif
-
-          case 'cost'
-            Cost = varargin{2};
-            ## A struct carrying its own class order is a cost too,
-            ## and is resolved by the property's own set method.
-            if (! (isstruct (Cost)
-                   || (isnumeric (Cost) && issquare (Cost))))
-              error (strcat ("ClassificationGAM: 'Cost' must be", ...
-                             " a numeric square matrix."));
-            endif
-
-          case 'scoretransform'
-            name = 'ClassificationGAM';
-            this.ScoreTransform = varargin{2};
-
-          case 'formula'
-            if (F_I < 1)
-              Formula = varargin{2};
-              if (! ischar (Formula) && ! islogical (Formula))
-                error ("ClassificationGAM: 'Formula' must be a string.");
-              endif
-              F_I += 1;
-            else
-              error (strcat ("ClassificationGAM: 'Interactions'", ...
-                             " have already been defined."));
-            endif
-
-          case 'interactions'
-            if (F_I < 1)
-              tmp = varargin{2};
-              if (isnumeric (tmp) && isscalar (tmp)
-                                  && tmp == fix (tmp) && tmp >= 0)
-                Interactions = tmp;
-              elseif (islogical (tmp))
-                Interactions = tmp;
-              elseif (ischar (tmp) && strcmpi (tmp, 'all'))
-                Interactions = tmp;
-              else
-                error ("ClassificationGAM: invalid 'Interactions' parameter.");
-              endif
-              F_I += 1;
-            else
-              error ("ClassificationGAM: 'Formula' has already been defined.");
-            endif
-
-          case 'knots'
-            if (KOD < 2)
-              Knots = varargin{2};
-              if (! isnumeric (Knots) || ! (isscalar (Knots) ||
-                  isequal (size (Knots), [1, ndims_X])))
-                error ("ClassificationGAM: invalid value for 'Knots'.");
-              endif
-              DoF = Knots + Order;
-              Order = DoF - Knots;
-              KOD += 1;
-            else
-              error (strcat ("ClassificationGAM: 'DoF' and 'Order'", ...
-                             " have been set already."));
-            endif
-
-          case 'order'
-            if (KOD < 2)
-              Order = varargin{2};
-              if (! isnumeric (Order) || ! (isscalar (Order) ||
-                  isequal (size (Order), [1, ndims_X])))
-                error ("ClassificationGAM: invalid value for 'Order'.");
-              endif
-              DoF = Knots + Order;
-              Knots = DoF - Order;
-              KOD += 1;
-            else
-              error (strcat ("ClassificationGAM: 'DoF' and 'Knots'", ...
-                             " have been set already."));
-            endif
-
-          case 'dof'
-            if (KOD < 2)
-              DoF = varargin{2};
-              if (! isnumeric (DoF) ||
-                  ! (isscalar (DoF) || isequal (size (DoF), [1, ndims_X])))
-                error ("ClassificationGAM: invalid value for 'DoF'.");
-              endif
-              Knots = DoF - Order;
-              Order = DoF - Knots;
-              KOD += 1;
-            else
-              error (strcat ("ClassificationGAM: 'Knots' and 'Order'", ...
-                             " have been set already."));
-            endif
-
-          case 'learningrate'
-            LearningRate = varargin{2};
-            if (LearningRate > 1 || LearningRate <= 0)
-              error (strcat ("ClassificationGAM: 'LearningRate'", ...
-                             " must be between 0 and 1."));
-            endif
-
-          case 'numiterations'
-            NumIterations = varargin{2};
-            if (! isnumeric (NumIterations) || NumIterations <= 0)
-              error (strcat ("ClassificationGAM: 'NumIterations'", ...
-                             " must be a positive integer value."));
-            endif
-
-          case 'fitmethod'
-            FitMethod = varargin{2};
-            if (! (ischar (FitMethod) && isrow (FitMethod)) ||
-                ! any (strcmpi (FitMethod, {'boostedtrees', 'splines'})))
-              error (strcat ("ClassificationGAM: 'FitMethod' must be", ...
-                             " 'boostedtrees' or 'splines'."));
-            endif
-            FitMethod = tolower (FitMethod);
-
-          case 'numtreesperpredictor'
-            NumTreesPerPredictor = varargin{2};
-            if (! isnumeric (NumTreesPerPredictor) ||
-                ! isscalar (NumTreesPerPredictor) ||
-                NumTreesPerPredictor < 1 ||
-                fix (NumTreesPerPredictor) != NumTreesPerPredictor)
-              error (strcat ("ClassificationGAM:", ...
-                             " 'NumTreesPerPredictor' must be a positive", ...
-                             " integer value."));
-            endif
-
-          case 'numtreesperinteraction'
-            NumTreesPerInteraction = varargin{2};
-            if (! isnumeric (NumTreesPerInteraction) ||
-                ! isscalar (NumTreesPerInteraction) ||
-                NumTreesPerInteraction < 1 ||
-                fix (NumTreesPerInteraction) != NumTreesPerInteraction)
-              error (strcat ("ClassificationGAM:", ...
-                             " 'NumTreesPerInteraction' must be a", ...
-                             " positive integer value."));
-            endif
-
-          case 'maxnumsplitsperpredictor'
-            MaxNumSplitsPerPredictor = varargin{2};
-            if (! isnumeric (MaxNumSplitsPerPredictor) ||
-                ! isscalar (MaxNumSplitsPerPredictor) ||
-                MaxNumSplitsPerPredictor < 1 ||
-                fix (MaxNumSplitsPerPredictor) != MaxNumSplitsPerPredictor)
-              error (strcat ("ClassificationGAM:", ...
-                             " 'MaxNumSplitsPerPredictor' must be a", ...
-                             " positive integer value."));
-            endif
-
-          case 'maxnumsplitsperinteraction'
-            MaxNumSplitsPerInteraction = varargin{2};
-            if (! isnumeric (MaxNumSplitsPerInteraction) ||
-                ! isscalar (MaxNumSplitsPerInteraction) ||
-                MaxNumSplitsPerInteraction < 1 ||
-                fix (MaxNumSplitsPerInteraction) != MaxNumSplitsPerInteraction)
-              error (strcat ("ClassificationGAM:", ...
-                             " 'MaxNumSplitsPerInteraction' must be a", ...
-                             " positive integer value."));
-            endif
-
-          case 'initiallearnrateforpredictors'
-            InitialLearnRateForPredictors = varargin{2};
-            if (! isnumeric (InitialLearnRateForPredictors) ||
-                ! isscalar (InitialLearnRateForPredictors) ||
-                InitialLearnRateForPredictors <= 0 ||
-                InitialLearnRateForPredictors > 1)
-              error (strcat ("ClassificationGAM:", ...
-                             " 'InitialLearnRateForPredictors' must be", ...
-                             " greater than 0 and at most 1."));
-            endif
-
-          case 'initiallearnrateforinteractions'
-            InitialLearnRateForInteractions = varargin{2};
-            if (! isnumeric (InitialLearnRateForInteractions) ||
-                ! isscalar (InitialLearnRateForInteractions) ||
-                InitialLearnRateForInteractions <= 0 ||
-                InitialLearnRateForInteractions > 1)
-              error (strcat ("ClassificationGAM:", ...
-                             " 'InitialLearnRateForInteractions' must be", ...
-                             " greater than 0 and at most 1."));
-            endif
-
-          case 'verbose'
-            Verbose = varargin{2};
-            if (! isnumeric (Verbose) || ! isscalar (Verbose) || Verbose < 0
-                || fix (Verbose) != Verbose)
-              error (strcat ("ClassificationGAM: 'Verbose' must be a", ...
-                             " non-negative integer value."));
-            endif
-
-          case 'numprint'
-            NumPrint = varargin{2};
-            if (! isnumeric (NumPrint) || ! isscalar (NumPrint)
-                || NumPrint < 1 || fix (NumPrint) != NumPrint)
-              error (strcat ("ClassificationGAM: 'NumPrint' must be a", ...
-                             " positive integer value."));
-            endif
-
-          case 'maxpvalue'
-            MaxPValue = varargin{2};
-            if (! isnumeric (MaxPValue) || ! isscalar (MaxPValue) ||
-                MaxPValue < 0 || MaxPValue > 1)
-              error (strcat ("ClassificationGAM: 'MaxPValue' must be", ...
-                             " between 0 and 1."));
-            endif
-
-          otherwise
-            error (strcat ("ClassificationGAM: invalid parameter", ...
-                           " name in optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("ClassificationGAM: invalid optional paired argument.");
+      endif
 
       ## An argument belongs to one engine or the other, and asking for one
       ## the chosen engine cannot honour is refused rather than ignored.  The
       ## alternative is the trap MATLAB sets with a name it accepts and never
       ## reads: the caller gets a fit that quietly disregarded what it asked
       ## for.
-      splineOnly = {'knots', 'order', 'dof', 'formula', ...
-                    'learningrate', 'numiterations'};
-      treeOnly = {'numtreesperpredictor', 'numtreesperinteraction', ...
-                  'maxnumsplitsperpredictor', 'maxnumsplitsperinteraction', ...
+      ## An option was given when it is not empty, its default being filled
+      ## in below.
+      splineOnly = {'knots', Knots; 'order', Order; 'dof', DoF; ...
+                    'formula', Formula; 'learningrate', LearningRate; ...
+                    'numiterations', NumIterations};
+      treeOnly = {'numtreesperpredictor', NumTreesPerPredictor; ...
+                  'numtreesperinteraction', NumTreesPerInteraction; ...
+                  'maxnumsplitsperpredictor', MaxNumSplitsPerPredictor; ...
+                  'maxnumsplitsperinteraction', MaxNumSplitsPerInteraction; ...
                   'initiallearnrateforpredictors', ...
-                  'initiallearnrateforinteractions', 'maxpvalue', ...
-                  'verbose', 'numprint', 'weights', ...
-                  'categoricalpredictors'};
+                  InitialLearnRateForPredictors; ...
+                  'initiallearnrateforinteractions', ...
+                  InitialLearnRateForInteractions; ...
+                  'maxpvalue', MaxPValue; 'verbose', Verbose; ...
+                  'numprint', NumPrint; 'weights', Weights; ...
+                  'categoricalpredictors', CategoricalPredictors};
       if (strcmp (FitMethod, 'boostedtrees'))
-        clash = intersect (namesGiven, splineOnly);
+        clash = splineOnly(! cellfun (@isempty, splineOnly(:,2)), 1);
         if (! isempty (clash))
           error (strcat ("ClassificationGAM: '", clash{1}, "' is a", ...
                          " parameter of the spline engine and cannot be", ...
                          " used with 'FitMethod' 'boostedtrees'."));
         endif
       else
-        clash = intersect (namesGiven, treeOnly);
+        clash = treeOnly(! cellfun (@isempty, treeOnly(:,2)), 1);
         if (! isempty (clash))
           error (strcat ("ClassificationGAM: '", clash{1}, "' is a", ...
                          " parameter of the boosted-tree engine and cannot", ...
                          " be used with 'FitMethod' 'splines'."));
         endif
+      endif
+
+      ## A model is described either by a formula or by its interactions
+      if (! isempty (Formula) && ! isempty (Interactions))
+        error (strcat ("ClassificationGAM: 'Formula' and 'Interactions'", ...
+                       " cannot be given together."));
+      endif
+
+      ## Any two of 'Knots', 'Order' and 'DoF' determine the third, DoF being
+      ## Knots plus Order; one given alone keeps the default of another.
+      if (! isempty (Knots) && ! isempty (Order) && ! isempty (DoF))
+        error (strcat ("ClassificationGAM: at most two of 'Knots',", ...
+                       " 'Order' and 'DoF' may be given."));
+      endif
+      if (isempty (DoF))
+        if (isempty (Knots))
+          Knots = ones (1, ndims_X) * 5;
+        endif
+        if (isempty (Order))
+          Order = ones (1, ndims_X) * 3;
+        endif
+        DoF = Knots + Order;
+      elseif (isempty (Knots))
+        if (isempty (Order))
+          Order = ones (1, ndims_X) * 3;
+        endif
+        Knots = DoF - Order;
+      else
+        Order = DoF - Knots;
+      endif
+
+      ## The defaults of the remaining engine options
+      if (isempty (LearningRate))
+        LearningRate = 0.1;
+      endif
+      if (isempty (NumIterations))
+        NumIterations = 100;
+      endif
+      if (isempty (NumTreesPerPredictor))
+        NumTreesPerPredictor = 300;
+      endif
+      if (isempty (NumTreesPerInteraction))
+        NumTreesPerInteraction = 100;
+      endif
+      if (isempty (MaxNumSplitsPerPredictor))
+        MaxNumSplitsPerPredictor = 1;
+      endif
+      if (isempty (MaxNumSplitsPerInteraction))
+        MaxNumSplitsPerInteraction = 4;
+      endif
+      if (isempty (InitialLearnRateForPredictors))
+        InitialLearnRateForPredictors = 1;
+      endif
+      if (isempty (InitialLearnRateForInteractions))
+        InitialLearnRateForInteractions = 1;
+      endif
+      if (isempty (MaxPValue))
+        MaxPValue = 1;
+      endif
+      if (isempty (Verbose))
+        Verbose = 0;
+      endif
+      if (isempty (NumPrint))
+        NumPrint = 10;
       endif
 
       ## Generate default predictors and response variable names (if necessary)
@@ -1359,7 +1327,7 @@ classdef ClassificationGAM < PredictiveModel
         this.Intercept            = intercept;
 
         ## Handle interaction terms (if given)
-        if (F_I > 0)
+        if (! isempty (Formula) || ! isempty (Interactions))
           this = this.fitModelwInt (X, Y, Inter, Knots, Order, DoF, ...
                                     LearningRate, NumIterations);
         endif
@@ -4238,3 +4206,25 @@ endfunction
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## Any two of 'Knots', 'Order' and 'DoF' determine the third, whichever
+## order they are given in
+%!test
+%! load fisheriris
+%! X = meas(51:150,1);
+%! Y = species(51:150);
+%! M = fitcgam (X, Y, 'FitMethod', 'splines', 'Knots', 5, 'DoF', 9);
+%! assert_equal ([M.Knots, M.Order, M.DoF], [5, 4, 9]);
+%! M = fitcgam (X, Y, 'FitMethod', 'splines', 'DoF', 9, 'Knots', 5);
+%! assert_equal ([M.Knots, M.Order, M.DoF], [5, 4, 9]);
+%! M = fitcgam (X, Y, 'FitMethod', 'splines', 'Order', 2, 'DoF', 9);
+%! assert_equal ([M.Knots, M.Order, M.DoF], [7, 2, 9]);
+%!error<ClassificationGAM: at most two of 'Knots', 'Order' and 'DoF' may be given.> ...
+%! ClassificationGAM (ones (10,2), [ones(5,1); zeros(5,1)], ...
+%!                    'FitMethod', 'splines', 'Knots', 5, 'Order', 3, 'DoF', 8)
+%!error<ClassificationGAM: 'Formula' and 'Interactions' cannot be given together.> ...
+%! ClassificationGAM (ones (10,2), [ones(5,1); zeros(5,1)], ...
+%!                    'FitMethod', 'splines', 'Interactions', 1, ...
+%!                    'Formula', 'Y ~ x1 + x2')
+%!error<ClassificationGAM: invalid optional paired argument.> ...
+%! ClassificationGAM (ones (10,2), [ones(5,1); zeros(5,1)], 'Bogus', 1)

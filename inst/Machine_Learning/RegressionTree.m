@@ -756,6 +756,8 @@ classdef RegressionTree < PredictiveModel
         error (strcat ("RegressionTree: 'QuadraticErrorTolerance' must be", ...
                        " a positive scalar."));
       endif
+      ## A regression tree has one criterion either way, so the two names are
+      ## taken and checked rather than refused outright.
       if (! (ischar (SplitCrit) && strcmpi (SplitCrit, 'mse')))
         error (strcat ("RegressionTree: 'SplitCriterion' must be 'mse' for", ...
                        " a regression tree."));

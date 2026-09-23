@@ -50,7 +50,7 @@ classdef RegressionGAM < PredictiveModel
 ## @multitable @columnfractions 0.2 0.75
 ## @headitem @var{Name} @tab @var{Value}
 ##
-## @item @qcode{'predictors'} @tab Predictor Variable names, specified as
+## @item @qcode{'Predictors'} @tab Predictor Variable names, specified as
 ## a row vector cell of strings with the same length as the columns in @var{X}.
 ## If omitted, the program will generate default variable names
 ## @qcode{(x1, x2, ..., xn)} for each column in @var{X}.
@@ -647,293 +647,277 @@ classdef RegressionGAM < PredictiveModel
         error ("RegressionGAM: number of rows in X and Y must be equal.");
       endif
 
-      ## Set default values before parsing optional parameters
-      PredictorNames = {};                    # Predictor variable names
-      ResponseName   = [];                    # Response variable name
-      Formula        = [];                    # Formula for GAM model
-      Interactions   = [];                    # Interaction terms
-      DoF            = ones (1, ndims_X) * 8; # Degrees of freedom
-      Order          = ones (1, ndims_X) * 3; # Order of spline
-      Knots          = ones (1, ndims_X) * 5; # Knots
-      Tol            = 1e-3;                  # Tolerance for convergence
-      ResponseTransform = 'none';             # Name of the transform
-      RTfun             = @(y) y;             # and the callable it names
-      Weights           = [];                 # Observation weights
+      ## The response transform and the callable it names, unless one is
+      ## given below
+      ResponseTransform = 'none';
+      RTfun             = @(y) y;
 
-      ## Boosted-tree defaults, MATLAB's own.  They are reported through
-      ## ModelParameters, so they are part of the surface being matched and
-      ## are not ours to improve.
-      FitMethod                       = 'boostedtrees';
-      NumTreesPerPredictor            = 300;
-      NumTreesPerInteraction          = 100;
-      MaxNumSplitsPerPredictor        = 1;
-      MaxNumSplitsPerInteraction      = 4;
-      InitialLearnRateForPredictors   = 1;
-      InitialLearnRateForInteractions = 1;
-      MaxPValue                       = 1;
-      Verbose                         = 0;
-      NumPrint                        = 10;
+      ## Parse optional paired arguments
+      optNames = {'PredictorNames', 'predictors', 'ResponseTransform', ...
+                  'ResponseName', 'Formula', 'Interactions', 'Knots', ...
+                  'Order', 'DoF', 'Tol', 'FitMethod', ...
+                  'NumTreesPerPredictor', 'NumTreesPerInteraction', ...
+                  'MaxNumSplitsPerPredictor', 'MaxNumSplitsPerInteraction', ...
+                  'InitialLearnRateForPredictors', ...
+                  'InitialLearnRateForInteractions', ...
+                  'CategoricalPredictors', 'Weights', 'Verbose', 'NumPrint', ...
+                  'MaxPValue'};
+      ## An empty default stands for one resolved once the options are
+      ## known, so that giving an option can be told apart from leaving it
+      ## out: 'Knots', 'Order' and 'DoF' are 5, 3 and 8 per predictor, any
+      ## two determining the third, and 'Tol' is 1e-3.  The boosted-tree
+      ## options take MATLAB's own defaults, which ModelParameters reports and
+      ## so are part of the surface being matched and not ours to improve:
+      ## 300 and 100 trees, 1 and 4 splits, learning rates of 1, a
+      ## 'MaxPValue' of 1, 'Verbose' 0 and 'NumPrint' 10.
+      dfValues = {{}, [], [], [], [], [], [], [], [], [], 'boostedtrees', ...
+                  [], [], [], [], [], [], [], [], [], [], []};
+      [PredictorNames, PredictorsIn, RTin, ResponseName, Formula, ...
+       Interactions, Knots, Order, DoF, Tol, FitMethod, ...
+       NumTreesPerPredictor, NumTreesPerInteraction, ...
+       MaxNumSplitsPerPredictor, MaxNumSplitsPerInteraction, ...
+       InitialLearnRateForPredictors, InitialLearnRateForInteractions, ...
+       CategoricalPredictors, Weights, Verbose, NumPrint, MaxPValue, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      ## Every name the caller asked for, so an argument meant for the other
-      ## engine is refused instead of quietly doing nothing.
-      namesGiven = {};
+      ## Validate optional paired arguments
+      if (! isempty (ResponseName) && ! ischar (ResponseName))
+        error ("RegressionGAM: ResponseName must be a char string.");
+      endif
+      if (! isempty (Formula) && ! ischar (Formula) && ! islogical (Formula))
+        error ("RegressionGAM: Formula must be a string.");
+      endif
+      if (! isempty (Interactions) &&
+          ! ((isnumeric (Interactions) && isscalar (Interactions)
+              && Interactions == fix (Interactions) && Interactions >= 0)
+             || islogical (Interactions)
+             || (ischar (Interactions) && strcmpi (Interactions, 'all'))))
+        error ("RegressionGAM: invalid Interactions parameter.");
+      endif
+      if (! isempty (Knots)
+          && (! isnumeric (Knots) || ! (isscalar (Knots) ||
+              isequal (size (Knots), [1, ndims_X]))))
+        error ("RegressionGAM: invalid value for Knots.");
+      endif
+      if (! isempty (Order)
+          && (! isnumeric (Order) || ! (isscalar (Order) ||
+              isequal (size (Order), [1, ndims_X]))))
+        error ("RegressionGAM: invalid value for Order.");
+      endif
+      if (! isempty (DoF)
+          && (! isnumeric (DoF) ||
+              ! (isscalar (DoF) || isequal (size (DoF), [1, ndims_X]))))
+        error ("RegressionGAM: invalid value for DoF.");
+      endif
+      if (! isempty (Tol) &&
+          ! (isnumeric (Tol) && isscalar (Tol) && (Tol > 0)))
+        error ("RegressionGAM: Tolerance must be a Positive scalar.");
+      endif
+      if (! (ischar (FitMethod) && isrow (FitMethod)) ||
+          ! any (strcmpi (FitMethod, {'boostedtrees', 'splines'})))
+        error (strcat ("RegressionGAM: 'FitMethod' must be", ...
+                       " 'boostedtrees' or 'splines'."));
+      endif
+      FitMethod = tolower (FitMethod);
+      if (! isempty (NumTreesPerPredictor)
+          && (! isnumeric (NumTreesPerPredictor) ||
+              ! isscalar (NumTreesPerPredictor) ||
+              NumTreesPerPredictor < 1 ||
+              fix (NumTreesPerPredictor) != NumTreesPerPredictor))
+        error (strcat ("RegressionGAM: 'NumTreesPerPredictor'", ...
+                       " must be a positive integer value."));
+      endif
+      if (! isempty (NumTreesPerInteraction)
+          && (! isnumeric (NumTreesPerInteraction) ||
+              ! isscalar (NumTreesPerInteraction) ||
+              NumTreesPerInteraction < 1 ||
+              fix (NumTreesPerInteraction) != NumTreesPerInteraction))
+        error (strcat ("RegressionGAM: 'NumTreesPerInteraction'", ...
+                       " must be a positive integer value."));
+      endif
+      if (! isempty (MaxNumSplitsPerPredictor)
+          && (! isnumeric (MaxNumSplitsPerPredictor) ||
+              ! isscalar (MaxNumSplitsPerPredictor) ||
+              MaxNumSplitsPerPredictor < 1 ||
+              fix (MaxNumSplitsPerPredictor) != MaxNumSplitsPerPredictor))
+        error (strcat ("RegressionGAM:", ...
+                       " 'MaxNumSplitsPerPredictor' must be a", ...
+                       " positive integer value."));
+      endif
+      if (! isempty (MaxNumSplitsPerInteraction)
+          && (! isnumeric (MaxNumSplitsPerInteraction) ||
+              ! isscalar (MaxNumSplitsPerInteraction) ||
+              MaxNumSplitsPerInteraction < 1 ||
+              fix (MaxNumSplitsPerInteraction) != MaxNumSplitsPerInteraction))
+        error (strcat ("RegressionGAM:", ...
+                       " 'MaxNumSplitsPerInteraction' must be a", ...
+                       " positive integer value."));
+      endif
+      if (! isempty (InitialLearnRateForPredictors)
+          && (! isnumeric (InitialLearnRateForPredictors) ||
+              ! isscalar (InitialLearnRateForPredictors) ||
+              InitialLearnRateForPredictors <= 0 ||
+              InitialLearnRateForPredictors > 1))
+        error (strcat ("RegressionGAM:", ...
+                       " 'InitialLearnRateForPredictors' must be", ...
+                       " greater than 0 and at most 1."));
+      endif
+      if (! isempty (InitialLearnRateForInteractions)
+          && (! isnumeric (InitialLearnRateForInteractions) ||
+              ! isscalar (InitialLearnRateForInteractions) ||
+              InitialLearnRateForInteractions <= 0 ||
+              InitialLearnRateForInteractions > 1))
+        error (strcat ("RegressionGAM:", ...
+                       " 'InitialLearnRateForInteractions' must be", ...
+                       " greater than 0 and at most 1."));
+      endif
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isreal (Weights)
+             && isvector (Weights)))
+        error ("RegressionGAM: 'Weights' must be a numeric vector.");
+      endif
+      if (! isempty (Weights) && numel (Weights) != rows (X))
+        error (strcat ("RegressionGAM: 'Weights' must have one", ...
+                       " element per row of X."));
+      endif
+      if (! isempty (Weights)
+          && (any (Weights(:) < 0) || ! all (isfinite (Weights(:)))))
+        error (strcat ("RegressionGAM: 'Weights' must hold", ...
+                       " finite non-negative values."));
+      endif
+      if (! isempty (Verbose)
+          && (! isnumeric (Verbose) || ! isscalar (Verbose) || Verbose < 0
+              || fix (Verbose) != Verbose))
+        error (strcat ("RegressionGAM: 'Verbose' must be a", ...
+                       " non-negative integer value."));
+      endif
+      if (! isempty (NumPrint)
+          && (! isnumeric (NumPrint) || ! isscalar (NumPrint)
+              || NumPrint < 1 || fix (NumPrint) != NumPrint))
+        error (strcat ("RegressionGAM: 'NumPrint' must be a positive", ...
+                       " integer value."));
+      endif
+      if (! isempty (MaxPValue)
+          && (! isnumeric (MaxPValue) || ! isscalar (MaxPValue) ||
+              MaxPValue < 0 || MaxPValue > 1))
+        error (strcat ("RegressionGAM: 'MaxPValue' must be", ...
+                       " between 0 and 1."));
+      endif
 
-      ## Number of parameters for Knots, DoF, Order (maximum 2 allowed)
-      KOD = 0;
-      ## Number of parameters for Formula, Interactions (maximum 1 allowed)
-      F_I = 0;
+      ## 'Predictors' is another name for 'PredictorNames'
+      if (isempty (PredictorNames))
+        PredictorNames = PredictorsIn;
+      endif
+      if (! isempty (PredictorNames))
+        if (! iscellstr (PredictorNames))
+          error (strcat ("RegressionGAM: PredictorNames must be a", ...
+                         " cellstring array."));
+        elseif (columns (PredictorNames) != columns (X))
+          error (strcat ("RegressionGAM: PredictorNames must have same", ...
+                         " number of columns as X."));
+        endif
+      endif
+      if (! isempty (RTin))
+        [RTfun, ResponseTransform] = parseResponseTransform (RTin, ...
+                                                             'RegressionGAM');
+      endif
 
-      ## Parse extra parameters
-      CategoricalPredictors = [];
-      while (numel (varargin) > 0)
-        namesGiven{end+1} = tolower (varargin{1});
-        switch (tolower (varargin {1}))
-
-          case {'predictors', 'predictornames'}
-            PredictorNames = varargin{2};
-            if (! isempty (PredictorNames))
-              if (! iscellstr (PredictorNames))
-                error (strcat ("RegressionGAM: PredictorNames must", ...
-                               " be a cellstring array."));
-              elseif (columns (PredictorNames) != columns (X))
-                error (strcat ("RegressionGAM: PredictorNames must", ...
-                               " have same number of columns as X."));
-              endif
-            endif
-
-          case 'responsetransform'
-            [RTfun, ResponseTransform] = ...
-                      parseResponseTransform (varargin{2}, 'RegressionGAM');
-
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! ischar (ResponseName))
-              error ("RegressionGAM: ResponseName must be a char string.");
-            endif
-
-          case 'formula'
-            if (F_I < 1)
-              Formula = varargin{2};
-              if (! ischar (Formula) && ! islogical (Formula))
-                error ("RegressionGAM: Formula must be a string.");
-              endif
-              F_I += 1;
-            else
-              error ("RegressionGAM: Interactions have been already defined.");
-            endif
-
-          case 'interactions'
-            if (F_I < 1)
-              tmp = varargin{2};
-              if (isnumeric (tmp) && isscalar (tmp)
-                                  && tmp == fix (tmp) && tmp >= 0)
-                Interactions = tmp;
-              elseif (islogical (tmp))
-                Interactions = tmp;
-              elseif (ischar (tmp) && strcmpi (tmp, 'all'))
-                Interactions = tmp;
-              else
-                error ("RegressionGAM: invalid Interactions parameter.");
-              endif
-              F_I += 1;
-            else
-              error ("RegressionGAM: Formula has been already defined.");
-            endif
-
-          case 'knots'
-            if (KOD < 2)
-              Knots = varargin{2};
-              if (! isnumeric (Knots) || ! (isscalar (Knots) ||
-                  isequal (size (Knots), [1, ndims_X])))
-                error ("RegressionGAM: invalid value for Knots.");
-              endif
-              DoF = Knots + Order;
-              Order = DoF - Knots;
-              KOD += 1;
-            else
-              error ("RegressionGAM: DoF and Order have been set already.");
-            endif
-
-          case 'order'
-            if (KOD < 2)
-              Order = varargin{2};
-              if (! isnumeric (Order) || ! (isscalar (Order) ||
-                  isequal (size (Order), [1, ndims_X])))
-                error ("RegressionGAM: invalid value for Order.");
-              endif
-              DoF = Knots + Order;
-              Knots = DoF - Order;
-              KOD += 1;
-            else
-              error ("RegressionGAM: DoF and Knots have been set already.");
-            endif
-
-          case 'dof'
-            if (KOD < 2)
-              DoF = varargin{2};
-              if (! isnumeric (DoF) ||
-                  ! (isscalar (DoF) || isequal (size (DoF), [1, ndims_X])))
-                error ("RegressionGAM: invalid value for DoF.");
-              endif
-              Knots = DoF - Order;
-              Order = DoF - Knots;
-              KOD += 1;
-            else
-              error ("RegressionGAM: Knots and Order have been set already.");
-            endif
-
-          case 'tol'
-            Tol = varargin{2};
-            if (! (isnumeric (Tol) && isscalar (Tol) && (Tol > 0)))
-              error ("RegressionGAM: Tolerance must be a Positive scalar.");
-            endif
-
-          case 'fitmethod'
-            FitMethod = varargin{2};
-            if (! (ischar (FitMethod) && isrow (FitMethod)) ||
-                ! any (strcmpi (FitMethod, {'boostedtrees', 'splines'})))
-              error (strcat ("RegressionGAM: 'FitMethod' must be", ...
-                             " 'boostedtrees' or 'splines'."));
-            endif
-            FitMethod = tolower (FitMethod);
-
-          case 'numtreesperpredictor'
-            NumTreesPerPredictor = varargin{2};
-            if (! isnumeric (NumTreesPerPredictor) ||
-                ! isscalar (NumTreesPerPredictor) ||
-                NumTreesPerPredictor < 1 ||
-                fix (NumTreesPerPredictor) != NumTreesPerPredictor)
-              error (strcat ("RegressionGAM: 'NumTreesPerPredictor'", ...
-                             " must be a positive integer value."));
-            endif
-
-          case 'numtreesperinteraction'
-            NumTreesPerInteraction = varargin{2};
-            if (! isnumeric (NumTreesPerInteraction) ||
-                ! isscalar (NumTreesPerInteraction) ||
-                NumTreesPerInteraction < 1 ||
-                fix (NumTreesPerInteraction) != NumTreesPerInteraction)
-              error (strcat ("RegressionGAM: 'NumTreesPerInteraction'", ...
-                             " must be a positive integer value."));
-            endif
-
-          case 'maxnumsplitsperpredictor'
-            MaxNumSplitsPerPredictor = varargin{2};
-            if (! isnumeric (MaxNumSplitsPerPredictor) ||
-                ! isscalar (MaxNumSplitsPerPredictor) ||
-                MaxNumSplitsPerPredictor < 1 ||
-                fix (MaxNumSplitsPerPredictor) != MaxNumSplitsPerPredictor)
-              error (strcat ("RegressionGAM:", ...
-                             " 'MaxNumSplitsPerPredictor' must be a", ...
-                             " positive integer value."));
-            endif
-
-          case 'maxnumsplitsperinteraction'
-            MaxNumSplitsPerInteraction = varargin{2};
-            if (! isnumeric (MaxNumSplitsPerInteraction) ||
-                ! isscalar (MaxNumSplitsPerInteraction) ||
-                MaxNumSplitsPerInteraction < 1 ||
-                fix (MaxNumSplitsPerInteraction) != MaxNumSplitsPerInteraction)
-              error (strcat ("RegressionGAM:", ...
-                             " 'MaxNumSplitsPerInteraction' must be a", ...
-                             " positive integer value."));
-            endif
-
-          case 'initiallearnrateforpredictors'
-            InitialLearnRateForPredictors = varargin{2};
-            if (! isnumeric (InitialLearnRateForPredictors) ||
-                ! isscalar (InitialLearnRateForPredictors) ||
-                InitialLearnRateForPredictors <= 0 ||
-                InitialLearnRateForPredictors > 1)
-              error (strcat ("RegressionGAM:", ...
-                             " 'InitialLearnRateForPredictors' must be", ...
-                             " greater than 0 and at most 1."));
-            endif
-
-          case 'initiallearnrateforinteractions'
-            InitialLearnRateForInteractions = varargin{2};
-            if (! isnumeric (InitialLearnRateForInteractions) ||
-                ! isscalar (InitialLearnRateForInteractions) ||
-                InitialLearnRateForInteractions <= 0 ||
-                InitialLearnRateForInteractions > 1)
-              error (strcat ("RegressionGAM:", ...
-                             " 'InitialLearnRateForInteractions' must be", ...
-                             " greater than 0 and at most 1."));
-            endif
-
-          case 'categoricalpredictors'
-            CategoricalPredictors = varargin{2};
-
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isreal (Weights)
-                   && isvector (Weights)))
-              error ("RegressionGAM: 'Weights' must be a numeric vector.");
-            endif
-            if (numel (Weights) != rows (X))
-              error (strcat ("RegressionGAM: 'Weights' must have one", ...
-                             " element per row of X."));
-            endif
-            if (any (Weights(:) < 0) || ! all (isfinite (Weights(:))))
-              error (strcat ("RegressionGAM: 'Weights' must hold", ...
-                             " finite non-negative values."));
-            endif
-
-          case 'verbose'
-            Verbose = varargin{2};
-            if (! isnumeric (Verbose) || ! isscalar (Verbose) || Verbose < 0
-                || fix (Verbose) != Verbose)
-              error (strcat ("RegressionGAM: 'Verbose' must be a", ...
-                             " non-negative integer value."));
-            endif
-
-          case 'numprint'
-            NumPrint = varargin{2};
-            if (! isnumeric (NumPrint) || ! isscalar (NumPrint)
-                || NumPrint < 1 || fix (NumPrint) != NumPrint)
-              error (strcat ("RegressionGAM: 'NumPrint' must be a positive", ...
-                             " integer value."));
-            endif
-
-          case 'maxpvalue'
-            MaxPValue = varargin{2};
-            if (! isnumeric (MaxPValue) || ! isscalar (MaxPValue) ||
-                MaxPValue < 0 || MaxPValue > 1)
-              error (strcat ("RegressionGAM: 'MaxPValue' must be", ...
-                             " between 0 and 1."));
-            endif
-
-          otherwise
-            error (strcat ("RegressionGAM: invalid parameter name", ...
-                           " in optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("RegressionGAM: invalid optional paired argument.");
+      endif
 
       ## An argument belongs to one engine or the other, and asking for one
       ## the chosen engine cannot honour is refused rather than ignored.
-      splineOnly = {'knots', 'order', 'dof', 'formula', 'tol'};
-      treeOnly = {'numtreesperpredictor', 'numtreesperinteraction', ...
-                  'maxnumsplitsperpredictor', 'maxnumsplitsperinteraction', ...
+      ## An option was given when it is not empty, its default being filled
+      ## in below.
+      splineOnly = {'knots', Knots; 'order', Order; 'dof', DoF; ...
+                    'formula', Formula; 'tol', Tol};
+      treeOnly = {'numtreesperpredictor', NumTreesPerPredictor; ...
+                  'numtreesperinteraction', NumTreesPerInteraction; ...
+                  'maxnumsplitsperpredictor', MaxNumSplitsPerPredictor; ...
+                  'maxnumsplitsperinteraction', MaxNumSplitsPerInteraction; ...
                   'initiallearnrateforpredictors', ...
-                  'initiallearnrateforinteractions', 'maxpvalue', ...
-                  'verbose', 'numprint', 'weights', ...
-                  'categoricalpredictors'};
+                  InitialLearnRateForPredictors; ...
+                  'initiallearnrateforinteractions', ...
+                  InitialLearnRateForInteractions; ...
+                  'maxpvalue', MaxPValue; 'verbose', Verbose; ...
+                  'numprint', NumPrint; 'weights', Weights; ...
+                  'categoricalpredictors', CategoricalPredictors};
       if (strcmp (FitMethod, 'boostedtrees'))
-        clash = intersect (namesGiven, splineOnly);
+        clash = splineOnly(! cellfun (@isempty, splineOnly(:,2)), 1);
         if (! isempty (clash))
           error (strcat ("RegressionGAM: '", clash{1}, "' is a parameter", ...
                          " of the spline engine and cannot be used with", ...
                          " 'FitMethod' 'boostedtrees'."));
         endif
       else
-        clash = intersect (namesGiven, treeOnly);
+        clash = treeOnly(! cellfun (@isempty, treeOnly(:,2)), 1);
         if (! isempty (clash))
           error (strcat ("RegressionGAM: '", clash{1}, "' is a parameter", ...
                          " of the boosted-tree engine and cannot be used", ...
                          " with 'FitMethod' 'splines'."));
         endif
+      endif
+
+      ## A model is described either by a formula or by its interactions
+      if (! isempty (Formula) && ! isempty (Interactions))
+        error (strcat ("RegressionGAM: 'Formula' and 'Interactions'", ...
+                       " cannot be given together."));
+      endif
+
+      ## Any two of 'Knots', 'Order' and 'DoF' determine the third, DoF being
+      ## Knots plus Order; one given alone keeps the default of another.
+      if (! isempty (Knots) && ! isempty (Order) && ! isempty (DoF))
+        error (strcat ("RegressionGAM: at most two of 'Knots', 'Order'", ...
+                       " and 'DoF' may be given."));
+      endif
+      if (isempty (DoF))
+        if (isempty (Knots))
+          Knots = ones (1, ndims_X) * 5;
+        endif
+        if (isempty (Order))
+          Order = ones (1, ndims_X) * 3;
+        endif
+        DoF = Knots + Order;
+      elseif (isempty (Knots))
+        if (isempty (Order))
+          Order = ones (1, ndims_X) * 3;
+        endif
+        Knots = DoF - Order;
+      else
+        Order = DoF - Knots;
+      endif
+
+      ## The defaults of the remaining engine options
+      if (isempty (Tol))
+        Tol = 1e-3;
+      endif
+      if (isempty (NumTreesPerPredictor))
+        NumTreesPerPredictor = 300;
+      endif
+      if (isempty (NumTreesPerInteraction))
+        NumTreesPerInteraction = 100;
+      endif
+      if (isempty (MaxNumSplitsPerPredictor))
+        MaxNumSplitsPerPredictor = 1;
+      endif
+      if (isempty (MaxNumSplitsPerInteraction))
+        MaxNumSplitsPerInteraction = 4;
+      endif
+      if (isempty (InitialLearnRateForPredictors))
+        InitialLearnRateForPredictors = 1;
+      endif
+      if (isempty (InitialLearnRateForInteractions))
+        InitialLearnRateForInteractions = 1;
+      endif
+      if (isempty (MaxPValue))
+        MaxPValue = 1;
+      endif
+      if (isempty (Verbose))
+        Verbose = 0;
+      endif
+      if (isempty (NumPrint))
+        NumPrint = 10;
       endif
 
       ## Assign original X and Y data to the RegressionGAM object
@@ -1073,7 +1057,7 @@ classdef RegressionGAM < PredictiveModel
       this.Intercept            = Inter;
 
       ## Handle interaction terms (if given)
-      if (F_I > 0)
+      if (! isempty (Formula) || ! isempty (Interactions))
         this = this.fitModelwInt (X, Y, Inter, Knots, Order, DoF);
       endif
 
@@ -2869,7 +2853,7 @@ endfunction
 %! RegressionGAM (ones (10,2), ones (5,1))
 %!error<RegressionGAM: invalid values in X.> ...
 %! RegressionGAM ([1;2;3;'a';4], ones (5,1))
-%!error<RegressionGAM: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionGAM: invalid optional paired argument.> ...
 %! RegressionGAM (ones (10,2), ones (10,1), 'some', 'some')
 %!error<RegressionGAM: Formula must be a string.>
 %! RegressionGAM (ones (10,2), ones (10,1), 'formula', {'y~x1+x2'})
@@ -2896,22 +2880,27 @@ endfunction
 %!error<RegressionGAM: number of interaction terms requested is larger than> ...
 %! RegressionGAM (ones (10,2), ones (10,1), 'FitMethod', 'splines', ...
 %!                'interactions', 3)
-%!error<RegressionGAM: Formula has been already defined.> ...
-%! RegressionGAM (ones (10,2), ones (10,1), 'formula', 'y ~ x1 + x2', 'interactions', 1)
-%!error<RegressionGAM: Interactions have been already defined.> ...
-%! RegressionGAM (ones (10,2), ones (10,1), 'interactions', 1, 'formula', 'y ~ x1 + x2')
+%!error<RegressionGAM: 'Formula' and 'Interactions' cannot be given together.> ...
+%! RegressionGAM (ones (10,2), ones (10,1), 'FitMethod', 'splines', ...
+%!                'formula', 'y ~ x1 + x2', 'interactions', 1)
+%!error<RegressionGAM: 'Formula' and 'Interactions' cannot be given together.> ...
+%! RegressionGAM (ones (10,2), ones (10,1), 'FitMethod', 'splines', ...
+%!                'interactions', 1, 'formula', 'y ~ x1 + x2')
 %!error<RegressionGAM: invalid value for Knots.> ...
 %! RegressionGAM (ones (10,2), ones (10,1), 'knots', 'a')
-%!error<RegressionGAM: DoF and Order have been set already.> ...
-%! RegressionGAM (ones (10,2), ones (10,1), 'order', 3, 'dof', 2, 'knots', 5)
+%!error<RegressionGAM: at most two of 'Knots', 'Order' and 'DoF' may be given.> ...
+%! RegressionGAM (ones (10,2), ones (10,1), 'FitMethod', 'splines', ...
+%!                'order', 3, 'dof', 2, 'knots', 5)
 %!error<RegressionGAM: invalid value for DoF.> ...
 %! RegressionGAM (ones (10,2), ones (10,1), 'dof', 'a')
-%!error<RegressionGAM: Knots and Order have been set already.> ...
-%! RegressionGAM (ones (10,2), ones (10,1), 'knots', 5, 'order', 3, 'dof', 2)
+%!error<RegressionGAM: at most two of 'Knots', 'Order' and 'DoF' may be given.> ...
+%! RegressionGAM (ones (10,2), ones (10,1), 'FitMethod', 'splines', ...
+%!                'knots', 5, 'order', 3, 'dof', 2)
 %!error<RegressionGAM: invalid value for Order.> ...
 %! RegressionGAM (ones (10,2), ones (10,1), 'order', 'a')
-%!error<RegressionGAM: DoF and Knots have been set already.> ...
-%! RegressionGAM (ones (10,2), ones (10,1), 'knots', 5, 'dof', 2, 'order', 2)
+%!error<RegressionGAM: at most two of 'Knots', 'Order' and 'DoF' may be given.> ...
+%! RegressionGAM (ones (10,2), ones (10,1), 'FitMethod', 'splines', ...
+%!                'knots', 5, 'dof', 2, 'order', 2)
 %!error<RegressionGAM: Tolerance must be a Positive scalar.> ...
 %! RegressionGAM (ones (10,2), ones (10,1), 'tol', -1)
 %!error<RegressionGAM: ResponseName must be a char string.> ...
@@ -3404,3 +3393,15 @@ endfunction
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'SL'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## Any two of 'Knots', 'Order' and 'DoF' determine the third, whichever
+## order they are given in
+%!test
+%! X = linspace (0, 1, 50)';
+%! Y = sin (6 * X);
+%! M = fitrgam (X, Y, 'FitMethod', 'splines', 'Knots', 5, 'DoF', 9);
+%! assert_equal ([M.Knots, M.Order, M.DoF], [5, 4, 9]);
+%! M = fitrgam (X, Y, 'FitMethod', 'splines', 'DoF', 9, 'Knots', 5);
+%! assert_equal ([M.Knots, M.Order, M.DoF], [5, 4, 9]);
+%! M = fitrgam (X, Y, 'FitMethod', 'splines', 'Order', 2, 'DoF', 9);
+%! assert_equal ([M.Knots, M.Order, M.DoF], [7, 2, 9]);
