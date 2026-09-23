@@ -680,22 +680,23 @@ classdef RegressionEnsemble < PredictiveModel
       if (mod (numel (varargin), 2) != 0)
         error ("%s: name-value arguments must be in pairs.", caller);
       endif
-      NPrint = 0;
-      for i = 1:2:numel (varargin)
-        if (! (ischar (varargin{i}) && strcmpi (varargin{i}, 'NPrint')))
-          error (strcat ("%s: invalid parameter name in optional pair", ...
-                         " arguments."), caller);
-        endif
-        val = varargin{i+1};
-        if (ischar (val) && strcmpi (val, 'off'))
-          NPrint = 0;
-        elseif (isnumeric (val) && isscalar (val) && isreal (val)
-                && val >= 1 && val == fix (val))
-          NPrint = double (val);
-        else
-          error ("%s: 'NPrint' must be a positive integer or 'off'.", caller);
-        endif
-      endfor
+      ## Parse optional paired arguments
+      [NPrint, args] = parsePairedArguments ({'NPrint'}, {'off'}, ...
+                                             varargin(:));
+
+      ## Validate optional paired arguments
+      if (ischar (NPrint) && strcmpi (NPrint, 'off'))
+        NPrint = 0;
+      elseif (isnumeric (NPrint) && isscalar (NPrint) && isreal (NPrint)
+              && NPrint >= 1 && NPrint == fix (NPrint))
+        NPrint = double (NPrint);
+      else
+        error ("%s: 'NPrint' must be a positive integer or 'off'.", caller);
+      endif
+
+      if (! isempty (args))
+        error ("%s: invalid optional paired argument.", caller);
+      endif
       this = growLearners (this, double (NumLearningCycles), NPrint);
       this.Regularization = [];
 
@@ -1372,7 +1373,7 @@ endfunction
 %! resume (RegressionEnsemble (X, y, 'NumLearningCycles', 1), 0)
 %!error<RegressionEnsemble.resume: name-value arguments must be in pairs.> ...
 %! resume (RegressionEnsemble (X, y, 'NumLearningCycles', 1), 1, 'NPrint')
-%!error<RegressionEnsemble.resume: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionEnsemble.resume: invalid optional paired argument.> ...
 %! resume (RegressionEnsemble (X, y, 'NumLearningCycles', 1), 1, 'Foo', 1)
 %!error<RegressionEnsemble.resume: 'NPrint' must be a positive integer or 'off'.> ...
 %! resume (RegressionEnsemble (X, y, 'NumLearningCycles', 1), 1, ...

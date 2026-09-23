@@ -338,14 +338,29 @@ classdef RegressionBaggedEnsemble < RegressionEnsemble
     function imp = oobPermutedPredictorImportance (this, varargin)
 
       caller = 'RegressionBaggedEnsemble.oobPermutedPredictorImportance';
-      args = oobArgs (varargin, {'Learners', 'Options'}, caller);
-      learners = 1:this.NumTrained;
-      for i = 1:2:numel (args)
-        if (strcmpi (args{i}, 'Options'))
-          error ("%s: 'Options' is not implemented.", caller);
-        endif
-        learners = oobLearners (args{i+1}, this.NumTrained, caller);
-      endfor
+      if (mod (numel (varargin), 2) != 0)
+        error ("%s: name-value arguments must be in pairs.", caller);
+      endif
+
+      ## Parse optional paired arguments; empty 'Learners' stands for every
+      ## trained learner
+      [Learners, Options, args] = ...
+             parsePairedArguments ({'Learners', 'Options'}, {[], []}, ...
+                                   varargin(:));
+
+      ## Validate optional paired arguments
+      if (isempty (Learners))
+        learners = 1:this.NumTrained;
+      else
+        learners = oobLearners (Learners, this.NumTrained, caller);
+      endif
+      if (! isempty (Options))
+        error ("%s: 'Options' is not implemented.", caller);
+      endif
+
+      if (! isempty (args))
+        error ("%s: invalid optional paired argument.", caller);
+      endif
       p = columns (this.X);
       D = zeros (numel (learners), p);
       for j = 1:numel (learners)
@@ -552,6 +567,11 @@ endfunction
 %! oobPermutedPredictorImportance (RegressionBaggedEnsemble (meas(:,2:4), ...
 %!                                 meas(:,1), 'NumLearningCycles', 1), ...
 %!                                 'Options', struct ())
+%!error<RegressionBaggedEnsemble.oobPermutedPredictorImportance: invalid optional paired argument.> ...
+%! load fisheriris
+%! oobPermutedPredictorImportance (RegressionBaggedEnsemble (meas(:,2:4), ...
+%!                                 meas(:,1), 'NumLearningCycles', 1), ...
+%!                                 'Bogus', struct ())
 
 %!shared Xr, yr, tr
 %! load fisheriris

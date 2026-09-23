@@ -1496,39 +1496,30 @@ classdef TreeBagger < PredictiveModel
         error ("TreeBagger.mdsprox: name-value arguments must be in pairs.");
       endif
       N = rows (this.X);
-      keep = 1:N;
-      colors = '';
-      coords = [1, 2];
-      for i = 1:2:numel (varargin)
-        name = varargin{i};
-        val = varargin{i+1};
-        if (! (ischar (name)
-               && any (strcmpi (name, {'Keep', 'Colors', 'MDSCoordinates'}))))
-          error (strcat ("TreeBagger.mdsprox: invalid parameter name in", ...
-                         " optional pair arguments."));
-        endif
-        switch (tolower (name))
-          case 'keep'
-            if (ischar (val) && strcmpi (val, 'all'))
-              keep = 1:N;
-            elseif (islogical (val) && isvector (val) && numel (val) == N)
-              keep = find (val);
-            elseif (isnumeric (val) && isvector (val) && isreal (val)
-                    && all (val >= 1) && all (val <= N)
-                    && all (val == fix (val)))
-              keep = double (val(:)');
-            else
-              error (strcat ("TreeBagger.mdsprox: 'Keep' must be 'all',", ...
-                             " a vector of indices of observations, or a", ...
-                             " logical vector with one element per", ...
-                             " observation."));
-            endif
-          case 'colors'
-            colors = val;
-          case 'mdscoordinates'
-            coords = val;
-        endswitch
-      endfor
+      ## Parse optional paired arguments
+      optNames = {'Keep', 'Colors', 'MDSCoordinates'};
+      dfValues = {'all', '', [1, 2]};
+      [Keep, colors, coords, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (ischar (Keep) && strcmpi (Keep, 'all'))
+        keep = 1:N;
+      elseif (islogical (Keep) && isvector (Keep) && numel (Keep) == N)
+        keep = find (Keep);
+      elseif (isnumeric (Keep) && isvector (Keep) && isreal (Keep)
+              && all (Keep >= 1) && all (Keep <= N)
+              && all (Keep == fix (Keep)))
+        keep = double (Keep(:)');
+      else
+        error (strcat ("TreeBagger.mdsprox: 'Keep' must be 'all', a", ...
+                       " vector of indices of observations, or a logical", ...
+                       " vector with one element per observation."));
+      endif
+
+      if (! isempty (args))
+        error ("TreeBagger.mdsprox: invalid optional paired argument.");
+      endif
       g = [];
       if (strcmp (this.Method, 'classification'))
         g = this.gY(keep);
@@ -1586,24 +1577,25 @@ classdef TreeBagger < PredictiveModel
         error (strcat ("TreeBagger.growTrees: name-value arguments must", ...
                        " be in pairs."));
       endif
-      NumPrint = 0;
-      for i = 1:2:numel (varargin)
-        name = varargin{i};
-        if (ischar (name) && strcmpi (name, 'numprint'))
-          NumPrint = varargin{i+1};
-          if (! (isnumeric (NumPrint) && isscalar (NumPrint)
-                 && isreal (NumPrint) && NumPrint >= 0
-                 && NumPrint == fix (NumPrint)))
-            error (strcat ("TreeBagger.growTrees: 'NumPrint' must be a", ...
-                           " nonnegative integer."));
-          endif
-        elseif (ischar (name) && strcmpi (name, 'options'))
-          error ("TreeBagger.growTrees: 'Options' is not implemented.");
-        else
-          error (strcat ("TreeBagger.growTrees: invalid parameter name", ...
-                         " in optional pair arguments."));
-        endif
-      endfor
+      ## Parse optional paired arguments
+      [NumPrint, Options, args] = ...
+             parsePairedArguments ({'NumPrint', 'Options'}, {0, []}, ...
+                                   varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (isnumeric (NumPrint) && isscalar (NumPrint)
+             && isreal (NumPrint) && NumPrint >= 0
+             && NumPrint == fix (NumPrint)))
+        error (strcat ("TreeBagger.growTrees: 'NumPrint' must be a", ...
+                       " nonnegative integer."));
+      endif
+      if (! isempty (Options))
+        error ("TreeBagger.growTrees: 'Options' is not implemented.");
+      endif
+
+      if (! isempty (args))
+        error ("TreeBagger.growTrees: invalid optional paired argument.");
+      endif
       this = growForest (this, NumTrees, NumPrint);
 
     endfunction
@@ -2765,7 +2757,7 @@ endfunction
 %! growTrees (B, 1, 'NumPrint', -1)
 %!error<TreeBagger.growTrees: 'Options' is not implemented.> ...
 %! growTrees (B, 1, 'Options', 1)
-%!error<TreeBagger.growTrees: invalid parameter name in optional pair arguments.> ...
+%!error<TreeBagger.growTrees: invalid optional paired argument.> ...
 %! growTrees (B, 1, 'Foo', 1)
 %!error<TreeBagger.append: too few input arguments.> append (B)
 %!error<TreeBagger.append: B2 must be a TreeBagger object.> append (B, C)
@@ -2836,7 +2828,7 @@ endfunction
 %! mdsprox (B)
 %!error<TreeBagger.mdsprox: name-value arguments must be in pairs.> ...
 %! mdsprox (fillprox (B), 'Keep')
-%!error<TreeBagger.mdsprox: invalid parameter name in optional pair arguments.> ...
+%!error<TreeBagger.mdsprox: invalid optional paired argument.> ...
 %! mdsprox (fillprox (B), 'Data', 'proximity')
 %!error<TreeBagger.mdsprox: 'Keep' must be 'all', a vector of indices of observations, or a logical vector with one element per observation.> ...
 %! mdsprox (fillprox (B), 'Keep', 0)

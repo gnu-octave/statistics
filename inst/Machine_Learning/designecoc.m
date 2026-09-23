@@ -92,24 +92,19 @@ function M = designecoc (K, name, varargin)
     error ("designecoc: NAME must be a character vector.");
   endif
 
-  NumTrials = 10000;
-  for i = 1:2:numel (varargin)
-    if (! (ischar (varargin{i}) && isrow (varargin{i})))
-      error ("designecoc: invalid name-value argument.");
-    endif
-    switch (tolower (varargin{i}))
-      case 'numtrials'
-        NumTrials = varargin{i+1};
-        if (! (isnumeric (NumTrials) && isscalar (NumTrials)
-               && isreal (NumTrials) && NumTrials == fix (NumTrials)
-               && NumTrials >= 1))
-          error (strcat ("designecoc: 'NumTrials' must be a positive", ...
-                         " integer."));
-        endif
-      otherwise
-        error ("designecoc: invalid name-value argument.");
-    endswitch
-  endfor
+  ## Parse optional paired arguments
+  [NumTrials, args] = parsePairedArguments ({'NumTrials'}, {10000}, ...
+                                            varargin(:));
+
+  ## Validate optional paired arguments
+  if (! (isnumeric (NumTrials) && isscalar (NumTrials) && isreal (NumTrials)
+         && NumTrials == fix (NumTrials) && NumTrials >= 1))
+    error ("designecoc: 'NumTrials' must be a positive integer.");
+  endif
+
+  if (! isempty (args))
+    error ("designecoc: invalid optional paired argument.");
+  endif
 
   designs = {'onevsone', 'onevsall', 'binarycomplete', 'ternarycomplete', ...
              'ordinal', 'denserandom', 'sparserandom'};
@@ -345,7 +340,7 @@ endfunction
 %!error<designecoc: K must be an integer of at least 2.> designecoc ('a', 'onevsone')
 %!error<designecoc: NAME must be a character vector.> designecoc (3, 42)
 %!error<designecoc: 'nosuch' is not a coding design.> designecoc (3, 'nosuch')
-%!error<designecoc: invalid name-value argument.> ...
+%!error<designecoc: invalid optional paired argument.> ...
 %! designecoc (3, 'onevsone', 'NoSuch', 1)
 %!error<designecoc: 'NumTrials' must be a positive integer.> ...
 %! designecoc (3, 'denserandom', 'NumTrials', 0)

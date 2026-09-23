@@ -336,8 +336,8 @@ classdef CompactClassificationECOC < PredictiveModel
       ## A table is read by the names the model was fitted on
       XC = tableColumns (this, 'CompactClassificationECOC.predict', XC);
       if (mod (numel (varargin), 2) != 0)
-        error (strcat ("CompactClassificationECOC.predict: name-value", ...
-                       " arguments must be in pairs."));
+        error (strcat ("CompactClassificationECOC.predict:", ...
+                       " name-value arguments must be in pairs."));
       endif
       if (isempty (XC))
         error ("CompactClassificationECOC.predict: XC is empty.");
@@ -348,31 +348,29 @@ classdef CompactClassificationECOC < PredictiveModel
                        " model."));
       endif
 
-      lossname = this.BinaryLoss;
-      decoding = 'lossweighted';
-      for i = 1:2:numel (varargin)
-        switch (tolower (varargin{i}))
-          case 'binaryloss'
-            lossname = varargin{i+1};
-            if (! (ischar (lossname) && isrow (lossname)))
-              error (strcat ("CompactClassificationECOC.predict:", ...
-                             " 'BinaryLoss' must be a character vector."));
-            endif
-            lossname = tolower (lossname);
-          case 'decoding'
-            decoding = varargin{i+1};
-            if (! (ischar (decoding) && isrow (decoding)
-                   && any (strcmpi (decoding, {'lossweighted', 'lossbased'}))))
-              error (strcat ("CompactClassificationECOC.predict:", ...
-                             " 'Decoding' must be 'lossweighted' or", ...
-                             " 'lossbased'."));
-            endif
-            decoding = tolower (decoding);
-          otherwise
-            error (strcat ("CompactClassificationECOC.predict: invalid", ...
-                           " parameter name in optional pair arguments."));
-        endswitch
-      endfor
+      ## Parse optional paired arguments
+      optNames = {'BinaryLoss', 'Decoding'};
+      dfValues = {this.BinaryLoss, 'lossweighted'};
+      [lossname, decoding, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (ischar (lossname) && isrow (lossname)))
+        error (strcat ("CompactClassificationECOC.predict:", ...
+                       " 'BinaryLoss' must be a character vector."));
+      endif
+      lossname = tolower (lossname);
+      if (! (ischar (decoding) && isrow (decoding)
+             && any (strcmpi (decoding, {'lossweighted', 'lossbased'}))))
+        error (strcat ("CompactClassificationECOC.predict:", ...
+                       " 'Decoding' must be 'lossweighted' or 'lossbased'."));
+      endif
+      decoding = tolower (decoding);
+
+      if (! isempty (args))
+        error (strcat ("CompactClassificationECOC.predict:", ...
+                       " invalid optional paired argument."));
+      endif
 
       PBScore = binaryScores (this, XC);
       [NegLoss, errmsg] = ecocDecode (PBScore, this.CodingMatrix, lossname, ...
@@ -837,6 +835,8 @@ endclassdef
 %! predict (CMdl, ones (1, 2), 'Decoding')
 %!error<CompactClassificationECOC.predict: 'Decoding' must be 'lossweighted' or 'lossbased'.> ...
 %! predict (CMdl, ones (1, 2), 'Decoding', 'nosuch')
+%!error<CompactClassificationECOC.predict: invalid optional paired argument.> ...
+%! predict (CMdl, ones (1, 2), 'Bogus', 1)
 %!error<CompactClassificationECOC.predict: you cannot use 'quadratic' loss for binary learners with response in the range \(-Inf,\+Inf\).> ...
 %! predict (CMdl, ones (1, 2), 'BinaryLoss', 'quadratic')
 %!error<CompactClassificationECOC.subsasgn: you cannot use 'quadratic' loss for binary learners with response in the range \(-Inf,\+Inf\).> ...
