@@ -1035,6 +1035,7 @@ classdef ClassificationKernel < PredictiveModel
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationKernel} {@var{obj} =} resume (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {ClassificationKernel} {@var{obj} =} resume (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {ClassificationKernel} {@var{obj} =} resume (@var{obj}, @var{Tbl}, @var{ResponseVarName})
     ##
     ## Continue fitting a kernel classifier.
     ##
@@ -1053,62 +1054,67 @@ classdef ClassificationKernel < PredictiveModel
     ## R2024a, resuming a weighted fit without passing the weights back
     ## reaches the objective of the @emph{unweighted} fit.
     ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## The response is then named by @var{ResponseVarName}, a variable of the
+    ## table, or given beside the table as @var{Y}; unlike
+    ## @code{ClassificationKernel.loss}, it is never taken from the table
+    ## unasked.
+    ##
     ## @end deftypefn
     function this = resume (this, X, Y, varargin)
 
       if (nargin < 3)
         error ("ClassificationKernel.resume: too few input arguments.");
       endif
+
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("ClassificationKernel.resume: optional arguments", ...
                        " must be given in Name-Value pairs."));
       endif
 
-      BetaTolerance = this.ModelParameters.BetaTolerance;
-      GradientTolerance = this.ModelParameters.GradientTolerance;
-      IterationLimit = this.ModelParameters.IterationLimit;
-      Weights = [];
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isreal (Weights)
-                   && isvector (Weights) && all (Weights >= 0)))
-              error (strcat ("ClassificationKernel.resume: 'Weights'", ...
-                             " must be a vector of nonnegative values."));
-            endif
-          case 'betatolerance'
-            BetaTolerance = varargin{2};
-            if (! (isnumeric (BetaTolerance) && isscalar (BetaTolerance)
-                   && isreal (BetaTolerance) && BetaTolerance >= 0))
-              error (strcat ("ClassificationKernel.resume:", ...
-                             " 'BetaTolerance' must be a nonnegative", ...
-                             " scalar."));
-            endif
-          case 'gradienttolerance'
-            GradientTolerance = varargin{2};
-            if (! (isnumeric (GradientTolerance)
-                   && isscalar (GradientTolerance)
-                   && isreal (GradientTolerance) && GradientTolerance >= 0))
-              error (strcat ("ClassificationKernel.resume:", ...
-                             " 'GradientTolerance' must be a", ...
-                             " nonnegative scalar."));
-            endif
-          case 'iterationlimit'
-            IterationLimit = varargin{2};
-            if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
-                   && isreal (IterationLimit) && IterationLimit > 0
-                   && fix (IterationLimit) == IterationLimit))
-              error (strcat ("ClassificationKernel.resume:", ...
-                             " 'IterationLimit' must be a positive", ...
-                             " integer scalar."));
-            endif
-          otherwise
-            error (strcat ("ClassificationKernel.resume: invalid", ...
-                           " parameter name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments
+      optNames = {'Weights', 'BetaTolerance', 'GradientTolerance', ...
+                  'IterationLimit'};
+      dfValues = {[], this.ModelParameters.BetaTolerance, ...
+                  this.ModelParameters.GradientTolerance, ...
+                  this.ModelParameters.IterationLimit};
+      [Weights, BetaTolerance, GradientTolerance, IterationLimit, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! isempty (Weights) && ! (isnumeric (Weights) && isreal (Weights) &&
+                                    isvector (Weights) && all (Weights >= 0)))
+        error (strcat ("ClassificationKernel.resume: 'Weights'", ...
+                       " must be a vector of nonnegative values."));
+      endif
+      if (! (isnumeric (BetaTolerance) && isscalar (BetaTolerance)
+             && isreal (BetaTolerance) && BetaTolerance >= 0))
+        error (strcat ("ClassificationKernel.resume: 'BetaTolerance'", ...
+                       " must be a nonnegative scalar."));
+      endif
+      if (! (isnumeric (GradientTolerance)
+             && isscalar (GradientTolerance)
+             && isreal (GradientTolerance) && GradientTolerance >= 0))
+        error (strcat ("ClassificationKernel.resume: 'GradientTolerance'", ...
+                       " must be a nonnegative scalar."));
+      endif
+      if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
+             && isreal (IterationLimit) && IterationLimit > 0
+             && fix (IterationLimit) == IterationLimit))
+        error (strcat ("ClassificationKernel.resume: 'IterationLimit'", ...
+                       " must be a positive integer scalar."));
+      endif
+
+      ## Handle table input
+      if (istable (X))
+        [X, Y] = tableResponse (this, 'resume', X, Y, {}, true);
+      endif
+
+      if (! isempty (args))
+        error (strcat ("ClassificationKernel.resume: invalid parameter", ...
+                       " name in optional pair arguments."));
+      endif
 
       [T, y, W] = resumeData (this, X, Y, Weights, 'resume');
 
@@ -1813,3 +1819,30 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## A table at resume
+%!test  # the response is named or given beside the table
+%! load fisheriris
+%! X = meas(51:150,1:2);
+%! y = categorical (species(51:150));
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = fitckernel (T, 'Species', 'IterationLimit', 5);
+%! [~, a] = predict (resume (Mdl, X, y, 'IterationLimit', 20), X);
+%! [~, b] = predict (resume (Mdl, T(:,1:2), y, 'IterationLimit', 20), X);
+%! assert_equal (b, a);
+%! [~, b] = predict (resume (Mdl, T, 'Species', 'IterationLimit', 20), X);
+%! assert_equal (b, a);
+%! [~, b] = predict (resume (Mdl, T(:,[3, 2, 1]), 'Species'), X);
+%! [~, c] = predict (resume (Mdl, X, y), X);
+%! assert_equal (b, c);
+%!error<ClassificationKernel.resume: too few input arguments.> ...
+%! load fisheriris
+%! T = table (meas(51:150,1), meas(51:150,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = categorical (species(51:150));
+%! resume (fitckernel (T, 'Species'), T)
+%!error<ClassificationKernel.resume: optional arguments must be given in Name-Value pairs.> ...
+%! load fisheriris
+%! T = table (meas(51:150,1), meas(51:150,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = categorical (species(51:150));
+%! resume (fitckernel (T, 'Species'), T, 'IterationLimit', 5)
