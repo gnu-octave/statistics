@@ -20,6 +20,10 @@
 ##
 ## Return all combinations of @var{k} elements in @var{data}.
 ##
+## @var{k} must be a non-negative integer.  @code{combnk (@var{data}, 0)}
+## returns a 1-by-0 array of the class of @var{data}, the one empty
+## combination.
+##
 ## @end deftypefn
 
 function retval = combnk (data, k)
@@ -34,7 +38,9 @@ function retval = combnk (data, k)
 
   ## Simple checks
   n = numel (data);
-  if (k == 0 || k > n)
+  if (k == 0)
+    retval = resize (data, 1, 0);
+  elseif (k > n)
     retval = resize (data, 0, k);
   elseif (k == n)
     retval = data(:).';
@@ -95,3 +101,8 @@ endfunction
 %!test
 %! c = combnk ('hello', 2);
 %! assert_equal (c, ['lo'; 'lo'; 'll'; 'eo'; 'el'; 'el'; 'ho'; 'hl'; 'hl'; 'he']);
+
+%!assert_equal (combnk (1:3, 0), zeros (1, 0))
+%!assert_equal (combnk ((1:3)', 0), zeros (1, 0))
+%!assert_equal (combnk ('abc', 0), char (zeros (1, 0)))
+%!assert_equal (combnk (int8 (1:3), 0), zeros (1, 0, 'int8'))
