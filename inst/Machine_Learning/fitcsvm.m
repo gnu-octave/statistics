@@ -144,7 +144,8 @@
 ## misclassifying it.  An empirical prior sums the weights per class,
 ## standardization uses weighted means and standard deviations, and a row of
 ## zero weight is left out.  The model's @code{W} keeps the class of the
-## weights, while every computation runs in double.
+## weights, while every computation runs in double, so @code{Prior} is double
+## where MATLAB returns single.
 ##
 ## @item @qcode{'BoxConstraint'} @tab A positive scalar that specifies the
 ## upper bound of the Lagrange multipliers, i.e. the parameter C, which is used

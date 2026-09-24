@@ -79,7 +79,8 @@
 ## votes with that weight.  An empirical prior sums the weights per class,
 ## standardization uses weighted means and standard deviations, and a row of
 ## zero weight is left out.  The model's @code{W} keeps the class of the
-## weights, while every computation runs in double.
+## weights, while every computation runs in double, so @code{Prior} is double
+## where MATLAB returns single.
 ##
 ## @item @qcode{'Cost'} @tab A @math{N*R} numeric matrix containing
 ## misclassification cost for the corresponding instances in @var{X} where

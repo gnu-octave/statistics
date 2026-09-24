@@ -930,7 +930,8 @@ classdef ClassificationKNN < PredictiveModel
     ## neighbour votes with that weight.  An empirical prior sums the weights
     ## per class, standardization uses weighted means and standard deviations,
     ## and a row of zero weight is left out.  The model's @code{W} keeps the
-    ## class of the weights, while every computation runs in double.
+    ## class of the weights, while every computation runs in double, so
+    ## @code{Prior} is double where MATLAB returns single.
     ##
     ## @item @qcode{'ScoreTransform'} @tab A user-defined function handle
     ## or a character vector specifying one of the following builtin functions

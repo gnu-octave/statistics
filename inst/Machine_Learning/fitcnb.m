@@ -108,8 +108,8 @@
 ## kernel density weighs its observations but chooses its bandwidth from them
 ## alone, and the multinomials count each observation by its weight.  A row of
 ## zero or missing weight is left out.  The model's @code{W} keeps the class of
-## the weights, while every computation runs in double.  The default is
-## uniform.
+## the weights, while every computation runs in double, so @code{Prior} is
+## double where MATLAB returns single.  The default is uniform.
 ##
 ## @end multitable
 ##

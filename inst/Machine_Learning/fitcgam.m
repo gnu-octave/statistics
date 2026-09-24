@@ -194,7 +194,8 @@
 ## observation weights, one per row of @var{X}.  Each class carries its
 ## @qcode{'Prior'}, spread over its observations in proportion to their weights.
 ## The model's @code{W} keeps the class of the weights, while every computation
-## runs in double, so the predictions are double where MATLAB returns single.
+## runs in double, so @code{Prior} and the predictions are double where MATLAB
+## returns single.
 ##
 ## @end multitable
 ## You can parse either a @qcode{'Formula'} or an @qcode{'Interactions'}

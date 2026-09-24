@@ -795,7 +795,8 @@ classdef ClassificationTree < PredictiveModel
     ## @item @qcode{'Weights'} @tab A nonnegative single or double vector with
     ## one element per observation.  The default is uniform.  The model's
     ## @code{W} keeps the class of the weights, while every computation runs in
-    ## double, so the predictions are double where MATLAB returns single.
+    ## double, so @code{Prior} and the predictions are double where MATLAB
+    ## returns single.
     ##
     ## @end multitable
     ##

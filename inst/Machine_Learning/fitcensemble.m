@@ -195,7 +195,8 @@
 ## @qcode{'uniform'}, or a vector with one element per class.
 ## @item @qcode{'Weights'} @tab @tab A nonnegative single or double vector with
 ## one weight per observation.  The default is uniform.  The model's @code{W}
-## keeps the class of the weights, while every computation runs in double.
+## keeps the class of the weights, while every computation runs in double, so
+## @code{Prior} is double where MATLAB returns single.
 ## @item @qcode{'PredictorNames'} @tab @tab A cell array of character vectors
 ## naming the columns of @var{X}.
 ## @item @qcode{'ResponseName'} @tab @tab The name of the response variable.

@@ -74,7 +74,8 @@
 ##
 ## @item @qcode{'Weights'} @tab @tab A nonnegative single or double vector with
 ## one element per observation.  The default is uniform.  The model's @code{W}
-## keeps the class of the weights, while every computation runs in double.
+## keeps the class of the weights, while every computation runs in double, so
+## @code{Prior} is double where MATLAB returns single.
 ##
 ## @item @qcode{'CategoricalPredictors'} @tab @tab The predictors whose values
 ## are levels, as indices, a logical vector or @qcode{'all'}, passed as given
