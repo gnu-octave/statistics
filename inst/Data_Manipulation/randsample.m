@@ -41,17 +41,17 @@
 
 function y = randsample (v, k, replacement=false, w=[])
 
-  if (isscalar (v) && isnumeric (v) && (round (v) == v) && (v >= 0))
+  if (isscalar (v) && isnumeric (v) && isfinite (v) &&(round (v) == v) && (v >= 0))
     n = v;
     vector_v = false;
-  elseif (isvector (v) || isscalar (v))
+  elseif (isvector (v) && !(isnumeric (v) && isscalar (v) && isinf (v)))
     n = length (v);
     vector_v = true;
   else
     error ("randsample: The input v must be a vector or non-negative integer.");
   endif
 
-  if (! isscalar (k) || ! isnumeric (k) || round (k) != k)
+  if (! isscalar (k) || ! isnumeric (k) || ! isfinite (k) || round (k) != k)
     error ("randsample: The input k must be an integer.");
   endif
 
@@ -250,3 +250,10 @@ endfunction
 
 %!error <randsample: The input k must be an integer.> ...
 %! randsample (10, 2.5)
+
+%!error <The input v must be a vector or non-negative integer>
+%! randsample (Inf, 1)
+
+%!error <The input k must be an integer>
+%! randsample (5, Inf, true)
+
