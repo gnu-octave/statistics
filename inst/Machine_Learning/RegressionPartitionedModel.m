@@ -1469,9 +1469,9 @@ endclassdef
 %! w = 1 + (1:150)' / 7;
 %! CVMdl = crossval (fitrsvm (X, y, 'Weights', w), 'KFold', 3);
 %! idx = training (CVMdl.Partition, 1);
-%! Mdl = fitrsvm (X(idx,:), y(idx), 'Weights', w(idx), ...
+%! Mdl = fitrsvm (X(idx,:), y(idx), 'Weights', CVMdl.W(idx), ...
 %!                'Epsilon', CVMdl.ModelParameters.Epsilon);
-%! assert_equal (predict (CVMdl.Trained{1}, X), predict (Mdl, X), 1e-10);
+%! assert_equal (predict (CVMdl.Trained{1}, X), predict (Mdl, X), 1e-14);
 %!test
 %! ## A neural network fold is fitted with its rows' weights
 %! load fisheriris
