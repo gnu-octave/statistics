@@ -1644,13 +1644,18 @@ static void solve_epsilon_svr(
 	Solver s;
 	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y,
 		alpha2, C, param->eps, si, param->shrinking);
+	// Upstream divides by C * l; with a box constraint per instance the
+	// divisor is their sum, as solve_nu_svr takes it, and the two agree
+	// when every weight is 1
+	double sum_alpha = 0;
+	double sum_C = 0;
 	for(i=0;i<l;i++)
 	{
 		alpha[i] = alpha2[i] - alpha2[i+l];
+		sum_alpha += fabs(alpha[i]);
+		sum_C += C[i];
 	}
-	// Upstream reports nu = sum|alpha| / (C * l) here.  With a box constraint
-	// per instance there is no single C to divide by, so the diagnostic is
-	// dropped rather than reported wrongly, and the sum it needed with it.
+	info("nu = %f\n",sum_alpha/sum_C);
 	delete[] alpha2;
 	delete[] linear_term;
 	delete[] C;
