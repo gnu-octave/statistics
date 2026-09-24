@@ -17,7 +17,7 @@
 
 classdef ClassificationECOC < PredictiveModel
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} ClassificationECOC
+  ## @deftp {statistics} ClassificationECOC
   ##
   ## A multiclass model built from binary learners.
   ##
@@ -33,7 +33,7 @@ classdef ClassificationECOC < PredictiveModel
   ## on top of.
   ##
   ## @seealso{fitcecoc, CompactClassificationECOC, designecoc}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 

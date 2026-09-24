@@ -677,11 +677,11 @@ classdef ClassificationGAM < PredictiveModel
   methods (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {statistics} {@var{obj} =} ClassificationGAM (@var{X}, @var{Y})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationGAM (@var{Tbl}, @var{ResponseVarName})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationGAM (@var{Tbl}, @var{formula})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationGAM (@var{Tbl}, @var{Y})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationGAM (@dots{}, @var{name}, @var{value})
+    ## @deftypefn  {ClassificationGAM} {@var{obj} =} ClassificationGAM (@var{X}, @var{Y})
+    ## @deftypefnx {ClassificationGAM} {@var{obj} =} ClassificationGAM (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationGAM} {@var{obj} =} ClassificationGAM (@var{Tbl}, @var{formula})
+    ## @deftypefnx {ClassificationGAM} {@var{obj} =} ClassificationGAM (@var{Tbl}, @var{Y})
+    ## @deftypefnx {ClassificationGAM} {@var{obj} =} ClassificationGAM (@dots{}, @var{name}, @var{value})
     ##
     ## Create a @qcode{ClassificationGAM} class object containing a generalized
     ## additive classification model.

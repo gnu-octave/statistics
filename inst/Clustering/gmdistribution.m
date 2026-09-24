@@ -19,36 +19,23 @@
 
 classdef gmdistribution
    ## -*- texinfo -*-
-   ## @deftypefn  {statistics} {@var{GMdist} =} gmdistribution (@var{mu}, @var{Sigma})
-   ## @deftypefnx {statistics} {@var{GMdist} =} gmdistribution (@var{mu}, @var{Sigma}, @var{p})
-   ## @deftypefnx {statistics} {@var{GMdist} =} gmdistribution (@var{mu}, @var{Sigma}, @var{p}, @var{extra})
+   ## @deftp {statistics} gmdistribution
    ##
-   ## Create an object of the gmdistribution class which represents a Gaussian
-   ## mixture model with k components of n-dimensional Gaussians.
+   ## Gaussian mixture distribution.
    ##
-   ## Input @var{mu} is a k-by-n matrix specifying the n-dimensional mean of
-   ## each of the k components of the distribution.
+   ## A @code{gmdistribution} object represents a mixture of k multivariate
+   ## Gaussian components in d variables: their means @code{mu}, their
+   ## covariances @code{Sigma} and their mixing proportions
+   ## @code{ComponentProportion}.  The methods @code{pdf}, @code{cdf} and
+   ## @code{random} evaluate and sample the mixture, while @code{cluster},
+   ## @code{posterior} and @code{mahal} assign observations to its components.
    ##
-   ## Input @var{Sigma} is an array that specifies the variances of the
-   ## distributions, in one of four forms depending on its dimension.
-   ## @itemize
-   ##   @item n-by-n-by-k: Slice @var{Sigma}(:,:,i) is the variance of the
-   ##         i'th component
-   ##   @item 1-by-n-by-k: Slice diag(@var{Sigma}(1,:,i)) is the variance of the
-   ##         i'th component
-   ##   @item n-by-n: @var{Sigma} is the variance of every component
-   ##   @item 1-by-n-by-k: Slice diag(@var{Sigma}) is the variance of every
-   ##         component
-   ## @end itemize
+   ## Create a @code{gmdistribution} object with the class constructor from
+   ## known parameters, or with @code{fitgmdist} from data, which also records
+   ## the results of the fit.
    ##
-   ## If @var{p} is specified, it is a vector of length k specifying the
-   ## proportion of each component.  If it is omitted or empty, each component
-   ## has an equal proportion.
-   ##
-   ## Input @var{extra} is used by fitgmdist to indicate the parameters of the
-   ## fitting process.
    ## @seealso{fitgmdist}
-   ## @end deftypefn
+   ## @end deftp
 
    properties
 

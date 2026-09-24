@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {} GeneralizedLinearMixedModel
+## @deftp {statistics} GeneralizedLinearMixedModel
 ##
 ## Generalized linear mixed-effects model fitted to data.
 ##
@@ -32,7 +32,7 @@
 ## @code{residuals}, @code{anova}, @code{coefTest}, and @code{coefCI} methods.
 ##
 ## @seealso{fitglme, fitlme, GeneralizedLinearModel}
-## @end deftypefn
+## @end deftp
 
 classdef GeneralizedLinearMixedModel < PredictiveModel
 

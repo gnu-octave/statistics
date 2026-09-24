@@ -865,11 +865,11 @@ classdef ClassificationKNN < PredictiveModel
   methods (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {statistics} {@var{obj} =} ClassificationKNN (@var{X}, @var{Y})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationKNN (@var{Tbl}, @var{ResponseVarName})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationKNN (@var{Tbl}, @var{formula})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationKNN (@var{Tbl}, @var{Y})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationKNN (@dots{}, @var{name}, @var{value})
+    ## @deftypefn  {ClassificationKNN} {@var{obj} =} ClassificationKNN (@var{X}, @var{Y})
+    ## @deftypefnx {ClassificationKNN} {@var{obj} =} ClassificationKNN (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationKNN} {@var{obj} =} ClassificationKNN (@var{Tbl}, @var{formula})
+    ## @deftypefnx {ClassificationKNN} {@var{obj} =} ClassificationKNN (@var{Tbl}, @var{Y})
+    ## @deftypefnx {ClassificationKNN} {@var{obj} =} ClassificationKNN (@dots{}, @var{name}, @var{value})
     ##
     ## Create a @qcode{ClassificationKNN} class object containing a k-Nearest
     ## Neighbor classification model.

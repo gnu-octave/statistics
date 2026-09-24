@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {} LinearMixedModel
+## @deftp {statistics} LinearMixedModel
 ##
 ## Linear mixed-effects model fitted to data.
 ##
@@ -41,7 +41,7 @@
 ## and @code{coefCI} methods.
 ##
 ## @seealso{fitlmematrix, fitlm}
-## @end deftypefn
+## @end deftp
 
 classdef LinearMixedModel < PredictiveModel
 

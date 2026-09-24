@@ -591,11 +591,11 @@ classdef ClassificationSVM < PredictiveModel
   methods (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {statistics} {@var{obj} =} ClassificationSVM (@var{X}, @var{Y})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationSVM (@var{Tbl}, @var{ResponseVarName})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationSVM (@var{Tbl}, @var{formula})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationSVM (@var{Tbl}, @var{Y})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationSVM (@dots{}, @var{name}, @var{value})
+    ## @deftypefn  {ClassificationSVM} {@var{obj} =} ClassificationSVM (@var{X}, @var{Y})
+    ## @deftypefnx {ClassificationSVM} {@var{obj} =} ClassificationSVM (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationSVM} {@var{obj} =} ClassificationSVM (@var{Tbl}, @var{formula})
+    ## @deftypefnx {ClassificationSVM} {@var{obj} =} ClassificationSVM (@var{Tbl}, @var{Y})
+    ## @deftypefnx {ClassificationSVM} {@var{obj} =} ClassificationSVM (@dots{}, @var{name}, @var{value})
     ##
     ## Create a @qcode{ClassificationSVM} class object containing a Support
     ## Vector Machine classification model for one-class or two-class problems.

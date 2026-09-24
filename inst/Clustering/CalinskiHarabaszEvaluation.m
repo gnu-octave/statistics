@@ -45,7 +45,7 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
   methods(Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn {statistics} {@var{obj} =} CalinskiHarabaszEvaluation (@var{x}, @var{clust}, @var{KList})
+    ## @deftypefn {CalinskiHarabaszEvaluation} {@var{obj} =} CalinskiHarabaszEvaluation (@var{x}, @var{clust}, @var{KList})
     ##
     ## Construct a @code{CalinskiHarabaszEvaluation} object to evaluate
     ## clustering solutions with the Calinski-Harabasz criterion.

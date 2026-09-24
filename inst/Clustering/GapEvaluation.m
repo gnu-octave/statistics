@@ -166,9 +166,9 @@ classdef GapEvaluation < ClusterCriterion
   methods(Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {statistics} {@var{obj} =} GapEvaluation (@var{x}, @var{clust}, @var{KList})
-    ## @deftypefnx {statistics} {@var{obj} =} GapEvaluation (@var{x}, @var{clust}, @var{KList}, @var{B})
-    ## @deftypefnx {statistics} {@var{obj} =} GapEvaluation (@dots{}, @var{name}, @var{value})
+    ## @deftypefn  {GapEvaluation} {@var{obj} =} GapEvaluation (@var{x}, @var{clust}, @var{KList})
+    ## @deftypefnx {GapEvaluation} {@var{obj} =} GapEvaluation (@var{x}, @var{clust}, @var{KList}, @var{B})
+    ## @deftypefnx {GapEvaluation} {@var{obj} =} GapEvaluation (@dots{}, @var{name}, @var{value})
     ##
     ## Construct a GapEvaluation object to evaluate clustering solutions using
     ## the gap statistic.

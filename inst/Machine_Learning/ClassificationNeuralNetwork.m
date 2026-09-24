@@ -613,11 +613,11 @@ classdef ClassificationNeuralNetwork < PredictiveModel
   methods (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {statistics} {@var{obj} =} ClassificationNeuralNetwork (@var{X}, @var{Y})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationNeuralNetwork (@var{Tbl}, @var{ResponseVarName})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationNeuralNetwork (@var{Tbl}, @var{formula})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationNeuralNetwork (@var{Tbl}, @var{Y})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationNeuralNetwork (@dots{}, @var{name}, @var{value})
+    ## @deftypefn  {ClassificationNeuralNetwork} {@var{obj} =} ClassificationNeuralNetwork (@var{X}, @var{Y})
+    ## @deftypefnx {ClassificationNeuralNetwork} {@var{obj} =} ClassificationNeuralNetwork (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationNeuralNetwork} {@var{obj} =} ClassificationNeuralNetwork (@var{Tbl}, @var{formula})
+    ## @deftypefnx {ClassificationNeuralNetwork} {@var{obj} =} ClassificationNeuralNetwork (@var{Tbl}, @var{Y})
+    ## @deftypefnx {ClassificationNeuralNetwork} {@var{obj} =} ClassificationNeuralNetwork (@dots{}, @var{name}, @var{value})
     ##
     ## Create a @qcode{ClassificationNeuralNetwork} class object containing a
     ## neural network classification model.

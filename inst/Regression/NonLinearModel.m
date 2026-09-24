@@ -15,50 +15,50 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftypefn {statistics} {@var{mdl} =} NonLinearModel (@dots{})
-##
-## Nonlinear regression model class.
-##
-## A @code{NonLinearModel} object holds a nonlinear regression fitted by
-## @code{fitnlm}, together with its coefficients, fit statistics, and methods
-## for inference, prediction, and diagnostics.  Construct one with
-## @code{fitnlm}, which documents the accepted inputs and
-## @var{Name}/@var{Value} pairs.
-##
-## The estimated coefficients and their statistics are in the
-## @code{Coefficients} table; @code{Rsquared}, @code{ModelCriterion},
-## @code{LogLikelihood}, @code{RMSE}, @code{SSE}, @code{SST}, and @code{SSR}
-## summarize the fit.  The methods @code{predict}, @code{feval}, @code{random},
-## @code{coefCI}, @code{coefTest}, @code{plotResiduals}, @code{plotDiagnostics},
-## and @code{plotSlice} operate on the fitted model.
-##
-## @subheading Fit statistics
-##
-## The fit statistics follow MATLAB's conventions.  @code{SSE} is the residual
-## sum of squares, @code{SST} the total sum of squares of the response about its
-## (weighted) mean, and @code{SSR} the regression sum of squares of the fitted
-## values about that mean; because the model is nonlinear, @code{SST} does
-## @emph{not} in general equal @code{SSR + SSE}.  @code{Rsquared.Ordinary} is
-## @code{1 - @var{SSE} / @var{SST}} and @code{Rsquared.Adjusted} corrects for
-## the error degrees of freedom.  @code{RMSE} is @code{sqrt (@var{MSE})}, and
-## the Gaussian @code{LogLikelihood} uses the maximum-likelihood error variance
-## @code{@var{SSE} / n}.  The information criteria in @code{ModelCriterion}
-## (@code{AIC}, @code{AICc}, @code{BIC}, @code{CAIC}) count the @math{p}
-## coefficients as the only parameters -- the error variance is @emph{not}
-## counted.  @code{coefTest} is a Wald test: for a contrast matrix @var{H} it
-## forms @code{(@var{H}*b)' * inv (@var{H}*@var{V}*@var{H}') * (@var{H}*b) / r}
-## with @var{V} the coefficient covariance and @math{r} the number of rows of
-## @var{H}, referred to an @math{F} distribution on @math{r} and @var{DFE}
-## degrees of freedom.  The summary printed by @code{disp} instead reports an
-## @math{F} statistic versus the zero model, formed from the uncorrected
-## regression sum of squares (the sum of the squared fitted values).
-##
-## @seealso{fitnlm, nlinfit, nlparci, nlpredci, LinearModel,
-## GeneralizedLinearModel}
-## @end deftypefn
-
 classdef NonLinearModel < PredictiveModel
+  ## -*- texinfo -*-
+  ## @deftp {statistics} NonLinearModel
+  ##
+  ## Nonlinear regression model class.
+  ##
+  ## A @code{NonLinearModel} object holds a nonlinear regression fitted by
+  ## @code{fitnlm}, together with its coefficients, fit statistics, and methods
+  ## for inference, prediction, and diagnostics.  Create a
+  ## @code{NonLinearModel} object with @code{fitnlm} or the class constructor.
+  ##
+  ## The estimated coefficients and their statistics are in the
+  ## @code{Coefficients} table; @code{Rsquared}, @code{ModelCriterion},
+  ## @code{LogLikelihood}, @code{RMSE}, @code{SSE}, @code{SST}, and @code{SSR}
+  ## summarize the fit.  The methods @code{predict}, @code{feval},
+  ## @code{random}, @code{coefCI}, @code{coefTest}, @code{plotResiduals},
+  ## @code{plotDiagnostics}, and @code{plotSlice} operate on the fitted model.
+  ##
+  ## @subheading Fit statistics
+  ##
+  ## The fit statistics follow MATLAB's conventions.  @code{SSE} is the residual
+  ## sum of squares, @code{SST} the total sum of squares of the response about
+  ## its (weighted) mean, and @code{SSR} the regression sum of squares of the
+  ## fitted values about that mean; because the model is nonlinear, @code{SST}
+  ## does @emph{not} in general equal @code{SSR + SSE}.
+  ## @code{Rsquared.Ordinary} is @code{1 - @var{SSE} / @var{SST}} and
+  ## @code{Rsquared.Adjusted} corrects for the error degrees of freedom.
+  ## @code{RMSE} is @code{sqrt (@var{MSE})}, and the Gaussian
+  ## @code{LogLikelihood} uses the maximum-likelihood error variance
+  ## @code{@var{SSE} / n}.  The information criteria in @code{ModelCriterion}
+  ## (@code{AIC}, @code{AICc}, @code{BIC}, @code{CAIC}) count the @math{p}
+  ## coefficients as the only parameters -- the error variance is @emph{not}
+  ## counted.  @code{coefTest} is a Wald test: for a contrast matrix @var{H} it
+  ## forms
+  ## @code{(@var{H}*b)' * inv (@var{H}*@var{V}*@var{H}') * (@var{H}*b) / r} with
+  ## @var{V} the coefficient covariance and @math{r} the number of rows of
+  ## @var{H}, referred to an @math{F} distribution on @math{r} and @var{DFE}
+  ## degrees of freedom.  The summary printed by @code{disp} instead reports an
+  ## @math{F} statistic versus the zero model, formed from the uncorrected
+  ## regression sum of squares (the sum of the squared fitted values).
+  ##
+  ## @seealso{fitnlm, nlinfit, nlparci, nlpredci, LinearModel,
+  ## GeneralizedLinearModel}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 
@@ -440,12 +440,51 @@ classdef NonLinearModel < PredictiveModel
   methods (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn {NonLinearModel} {@var{mdl} =} NonLinearModel (@var{data}, @var{resp}, @var{modelfun}, @var{beta0})
+    ## @deftypefn  {NonLinearModel} {@var{mdl} =} NonLinearModel (@var{X}, @var{y}, @var{modelfun}, @var{beta0})
+    ## @deftypefnx {NonLinearModel} {@var{mdl} =} NonLinearModel (@var{tbl}, [], @var{modelfun}, @var{beta0})
     ## @deftypefnx {NonLinearModel} {@var{mdl} =} NonLinearModel (@dots{}, @var{Name}, @var{Value})
     ##
-    ## Fit a nonlinear regression model.  Prefer the @code{fitnlm} function,
-    ## which documents the accepted inputs and @var{Name}/@var{Value} pairs.
+    ## Fit a nonlinear regression model.
     ##
+    ## @code{@var{mdl} = NonLinearModel (@var{X}, @var{y}, @var{modelfun},
+    ## @var{beta0})} fits the nonlinear regression model
+    ## @code{@var{y} = @var{modelfun} (@var{beta}, @var{X})} to the response
+    ## vector @var{y} and the @math{n}-by-@math{p} predictor matrix @var{X},
+    ## starting the iterative fit from the coefficient vector @var{beta0}.
+    ## @var{modelfun} is a function handle @code{@@(@var{b}, @var{X})} returning
+    ## the fitted responses.
+    ##
+    ## @code{@var{mdl} = NonLinearModel (@var{tbl}, [], @var{modelfun},
+    ## @var{beta0})} takes the predictors and response from the table
+    ## @var{tbl}; the last column is the response unless overridden by
+    ## @qcode{'ResponseVar'}.
+    ##
+    ## The following @var{Name}/@var{Value} pairs are accepted:
+    ##
+    ## @multitable @columnfractions 0.2 0.75
+    ## @headitem Name @tab Value
+    ## @item @qcode{'CoefficientNames'} @tab a cell array of names for the
+    ## coefficients (default @qcode{'b1'}, @qcode{'b2'}, @dots{}).
+    ## @item @qcode{'Weights'} @tab a vector of nonnegative observation weights.
+    ## @item @qcode{'ErrorModel'} @tab the error-variance model:
+    ## @qcode{'constant'} (default), @qcode{'proportional'}, or
+    ## @qcode{'combined'}.
+    ## @item @qcode{'RobustWgtFun'} @tab the name of a robust weight function,
+    ## enabling robust fitting (see @code{nlinfit}).
+    ## @item @qcode{'Options'} @tab a statset-style options structure
+    ## controlling the iterative fit (@qcode{MaxIter}, @qcode{TolFun},
+    ## @qcode{TolX}).
+    ## @item @qcode{'PredictorVars'}, @qcode{'ResponseVar'} @tab for table
+    ## input, the predictor and response variable names.
+    ## @item @qcode{'VarNames'} @tab a cell array of @math{p + 1} variable names
+    ## (predictors followed by the response) for numeric @var{X}.
+    ## @item @qcode{'Exclude'} @tab observations to exclude from the fit.
+    ## @end multitable
+    ##
+    ## @code{fitnlm} makes the same fit and takes a table without the empty
+    ## second argument.
+    ##
+    ## @seealso{fitnlm, nlinfit}
     ## @end deftypefn
     function this = NonLinearModel (data, resp, modelfun, beta0, varargin)
 

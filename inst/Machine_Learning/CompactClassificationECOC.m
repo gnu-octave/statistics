@@ -17,7 +17,7 @@
 
 classdef CompactClassificationECOC < PredictiveModel
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} CompactClassificationECOC
+  ## @deftp {statistics} CompactClassificationECOC
   ##
   ## A multiclass model built from binary learners, without its training data.
   ##
@@ -32,7 +32,7 @@ classdef CompactClassificationECOC < PredictiveModel
   ## classifiers, which carry no training data of their own.
   ##
   ## @seealso{fitcecoc, ClassificationECOC, designecoc}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 

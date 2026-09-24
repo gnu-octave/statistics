@@ -15,37 +15,23 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftypefn {statistics} {@var{obj} =} RegressionPartitionedModel (@var{Mdl}, @var{Partition})
-##
-## Create a @qcode{RegressionPartitionedModel} object, a regression model
-## cross validated over a partition of its training data.
-##
-## @code{@var{obj} = RegressionPartitionedModel (@var{Mdl}, @var{Partition})}
-## refits @var{Mdl} once per fold of @var{Partition}, each time on the
-## observations that fold holds out of its test set, and stores the compact
-## form of every fit in @code{Trained}.  It is normally reached through
-## @code{crossval (@var{Mdl})} rather than called directly.
-##
-## @itemize
-## @item
-## @var{Mdl} must be a @qcode{RegressionGAM}, a
-## @qcode{RegressionNeuralNetwork}, or a @qcode{RegressionSVM} object.
-## @item
-## @var{Partition} must be a @qcode{cvpartition} object over as many
-## observations as @var{Mdl} was trained on.
-## @end itemize
-##
-## Every observation is held out by exactly one fold under @math{k}-fold or
-## leave-one-out partitioning, so @code{kfoldPredict} can answer for it with a
-## model that never saw it.  Under a holdout partition only the test set is
-## answered for, and the rest come back @code{NaN}.
-##
-## @seealso{crossval, cvpartition, RegressionGAM, RegressionNeuralNetwork,
-## RegressionSVM}
-## @end deftypefn
-
 classdef RegressionPartitionedModel
+  ## -*- texinfo -*-
+  ## @deftp {statistics} RegressionPartitionedModel
+  ##
+  ## Cross-validated regression model.
+  ##
+  ## A @qcode{RegressionPartitionedModel} object holds a regression model cross
+  ## validated over a partition of its training data: one compact model per
+  ## fold, in @code{Trained}, each fitted without the observations that fold
+  ## tests on.  @code{kfoldPredict}, @code{kfoldLoss} and @code{kfoldfun} answer
+  ## for every observation with a model that never saw it.
+  ##
+  ## Create a @qcode{RegressionPartitionedModel} object with the @code{crossval}
+  ## method of a regression model or with the class constructor.
+  ##
+  ## @seealso{crossval, cvpartition, ClassificationPartitionedModel}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = public)
 
@@ -324,11 +310,31 @@ classdef RegressionPartitionedModel
     ## -*- texinfo -*-
     ## @deftypefn {RegressionPartitionedModel} {@var{obj} =} RegressionPartitionedModel (@var{Mdl}, @var{Partition})
     ##
-    ## Create a @qcode{RegressionPartitionedModel} object.
+    ## Cross-validate a regression model over a partition of its training data.
     ##
-    ## See the class documentation for what it holds and how it is reached.
+    ## @code{@var{obj} = RegressionPartitionedModel (@var{Mdl},
+    ## @var{Partition})} refits @var{Mdl} once per fold of @var{Partition},
+    ## each time on the observations that fold holds out of its test set, and
+    ## stores the compact form of every fit in @code{Trained}.  It is normally
+    ## reached through @code{crossval (@var{Mdl})} rather than called directly.
     ##
-    ## @seealso{crossval, RegressionPartitionedModel}
+    ## @itemize
+    ## @item
+    ## @var{Mdl} must be a @qcode{RegressionGAM}, a @qcode{RegressionGP}, a
+    ## @qcode{RegressionNeuralNetwork}, a @qcode{RegressionSVM} or a
+    ## @qcode{RegressionTree} object.
+    ## @item
+    ## @var{Partition} must be a @qcode{cvpartition} object over as many
+    ## observations as @var{Mdl} was trained on.
+    ## @end itemize
+    ##
+    ## Every observation is held out by exactly one fold under @math{k}-fold or
+    ## leave-one-out partitioning, so @code{kfoldPredict} can answer for it with
+    ## a model that never saw it.  Under a holdout partition only the test set
+    ## is answered for, and the rest come back @code{NaN}.
+    ##
+    ## @seealso{crossval, cvpartition, RegressionGAM, RegressionGP,
+    ## RegressionNeuralNetwork, RegressionSVM, RegressionTree}
     ## @end deftypefn
     function this = RegressionPartitionedModel (Mdl, Partition)
 

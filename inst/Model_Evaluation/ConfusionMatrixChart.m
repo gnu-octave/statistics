@@ -464,8 +464,8 @@ classdef ConfusionMatrixChart < handle
   methods(Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {statistics} {@var{cmc} =} ConfusionMatrixChart (@var{hax}, @var{cm}, @var{cl})
-    ## @deftypefnx {statistics} {@var{cmc} =} ConfusionMatrixChart (@dots{}, @var{name}, @var{value})
+    ## @deftypefn  {ConfusionMatrixChart} {@var{cmc} =} ConfusionMatrixChart (@var{hax}, @var{cm}, @var{cl})
+    ## @deftypefnx {ConfusionMatrixChart} {@var{cmc} =} ConfusionMatrixChart (@dots{}, @var{name}, @var{value})
     ##
     ## Create a @qcode{ConfusionMatrixChart} object for visualizing
     ## classification performance.

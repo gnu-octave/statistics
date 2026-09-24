@@ -15,122 +15,28 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{obj} =} RegressionSVM (@var{X}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} RegressionSVM (@var{Tbl}, @var{ResponseVarName})
-## @deftypefnx {statistics} {@var{obj} =} RegressionSVM (@var{Tbl}, @var{formula})
-## @deftypefnx {statistics} {@var{obj} =} RegressionSVM (@var{Tbl}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} RegressionSVM (@dots{}, @var{name}, @var{value})
-##
-## Create a @qcode{RegressionSVM} object containing a support vector machine
-## regression model.
-##
-## @code{@var{obj} = RegressionSVM (@var{X}, @var{Y})} returns a support vector
-## regression model, @var{obj}, with @var{X} being the predictor data and
-## @var{Y} the continuous response of the observations in @var{X}.
-##
-## @itemize
-## @item
-## @var{X} must be an @math{NxP} numeric matrix of predictor data, where rows
-## correspond to observations and columns to features.
-## @item
-## @var{Y} must be an @math{Nx1} numeric vector holding the response of the
-## corresponding predictor data in @var{X}.  @var{Y} must have the same number
-## of rows as @var{X}.
-## @end itemize
-##
-## The model is fitted by @math{epsilon}-insensitive regression: errors smaller
-## than @qcode{Epsilon} cost nothing, so only the observations outside that
-## tube become support vectors.  @qcode{Epsilon} defaults to
-## @code{iqr (@var{Y}) / 13.49}, a robust estimate of a tenth of the response's
-## standard deviation, which is what MATLAB uses.
-##
-## @code{@var{obj} = RegressionSVM (@dots{}, @var{name}, @var{value})} returns
-## a model with additional options specified by @qcode{Name-Value} pair
-## arguments listed below.
-##
-## @multitable @columnfractions 0.32 0.68
-## @headitem @var{Name} @tab @var{Value}
-##
-## @item @qcode{'Standardize'} @tab A logical scalar specifying whether the
-## predictor data should be centred and scaled before training.  The same
-## transformation is applied by @code{predict}.  The default is @qcode{false}.
-##
-## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values are
-## levels, as indices, as a logical vector with one element per predictor, or as
-## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros and
-## ones per level seen in training, named as in @qcode{'x1 == 2'} in
-## @code{ExpandedPredictorNames}, and the coded columns are not standardized.
-## An observation holding a level the training data did not is predicted as a
-## row missing a predictor, the lower median of the training response.
-## A predictor may be named rather than indexed, as a character matrix of one
-## padded name per row, a string array or a cellstr; a name must match an entry
-## of @qcode{'PredictorNames'} exactly, its case included.
-##
-## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
-## naming the predictors, in the order they appear in @var{X}.
-##
-## @item @qcode{'ResponseName'} @tab A character vector naming the response.
-## The default is @qcode{'Y'}.
-##
-## @item @qcode{'ResponseTransform'} @tab A character vector naming one of the
-## supported transformations, or a function handle, applied to the predicted
-## response by @code{predict} and @code{resubPredict}.  The default is
-## @qcode{'none'}.
-##
-## @item @qcode{'Epsilon'} @tab A non-negative scalar, the half-width of the
-## insensitive tube.  The default is @code{iqr (@var{Y}) / 13.49}, or
-## @math{0.1} where that is zero.
-##
-## @item @qcode{'BoxConstraint'} @tab A positive scalar bounding the dual
-## coefficients, the cost of an error outside the tube.  The default is 1.
-##
-## @item @qcode{'KernelFunction'} @tab A character vector naming the kernel,
-## one of @qcode{'linear'}, the default, @qcode{'rbf'}, @qcode{'gaussian'},
-## @qcode{'polynomial'} or @qcode{'sigmoid'}.
-##
-## @item @qcode{'PolynomialOrder'} @tab A positive integer, the order of the
-## polynomial kernel.  The default is 3.  It is ignored by every other kernel.
-##
-## @item @qcode{'KernelScale'} @tab A positive scalar dividing the predictors
-## before the kernel is applied.  The default is 1.
-##
-## @item @qcode{'KernelOffset'} @tab A non-negative scalar added to the kernel
-## value.  The default is 0.
-##
-## @item @qcode{'SVMtype'} @tab A character vector selecting the formulation,
-## either @qcode{'eps_svr'}, the default, or @qcode{'nu_svr'}.  MATLAB fits
-## only the @math{epsilon} form; @qcode{'nu_svr'} is an Octave extension, in
-## which @qcode{Nu} bounds the fraction of support vectors and @qcode{Epsilon}
-## is determined by the fit rather than given.
-##
-## @item @qcode{'Nu'} @tab A scalar in @math{(0, 1]} used by
-## @qcode{'nu_svr'}.  The default is 0.5.
-##
-## @item @qcode{'CacheSize'} @tab A positive scalar, the kernel cache in
-## megabytes.  The default is 1000.
-##
-## @item @qcode{'Tolerance'} @tab A non-negative scalar, the tolerance of the
-## termination criterion.  The default is @math{1e-6}.
-##
-## @item @qcode{'Shrinking'} @tab Either 0 or 1, whether to use the shrinking
-## heuristic.  The default is 1.
-## @end multitable
-##
-## The supported values for @qcode{'ResponseTransform'} are:
-##
-## @multitable @columnfractions 0.3 0.7
-## @headitem @var{Value} @tab @var{Description}
-## @item @qcode{'none'} @tab @math{x} (no transformation)
-## @item @qcode{'identity'} @tab @math{x} (no transformation)
-## @item @qcode{'exp'} @tab @math{exp (x)}
-## @item @qcode{'log'} @tab @math{log (x)}
-## @end multitable
-##
-## @seealso{fitrsvm, ClassificationSVM, RegressionNeuralNetwork}
-## @end deftypefn
-
 classdef RegressionSVM < PredictiveModel
+  ## -*- texinfo -*-
+  ## @deftp {statistics} RegressionSVM
+  ##
+  ## Support vector machine regression model.
+  ##
+  ## A @qcode{RegressionSVM} object holds a support vector machine fitted to a
+  ## continuous response by @math{epsilon}-insensitive regression, and predicts
+  ## the response for new data with the @code{predict} method.  Errors smaller
+  ## than @qcode{Epsilon} cost nothing, so only the observations outside that
+  ## tube become support vectors, and a prediction is a weighted sum of kernel
+  ## evaluations against them.  The fit is carried out by LIBSVM.
+  ##
+  ## The object keeps its training data, which @code{resubPredict},
+  ## @code{resubLoss} and @code{crossval} work on; @code{compact} drops it and
+  ## returns a @code{CompactRegressionSVM}, which still predicts.
+  ##
+  ## Create a @qcode{RegressionSVM} object with @code{fitrsvm} or the class
+  ## constructor.
+  ##
+  ## @seealso{fitrsvm, CompactRegressionSVM, ClassificationSVM}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
@@ -507,14 +413,119 @@ classdef RegressionSVM < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionSVM} {@var{obj} =} RegressionSVM (@var{X}, @var{Y})
+    ## @deftypefnx {RegressionSVM} {@var{obj} =} RegressionSVM (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {RegressionSVM} {@var{obj} =} RegressionSVM (@var{Tbl}, @var{formula})
+    ## @deftypefnx {RegressionSVM} {@var{obj} =} RegressionSVM (@var{Tbl}, @var{Y})
     ## @deftypefnx {RegressionSVM} {@var{obj} =} RegressionSVM (@dots{}, @var{name}, @var{value})
     ##
-    ## Create a @qcode{RegressionSVM} object containing a support vector
-    ## machine regression model.
+    ## Fit a support vector machine regression model.
     ##
-    ## See the class documentation for the accepted @qcode{Name-Value} pairs.
+    ## @code{@var{obj} = RegressionSVM (@var{X}, @var{Y})} returns a support
+    ## vector regression model, @var{obj}, with @var{X} being the predictor data
+    ## and @var{Y} the continuous response of the observations in @var{X}.
     ##
-    ## @seealso{fitrsvm, RegressionSVM}
+    ## @itemize
+    ## @item
+    ## @var{X} must be an @math{NxP} numeric matrix of predictor data, where
+    ## rows correspond to observations and columns to features.
+    ## @item
+    ## @var{Y} must be an @math{Nx1} numeric vector holding the response of the
+    ## corresponding predictor data in @var{X}.  @var{Y} must have the same
+    ## number of rows as @var{X}.
+    ## @end itemize
+    ##
+    ## The model is fitted by @math{epsilon}-insensitive regression: errors
+    ## smaller than @qcode{Epsilon} cost nothing, so only the observations
+    ## outside that tube become support vectors.  @qcode{Epsilon} defaults to
+    ## @code{iqr (@var{Y}) / 13.49}, a robust estimate of a tenth of the
+    ## response's standard deviation, which is what MATLAB uses.
+    ##
+    ## @code{@var{obj} = RegressionSVM (@dots{}, @var{name}, @var{value})}
+    ## returns a model with additional options specified by @qcode{Name-Value}
+    ## pair arguments listed below.
+    ##
+    ## @multitable @columnfractions 0.32 0.68
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'Standardize'} @tab A logical scalar specifying whether the
+    ## predictor data should be centred and scaled before training.  The same
+    ## transformation is applied by @code{predict}.  The default is
+    ## @qcode{false}.
+    ##
+    ## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values
+    ## are levels, as indices, as a logical vector with one element per
+    ## predictor, or as @qcode{'all'}.  Each is dummy coded in its place, one
+    ## column of zeros and ones per level seen in training, named as in
+    ## @qcode{'x1 == 2'} in @code{ExpandedPredictorNames}, and the coded columns
+    ## are not standardized.  An observation holding a level the training data
+    ## did not is predicted as a row missing a predictor, the lower median of
+    ## the training response.  A predictor may be named rather than indexed, as
+    ## a character matrix of one padded name per row, a string array or a
+    ## cellstr; a name must match an entry of @qcode{'PredictorNames'} exactly,
+    ## its case included.
+    ##
+    ## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
+    ## naming the predictors, in the order they appear in @var{X}.
+    ##
+    ## @item @qcode{'ResponseName'} @tab A character vector naming the response.
+    ## The default is @qcode{'Y'}.
+    ##
+    ## @item @qcode{'ResponseTransform'} @tab A character vector naming one of
+    ## the supported transformations, or a function handle, applied to the
+    ## predicted response by @code{predict} and @code{resubPredict}.  The
+    ## default is @qcode{'none'}.
+    ##
+    ## @item @qcode{'Epsilon'} @tab A non-negative scalar, the half-width of the
+    ## insensitive tube.  The default is @code{iqr (@var{Y}) / 13.49}, or
+    ## @math{0.1} where that is zero.
+    ##
+    ## @item @qcode{'BoxConstraint'} @tab A positive scalar bounding the dual
+    ## coefficients, the cost of an error outside the tube.  The default is 1.
+    ##
+    ## @item @qcode{'KernelFunction'} @tab A character vector naming the kernel,
+    ## one of @qcode{'linear'}, the default, @qcode{'rbf'}, @qcode{'gaussian'},
+    ## @qcode{'polynomial'} or @qcode{'sigmoid'}.
+    ##
+    ## @item @qcode{'PolynomialOrder'} @tab A positive integer, the order of the
+    ## polynomial kernel.  The default is 3.  It is ignored by every other
+    ## kernel.
+    ##
+    ## @item @qcode{'KernelScale'} @tab A positive scalar dividing the
+    ## predictors before the kernel is applied.  The default is 1.
+    ##
+    ## @item @qcode{'KernelOffset'} @tab A non-negative scalar added to the
+    ## kernel value.  The default is 0.
+    ##
+    ## @item @qcode{'SVMtype'} @tab A character vector selecting the
+    ## formulation, either @qcode{'eps_svr'}, the default, or @qcode{'nu_svr'}.
+    ## MATLAB fits only the @math{epsilon} form; @qcode{'nu_svr'} is an Octave
+    ## extension, in which @qcode{Nu} bounds the fraction of support vectors and
+    ## @qcode{Epsilon} is determined by the fit rather than given.
+    ##
+    ## @item @qcode{'Nu'} @tab A scalar in @math{(0, 1]} used by
+    ## @qcode{'nu_svr'}.  The default is 0.5.
+    ##
+    ## @item @qcode{'CacheSize'} @tab A positive scalar, the kernel cache in
+    ## megabytes.  The default is 1000.
+    ##
+    ## @item @qcode{'Tolerance'} @tab A non-negative scalar, the tolerance of
+    ## the termination criterion.  The default is @math{1e-6}.
+    ##
+    ## @item @qcode{'Shrinking'} @tab Either 0 or 1, whether to use the
+    ## shrinking heuristic.  The default is 1.
+    ## @end multitable
+    ##
+    ## The supported values for @qcode{'ResponseTransform'} are:
+    ##
+    ## @multitable @columnfractions 0.3 0.7
+    ## @headitem @var{Value} @tab @var{Description}
+    ## @item @qcode{'none'} @tab @math{x} (no transformation)
+    ## @item @qcode{'identity'} @tab @math{x} (no transformation)
+    ## @item @qcode{'exp'} @tab @math{exp (x)}
+    ## @item @qcode{'log'} @tab @math{log (x)}
+    ## @end multitable
+    ##
+    ## @seealso{fitrsvm, ClassificationSVM, RegressionNeuralNetwork}
     ## @end deftypefn
     function this = RegressionSVM (X, Y, varargin)
       ## Check for sufficient number of input arguments

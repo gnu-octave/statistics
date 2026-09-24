@@ -818,11 +818,11 @@ classdef ClassificationDiscriminant < PredictiveModel
   methods (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {statistics} {@var{obj} =} ClassificationDiscriminant (@var{X}, @var{Y})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationDiscriminant (@var{Tbl}, @var{ResponseVarName})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationDiscriminant (@var{Tbl}, @var{formula})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationDiscriminant (@var{Tbl}, @var{Y})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationDiscriminant (@dots{}, @var{name}, @var{value})
+    ## @deftypefn  {ClassificationDiscriminant} {@var{obj} =} ClassificationDiscriminant (@var{X}, @var{Y})
+    ## @deftypefnx {ClassificationDiscriminant} {@var{obj} =} ClassificationDiscriminant (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationDiscriminant} {@var{obj} =} ClassificationDiscriminant (@var{Tbl}, @var{formula})
+    ## @deftypefnx {ClassificationDiscriminant} {@var{obj} =} ClassificationDiscriminant (@var{Tbl}, @var{Y})
+    ## @deftypefnx {ClassificationDiscriminant} {@var{obj} =} ClassificationDiscriminant (@dots{}, @var{name}, @var{value})
     ##
     ## Create a @qcode{ClassificationDiscriminant} class object containing a
     ## discriminant analysis model.

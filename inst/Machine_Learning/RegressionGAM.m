@@ -17,151 +17,30 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef RegressionGAM < PredictiveModel
-## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{obj} =} RegressionGAM (@var{X}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} RegressionGAM (@dots{}, @var{name}, @var{value})
-##
-## Create a @qcode{RegressionGAM} class object containing a Generalized Additive
-## Model (GAM) for regression.
-##
-## A @qcode{RegressionGAM} class object can store the predictors and response
-## data along with various parameters for the GAM model.  It is recommended to
-## use the @code{fitrgam} function to create a @qcode{RegressionGAM} object.
-##
-## @code{@var{obj} = RegressionGAM (@var{X}, @var{Y})} returns an object of
-## class RegressionGAM, with matrix @var{X} containing the predictor data and
-## vector @var{Y} containing the continuous response data.
-##
-## @itemize
-## @item
-## @var{X} must be a @math{N*P} numeric matrix of input data where rows
-## correspond to observations and columns correspond to features or variables.
-## @var{X} will be used to train the GAM model.
-## @item
-## @var{Y} must be @math{N*1} numeric vector containing the response data
-## corresponding to the predictor data in @var{X}. @var{Y} must have same
-## number of rows as @var{X}.
-## @end itemize
-##
-## @code{@var{obj} = RegressionGAM (@dots{}, @var{name}, @var{value})} returns
-## an object of class RegressionGAM with additional properties specified by
-## @qcode{Name-Value} pair arguments listed below.
-##
-## @multitable @columnfractions 0.2 0.75
-## @headitem @var{Name} @tab @var{Value}
-##
-## @item @qcode{'Predictors'} @tab Predictor Variable names, specified as
-## a row vector cell of strings with the same length as the columns in @var{X}.
-## If omitted, the program will generate default variable names
-## @qcode{(x1, x2, ..., xn)} for each column in @var{X}.
-##
-## @item @qcode{'responsename'} @tab Response Variable Name, specified as
-## a string.  If omitted, the default value is @qcode{'Y'}.
-##
-## @item @qcode{'formula'} @tab (spline option) a model specification given as a
-## string in
-## the form @qcode{'Y ~ terms'} where @qcode{Y} represents the response variable
-## and @qcode{terms} the predictor variables.  The formula can be used to
-## specify a subset of variables for training model.  For example:
-## @qcode{'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3'} specifies four linear terms
-## for the first four columns of for predictor data, and @qcode{x1:x2} and
-## @qcode{x2:x3} specify the two interaction terms for 1st-2nd and 3rd-4th
-## columns respectively.  Only these terms will be used for training the model,
-## but @var{X} must have at least as many columns as referenced in the formula.
-## If Predictor Variable names have been defined, then the terms in the formula
-## must reference to those.  When @qcode{'formula'} is specified, all terms used
-## for training the model are referenced in the @qcode{IntMatrix} field of the
-## @var{obj} class object as a matrix containing the column indexes for each
-## term including both the predictors and the interactions used.
-##
-## @item @qcode{'interactions'} @tab a logical matrix, a positive integer
-## scalar, or the string @qcode{'all'} for defining the interactions between
-## predictor variables.  When given a logical matrix, it must have the same
-## number of columns as @var{X} and each row corresponds to a different
-## interaction term combining the predictors indexed as @qcode{true}.  Each
-## interaction term is appended as a column vector after the available predictor
-## column in @var{X}.  When @qcode{'all'} is defined, then all possible
-## combinations of interactions are appended in @var{X} before training.  At the
-## moment, parsing a positive integer has the same effect as the @qcode{'all'}
-## option.  When @qcode{'interactions'} is specified, only the interaction terms
-## appended to @var{X} are referenced in the @qcode{IntMatrix} field of the
-## @var{obj} class object.
-##
-## @item @qcode{'knots'} @tab (spline option) a scalar or a row vector with the
-## same
-## columns as @var{X}.  It defines the knots for fitting a polynomial when
-## training the GAM.  As a scalar, it is expanded to a row vector.  The default
-## value is 5, hence expanded to @qcode{ones (1, columns (X)) * 5}.  You can
-## parse a row vector with different number of knots for each predictor
-## variable to be fitted with, although not recommended.
-##
-## @item @qcode{'order'} @tab (spline option) a scalar or a row vector with the
-## same
-## columns as @var{X}.  It defines the order of the polynomial when training the
-## GAM.  As a scalar, it is expanded to a row vector.  The default values is 3,
-## hence expanded to @qcode{ones (1, columns (X)) * 3}.  You can parse a row
-## vector with different number of polynomial order for each predictor variable
-## to be fitted with, although not recommended.
-##
-## @item @qcode{'dof'} @tab (spline option) a scalar or a row vector with the
-## same columns
-## as @var{X}.  It defines the degrees of freedom for fitting a polynomial when
-## training the GAM.  As a scalar, it is expanded to a row vector.  The default
-## value is 8, hence expanded to @qcode{ones (1, columns (X)) * 8}.  You can
-## parse a row vector with different degrees of freedom for each predictor
-## variable to be fitted with, although not recommended.
-##
-## @item @qcode{'tol'} @tab (spline option) a positive scalar to set the
-## tolerance for
-## convergence during training. By default, it is set to @qcode{1e-3}.
-##
-## @end multitable
-##
-## A row marked @qcode{(spline option)} belongs to the spline
-## engine and requires @qcode{'FitMethod', 'splines'}; passing one
-## under the default boosted-tree engine is an error rather than
-## being ignored.  The boosted-tree engine's own options are
-## documented under @code{fitrgam}.
-##
-## You can parse either a @qcode{'formula'} or an @qcode{'interactions'}
-## optional parameter.  Parsing both parameters will result an error.
-## Accordingly, you can only pass up to two parameters among @qcode{'knots'},
-## @qcode{'order'}, and @qcode{'dof'} to define the required polynomial for
-## training the GAM model.
-##
-## Two weak learners are available, selected by @code{FitMethod}.
-##
-## @qcode{'boostedtrees'}, the default, boosts one shallow decision tree per
-## predictor in each round, which is the scheme MATLAB's generalized additive
-## model uses.  A second phase then boosts trees over pairs of predictors,
-## where interactions are asked for.
-##
-## @qcode{'splines'} boosts a smoothing spline per predictor until the
-## residual sum of squares changes by less than @qcode{'Tol'}.  It has no
-## MATLAB counterpart and is an Octave extension, kept because a smooth
-## additive fit is a genuinely different and often better answer than a
-## staircase of stumps.  A standard deviation and a prediction interval are
-## available from it alone.
-##
-## The two take different arguments, and an argument meant for one is refused
-## by the other rather than ignored.
-##
-## The choice is visible in the properties.  @code{Knots}, @code{Order},
-## @code{DoF}, @code{Formula}, @code{Tol}, @code{BaseModel},
-## @code{ModelwInt} and @code{IntMatrix} describe a spline fit and are empty
-## under the boosted-tree engine, while @code{ModelParameters},
-## @code{ReasonForTermination}, @code{BinEdges},
-## @code{PairDetectionBinEdges} and @code{TreeModel} describe a tree fit and
-## are empty under the spline engine.
-##
-## Fitted values are not expected to equal MATLAB's even under
-## @qcode{'boostedtrees'}.  The stopping rule and the step-reduction limit are
-## not recoverable from anything MATLAB reports, so this engine documents its
-## own; what the two share is the estimator and the reported surface, not the
-## arithmetic.
-##
-## @seealso{fitrgam, regress, regress_gp}
-## @end deftypefn
+  ## -*- texinfo -*-
+  ## @deftp {statistics} RegressionGAM
+  ##
+  ## Generalized additive model for regression.
+  ##
+  ## A @qcode{RegressionGAM} object holds a generalized additive model fitted to
+  ## a continuous response, and predicts the response for new data with the
+  ## @code{predict} method.  The model is a sum of one shape function per
+  ## predictor, and optionally one per pair of predictors, each learned from the
+  ## data rather than assumed.
+  ##
+  ## Two engines fit it.  @qcode{'boostedtrees'}, the default, boosts shallow
+  ## decision trees one predictor at a time; @qcode{'splines'} boosts smoothing
+  ## splines.  The properties describing the engine that was not used are empty.
+  ##
+  ## The object keeps its training data, which @code{resubPredict},
+  ## @code{resubLoss} and @code{crossval} work on; @code{compact} drops it and
+  ## returns a @code{CompactRegressionGAM}, which still predicts.
+  ##
+  ## Create a @qcode{RegressionGAM} object with @code{fitrgam} or the class
+  ## constructor.
+  ##
+  ## @seealso{fitrgam, CompactRegressionGAM, ClassificationGAM}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
@@ -608,16 +487,138 @@ classdef RegressionGAM < PredictiveModel
     ##
     ## Fit a generalized additive model for regression.
     ##
-    ## @var{X} is an @math{N*P} numeric matrix of predictor data, one
-    ## observation per row, and @var{Y} is the continuous response of those
-    ## @math{N} observations.  The fit runs at construction, so @var{obj}
-    ## arrives fitted.
+    ## @code{@var{obj} = RegressionGAM (@var{X}, @var{Y})} returns an object of
+    ## class RegressionGAM, with matrix @var{X} containing the predictor data
+    ## and vector @var{Y} containing the continuous response data.
     ##
-    ## The @var{name}/@var{value} pairs the fit accepts, and the validation
-    ## each one is held to, are listed in @code{help RegressionGAM}.
-    ## @code{fitrgam} is the documented way to reach this constructor and
-    ## takes the same pairs.
+    ## @itemize
+    ## @item
+    ## @var{X} must be a @math{N*P} numeric matrix of input data where rows
+    ## correspond to observations and columns correspond to features or
+    ## variables.  @var{X} will be used to train the GAM model.
+    ## @item
+    ## @var{Y} must be @math{N*1} numeric vector containing the response data
+    ## corresponding to the predictor data in @var{X}. @var{Y} must have same
+    ## number of rows as @var{X}.
+    ## @end itemize
     ##
+    ## @code{@var{obj} = RegressionGAM (@dots{}, @var{name}, @var{value})}
+    ## returns an object of class RegressionGAM with additional properties
+    ## specified by @qcode{Name-Value} pair arguments listed below.
+    ##
+    ## @multitable @columnfractions 0.2 0.75
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'Predictors'} @tab Predictor Variable names, specified as a
+    ## row vector cell of strings with the same length as the columns in
+    ## @var{X}.  If omitted, the program will generate default variable names
+    ## @qcode{(x1, x2, ..., xn)} for each column in @var{X}.
+    ##
+    ## @item @qcode{'responsename'} @tab Response Variable Name, specified as
+    ## a string.  If omitted, the default value is @qcode{'Y'}.
+    ##
+    ## @item @qcode{'formula'} @tab (spline option) a model specification given
+    ## as a string in the form @qcode{'Y ~ terms'} where @qcode{Y} represents
+    ## the response variable and @qcode{terms} the predictor variables.  The
+    ## formula can be used to specify a subset of variables for training model.
+    ## For example: @qcode{'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3'} specifies
+    ## four linear terms for the first four columns of for predictor data, and
+    ## @qcode{x1:x2} and @qcode{x2:x3} specify the two interaction terms for
+    ## 1st-2nd and 3rd-4th columns respectively.  Only these terms will be used
+    ## for training the model, but @var{X} must have at least as many columns as
+    ## referenced in the formula.  If Predictor Variable names have been
+    ## defined, then the terms in the formula must reference to those.  When
+    ## @qcode{'formula'} is specified, all terms used for training the model are
+    ## referenced in the @qcode{IntMatrix} field of the @var{obj} class object
+    ## as a matrix containing the column indexes for each term including both
+    ## the predictors and the interactions used.
+    ##
+    ## @item @qcode{'interactions'} @tab a logical matrix, a positive integer
+    ## scalar, or the string @qcode{'all'} for defining the interactions between
+    ## predictor variables.  When given a logical matrix, it must have the same
+    ## number of columns as @var{X} and each row corresponds to a different
+    ## interaction term combining the predictors indexed as @qcode{true}.  Each
+    ## interaction term is appended as a column vector after the available
+    ## predictor column in @var{X}.  When @qcode{'all'} is defined, then all
+    ## possible combinations of interactions are appended in @var{X} before
+    ## training.  At the moment, parsing a positive integer has the same effect
+    ## as the @qcode{'all'} option.  When @qcode{'interactions'} is specified,
+    ## only the interaction terms appended to @var{X} are referenced in the
+    ## @qcode{IntMatrix} field of the @var{obj} class object.
+    ##
+    ## @item @qcode{'knots'} @tab (spline option) a scalar or a row vector with
+    ## the same columns as @var{X}.  It defines the knots for fitting a
+    ## polynomial when training the GAM.  As a scalar, it is expanded to a row
+    ## vector.  The default value is 5, hence expanded to
+    ## @qcode{ones (1, columns (X)) * 5}.  You can parse a row vector with
+    ## different number of knots for each predictor variable to be fitted with,
+    ## although not recommended.
+    ##
+    ## @item @qcode{'order'} @tab (spline option) a scalar or a row vector with
+    ## the same columns as @var{X}.  It defines the order of the polynomial when
+    ## training the GAM.  As a scalar, it is expanded to a row vector.  The
+    ## default values is 3, hence expanded to @qcode{ones (1, columns (X)) * 3}.
+    ## You can parse a row vector with different number of polynomial order for
+    ## each predictor variable to be fitted with, although not recommended.
+    ##
+    ## @item @qcode{'dof'} @tab (spline option) a scalar or a row vector with
+    ## the same columns as @var{X}.  It defines the degrees of freedom for
+    ## fitting a polynomial when training the GAM.  As a scalar, it is expanded
+    ## to a row vector.  The default value is 8, hence expanded to
+    ## @qcode{ones (1, columns (X)) * 8}.  You can parse a row vector with
+    ## different degrees of freedom for each predictor variable to be fitted
+    ## with, although not recommended.
+    ##
+    ## @item @qcode{'tol'} @tab (spline option) a positive scalar to set the
+    ## tolerance for
+    ## convergence during training. By default, it is set to @qcode{1e-3}.
+    ##
+    ## @end multitable
+    ##
+    ## A row marked @qcode{(spline option)} belongs to the spline
+    ## engine and requires @qcode{'FitMethod', 'splines'}; passing one
+    ## under the default boosted-tree engine is an error rather than
+    ## being ignored.  The boosted-tree engine's own options are
+    ## documented under @code{fitrgam}.
+    ##
+    ## You can parse either a @qcode{'formula'} or an @qcode{'interactions'}
+    ## optional parameter.  Parsing both parameters will result an error.
+    ## Accordingly, you can only pass up to two parameters among
+    ## @qcode{'knots'}, @qcode{'order'}, and @qcode{'dof'} to define the
+    ## required polynomial for training the GAM model.
+    ##
+    ## Two weak learners are available, selected by @code{FitMethod}.
+    ##
+    ## @qcode{'boostedtrees'}, the default, boosts one shallow decision tree per
+    ## predictor in each round, which is the scheme MATLAB's generalized
+    ## additive model uses.  A second phase then boosts trees over pairs of
+    ## predictors, where interactions are asked for.
+    ##
+    ## @qcode{'splines'} boosts a smoothing spline per predictor until the
+    ## residual sum of squares changes by less than @qcode{'Tol'}.  It has no
+    ## MATLAB counterpart and is an Octave extension, kept because a smooth
+    ## additive fit is a genuinely different and often better answer than a
+    ## staircase of stumps.  A standard deviation and a prediction interval are
+    ## available from it alone.
+    ##
+    ## The two take different arguments, and an argument meant for one is
+    ## refused by the other rather than ignored.
+    ##
+    ## The choice is visible in the properties.  @code{Knots}, @code{Order},
+    ## @code{DoF}, @code{Formula}, @code{Tol}, @code{BaseModel},
+    ## @code{ModelwInt} and @code{IntMatrix} describe a spline fit and are empty
+    ## under the boosted-tree engine, while @code{ModelParameters},
+    ## @code{ReasonForTermination}, @code{BinEdges},
+    ## @code{PairDetectionBinEdges} and @code{TreeModel} describe a tree fit and
+    ## are empty under the spline engine.
+    ##
+    ## Fitted values are not expected to equal MATLAB's even under
+    ## @qcode{'boostedtrees'}.  The stopping rule and the step-reduction limit
+    ## are not recoverable from anything MATLAB reports, so this engine
+    ## documents its own; what the two share is the estimator and the reported
+    ## surface, not the arithmetic.
+    ##
+    ## @seealso{fitrgam, regress, regress_gp}
     ## @end deftypefn
     function this = RegressionGAM (X, Y, varargin)
       ## Check for sufficient number of input arguments

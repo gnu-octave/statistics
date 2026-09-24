@@ -15,164 +15,30 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{obj} =} RegressionGP (@var{X}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} RegressionGP (@var{Tbl}, @var{ResponseVarName})
-## @deftypefnx {statistics} {@var{obj} =} RegressionGP (@var{Tbl}, @var{formula})
-## @deftypefnx {statistics} {@var{obj} =} RegressionGP (@var{Tbl}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} RegressionGP (@dots{}, @var{name}, @var{value})
-##
-## Create a @qcode{RegressionGP} object containing a Gaussian process
-## regression model.
-##
-## @code{@var{obj} = RegressionGP (@var{X}, @var{Y})} returns a Gaussian
-## process regression model, @var{obj}, with @var{X} being the predictor data
-## and @var{Y} the continuous response of the observations in @var{X}.
-##
-## @itemize
-## @item
-## @var{X} must be an @math{NxP} numeric matrix of predictor data, where rows
-## correspond to observations and columns to features.
-## @item
-## @var{Y} must be an @math{Nx1} numeric vector holding the response of the
-## corresponding predictor data in @var{X}.  @var{Y} must have the same number
-## of rows as @var{X}.
-## @end itemize
-##
-## A Gaussian process places a prior over functions, given by the covariance
-## function, and conditions it on the observations.  The response is modelled
-## as @math{H*Beta} plus a draw from that process plus independent noise of
-## standard deviation @qcode{Sigma}, where @math{H} is the explicit basis.  The
-## covariance parameters and @qcode{Sigma} are estimated by maximizing the log
-## marginal likelihood, and @qcode{Beta} follows from them in closed form as
-## the generalized least squares estimate.
-##
-## @code{@var{obj} = RegressionGP (@dots{}, @var{name}, @var{value})} returns a
-## model with additional options specified by @qcode{Name-Value} pair
-## arguments listed below.
-##
-## @multitable @columnfractions 0.32 0.68
-## @headitem @var{Name} @tab @var{Value}
-##
-## @item @qcode{'KernelFunction'} @tab A character vector naming the covariance
-## function, or a function handle taking two matrices of points and a parameter
-## vector.  The default is @qcode{'squaredexponential'}.  The supported names
-## are listed below.
-##
-## @item @qcode{'KernelParameters'} @tab A numeric vector of initial values for
-## the covariance parameters.  Its length depends on the covariance function.
-## These are starting values for the optimization, not fixed values.
-##
-## @item @qcode{'BasisFunction'} @tab A character vector naming the explicit
-## basis, one of @qcode{'none'}, @qcode{'constant'}, @qcode{'linear'} or
-## @qcode{'pureQuadratic'}, or a function handle taking @var{X} and returning
-## the basis matrix.  The default is @qcode{'constant'}.
-##
-## @item @qcode{'Beta'} @tab A numeric vector of basis coefficients.  These are
-## used as known values only when @qcode{'FitMethod'} is @qcode{'none'}.
-##
-## @item @qcode{'Sigma'} @tab A positive scalar, the initial value of the noise
-## standard deviation.  The default is @code{std (@var{Y}) / sqrt (2)}.
-##
-## @item @qcode{'ConstantSigma'} @tab A logical scalar.  When @qcode{true} the
-## noise standard deviation is held at its initial value instead of being
-## estimated.  The default is @qcode{false}.
-##
-## @item @qcode{'SigmaLowerBound'} @tab A positive scalar bounding the noise
-## standard deviation from below.  The default is
-## @code{1e-2 * std (@var{Y})}.
-##
-## @item @qcode{'FitMethod'} @tab A character vector, either @qcode{'exact'} to
-## estimate the parameters or @qcode{'none'} to keep them at their initial
-## values.  The default is @qcode{'exact'}.
-##
-## @item @qcode{'PredictMethod'} @tab A character vector.  Only @qcode{'exact'}
-## is implemented, which is also the only method under which a standard
-## deviation and a prediction interval are available.
-##
-## @item @qcode{'Optimizer'} @tab A character vector naming the optimizer used
-## to maximize the log marginal likelihood.  @qcode{'quasinewton'} and
-## @qcode{'fminunc'} name the same dense solver and are the default,
-## @qcode{'lbfgs'} selects limited-memory BFGS, which holds a fixed number of
-## curvature pairs rather than a full inverse Hessian and is the cheaper
-## choice when the kernel carries many parameters, and @qcode{'fminsearch'}
-## is derivative-free.
-##
-## @item @qcode{'Standardize'} @tab A logical scalar specifying whether the
-## predictor data should be centred and scaled before training.  The same
-## transformation is applied by @code{predict}.  The default is @qcode{false}.
-##
-## @item @qcode{'CategoricalPredictors'} @tab The categorical predictors, as
-## indices, as a logical vector with one element per predictor, or as
-## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros and
-## ones per distinct value it takes in the training data, named as in
-## @qcode{'x1 == 2'}, and the coded columns are not standardized.
-## @qcode{X} keeps the predictors as given.  A row holding a value the
-## training data did not is predicted as a row missing a predictor, the
-## weighted lower median of the training response.
-## A predictor may be named rather than indexed, as a character matrix of one
-## padded name per row, a string array or a cellstr; a name must match an entry
-## of @qcode{'PredictorNames'} exactly, its case included.
-##
-## @item @qcode{'Weights'} @tab An @math{Nx1} numeric vector of non-negative
-## observation weights.  The default is a vector of ones.
-##
-## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
-## naming the predictors, in the order they appear in @var{X}.
-##
-## @item @qcode{'ResponseName'} @tab A character vector naming the response.
-## The default is @qcode{'Y'}.
-##
-## @item @qcode{'ResponseTransform'} @tab A character vector or a function
-## handle applied to the response the model predicts.  The default is
-## @qcode{'none'}.
-## @end multitable
-##
-## The supported values for @qcode{'KernelFunction'} are:
-##
-## @multitable @columnfractions 0.4 0.6
-## @headitem @var{Value} @tab @var{Parameters}
-## @item @qcode{'exponential'} @tab @qcode{[SigmaL; SigmaF]}
-## @item @qcode{'squaredexponential'} @tab @qcode{[SigmaL; SigmaF]}
-## @item @qcode{'matern32'} @tab @qcode{[SigmaL; SigmaF]}
-## @item @qcode{'matern52'} @tab @qcode{[SigmaL; SigmaF]}
-## @item @qcode{'rationalquadratic'} @tab @qcode{[SigmaL; AlphaRQ; SigmaF]}
-## @item @qcode{'ardexponential'} @tab @qcode{[LengthScale1; @dots{}; SigmaF]}
-## @item @qcode{'ardsquaredexponential'} @tab
-## @qcode{[LengthScale1; @dots{}; SigmaF]}
-## @item @qcode{'ardmatern32'} @tab @qcode{[LengthScale1; @dots{}; SigmaF]}
-## @item @qcode{'ardmatern52'} @tab @qcode{[LengthScale1; @dots{}; SigmaF]}
-## @item @qcode{'ardrationalquadratic'} @tab
-## @qcode{[LengthScale1; @dots{}; AlphaRQ; SigmaF]}
-## @end multitable
-##
-## The automatic relevance determination kernels carry one length scale per
-## predictor, so a predictor the response does not depend on is given a large
-## length scale and stops contributing.
-##
-## The supported values for @qcode{'ResponseTransform'} are:
-##
-## @multitable @columnfractions 0.3 0.7
-## @headitem @var{Value} @tab @var{Description}
-## @item @qcode{'none'} @tab @math{x} (no transformation)
-## @item @qcode{'identity'} @tab @math{x} (no transformation)
-## @item @qcode{'exp'} @tab @math{exp (x)}
-## @item @qcode{'log'} @tab @math{log (x)}
-## @end multitable
-##
-## Two deviations from MATLAB are deliberate and documented.  The distance
-## between points is accumulated one predictor at a time instead of by the
-## expanded form MATLAB uses by default, because the expanded form does not
-## return exactly zero for a point against itself and the rough kernels
-## amplify that residue through their square root.  The approximate fitting
-## and prediction methods, @qcode{'sd'}, @qcode{'sr'}, @qcode{'fic'} and
-## @qcode{'bcd'}, together with the active set options that serve them, are
-## not implemented and are refused rather than silently ignored.
-##
-## @seealso{fitrgp, CompactRegressionGP, RegressionSVM, RegressionGAM}
-## @end deftypefn
-
 classdef RegressionGP < PredictiveModel
+  ## -*- texinfo -*-
+  ## @deftp {statistics} RegressionGP
+  ##
+  ## Gaussian process regression model.
+  ##
+  ## A @qcode{RegressionGP} object holds a Gaussian process fitted to a
+  ## continuous response, and predicts the response for new data with the
+  ## @code{predict} method, which also returns the standard deviation of each
+  ## prediction and a prediction interval.  The response is modelled as an
+  ## explicit basis times @qcode{Beta}, plus a draw from a process whose
+  ## covariance is given by the kernel function, plus independent noise of
+  ## standard deviation @qcode{Sigma}.  The kernel parameters and @qcode{Sigma}
+  ## are estimated by maximizing the log marginal likelihood.
+  ##
+  ## The object keeps its training data, which @code{resubPredict},
+  ## @code{resubLoss} and @code{crossval} work on; @code{compact} drops it and
+  ## returns a @code{CompactRegressionGP}, which still predicts.
+  ##
+  ## Create a @qcode{RegressionGP} object with @code{fitrgp} or the class
+  ## constructor.
+  ##
+  ## @seealso{fitrgp, CompactRegressionGP}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 
@@ -568,20 +434,162 @@ classdef RegressionGP < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionGP} {@var{obj} =} RegressionGP (@var{X}, @var{Y})
+    ## @deftypefnx {RegressionGP} {@var{obj} =} RegressionGP (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {RegressionGP} {@var{obj} =} RegressionGP (@var{Tbl}, @var{formula})
+    ## @deftypefnx {RegressionGP} {@var{obj} =} RegressionGP (@var{Tbl}, @var{Y})
     ## @deftypefnx {RegressionGP} {@var{obj} =} RegressionGP (@dots{}, @var{name}, @var{value})
     ##
     ## Fit a Gaussian process regression model.
     ##
-    ## @var{X} is an @math{N*P} numeric matrix of predictor data, one
-    ## observation per row, and @var{Y} is the continuous response of those
-    ## @math{N} observations.  The fit runs at construction, so @var{obj}
-    ## arrives fitted.
+    ## @code{@var{obj} = RegressionGP (@var{X}, @var{Y})} returns a Gaussian
+    ## process regression model, @var{obj}, with @var{X} being the predictor
+    ## data and @var{Y} the continuous response of the observations in @var{X}.
     ##
-    ## The @var{name}/@var{value} pairs the fit accepts, and the validation
-    ## each one is held to, are listed in @code{help RegressionGP}.
-    ## @code{fitrgp} is the documented way to reach this constructor and
-    ## takes the same pairs.
+    ## @itemize
+    ## @item
+    ## @var{X} must be an @math{NxP} numeric matrix of predictor data, where
+    ## rows correspond to observations and columns to features.
+    ## @item
+    ## @var{Y} must be an @math{Nx1} numeric vector holding the response of the
+    ## corresponding predictor data in @var{X}.  @var{Y} must have the same
+    ## number of rows as @var{X}.
+    ## @end itemize
     ##
+    ## A Gaussian process places a prior over functions, given by the covariance
+    ## function, and conditions it on the observations.  The response is
+    ## modelled as @math{H*Beta} plus a draw from that process plus independent
+    ## noise of standard deviation @qcode{Sigma}, where @math{H} is the explicit
+    ## basis.  The covariance parameters and @qcode{Sigma} are estimated by
+    ## maximizing the log marginal likelihood, and @qcode{Beta} follows from
+    ## them in closed form as the generalized least squares estimate.
+    ##
+    ## @code{@var{obj} = RegressionGP (@dots{}, @var{name}, @var{value})}
+    ## returns a model with additional options specified by @qcode{Name-Value}
+    ## pair arguments listed below.
+    ##
+    ## @multitable @columnfractions 0.32 0.68
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'KernelFunction'} @tab A character vector naming the
+    ## covariance function, or a function handle taking two matrices of points
+    ## and a parameter vector.  The default is @qcode{'squaredexponential'}.
+    ## The supported names are listed below.
+    ##
+    ## @item @qcode{'KernelParameters'} @tab A numeric vector of initial values
+    ## for the covariance parameters.  Its length depends on the covariance
+    ## function.  These are starting values for the optimization, not fixed
+    ## values.
+    ##
+    ## @item @qcode{'BasisFunction'} @tab A character vector naming the explicit
+    ## basis, one of @qcode{'none'}, @qcode{'constant'}, @qcode{'linear'} or
+    ## @qcode{'pureQuadratic'}, or a function handle taking @var{X} and
+    ## returning the basis matrix.  The default is @qcode{'constant'}.
+    ##
+    ## @item @qcode{'Beta'} @tab A numeric vector of basis coefficients.  These
+    ## are used as known values only when @qcode{'FitMethod'} is @qcode{'none'}.
+    ##
+    ## @item @qcode{'Sigma'} @tab A positive scalar, the initial value of the
+    ## noise standard deviation.  The default is
+    ## @code{std (@var{Y}) / sqrt (2)}.
+    ##
+    ## @item @qcode{'ConstantSigma'} @tab A logical scalar.  When @qcode{true}
+    ## the noise standard deviation is held at its initial value instead of
+    ## being estimated.  The default is @qcode{false}.
+    ##
+    ## @item @qcode{'SigmaLowerBound'} @tab A positive scalar bounding the noise
+    ## standard deviation from below.  The default is
+    ## @code{1e-2 * std (@var{Y})}.
+    ##
+    ## @item @qcode{'FitMethod'} @tab A character vector, either @qcode{'exact'}
+    ## to estimate the parameters or @qcode{'none'} to keep them at their
+    ## initial values.  The default is @qcode{'exact'}.
+    ##
+    ## @item @qcode{'PredictMethod'} @tab A character vector.  Only
+    ## @qcode{'exact'} is implemented, which is also the only method under which
+    ## a standard deviation and a prediction interval are available.
+    ##
+    ## @item @qcode{'Optimizer'} @tab A character vector naming the optimizer
+    ## used to maximize the log marginal likelihood.  @qcode{'quasinewton'} and
+    ## @qcode{'fminunc'} name the same dense solver and are the default,
+    ## @qcode{'lbfgs'} selects limited-memory BFGS, which holds a fixed number
+    ## of curvature pairs rather than a full inverse Hessian and is the cheaper
+    ## choice when the kernel carries many parameters, and @qcode{'fminsearch'}
+    ## is derivative-free.
+    ##
+    ## @item @qcode{'Standardize'} @tab A logical scalar specifying whether the
+    ## predictor data should be centred and scaled before training.  The same
+    ## transformation is applied by @code{predict}.  The default is
+    ## @qcode{false}.
+    ##
+    ## @item @qcode{'CategoricalPredictors'} @tab The categorical predictors, as
+    ## indices, as a logical vector with one element per predictor, or as
+    ## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros and
+    ## ones per distinct value it takes in the training data, named as in
+    ## @qcode{'x1 == 2'}, and the coded columns are not standardized.  @qcode{X}
+    ## keeps the predictors as given.  A row holding a value the training data
+    ## did not is predicted as a row missing a predictor, the weighted lower
+    ## median of the training response.  A predictor may be named rather than
+    ## indexed, as a character matrix of one padded name per row, a string array
+    ## or a cellstr; a name must match an entry of @qcode{'PredictorNames'}
+    ## exactly, its case included.
+    ##
+    ## @item @qcode{'Weights'} @tab An @math{Nx1} numeric vector of non-negative
+    ## observation weights.  The default is a vector of ones.
+    ##
+    ## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
+    ## naming the predictors, in the order they appear in @var{X}.
+    ##
+    ## @item @qcode{'ResponseName'} @tab A character vector naming the response.
+    ## The default is @qcode{'Y'}.
+    ##
+    ## @item @qcode{'ResponseTransform'} @tab A character vector or a function
+    ## handle applied to the response the model predicts.  The default is
+    ## @qcode{'none'}.
+    ## @end multitable
+    ##
+    ## The supported values for @qcode{'KernelFunction'} are:
+    ##
+    ## @multitable @columnfractions 0.4 0.6
+    ## @headitem @var{Value} @tab @var{Parameters}
+    ## @item @qcode{'exponential'} @tab @qcode{[SigmaL; SigmaF]}
+    ## @item @qcode{'squaredexponential'} @tab @qcode{[SigmaL; SigmaF]}
+    ## @item @qcode{'matern32'} @tab @qcode{[SigmaL; SigmaF]}
+    ## @item @qcode{'matern52'} @tab @qcode{[SigmaL; SigmaF]}
+    ## @item @qcode{'rationalquadratic'} @tab @qcode{[SigmaL; AlphaRQ; SigmaF]}
+    ## @item @qcode{'ardexponential'} @tab
+    ## @qcode{[LengthScale1; @dots{}; SigmaF]}
+    ## @item @qcode{'ardsquaredexponential'} @tab
+    ## @qcode{[LengthScale1; @dots{}; SigmaF]}
+    ## @item @qcode{'ardmatern32'} @tab @qcode{[LengthScale1; @dots{}; SigmaF]}
+    ## @item @qcode{'ardmatern52'} @tab @qcode{[LengthScale1; @dots{}; SigmaF]}
+    ## @item @qcode{'ardrationalquadratic'} @tab
+    ## @qcode{[LengthScale1; @dots{}; AlphaRQ; SigmaF]}
+    ## @end multitable
+    ##
+    ## The automatic relevance determination kernels carry one length scale per
+    ## predictor, so a predictor the response does not depend on is given a
+    ## large length scale and stops contributing.
+    ##
+    ## The supported values for @qcode{'ResponseTransform'} are:
+    ##
+    ## @multitable @columnfractions 0.3 0.7
+    ## @headitem @var{Value} @tab @var{Description}
+    ## @item @qcode{'none'} @tab @math{x} (no transformation)
+    ## @item @qcode{'identity'} @tab @math{x} (no transformation)
+    ## @item @qcode{'exp'} @tab @math{exp (x)}
+    ## @item @qcode{'log'} @tab @math{log (x)}
+    ## @end multitable
+    ##
+    ## Two deviations from MATLAB are deliberate and documented.  The distance
+    ## between points is accumulated one predictor at a time instead of by the
+    ## expanded form MATLAB uses by default, because the expanded form does not
+    ## return exactly zero for a point against itself and the rough kernels
+    ## amplify that residue through their square root.  The approximate fitting
+    ## and prediction methods, @qcode{'sd'}, @qcode{'sr'}, @qcode{'fic'} and
+    ## @qcode{'bcd'}, together with the active set options that serve them, are
+    ## not implemented and are refused rather than silently ignored.
+    ##
+    ## @seealso{fitrgp, CompactRegressionGP, RegressionSVM, RegressionGAM}
     ## @end deftypefn
     function this = RegressionGP (X, Y, varargin)
 

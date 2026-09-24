@@ -15,139 +15,29 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{obj} =} RegressionNeuralNetwork (@var{X}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} RegressionNeuralNetwork (@dots{}, @var{name}, @var{value})
-##
-## Create a @qcode{RegressionNeuralNetwork} object containing a neural network
-## regression model.
-##
-## @code{@var{obj} = RegressionNeuralNetwork (@var{X}, @var{Y})} returns a
-## neural network regression model, @var{obj}, with @var{X} being the predictor
-## data and @var{Y} the continuous response of the observations in @var{X}.
-##
-## @itemize
-## @item
-## @var{X} must be an @math{NxP} numeric matrix of predictor data, where rows
-## correspond to observations and columns to features.
-## @item
-## @var{Y} must be an @math{Nx1} numeric vector holding the response of the
-## corresponding predictor data in @var{X}.  @var{Y} must have the same number
-## of rows as @var{X}.
-## @end itemize
-##
-## The network is trained against the mean squared error, and its output layer
-## applies the identity, so a prediction is an unrestricted real number rather
-## than a score over classes.  This is the only difference in the engine
-## between this class and @code{ClassificationNeuralNetwork}; everything else,
-## the layer sizes, the activations, the learning rate and the initialisation,
-## behaves identically.
-##
-## @code{@var{obj} = RegressionNeuralNetwork (@dots{}, @var{name},
-## @var{value})} returns a model with additional options specified by
-## @qcode{Name-Value} pair arguments listed below.
-##
-## @multitable @columnfractions 0.32 0.68
-## @headitem @var{Name} @tab @var{Value}
-##
-## @item @qcode{'Standardize'} @tab A logical scalar specifying whether the
-## predictor data should be centred and scaled before training.  The same
-## transformation is applied by @code{predict}.  The default is @qcode{false}.
-##
-## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values are
-## levels, as indices, as a logical vector with one element per predictor, or as
-## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros and
-## ones per level seen in training, named as in @qcode{'x1 == 2'} in
-## @code{ExpandedPredictorNames}, and the coded columns are not standardized.
-## An observation holding a level the training data did not is predicted as a
-## row missing a predictor, the lower median of the training response.
-## A predictor may be named rather than indexed, as a character matrix of one
-## padded name per row, a string array or a cellstr; a name must match an entry
-## of @qcode{'PredictorNames'} exactly, its case included.
-##
-## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
-## naming the predictors, in the order they appear in @var{X}.
-##
-## @item @qcode{'ResponseName'} @tab A character vector naming the response.
-## The default is @qcode{'Y'}.
-##
-## @item @qcode{'ResponseTransform'} @tab A character vector naming one of the
-## supported transformations, or a function handle, applied to the predicted
-## response by @code{predict} and @code{resubPredict}.  The default is
-## @qcode{'none'}.
-##
-## @item @qcode{'LayerSizes'} @tab A positive integer vector specifying the
-## number of units in each fully connected hidden layer.  The default is 10,
-## one hidden layer of ten units.
-##
-## @item @qcode{'Activations'} @tab A character vector or cell array of
-## character vectors specifying the activation of the hidden layers.  The
-## supported functions are @qcode{'linear'}, @qcode{'sigmoid'},
-## @qcode{'relu'}, @qcode{'tanh'}, @qcode{'lrelu'}, @qcode{'prelu'},
-## @qcode{'elu'}, @qcode{'gelu'} and @qcode{'none'}.  The default is
-## @qcode{'relu'}.
-##
-## @item @qcode{'OutputLayerActivation'} @tab A character vector specifying
-## the activation of the output layer.  The default is @qcode{'none'}, the
-## identity, which is what a regression output calls for.  The supported
-## values are the same as for @qcode{'Activations'}.
-##
-## @item @qcode{'LearningRate'} @tab A positive scalar specifying the learning
-## rate for gradient descent.  The default is 0.003.  A larger rate can drive
-## every unit of a hidden layer negative, after which a rectifier passes no
-## gradient and the network stops training.
-## Applies only when @qcode{'Solver'} is @qcode{'sgd'}.
-##
-## @item @qcode{'Solver'} @tab A character vector naming the solver that
-## trains the network, either @qcode{'lbfgs'} or @qcode{'sgd'}.  The
-## default is @qcode{'lbfgs'}, which minimizes the loss over the whole
-## training set at once by limited-memory BFGS, as MATLAB does.  It takes
-## no learning rate, stops on the three tolerances below, and reaches a
-## lower training loss in fewer passes over the data, though each of its
-## iterations costs several passes where an epoch costs one.
-## @qcode{'sgd'} visits the samples one at a time and steps down the
-## gradient of each, running for @qcode{'IterationLimit'} epochs; it was
-## the default before version 1.9.0.
-##
-## @item @qcode{'GradientTolerance'} @tab A nonnegative scalar.  Training
-## stops once the gradient's infinity norm falls to or below it, which is
-## the quantity MATLAB tests too.  The default is @qcode{1e-6}.  Applies
-## only when @qcode{'Solver'} is @qcode{'lbfgs'}.
-##
-## @item @qcode{'StepTolerance'} @tab A nonnegative scalar.  Training
-## stops once the step's infinity norm falls to or below it, which is the
-## quantity MATLAB tests too.  The default is @qcode{1e-6}.  Applies only
-## when @qcode{'Solver'} is @qcode{'lbfgs'}.
-##
-## @item @qcode{'LossTolerance'} @tab A real scalar.  Training stops once
-## the training loss falls to or below it.  The test is on the loss
-## itself and not on its change, matching MATLAB; pass @code{-Inf} to
-## switch it off.  The default is @qcode{1e-6}.  Applies only when
-## @qcode{'Solver'} is @qcode{'lbfgs'}.
-##
-## @item @qcode{'IterationLimit'} @tab A positive integer specifying the
-## maximum number of training iterations.  The default is 1000.
-## Under @qcode{'sgd'} this counts epochs, under
-## @qcode{'lbfgs'} solver iterations.
-##
-## @item @qcode{'DisplayInfo'} @tab A logical scalar specifying whether to
-## print information during training.  The default is @qcode{false}.
-## @end multitable
-##
-## The supported values for @qcode{'ResponseTransform'} are:
-##
-## @multitable @columnfractions 0.3 0.7
-## @headitem @var{Value} @tab @var{Description}
-## @item @qcode{'none'} @tab @math{x} (no transformation)
-## @item @qcode{'identity'} @tab @math{x} (no transformation)
-## @item @qcode{'exp'} @tab @math{exp (x)}
-## @item @qcode{'log'} @tab @math{log (x)}
-## @end multitable
-##
-## @seealso{fitrnet, ClassificationNeuralNetwork, fcnntrain, fcnnpredict}
-## @end deftypefn
-
 classdef RegressionNeuralNetwork < PredictiveModel
+  ## -*- texinfo -*-
+  ## @deftp {statistics} RegressionNeuralNetwork
+  ##
+  ## Neural network regression model.
+  ##
+  ## A @qcode{RegressionNeuralNetwork} object holds a fully connected
+  ## feedforward neural network fitted to a continuous response, and predicts
+  ## the response for new data with the @code{predict} method.  The network is
+  ## trained against the mean squared error and its output layer applies the
+  ## identity, so a prediction is an unrestricted real number; otherwise the
+  ## engine is the one @code{ClassificationNeuralNetwork} uses.
+  ##
+  ## The object keeps its training data, which @code{resubPredict},
+  ## @code{resubLoss} and @code{crossval} work on; @code{compact} drops it and
+  ## returns a @code{CompactRegressionNeuralNetwork}, which still predicts.
+  ##
+  ## Create a @qcode{RegressionNeuralNetwork} object with @code{fitrnet} or the
+  ## class constructor.
+  ##
+  ## @seealso{fitrnet, CompactRegressionNeuralNetwork,
+  ## ClassificationNeuralNetwork}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 
@@ -566,16 +456,138 @@ classdef RegressionNeuralNetwork < PredictiveModel
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionNeuralNetwork} {@var{obj} =} RegressionNeuralNetwork (@var{X}, @var{Y})
     ## @deftypefnx {RegressionNeuralNetwork} {@var{obj} =} RegressionNeuralNetwork (@var{Tbl}, @var{ResponseVarName})
-## @deftypefnx {RegressionNeuralNetwork} {@var{obj} =} RegressionNeuralNetwork (@var{Tbl}, @var{formula})
-## @deftypefnx {RegressionNeuralNetwork} {@var{obj} =} RegressionNeuralNetwork (@var{Tbl}, @var{Y})
-## @deftypefnx {RegressionNeuralNetwork} {@var{obj} =} RegressionNeuralNetwork (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {RegressionNeuralNetwork} {@var{obj} =} RegressionNeuralNetwork (@var{Tbl}, @var{formula})
+    ## @deftypefnx {RegressionNeuralNetwork} {@var{obj} =} RegressionNeuralNetwork (@var{Tbl}, @var{Y})
+    ## @deftypefnx {RegressionNeuralNetwork} {@var{obj} =} RegressionNeuralNetwork (@dots{}, @var{name}, @var{value})
     ##
-    ## Create a @qcode{RegressionNeuralNetwork} object containing a neural
-    ## network regression model.
+    ## Fit a neural network regression model.
     ##
-    ## See the class documentation for the accepted @qcode{Name-Value} pairs.
+    ## @code{@var{obj} = RegressionNeuralNetwork (@var{X}, @var{Y})} returns a
+    ## neural network regression model, @var{obj}, with @var{X} being the
+    ## predictor data and @var{Y} the continuous response of the observations in
+    ## @var{X}.
     ##
-    ## @seealso{fitrnet, RegressionNeuralNetwork}
+    ## @itemize
+    ## @item
+    ## @var{X} must be an @math{NxP} numeric matrix of predictor data, where
+    ## rows correspond to observations and columns to features.
+    ## @item
+    ## @var{Y} must be an @math{Nx1} numeric vector holding the response of the
+    ## corresponding predictor data in @var{X}.  @var{Y} must have the same
+    ## number of rows as @var{X}.
+    ## @end itemize
+    ##
+    ## The network is trained against the mean squared error, and its output
+    ## layer applies the identity, so a prediction is an unrestricted real
+    ## number rather than a score over classes.  This is the only difference in
+    ## the engine between this class and @code{ClassificationNeuralNetwork};
+    ## everything else, the layer sizes, the activations, the learning rate and
+    ## the initialisation, behaves identically.
+    ##
+    ## @code{@var{obj} = RegressionNeuralNetwork (@dots{}, @var{name},
+    ## @var{value})} returns a model with additional options specified by
+    ## @qcode{Name-Value} pair arguments listed below.
+    ##
+    ## @multitable @columnfractions 0.32 0.68
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'Standardize'} @tab A logical scalar specifying whether the
+    ## predictor data should be centred and scaled before training.  The same
+    ## transformation is applied by @code{predict}.  The default is
+    ## @qcode{false}.
+    ##
+    ## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values
+    ## are levels, as indices, as a logical vector with one element per
+    ## predictor, or as @qcode{'all'}.  Each is dummy coded in its place, one
+    ## column of zeros and ones per level seen in training, named as in
+    ## @qcode{'x1 == 2'} in @code{ExpandedPredictorNames}, and the coded columns
+    ## are not standardized.  An observation holding a level the training data
+    ## did not is predicted as a row missing a predictor, the lower median of
+    ## the training response.  A predictor may be named rather than indexed, as
+    ## a character matrix of one padded name per row, a string array or a
+    ## cellstr; a name must match an entry of @qcode{'PredictorNames'} exactly,
+    ## its case included.
+    ##
+    ## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
+    ## naming the predictors, in the order they appear in @var{X}.
+    ##
+    ## @item @qcode{'ResponseName'} @tab A character vector naming the response.
+    ## The default is @qcode{'Y'}.
+    ##
+    ## @item @qcode{'ResponseTransform'} @tab A character vector naming one of
+    ## the supported transformations, or a function handle, applied to the
+    ## predicted response by @code{predict} and @code{resubPredict}.  The
+    ## default is @qcode{'none'}.
+    ##
+    ## @item @qcode{'LayerSizes'} @tab A positive integer vector specifying the
+    ## number of units in each fully connected hidden layer.  The default is 10,
+    ## one hidden layer of ten units.
+    ##
+    ## @item @qcode{'Activations'} @tab A character vector or cell array of
+    ## character vectors specifying the activation of the hidden layers.  The
+    ## supported functions are @qcode{'linear'}, @qcode{'sigmoid'},
+    ## @qcode{'relu'}, @qcode{'tanh'}, @qcode{'lrelu'}, @qcode{'prelu'},
+    ## @qcode{'elu'}, @qcode{'gelu'} and @qcode{'none'}.  The default is
+    ## @qcode{'relu'}.
+    ##
+    ## @item @qcode{'OutputLayerActivation'} @tab A character vector specifying
+    ## the activation of the output layer.  The default is @qcode{'none'}, the
+    ## identity, which is what a regression output calls for.  The supported
+    ## values are the same as for @qcode{'Activations'}.
+    ##
+    ## @item @qcode{'LearningRate'} @tab A positive scalar specifying the
+    ## learning rate for gradient descent.  The default is 0.003.  A larger rate
+    ## can drive every unit of a hidden layer negative, after which a rectifier
+    ## passes no gradient and the network stops training.  Applies only when
+    ## @qcode{'Solver'} is @qcode{'sgd'}.
+    ##
+    ## @item @qcode{'Solver'} @tab A character vector naming the solver that
+    ## trains the network, either @qcode{'lbfgs'} or @qcode{'sgd'}.  The
+    ## default is @qcode{'lbfgs'}, which minimizes the loss over the whole
+    ## training set at once by limited-memory BFGS, as MATLAB does.  It takes
+    ## no learning rate, stops on the three tolerances below, and reaches a
+    ## lower training loss in fewer passes over the data, though each of its
+    ## iterations costs several passes where an epoch costs one.
+    ## @qcode{'sgd'} visits the samples one at a time and steps down the
+    ## gradient of each, running for @qcode{'IterationLimit'} epochs; it was
+    ## the default before version 1.9.0.
+    ##
+    ## @item @qcode{'GradientTolerance'} @tab A nonnegative scalar.  Training
+    ## stops once the gradient's infinity norm falls to or below it, which is
+    ## the quantity MATLAB tests too.  The default is @qcode{1e-6}.  Applies
+    ## only when @qcode{'Solver'} is @qcode{'lbfgs'}.
+    ##
+    ## @item @qcode{'StepTolerance'} @tab A nonnegative scalar.  Training
+    ## stops once the step's infinity norm falls to or below it, which is the
+    ## quantity MATLAB tests too.  The default is @qcode{1e-6}.  Applies only
+    ## when @qcode{'Solver'} is @qcode{'lbfgs'}.
+    ##
+    ## @item @qcode{'LossTolerance'} @tab A real scalar.  Training stops once
+    ## the training loss falls to or below it.  The test is on the loss
+    ## itself and not on its change, matching MATLAB; pass @code{-Inf} to
+    ## switch it off.  The default is @qcode{1e-6}.  Applies only when
+    ## @qcode{'Solver'} is @qcode{'lbfgs'}.
+    ##
+    ## @item @qcode{'IterationLimit'} @tab A positive integer specifying the
+    ## maximum number of training iterations.  The default is 1000.
+    ## Under @qcode{'sgd'} this counts epochs, under
+    ## @qcode{'lbfgs'} solver iterations.
+    ##
+    ## @item @qcode{'DisplayInfo'} @tab A logical scalar specifying whether to
+    ## print information during training.  The default is @qcode{false}.
+    ## @end multitable
+    ##
+    ## The supported values for @qcode{'ResponseTransform'} are:
+    ##
+    ## @multitable @columnfractions 0.3 0.7
+    ## @headitem @var{Value} @tab @var{Description}
+    ## @item @qcode{'none'} @tab @math{x} (no transformation)
+    ## @item @qcode{'identity'} @tab @math{x} (no transformation)
+    ## @item @qcode{'exp'} @tab @math{exp (x)}
+    ## @item @qcode{'log'} @tab @math{log (x)}
+    ## @end multitable
+    ##
+    ## @seealso{fitrnet, ClassificationNeuralNetwork, fcnntrain, fcnnpredict}
     ## @end deftypefn
     function this = RegressionNeuralNetwork (X, Y, varargin)
       ## Check for sufficient number of input arguments

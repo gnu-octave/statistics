@@ -112,8 +112,8 @@ classdef SilhouetteEvaluation < ClusterCriterion
   methods(Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {statistics} {@var{obj} =} SilhouetteEvaluation (@var{x}, @var{clust}, @var{KList})
-    ## @deftypefnx {statistics} {@var{obj} =} SilhouetteEvaluation (@dots{}, @var{Name}, @var{Value})
+    ## @deftypefn  {SilhouetteEvaluation} {@var{obj} =} SilhouetteEvaluation (@var{x}, @var{clust}, @var{KList})
+    ## @deftypefnx {SilhouetteEvaluation} {@var{obj} =} SilhouetteEvaluation (@dots{}, @var{Name}, @var{Value})
     ##
     ## Create a @code{SilhouetteEvaluation} object to evaluate clustering
     ## solutions for data @var{x} using clustering method @var{clust} over the

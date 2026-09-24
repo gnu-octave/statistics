@@ -15,25 +15,23 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftypefn {statistics} {@var{Mdl} =} IsolationForest (@var{X})
-## @deftypefnx {statistics} {@var{Mdl} =} IsolationForest (@var{X}, @var{name}, @var{value})
-##
-## Isolation Forest model for anomaly detection.
-##
-## An @code{IsolationForest} object stores an ensemble of isolation trees fitted
-## to a set of observations and detects anomalies through the @code{isanomaly}
-## method.  Create a model with the @code{iforest} function rather than by
-## calling this constructor directly.
-##
-## Anomalies are easier to isolate, so they sit closer to the root of a random
-## isolation tree; the shorter its average path length across the ensemble, the
-## higher an observation's anomaly score.
-##
-## @seealso{iforest, IsolationForest.isanomaly}
-## @end deftypefn
-
 classdef IsolationForest
+  ## -*- texinfo -*-
+  ## @deftp {statistics} IsolationForest
+  ##
+  ## Isolation Forest model for anomaly detection.
+  ##
+  ## An @code{IsolationForest} object stores an ensemble of isolation trees
+  ## fitted to a set of observations and detects anomalies through the
+  ## @code{isanomaly} method.  Create an @code{IsolationForest} object with
+  ## @code{iforest} or the class constructor.
+  ##
+  ## Anomalies are easier to isolate, so they sit closer to the root of a random
+  ## isolation tree; the shorter its average path length across the ensemble,
+  ## the higher an observation's anomaly score.
+  ##
+  ## @seealso{iforest, IsolationForest.isanomaly}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = private)
 
@@ -87,11 +85,44 @@ classdef IsolationForest
 
     ## -*- texinfo -*-
     ## @deftypefn  {IsolationForest} {@var{Mdl} =} IsolationForest (@var{X})
-    ## @deftypefnx {IsolationForest} {@var{Mdl} =} IsolationForest (@var{X}, @var{name}, @var{value})
+    ## @deftypefnx {IsolationForest} {@var{Mdl} =} IsolationForest (@dots{}, @var{name}, @var{value})
     ##
-    ## Fit an isolation forest to the @math{N}-by-@math{P} matrix @var{X}.
-    ## Prefer the @code{iforest} function to this constructor.
+    ## Fit an isolation forest.
     ##
+    ## @code{@var{Mdl} = IsolationForest (@var{X})} fits an isolation forest to
+    ## the @math{N}-by-@math{P} matrix @var{X}, whose rows are observations and
+    ## columns are variables, and returns a @code{IsolationForest} object
+    ## @var{Mdl}.
+    ##
+    ## @code{@var{Mdl} = IsolationForest (@dots{}, @var{name}, @var{value})}
+    ## takes the following @qcode{Name-Value} pairs.
+    ##
+    ## @multitable @columnfractions 0.34 0.66
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'NumLearners'} @tab the number of isolation trees, a
+    ## positive integer (default 100).
+    ##
+    ## @item @qcode{'NumObservationsPerLearner'} @tab the subsample size used to
+    ## grow each tree, an integer in @math{[3, N]} (default @code{min (@var{N},
+    ## 256)}).
+    ##
+    ## @item @qcode{'ContaminationFraction'} @tab the assumed fraction of
+    ## anomalies in @var{X}, a scalar in @math{[0, 1]} (default 0).  It sets
+    ## @code{@var{Mdl}.ScoreThreshold} to the @math{1 -}
+    ## @var{ContaminationFraction} quantile of the anomaly scores of @var{X};
+    ## when it is 0 the threshold is the maximum score and no training
+    ## observation is flagged.
+    ## @end multitable
+    ##
+    ## Because the trees are grown from random subsamples and random splits, the
+    ## model depends on the state of the random number generator and is not
+    ## reproducible across runs unless the generator is seeded.
+    ##
+    ## @code{iforest} fits the same model and also returns the anomaly
+    ## indicators and the anomaly scores of the observations in @var{X}.
+    ##
+    ## @seealso{iforest, IsolationForest.isanomaly}
     ## @end deftypefn
     function obj = IsolationForest (X, varargin)
 

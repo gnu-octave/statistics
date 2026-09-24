@@ -17,7 +17,7 @@
 
 classdef ClassificationPartitionedECOC
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} ClassificationPartitionedECOC
+  ## @deftp {statistics} ClassificationPartitionedECOC
   ##
   ## A cross-validated multiclass model built from binary learners.
   ##
@@ -36,7 +36,7 @@ classdef ClassificationPartitionedECOC
   ## cannot be decoded at all.
   ##
   ## @seealso{fitcecoc, ClassificationECOC, CompactClassificationECOC}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 
