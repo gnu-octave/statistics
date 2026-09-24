@@ -260,9 +260,11 @@ classdef RegressionSVM < PredictiveModel
     ## Box constraints
     ##
     ## A numeric column vector with one entry per observation, holding the box
-    ## constraint the fit applied to it.  A regression has no classes to
-    ## reweight, so every entry is @qcode{BoxConstraint}.  This property is
-    ## read-only.
+    ## constraint the fit applied to it: @math{n} times @qcode{BoxConstraint}
+    ## times the observation's weight in @qcode{W}, which is
+    ## @qcode{BoxConstraint} for every observation when no weights were given.
+    ## An observation missing a predictor is not fitted and holds @code{NaN}.
+    ## This property is read-only.
     ##
     ## @end deftp
     BoxConstraints        = [];
@@ -294,8 +296,8 @@ classdef RegressionSVM < PredictiveModel
     ## Observation weights
     ##
     ## A numeric column vector with one entry per training observation,
-    ## normalized to sum to one, as MATLAB reports it.  This property is
-    ## read-only.
+    ## normalized to sum to one, as MATLAB reports it.  It has the class of the
+    ## @qcode{'Weights'} given, single or double.  This property is read-only.
     ##
     ## @end deftp
     W                     = [];
@@ -458,11 +460,11 @@ classdef RegressionSVM < PredictiveModel
     ## column of zeros and ones per level seen in training, named as in
     ## @qcode{'x1 == 2'} in @code{ExpandedPredictorNames}, and the coded columns
     ## are not standardized.  An observation holding a level the training data
-    ## did not is predicted as a row missing a predictor, the lower median of
-    ## the training response.  A predictor may be named rather than indexed, as
-    ## a character matrix of one padded name per row, a string array or a
-    ## cellstr; a name must match an entry of @qcode{'PredictorNames'} exactly,
-    ## its case included.
+    ## did not is predicted as a row missing a predictor, the weighted lower
+    ## median of the training response.  A predictor may be named rather than
+    ## indexed, as a character matrix of one padded name per row, a string
+    ## array or a cellstr; a name must match an entry of
+    ## @qcode{'PredictorNames'} exactly, its case included.
     ##
     ## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
     ## naming the predictors, in the order they appear in @var{X}.
@@ -481,6 +483,14 @@ classdef RegressionSVM < PredictiveModel
     ##
     ## @item @qcode{'BoxConstraint'} @tab A positive scalar bounding the dual
     ## coefficients, the cost of an error outside the tube.  The default is 1.
+    ##
+    ## @item @qcode{'Weights'} @tab A nonnegative single or double vector of
+    ## observation weights, one per row of @var{X}.  An observation's box
+    ## constraint is @math{n} times @qcode{BoxConstraint} times its weight, the
+    ## weights scaled to sum to one; standardization uses weighted means and
+    ## standard deviations, and a row of zero or missing weight is left out.
+    ## The model's @code{W} keeps the class of the weights, while every
+    ## computation runs in double.  The default is uniform.
     ##
     ## @item @qcode{'KernelFunction'} @tab A character vector naming the kernel,
     ## one of @qcode{'linear'}, the default, @qcode{'rbf'}, @qcode{'gaussian'},
@@ -559,16 +569,18 @@ classdef RegressionSVM < PredictiveModel
                   'ResponseTransform', 'SVMtype', 'Epsilon', ...
                   'KernelFunction', 'PolynomialOrder', 'KernelScale', ...
                   'KernelOffset', 'BoxConstraint', 'Nu', 'CacheSize', ...
-                  'Tolerance', 'Shrinking', 'CategoricalPredictors'};
+                  'Tolerance', 'Shrinking', 'CategoricalPredictors', ...
+                  'Weights'};
       ## An empty default stands for one resolved once the data are known:
       ## 'Epsilon' is the interquartile range of the response over 13.49,
       ## 'PredictorNames' are x1, x2, ... and 'ResponseName' is 'Y', and no
       ## 'ResponseTransform' leaves the response as it is.
       dfValues = {false, [], [], [], 'eps_svr', [], 'linear', 3, 1, 0, 1, ...
-                  0.5, 1000, 1e-6, 1, []};
+                  0.5, 1000, 1e-6, 1, [], []};
       [Standardize, PredictorNames, ResponseName, RTin, SVMtype, Epsilon, ...
        KernelFunction, PolynomialOrder, KernelScale, KernelOffset, ...
-       BoxConstraint, Nu, CacheSize, Tolerance, Shrinking, CatPreds, args] = ...
+       BoxConstraint, Nu, CacheSize, Tolerance, Shrinking, CatPreds, ...
+       Weights, args] = ...
                  parsePairedArguments (optNames, dfValues, varargin(:));
 
       ## Validate optional paired arguments
@@ -638,6 +650,21 @@ classdef RegressionSVM < PredictiveModel
               parseResponseTransform (RTin, 'RegressionSVM');
       endif
 
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionSVM: %s", errmsg);
+      endif
+      if (! isempty (Weights)
+          && ! (isvector (Weights) && numel (Weights) == rows (Y)))
+        error (strcat ("RegressionSVM: 'Weights' must be a vector with one", ...
+                       " element per row of X."));
+      endif
+      if (! isempty (Weights) && (any (Weights < 0)
+                                  || ! (sum (Weights(! isnan (Weights))) > 0)))
+        error (strcat ("RegressionSVM: 'Weights' must be nonnegative and", ...
+                       " must not be all zero."));
+      endif
+
       if (! isempty (args))
         error ("RegressionSVM: invalid optional paired argument.");
       endif
@@ -660,17 +687,30 @@ classdef RegressionSVM < PredictiveModel
       this.ResponseName   = ResponseName;
       this.CategoricalPredictors = [];
 
-      ## An observation is dropped only when its response is missing.  A row
-      ## whose predictors hold missing values is kept and reported as used,
-      ## while the fit below draws on the complete observations alone.
-      RowsUsed  = ! isnan (Y(:));
+      ## The weights keep their class in the model; every computation runs on
+      ## them as double.
+      Wclass = "double";
+      if (isempty (Weights))
+        Wall = ones (rows (Y), 1);
+      else
+        Wclass = class (Weights);
+        Wall = double (Weights(:));
+      endif
+
+      ## An observation is dropped when its response is missing, or when its
+      ## weight is zero or missing, as R2024a drops it.  A row whose
+      ## predictors hold missing values is kept and reported as used, while
+      ## the fit below draws on the complete observations alone.
+      RowsUsed  = ! isnan (Y(:)) & ! isnan (Wall) & Wall > 0;
       Yret      = Y(RowsUsed);
       Xret      = X(RowsUsed, :);
+      Wret      = Wall(RowsUsed) / sum (Wall(RowsUsed));
       this.X    = Xret;
       this.Y    = Yret;
       cobs      = ! any (isnan (Xret), 2);
       Y         = Yret(cobs);
       X         = Xret(cobs, :);
+      wfit      = Wret(cobs);
 
       ## Dummy code the categorical predictors on the rows the fit draws on.
       ## X keeps the predictors as given; the fit and every prediction see
@@ -685,9 +725,8 @@ classdef RegressionSVM < PredictiveModel
         error ("RegressionSVM: %s", errmsg);
       endif
       ## What a row missing a predictor is predicted to be, as MATLAB R2024a
-      ## predicts it: the lower median of the training response, every
-      ## observation weighing the same here.
-      this.MissingResponse_ = missingResponse (Y, ones (rows (Y), 1));
+      ## predicts it: the weighted lower median of the training response.
+      this.MissingResponse_ = missingResponse (Y, wfit);
       X = dummyCoding (X, Coding);
       if (! isempty (Coding.Index))
         this.CategoricalPredictors = Coding.Index;
@@ -713,16 +752,22 @@ classdef RegressionSVM < PredictiveModel
       else
         this.RowsUsed = RowsUsed;
       endif
-      this.W = ones (this.NumObservations, 1) / this.NumObservations;
+      this.W = cast (Wret, Wclass);
 
       ## Handle the Standardize option.  The model must be fitted on the
       ## scale it predicts on: predict and resubPredict standardize their
       ## input from Mu and Sigma, so the training data is standardized here
       ## as well.
       if (Standardize)
-        this.Sigma = std (X, [], 1);
-        this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
-        this.Mu = mean (X, 1);
+        ## Mu and Sigma weigh the complete observations by their weights, the
+        ## deviation unbiased for those weights, as R2024a reports them.
+        sw = wfit / sum (wfit);
+        this.Mu = sum (sw .* X, 1);
+        this.Sigma = sqrt (sum (sw .* (X - this.Mu) .^ 2, 1) ...
+                           / (1 - sum (sw .^ 2)));
+        ## A constant predictor is left unscaled; its weighted mean can miss
+        ## the constant by one rounding, so its deviation need not be zero.
+        this.Sigma(this.Sigma == 0 | all (X == X(1,:), 1)) = 1;
         ## A level's column is left as it is, as in MATLAB R2024a.
         this.Mu(Coding.Dummy) = 0;
         this.Sigma(Coding.Dummy) = 1;
@@ -773,8 +818,13 @@ classdef RegressionSVM < PredictiveModel
                              KernelOffset, BoxConstraint, Nu, Epsilon, ...
                              CacheSize, Tolerance, Shrinking);
 
+      ## The weights enter the fit through one box constraint per
+      ## observation, n * C * w, with w summing to one over the observations
+      ## used, as R2024a sets them.  Without weights every constraint is C.
+      instW = this.NumObservations * wfit;
+
       ## Train the SVM model using svmtrain from libsvm
-      Model = svmtrain (Y, X, svm_options);
+      Model = svmtrain (Y, X, svm_options, instW);
       this.Model = Model;
 
       ## Populate the model properties.  For regression LIBSVM's sv_coef is
@@ -797,15 +847,17 @@ classdef RegressionSVM < PredictiveModel
       endif
 
       this.IsSupportVector = false (this.NumObservations, 1);
-      this.IsSupportVector(Model.sv_indices) = true;
+      ## LIBSVM counts the observations the fit saw, the complete ones
+      fitted = find (cobs);
+      this.IsSupportVector(fitted(Model.sv_indices)) = true;
       this.SupportVectors = Model.SVs;
 
       ## The kernel and the per-observation box constraints, in the shapes
-      ## MATLAB reports them.  A regression has no classes to reweight, so the
-      ## scalar applies to every observation.
+      ## MATLAB reports them: an observation missing a predictor has none.
       this.KernelParameters = svmKernelParams (KernelFunction, KernelScale, ...
                                                PolynomialOrder);
-      this.BoxConstraints = BoxConstraint * ones (this.NumObservations, 1);
+      this.BoxConstraints = BoxConstraint * this.NumObservations * Wret;
+      this.BoxConstraints(! cobs) = NaN;
 
       ## Populate ModelParameters structure.  The polynomial order belongs to
       ## the polynomial kernel alone and is reported under no other, as
@@ -1102,10 +1154,11 @@ classdef RegressionSVM < PredictiveModel
     ## @seealso{RegressionSVM, fitrsvm}
     ## @end deftypefn
     function L = resubLoss (this, varargin)
-      used = true (rows (this.X), 1);
-      X = this.X(used, :);
-      Y = this.Y(used);
-      L = loss (this, X, Y, varargin{:});
+      ## The model's own weights stand unless others are given, as in R2024a
+      if (! any (strcmpi (varargin(1:2:end), 'Weights')))
+        varargin = [varargin, {'Weights', this.W}];
+      endif
+      L = loss (this, this.X, this.Y, varargin{:});
     endfunction
 
     ## -*- texinfo -*-
@@ -1997,3 +2050,65 @@ endclassdef
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'SL'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## Observation weights
+%!error <RegressionSVM: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionSVM ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', int8 ([1; 1; 1; 1]))
+%!error <RegressionSVM: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionSVM ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', true (4, 1))
+%!error <RegressionSVM: 'Weights' must be a vector with one element per row of X.> ...
+%! RegressionSVM ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', [1; 1])
+%!error <RegressionSVM: 'Weights' must be nonnegative and must not be all zero.> ...
+%! RegressionSVM ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', [1; -1; 1; 1])
+%!error <RegressionSVM: 'Weights' must be nonnegative and must not be all zero.> ...
+%! RegressionSVM ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', zeros (4, 1))
+%!test
+%! ## Box constraints are n * C * W, as R2024a sets them
+%! load fisheriris
+%! Mdl = RegressionSVM (meas(:,2:4), meas(:,1), 'Weights', 1 + (1:150)' / 7);
+%! assert_equal (sum (Mdl.W), 1, 1e-15);
+%! assert_equal (Mdl.BoxConstraints([1, 150]), ...
+%!               [0.09696969696969696; 1.903030303030303], 1e-15);
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! Mdl = RegressionSVM (meas(:,2:4), meas(:,1), ...
+%!                      'Weights', single (1 + (1:150)' / 7));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (class (Mdl.BoxConstraints), 'double');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Rows of zero weight are left out, as R2024a leaves them
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! w(5) = 0;
+%! Mdl = RegressionSVM (meas(:,2:4), meas(:,1), 'Weights', w);
+%! assert_equal (Mdl.NumObservations, 149);
+%! assert_equal (Mdl.RowsUsed(5), false);
+%!test
+%! ## Standardization weighs the observations, as R2024a does
+%! load fisheriris
+%! Mdl = RegressionSVM (meas(:,2:4), meas(:,1), 'Standardize', true, ...
+%!                      'Weights', 1 + (1:150)' / 7);
+%! assert_equal (Mdl.Mu, [2.965608080808081, 4.573050505050505, ...
+%!                        1.55819797979798], 1e-14);
+%! assert_equal (Mdl.Sigma, [0.3809861139391035, 1.433169957562235, ...
+%!                           0.6470320013330532], 1e-14);
+%!test
+%! ## A row missing a predictor is predicted as the weighted lower median
+%! load fisheriris
+%! X = meas(:,2:4);
+%! X(7,2) = NaN;
+%! Mdl = RegressionSVM (X, meas(:,1), 'Weights', 1 + (1:150)' / 7);
+%! assert_equal (predict (Mdl, [NaN, 1, 1]), 6.2);
+%! assert_equal (isnan (Mdl.BoxConstraints(7)), true);
+%! assert_equal (Mdl.IsSupportVector(7), false);
+%! assert_equal (sum (Mdl.IsSupportVector), rows (Mdl.SupportVectors));
+%!test
+%! ## resubLoss weighs the observations by W unless given weights
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = RegressionSVM (meas(:,2:4), meas(:,1), 'Weights', w);
+%! assert_equal (resubLoss (Mdl), ...
+%!               loss (Mdl, meas(:,2:4), meas(:,1), 'Weights', w), 1e-15);
+

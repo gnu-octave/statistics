@@ -510,9 +510,11 @@ classdef RegressionPartitionedModel
                   'CategoricalPredictors', Mdl.CategoricalPredictors, ...
                   'ResponseName', Mdl.ResponseName, ...
                   'PredictorNames', Mdl.PredictorNames};
+          ## A fold keeps the weights of the rows it holds.
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            tmp = fitrsvm (X(idx, :), Y(idx), args{:});
+            tmp = fitrsvm (X(idx, :), Y(idx), args{:}, ...
+                           'Weights', this.W(idx));
             this.Trained{k} = compact (tmp);
           endfor
 
@@ -1448,3 +1450,15 @@ endclassdef
 %! Mdl.ResponseTransform = @(x) x .^ 2;
 %! yhat = kfoldPredict (Mdl);
 %! assert_equal (yhat, raw .^ 2, 1e-12);
+%!test
+%! ## A support vector regression fold is fitted with its rows' weights
+%! load fisheriris
+%! X = meas(:,2:4);
+%! y = meas(:,1);
+%! w = 1 + (1:150)' / 7;
+%! CVMdl = crossval (fitrsvm (X, y, 'Weights', w), 'KFold', 3);
+%! idx = training (CVMdl.Partition, 1);
+%! Mdl = fitrsvm (X(idx,:), y(idx), 'Weights', w(idx), ...
+%!                'Epsilon', CVMdl.ModelParameters.Epsilon);
+%! assert_equal (predict (CVMdl.Trained{1}, X), predict (Mdl, X), 1e-10);
+

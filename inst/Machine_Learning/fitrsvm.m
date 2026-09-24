@@ -86,6 +86,14 @@
 ## @item @qcode{'BoxConstraint'} @tab A positive scalar bounding the dual
 ## coefficients, the cost of an error outside the tube.  The default is 1.
 ##
+## @item @qcode{'Weights'} @tab A nonnegative single or double vector of
+## observation weights, one per row of @var{X}.  An observation's box
+## constraint is @math{n} times @qcode{BoxConstraint} times its weight, the
+## weights scaled to sum to one; standardization uses weighted means and
+## standard deviations, and a row of zero or missing weight is left out.  The
+## model's @code{W} keeps the class of the weights, while every computation
+## runs in double.  The default is uniform.
+##
 ## @item @qcode{'KernelFunction'} @tab A character vector naming the kernel,
 ## one of @qcode{'linear'}, the default, @qcode{'rbf'}, @qcode{'gaussian'},
 ## @qcode{'polynomial'} or @qcode{'sigmoid'}.
