@@ -910,23 +910,21 @@ classdef ClassificationECOC < PredictiveModel
         args(end+1:end+2) = {name, val};
       endfor
       ## Weights are passed only when they carry information.  Uniform ones
-      ## say nothing a learner does not assume, and three of the seven
-      ## learners take no 'Weights' at all, so passing them regardless would
-      ## refuse the commonest fit there is.  A learner that cannot take them
-      ## refuses under its own name, which is the right place for it.
+      ## say nothing a learner does not assume, and the naive Bayes learner
+      ## takes no 'Weights' at all, so passing them regardless would refuse
+      ## the commonest fit there is.
       args(end+1:end+4) = {'PredictorNames', pnames, 'ClassNames', [-1; 1]};
       if (! isempty (cats))
         args(end+1:end+2) = {'CategoricalPredictors', cats};
       endif
       ## Weights spread a prior over its classes one class at a time, so even
-      ## equal ones differ in the last bits; only a real spread counts.  Four
-      ## of the learners take no observation weights.  They are given the
-      ## share of the weight each side holds as their prior, which is the
-      ## prior MATLAB's learners report, and weights that vary within a class
-      ## have no such form and are refused.
+      ## equal ones differ in the last bits; only a real spread counts.  The
+      ## naive Bayes learner takes no observation weights.  It is given the
+      ## share of the weight each side holds as its prior, which is the prior
+      ## MATLAB's learners report, and weights that vary within a class have
+      ## no such form and are refused.
       if (max (w) - min (w) > 1e-12 * max (w))
-        if (any (strcmpi (tmpl.Method, {'svm', 'knn', 'naivebayes', ...
-                                        'discriminant'})))
+        if (strcmpi (tmpl.Method, 'naivebayes'))
           if (! evenWithin)
             error (strcat ("ClassificationECOC: the '%s' learners take no", ...
                            " observation weights, so 'Weights' that vary", ...
@@ -1193,9 +1191,10 @@ endclassdef
 %! Mdl = ClassificationECOC (meas(11:150,:), y(11:150));
 %! assert_equal (Mdl.BinaryLearners{1}.Prior, [50, 50] / 100, 1e-12);
 
-%!error<ClassificationECOC: the 'svm' learners take no observation weights, so 'Weights' that vary within a class cannot be used with them.> ...
+%!error<ClassificationECOC: the 'naivebayes' learners take no observation weights, so 'Weights' that vary within a class cannot be used with them.> ...
 %! load fisheriris
-%! ClassificationECOC (meas, species, 'Weights', (1:150)')
+%! ClassificationECOC (meas, species, 'Learners', 'naivebayes', ...
+%!                     'Weights', (1:150)')
 
 ## A table at loss
 %!test  # the response is named, left out, or given beside the table
@@ -1255,3 +1254,26 @@ endclassdef
 %! Mdl = fitcecoc (meas, species, 'Weights', single (w), 'Learners', 'tree');
 %! assert_equal (class (Mdl.W), 'single');
 %! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Weights varying within a class reach discriminant learners, as R2024a
+%! load fisheriris
+%! Mdl = ClassificationECOC (meas, species, 'Learners', 'discriminant', ...
+%!                           'Weights', 1 + (1:150)' / 7);
+%! [~, NegLoss] = predict (Mdl, meas(134,:));
+%! assert_equal (NegLoss, [-2, -0.2957570199841673, -0.2080860771266001], ...
+%!               1e-12);
+%!test
+%! ## Weights varying within a class reach nearest neighbour learners
+%! load fisheriris
+%! Mdl = ClassificationECOC (meas, species, ...
+%!                           'Learners', templateKNN ('NumNeighbors', 5), ...
+%!                           'Weights', 1 + (1:150)' / 7);
+%! [~, NegLoss] = predict (Mdl, meas(58,:));
+%! assert_equal (NegLoss, [-1.211303329864724, 0, -1.291948491155047], 1e-12);
+%!test
+%! ## Weights varying within a class reach support vector machine learners
+%! load fisheriris
+%! Mdl = ClassificationECOC (meas, species, 'Learners', 'svm', ...
+%!                           'Weights', 1 + (1:150)' / 7);
+%! [~, NegLoss] = predict (Mdl, meas(23,:));
+%! assert_equal (NegLoss, [0, -0.749030561477596, -3.406162840589479], 2e-3);
