@@ -92,7 +92,9 @@ classdef IsolationForest
     ## @code{@var{Mdl} = IsolationForest (@var{X})} fits an isolation forest to
     ## the @math{N}-by-@math{P} matrix @var{X}, whose rows are observations and
     ## columns are variables, and returns a @code{IsolationForest} object
-    ## @var{Mdl}.
+    ## @var{Mdl}.  @var{X} must have at least 3 observations, the smallest
+    ## subsample MATLAB accepts too; MATLAB takes fewer by default and returns
+    ## a model that cannot tell one observation from another.
     ##
     ## @code{@var{Mdl} = IsolationForest (@dots{}, @var{name}, @var{value})}
     ## takes the following @qcode{Name-Value} pairs.
@@ -133,6 +135,9 @@ classdef IsolationForest
         error ("iforest: X must be a nonempty real numeric matrix.");
       endif
       [n, p] = size (X);
+      if (n < 3)
+        error ("iforest: X must have at least 3 observations.");
+      endif
 
       ## Defaults
       numlearners = 100;
