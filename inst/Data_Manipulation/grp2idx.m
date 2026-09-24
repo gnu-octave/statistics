@@ -131,6 +131,11 @@ function [g, gn, gl] = grp2idx (s)
   endif
 
   [gl, I, g] = unique (s(:));
+
+  if (isempty (g))
+    g = zeros (0, 1);
+  endif
+
   ## Fix order in here, since unique does not support this yet
   if (iscellstr (s))
     I = sort (I);
@@ -469,6 +474,13 @@ endfunction
 %! assert_equal (gn, {'a'; 'b'; 'c'});
 %! assert_equal (isstring (gl), true);
 %! assert_equal (cellstr (gl), gn);
+
+%!test
+%! [g, gn, gl] = grp2idx (zeros (0, 1));
+%! assert_equal (size (g), [0, 1]);
+%! assert_equal (size (gn), [0, 1]);
+%! assert_equal (size (gl), [0, 1]);
+
 
 ## Test input validation
 %!error <grp2idx: S must be either a vector or a matrix.> grp2idx (ones (3, 3, 3))
