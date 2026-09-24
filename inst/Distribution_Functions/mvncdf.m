@@ -60,7 +60,8 @@
 ##
 ## @code{@var{p} = mvncdf (@dots{}, @var{options})} specifies the structure,
 ## which controls specific parameters for the numerical integration used to
-## compute @var{p}. The required fields are:
+## compute @var{p}, as @code{statset} makes it.  A field that is missing or
+## empty takes its default.  The fields are:
 ##
 ## @multitable @columnfractions 0.2 0.75
 ## @item @qcode{'TolFun'} @tab Maximum absolute error tolerance.  Default
@@ -96,45 +97,32 @@ function [p, err] = mvncdf (varargin)
     error ("mvncdf: X, MU, and SIGMA must be double or single.");
   endif
 
-  ## Check for 'options' structure and parse parameters or add defaults
+  ## Defaults, which a field of the 'options' structure overrides where it
+  ## is present and not empty, as a structure from statset leaves unset
+  ## fields empty
+  if (size (varargin{1}, 2) < 4)
+    TolFun = 1e-8;
+  elseif (size (varargin{1}, 2) < 26)
+    TolFun = 1e-4;
+  endif
+  MaxFunEvals = 1e7;
+  Display = 'off';
+  rem_nargin = nargin;
   if (isstruct (varargin{end}))
-    if (isfield (varargin{end}, 'TolFun'))
-      TolFun = varargin{end}.TolFun;
-    else
-      error ("mvncdf: options structure missing 'TolFun' field.");
+    opts = varargin{end};
+    if (isfield (opts, 'TolFun') && ! isempty (opts.TolFun))
+      TolFun = opts.TolFun;
     endif
-    if (isempty (TolFun) && size (varargin{1}, 2) < 4)
-      TolFun = 1e-8;
-    elseif (isempty (TolFun) && size (varargin{1}, 2) < 26)
-      TolFun = 1e-4;
+    if (isfield (opts, 'MaxFunEvals') && ! isempty (opts.MaxFunEvals))
+      MaxFunEvals = opts.MaxFunEvals;
     endif
-    if (isfield (varargin{end}, 'MaxFunEvals'))
-      MaxFunEvals = varargin{end}.MaxFunEvals;
-    else
-      error ("mvncdf: options structure missing 'MaxFunEvals' field.");
-    endif
-    if (isempty (MaxFunEvals))
-      MaxFunEvals = 1e7;
-    endif
-    if (isfield (varargin{end}, 'Display'))
-      Display = varargin{end}.Display;
-    else
-      error ("mvncdf: options structure missing 'Display' field.");
-    endif
-    DispOptions = {'off', 'final', 'iter'};
-    if (sum (any (strcmpi (Display, DispOptions))) == 0)
-      error ("mvncdf: 'Display' field in 'options' has invalid value.");
+    if (isfield (opts, 'Display') && ! isempty (opts.Display))
+      Display = opts.Display;
+      if (! any (strcmpi (Display, {'off', 'final', 'iter'})))
+        error ("mvncdf: 'Display' field in 'options' has invalid value.");
+      endif
     endif
     rem_nargin = nargin - 1;
-  else
-    if (size (varargin{1}, 2) < 4)
-      TolFun = 1e-8;
-    elseif (size (varargin{1}, 2) < 26)
-      TolFun = 1e-4;
-    endif
-    MaxFunEvals = 1e7;
-    Display = 'off';
-    rem_nargin = nargin;
   endif
 
   ## Check for X of X_lo and X_up
@@ -503,9 +491,20 @@ endfunction
 %! a = [-inf 0];
 %! p = mvncdf (a, x, mu, sigma);
 %! assert_equal (p, 0.482672935215631, 1e-15);
+%!test  # MATLAB parity: an options field missing or empty takes its default
+%! rho = [1, 0.5; 0.5, 1];
+%! p = 1 / 3;
+%! o = statset ('TolFun', 1e-4);
+%! assert_equal (mvncdf ([0, 0], [0, 0], rho, o), p, 1e-8);
+%! o = struct ('TolFun', 1e-4);
+%! assert_equal (mvncdf ([0, 0], [0, 0], rho, o), p, 1e-8);
+%! assert_equal (mvncdf ([0, 0], [0, 0], rho, struct ('Display', 'final')), ...
+%!               p, 1e-8);
 %!error<mvncdf: X, MU, and SIGMA must be double or single.> mvncdf (int32 ([0, 0]))
 %!error<mvncdf: X, MU, and SIGMA must be double or single.> mvncdf ([true, true])
 %!error<mvncdf: X, MU, and SIGMA must be double or single.> mvncdf ('ab')
+%!error<mvncdf: 'Display' field in 'options' has invalid value.> ...
+%! mvncdf ([0, 0], [0, 0], eye (2), struct ('Display', 'bogus'))
 %!error p = mvncdf (randn (25,26), [], eye (26));
 %!error p = mvncdf (randn (25,8), [], eye (9));
 %!error p = mvncdf (randn (25,4), randn (25,5), [], eye (4));
