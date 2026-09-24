@@ -45,7 +45,7 @@ classdef paretotails
   ## supported; only the default empirical (@qcode{"ecdf"}) middle is available.
   ##
   ## @seealso{gpfit, gpcdf, gppdf, gpinv, ecdf, fitdist,
-  ## GeneralizedParetoDistribution}
+  ## prob.GeneralizedParetoDistribution}
   ## @end deftp
 
   properties (SetAccess = private)

@@ -67,7 +67,7 @@
 ##
 ## Run @code{demo confusionchart} to see some examples.
 ##
-## @seealso{confusionmat, sortClasses}
+## @seealso{confusionmat, ConfusionMatrixChart.sortClasses}
 ## @end deftypefn
 
 function cm = confusionchart (varargin)

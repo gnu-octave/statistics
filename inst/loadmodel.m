@@ -23,7 +23,7 @@
 ## @code{@var{obj} = loadmodel (@var{filename})} loads a Classification or
 ## Regression object, @var{obj}, from a file defined in @var{filename}.
 ##
-## @seealso{savemodel, ClassificationDiscriminant, ClassificationGAM,
+## @seealso{ClassificationDiscriminant, ClassificationGAM,
 ## ClassificationKNN, ClassificationNeuralNetwork,
 ## ClassificationPartitionedModel, ClassificationSVM, ClassificationTree,
 ## RegressionGAM}
