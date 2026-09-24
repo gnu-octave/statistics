@@ -61,6 +61,10 @@
 ##
 ## An empty @var{s} returns @var{g}, @var{gn} and @var{gl} as 0-by-1 arrays,
 ## whereas MATLAB returns a 0-by-0 @var{gn} for an empty categorical @var{s}.
+## A character array without rows returns a 0-by-1 @var{g} and @var{gn}, and a
+## @var{gl} with no rows.  Each row of a character array is an observation, so a
+## row without characters, being unnamed, is indexed as @code{NaN}, whereas
+## MATLAB returns no index for any empty character array.
 ##
 ## @seealso{grpstats}
 ## @end deftypefn
@@ -87,7 +91,14 @@ function [g, gn, gl] = grp2idx (s)
     is_categorical = true;
   elseif (ischar (s))
     is_char_array = true;
-    s = cellstr (s);
+    ## A character array without rows holds no observations
+    gl_cols = 0;
+    if (rows (s) == 0)
+      gl_cols = columns (s);
+      s = cell (0,1);
+    else
+      s = cellstr (s);
+    endif
   elseif (isdatetime (s))
     error ("grp2idx: 'datetime' grouping variable is not supported yet.");
   elseif (isduration (s))
@@ -201,7 +212,7 @@ function [g, gn, gl] = grp2idx (s)
   if (nargout > 2)
     if (is_char_array)
       if (isempty (gl))
-        gl = char (cell (0,1));
+        gl = char (zeros (0, gl_cols));
       else
         gl = char (gn);
       endif
@@ -501,6 +512,21 @@ endfunction
 %! assert_equal (gn, cell (0, 1));
 %! assert_equal (iscategorical (gl), true);
 %! assert_equal (size (gl), [0, 1]);
+%!test
+%! [g, gn, gl] = grp2idx (char (zeros (0, 3)));
+%! assert_equal (g, zeros (0, 1));
+%! assert_equal (gn, cell (0, 1));
+%! assert_equal (gl, char (zeros (0, 3)));
+%!test
+%! [g, gn, gl] = grp2idx ('');
+%! assert_equal (g, zeros (0, 1));
+%! assert_equal (gn, cell (0, 1));
+%! assert_equal (gl, '');
+%!test
+%! [g, gn, gl] = grp2idx (char (zeros (3, 0)));
+%! assert_equal (g, [NaN; NaN; NaN]);
+%! assert_equal (gn, cell (0, 1));
+%! assert_equal (gl, '');
 
 ## Test input validation
 %!error <grp2idx: S must be either a vector or a matrix.> grp2idx (ones (3, 3, 3))
