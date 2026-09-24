@@ -814,8 +814,8 @@ classdef RegressionPartitionedModel
     ## numeric vector of the same length every time it is called:
     ##
     ## @example
-    ## @var{testvals} = @var{fun} (@var{M}, @var{Xtrain}, @var{Ytrain}, @var{Wtrain}, @dots{}
-    ##                @var{Xtest}, @var{Ytest}, @var{Wtest})
+    ## @var{testvals} = @var{fun} (@var{M}, @var{Xtrain}, @var{Ytrain}, @dots{}
+    ##                @var{Wtrain}, @var{Xtest}, @var{Ytest}, @var{Wtest})
     ## @end example
     ##
     ## @var{M} is the model the fold was fitted with, taken from

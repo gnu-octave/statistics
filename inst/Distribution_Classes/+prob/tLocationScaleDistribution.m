@@ -22,9 +22,9 @@ classdef tLocationScaleDistribution < prob.ProbabilityDistribution
   ##
   ## Location-Scale Student's T probability distribution object.
   ##
-  ## A @code{prob.tLocationScaleDistribution} object consists of parameters, a model
-  ## description, and sample data for a location-scale Student's T probability
-  ## distribution.
+  ## A @code{prob.tLocationScaleDistribution} object consists of parameters, a
+  ## model description, and sample data for a location-scale Student's T
+  ## probability distribution.
   ##
   ## The location-scale Student's T distribution is a continuous probability
   ## distribution that generalizes the standard Student's T distribution by
@@ -42,9 +42,10 @@ classdef tLocationScaleDistribution < prob.ProbabilityDistribution
   ## @item Use the constructor @qcode{prob.tLocationScaleDistribution (@var{mu},
   ## @var{sigma}, @var{nu})} to create a location-scale Student's T distribution
   ## with fixed parameter values @var{mu}, @var{sigma}, and @var{nu}.
-  ## @item Use the static method @qcode{prob.tLocationScaleDistribution.fit (@var{x},
-  ## @var{censor}, @var{freq}, @var{options})} to fit a distribution to the data
-  ## in @var{x} using the same input arguments as the @code{tlsfit} function.
+  ## @item Use the static method @qcode{prob.tLocationScaleDistribution.fit
+  ## (@var{x}, @var{censor}, @var{freq}, @var{options})} to fit a distribution
+  ## to the data in @var{x} using the same input arguments as the @code{tlsfit}
+  ## function.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}

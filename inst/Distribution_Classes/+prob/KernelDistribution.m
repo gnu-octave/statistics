@@ -27,10 +27,10 @@ classdef KernelDistribution < prob.ProbabilityDistribution
   ## estimated parameters; the fitted distribution is defined entirely by the
   ## data, the smoothing kernel, and the bandwidth.
   ##
-  ## A @code{prob.KernelDistribution} object can only be created by fitting a kernel
-  ## smoothing distribution to data with the @code{fitdist} function.  Unlike
-  ## the parametric distributions, it cannot be created with the @code{makedist}
-  ## function, since it is not parametric and requires data.
+  ## A @code{prob.KernelDistribution} object can only be created by fitting a
+  ## kernel smoothing distribution to data with the @code{fitdist} function.
+  ## Unlike the parametric distributions, it cannot be created with the
+  ## @code{makedist} function, since it is not parametric and requires data.
   ##
   ## Further information about the kernel density estimation can be found at
   ## @url{https://en.wikipedia.org/wiki/Kernel_density_estimation}
@@ -94,10 +94,10 @@ classdef KernelDistribution < prob.ProbabilityDistribution
     ## A scalar structure containing the following fields:
     ## @itemize
     ## @item @qcode{range}: either the character vector @qcode{'unbounded'} or
-    ## @qcode{'positive'}, or a two-element numeric vector @math{[L, U]} with the
-    ## lower and upper bounds of the support.
-    ## @item @qcode{closedbound}: a two-element logical vector specifying whether
-    ## each bound is closed.
+    ## @qcode{'positive'}, or a two-element numeric vector @math{[L, U]} with
+    ## the lower and upper bounds of the support.
+    ## @item @qcode{closedbound}: a two-element logical vector specifying
+    ## whether each bound is closed.
     ## @item @qcode{iscontinuous}: a logical scalar, always @qcode{true} for a
     ## kernel distribution.
     ## @end itemize

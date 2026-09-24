@@ -33,19 +33,19 @@
 ## from the reference line indicate departures from the distribution.
 ##
 ## @var{dist} is one of @qcode{"normal"} (the default when @var{dist} is
-## omitted), @qcode{"lognormal"}, @qcode{"exponential"}, @qcode{"extreme value"},
-## @qcode{"weibull"}, @qcode{"rayleigh"}, @qcode{"logistic"}, or
-## @qcode{"loglogistic"}.  For @qcode{"lognormal"}, @qcode{"weibull"}, and
-## @qcode{"loglogistic"} the data axis is logarithmic.
+## omitted), @qcode{"lognormal"}, @qcode{"exponential"},
+## @qcode{"extreme value"}, @qcode{"weibull"}, @qcode{"rayleigh"},
+## @qcode{"logistic"}, or @qcode{"loglogistic"}.  For @qcode{"lognormal"},
+## @qcode{"weibull"}, and @qcode{"loglogistic"} the data axis is logarithmic.
 ##
 ## @var{y} is a numeric vector, or a matrix in which case each column is plotted
 ## as a separate sample.  @code{NaN} values are ignored.
 ##
 ## @var{cens} is a logical vector the same size as @var{y} that is true for
 ## right-censored observations; censored points are not plotted and the plotting
-## positions of the remaining points follow the Kaplan-Meier estimate.  @var{freq}
-## is a vector of nonnegative integer frequencies (counts) the same size as
-## @var{y}.  Pass @code{[]} to omit either one.
+## positions of the remaining points follow the Kaplan-Meier estimate.
+## @var{freq} is a vector of nonnegative integer frequencies (counts) the same
+## size as @var{y}.  Pass @code{[]} to omit either one.
 ##
 ## @code{probplot (@var{ax}, @dots{})} plots into the axes @var{ax} instead of
 ## the current axes.  The trailing option @qcode{"noref"} suppresses the
@@ -55,11 +55,11 @@
 ## plotted line objects (the data markers, followed by the reference line unless
 ## @qcode{"noref"} was given).
 ##
-## The reference line is a robust fit through the first and third quartiles of the
-## data on the transformed scale.  For censored data the quartiles are taken from
-## the Kaplan-Meier plotting positions; when heavy censoring prevents the data
-## from reaching a quartile the position is linearly extrapolated, which may
-## deviate slightly from @sc{matlab}.
+## The reference line is a robust fit through the first and third quartiles of
+## the data on the transformed scale.  For censored data the quartiles are taken
+## from the Kaplan-Meier plotting positions; when heavy censoring prevents the
+## data from reaching a quartile the position is linearly extrapolated, which
+## may deviate slightly from @sc{matlab}.
 ##
 ## @seealso{normplot, wblplot, qqplot, cdfplot, ecdf}
 ## @end deftypefn

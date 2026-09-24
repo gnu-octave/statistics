@@ -23,8 +23,9 @@
 ##
 ## @code{@var{Mdl} = sparsefilt (@var{X}, @var{Q})} learns @var{Q} features from
 ## the @math{N * P} data matrix @var{X} (rows are observations, columns are
-## predictors) and returns a @qcode{SparseFiltering} object @var{Mdl}.  Apply the
-## learned transformation to data with @code{transform (@var{Mdl}, @var{X})}.
+## predictors) and returns a @qcode{SparseFiltering} object @var{Mdl}.  Apply
+## the learned transformation to data with
+## @code{transform (@var{Mdl}, @var{X})}.
 ##
 ## The @math{N * @var{Q}} features returned by @code{transform} are the
 ## soft-absolute activations @code{sqrt ((@var{X} * @var{W}) .^ 2 + 1e-8)},

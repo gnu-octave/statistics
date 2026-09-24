@@ -39,9 +39,10 @@ classdef NegativeBinomialDistribution < prob.ProbabilityDistribution
   ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{prob.NegativeBinomialDistribution (@var{R},
-  ## @var{P})} to create a negative binomial distribution with fixed parameter
-  ## values @var{R} and @var{P}.
+  ## @item Use the constructor
+  ## @qcode{prob.NegativeBinomialDistribution (@var{R}, @var{P})} to create a
+  ## negative binomial distribution with fixed parameter values @var{R} and
+  ## @var{P}.
   ## @item Use the static method
   ## @qcode{prob.NegativeBinomialDistribution.fit
   ## (@var{x},

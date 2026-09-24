@@ -22,15 +22,17 @@ classdef LoglogisticDistribution < prob.ProbabilityDistribution
   ##
   ## Log-logistic probability distribution object.
   ##
-  ## A @code{prob.LoglogisticDistribution} object consists of parameters, a model
-  ## description, and sample data for a log-logistic probability distribution.
+  ## A @code{prob.LoglogisticDistribution} object consists of parameters, a
+  ## model description, and sample data for a log-logistic probability
+  ## distribution.
   ##
   ## The log-logistic distribution is a continuous probability distribution that
   ## models non-negative random variables whose logarithm follows the logistic
   ## distribution.  It is defined by location parameter @var{mu} and scale
   ## parameter @var{sigma}.
   ##
-  ## There are several ways to create a @code{prob.LoglogisticDistribution} object.
+  ## There are several ways to create a @code{prob.LoglogisticDistribution}
+  ## object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
@@ -39,9 +41,10 @@ classdef LoglogisticDistribution < prob.ProbabilityDistribution
   ## @item Use the constructor @qcode{prob.LoglogisticDistribution (@var{mu},
   ## @var{sigma})} to create a log-logistic distribution with fixed parameter
   ## values @var{mu} and @var{sigma}.
-  ## @item Use the static method @qcode{prob.LoglogisticDistribution.fit (@var{x},
-  ## @var{censor}, @var{freq}, @var{options})} to fit a distribution to the data
-  ## in @var{x} using the same input arguments as the @code{loglfit} function.
+  ## @item Use the static method @qcode{prob.LoglogisticDistribution.fit
+  ## (@var{x}, @var{censor}, @var{freq}, @var{options})} to fit a distribution
+  ## to the data in @var{x} using the same input arguments as the @code{loglfit}
+  ## function.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}

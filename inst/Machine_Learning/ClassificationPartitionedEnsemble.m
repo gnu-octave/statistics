@@ -546,7 +546,8 @@ classdef ClassificationPartitionedEnsemble
     ## Each fold's ensemble is resumed, as @code{ClassificationEnsemble.resume}
     ## does, by @var{NumLearningCycles} learners.
     ##
-    ## @seealso{ClassificationPartitionedEnsemble, ClassificationEnsemble.resume}
+    ## @seealso{ClassificationPartitionedEnsemble,
+    ## ClassificationEnsemble.resume}
     ## @end deftypefn
     function this = resume (this, varargin)
 

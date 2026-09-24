@@ -28,25 +28,25 @@
 ##
 ## @code{@var{coeff} = ppca (@var{Y}, @var{K})} fits a probabilistic principal
 ## component analysis (PPCA) model with @var{K} components to the @math{N * P}
-## data matrix @var{Y} (rows are observations, columns are variables) and returns
-## the @math{P * @var{K}} matrix @var{coeff} of orthonormal principal component
-## coefficients, ordered by decreasing component variance.  @var{Y} may contain
-## @code{NaN} values marking missing observations; the model is fitted by an
-## expectation-maximization algorithm that accounts for them.  @var{K} must be a
-## positive integer smaller than @math{P}.
+## data matrix @var{Y} (rows are observations, columns are variables) and
+## returns the @math{P * @var{K}} matrix @var{coeff} of orthonormal principal
+## component coefficients, ordered by decreasing component variance.  @var{Y}
+## may contain @code{NaN} values marking missing observations; the model is
+## fitted by an expectation-maximization algorithm that accounts for them.
+## @var{K} must be a positive integer smaller than @math{P}.
 ##
 ## @code{[@var{coeff}, @var{score}, @var{pcvar}, @var{mu}, @var{v}, @var{S}] =
 ## ppca (@dots{})} returns further outputs:
 ##
 ## @table @var
 ## @item score
-## The @math{N * @var{K}} principal component scores (the data projected onto the
-## components; missing entries are reconstructed from the model before
+## The @math{N * @var{K}} principal component scores (the data projected onto
+## the components; missing entries are reconstructed from the model before
 ## projection).
 ##
 ## @item pcvar
-## A @math{@var{K} * 1} vector of the principal component variances (the variance
-## explained by each component).
+## A @math{@var{K} * 1} vector of the principal component variances (the
+## variance explained by each component).
 ##
 ## @item mu
 ## A @math{1 * P} vector of the estimated mean of @var{Y}.
@@ -57,7 +57,8 @@
 ## @item S
 ## A structure with the fitted model details: the loadings @qcode{W}, the
 ## expected scores @qcode{Xexp}, the reconstruction @qcode{Recon}, the number of
-## iterations @qcode{NumIter}, and the root-mean-square residual @qcode{RMSResid}.
+## iterations @qcode{NumIter}, and the root-mean-square residual
+## @qcode{RMSResid}.
 ## @end table
 ##
 ## Name/Value pairs control the fit:
@@ -69,15 +70,15 @@
 ##
 ## @item @qcode{'Options'}
 ## A structure of algorithm options, as returned by @code{statset}, whose
-## @qcode{MaxIter}, @qcode{TolFun}, and @qcode{TolX} fields set the maximum number
-## of iterations and the convergence tolerances of the
+## @qcode{MaxIter}, @qcode{TolFun}, and @qcode{TolX} fields set the maximum
+## number of iterations and the convergence tolerances of the
 ## expectation-maximization algorithm.
 ## @end table
 ##
 ## When @var{Y} has no missing values the model is fitted directly from the
 ## eigendecomposition of its covariance matrix; @var{coeff}, @var{pcvar}, and
-## @var{v} are then the principal component directions, the leading variances, and
-## the mean of the trailing variances, respectively.
+## @var{v} are then the principal component directions, the leading variances,
+## and the mean of the trailing variances, respectively.
 ##
 ## @seealso{pca, pcacov, pcares, factoran, barttest}
 ## @end deftypefn

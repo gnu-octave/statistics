@@ -22,14 +22,16 @@ classdef ExponentialDistribution < prob.ProbabilityDistribution
   ##
   ## Exponential probability distribution object.
   ##
-  ## A @code{prob.ExponentialDistribution} object consists of parameters, a model
-  ## description, and sample data for a exponential probability distribution.
+  ## A @code{prob.ExponentialDistribution} object consists of parameters, a
+  ## model description, and sample data for a exponential probability
+  ## distribution.
   ##
   ## The exponential distribution is a continuous probability distribution with
   ## mean parameter @var{mu} that models the time between events in a Poisson
   ## process.
   ##
-  ## There are several ways to create a @code{prob.ExponentialDistribution} object.
+  ## There are several ways to create a @code{prob.ExponentialDistribution}
+  ## object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
@@ -37,8 +39,8 @@ classdef ExponentialDistribution < prob.ProbabilityDistribution
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{prob.ExponentialDistribution (@var{mu})}
   ## to create a exponential distribution with fixed parameter value @var{mu}.
-  ## @item Use the static method @qcode{prob.ExponentialDistribution.fit (@var{x},
-  ## @var{alpha}, @var{censor}, @var{freq}, @var{options})} to fit a
+  ## @item Use the static method @qcode{prob.ExponentialDistribution.fit
+  ## (@var{x}, @var{alpha}, @var{censor}, @var{freq}, @var{options})} to fit a
   ## distribution to the data in @var{x} using the same input arguments as the
   ## @code{expfit} function.
   ## @end itemize

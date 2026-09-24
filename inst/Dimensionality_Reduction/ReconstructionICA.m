@@ -18,7 +18,8 @@
 ## -*- texinfo -*-
 ## @deftp {statistics} {} ReconstructionICA
 ##
-## Reconstruction independent component analysis (RICA) feature-extraction model.
+## Reconstruction independent component analysis (RICA) feature-extraction
+## model.
 ##
 ## A @qcode{ReconstructionICA} object stores the transformation learned by
 ## @code{rica} for extracting features from data.  Create one with @code{rica};

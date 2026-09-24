@@ -22,15 +22,17 @@ classdef MultinomialDistribution < prob.ProbabilityDistribution
   ##
   ## Multinomial probability distribution object.
   ##
-  ## A @code{prob.MultinomialDistribution} object consists of parameters, a model
-  ## description, and sample data for a multinomial probability distribution.
+  ## A @code{prob.MultinomialDistribution} object consists of parameters, a
+  ## model description, and sample data for a multinomial probability
+  ## distribution.
   ##
   ## The multinomial distribution is a discrete probability distribution that
   ## models the outcomes of n independent trials of a k-category system, where
   ## each trial has a probability of falling into each category.  It is
   ## defined by the vector of probabilities for each outcome.
   ##
-  ## There are several ways to create a @code{prob.MultinomialDistribution} object.
+  ## There are several ways to create a @code{prob.MultinomialDistribution}
+  ## object.
   ##
   ## @itemize
   ## @item Create a distribution with specified parameter values using the

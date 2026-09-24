@@ -214,8 +214,8 @@ classdef BetaDistribution < prob.ProbabilityDistribution
     ## @itemize
     ## @item @qcode{data} : a numeric vector containing the data used for
     ## distribution fitting.
-    ## @item @qcode{cens} : an empty array, since @qcode{prob.BetaDistribution} does
-    ## not allow censoring.
+    ## @item @qcode{cens} : an empty array, since @qcode{prob.BetaDistribution}
+    ## does not allow censoring.
     ## @item @qcode{frequency} : a numeric vector of non-negative integer values
     ## containing the frequency information corresponding to the elements of the
     ## data used for distribution fitting.  If no frequency vector was used for

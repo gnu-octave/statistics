@@ -22,8 +22,8 @@ classdef PiecewiseLinearDistribution < prob.ProbabilityDistribution
   ##
   ## Piecewise linear probability distribution object.
   ##
-  ## A @code{prob.PiecewiseLinearDistribution} object consists of parameters, a model
-  ## description, and sample data for a piecewise linear probability
+  ## A @code{prob.PiecewiseLinearDistribution} object consists of parameters, a
+  ## model description, and sample data for a piecewise linear probability
   ## distribution.
   ##
   ## The piecewise linear distribution is a continuous probability distribution

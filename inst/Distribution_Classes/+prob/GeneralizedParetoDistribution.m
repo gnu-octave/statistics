@@ -22,8 +22,8 @@ classdef GeneralizedParetoDistribution < prob.ProbabilityDistribution
   ##
   ## Generalized Pareto probability distribution object.
   ##
-  ## A @code{prob.GeneralizedParetoDistribution} object consists of parameters, a
-  ## model description, and sample data for a Generalized Pareto probability
+  ## A @code{prob.GeneralizedParetoDistribution} object consists of parameters,
+  ## a model description, and sample data for a Generalized Pareto probability
   ## distribution.
   ##
   ## The Generalized Pareto distribution is a continuous probability
@@ -31,16 +31,17 @@ classdef GeneralizedParetoDistribution < prob.ProbabilityDistribution
   ## used for extreme value analysis.  It is defined by shape parameter @var{k},
   ## scale parameter @var{sigma}, and location parameter @var{theta}.
   ##
-  ## There are several ways to create a @code{prob.GeneralizedParetoDistribution}
-  ## object.
+  ## There are several ways to create a
+  ## @code{prob.GeneralizedParetoDistribution} object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{prob.GeneralizedParetoDistribution (@var{k},
-  ## @var{sigma}, @var{theta})} to create a Generalized Pareto distribution with
-  ## fixed parameter values @var{k}, @var{sigma}, and @var{theta}.
+  ## @item Use the constructor @qcode{prob.GeneralizedParetoDistribution
+  ## (@var{k}, @var{sigma}, @var{theta})} to create a Generalized Pareto
+  ## distribution with fixed parameter values @var{k}, @var{sigma}, and
+  ## @var{theta}.
   ## @item Use the static method @qcode{prob.GeneralizedParetoDistribution.fit
   ## (@var{x}, @var{theta}, @var{alpha}, @var{freq}, @var{options})} to fit a
   ## distribution to the data in @var{x} using the same input arguments as the

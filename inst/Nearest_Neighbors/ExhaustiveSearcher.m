@@ -286,9 +286,10 @@ classdef ExhaustiveSearcher
     ##
     ## @seealso{ExhaustiveSearcher, knnsearch, rangesearch, pdist2}
     ##
-    ## @qcode{'Distance'}, @qcode{'P'}, @qcode{'Cov'} and @qcode{'Scale'} override
-    ## the searcher's own metric for that call only; the @qcode{Distance} and
-    ## @qcode{DistParameter} properties keep their values, as they do in MATLAB.
+    ## @qcode{'Distance'}, @qcode{'P'}, @qcode{'Cov'} and @qcode{'Scale'}
+    ## override the searcher's own metric for that call only; the
+    ## @qcode{Distance} and @qcode{DistParameter} properties keep their values,
+    ## as they do in MATLAB.
     ## @end deftypefn
     function obj = ExhaustiveSearcher (X, varargin)
       if (nargin < 1)

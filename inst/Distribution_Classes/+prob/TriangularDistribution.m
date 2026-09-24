@@ -35,14 +35,16 @@ classdef TriangularDistribution < prob.ProbabilityDistribution
   ## @item @qcode{C} @tab Upper limit @tab @math{C > A}
   ## @end multitable
   ##
-  ## There are several ways to create a @code{prob.TriangularDistribution} object.
+  ## There are several ways to create a @code{prob.TriangularDistribution}
+  ## object.
   ##
   ## @itemize
   ## @item Create a distribution with specified parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{prob.TriangularDistribution (@var{A}, @var{B},
-  ## @var{C})} to create a triangular distribution with specified parameter
-  ## values @var{A}, @var{B}, and @var{C}.
+  ## @item Use the constructor
+  ## @qcode{prob.TriangularDistribution (@var{A}, @var{B}, @var{C})} to create a
+  ## triangular distribution with specified parameter values @var{A}, @var{B},
+  ## and @var{C}.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{makedist} function to create

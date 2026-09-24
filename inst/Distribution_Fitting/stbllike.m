@@ -29,8 +29,8 @@
 ## @var{delta} given in the four-element vector @var{params}.
 ##
 ## @code{[@var{nlogL}, @var{acov}] = stbllike (@var{params}, @var{x})} also
-## returns the inverse of the observed Fisher information matrix, @var{acov}.  If
-## the input parameter values in @var{params} are the maximum likelihood
+## returns the inverse of the observed Fisher information matrix, @var{acov}.
+## If the input parameter values in @var{params} are the maximum likelihood
 ## estimates, the diagonal elements of @var{acov} are their asymptotic
 ## variances.  @var{acov} is based on the numerically evaluated Hessian of the
 ## negative log-likelihood, since the stable density has no closed form.

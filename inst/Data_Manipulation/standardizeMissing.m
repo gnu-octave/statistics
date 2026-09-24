@@ -20,7 +20,7 @@
 ##
 ## Replace selected values by standard missing values.
 ##
-## @code{@var{Β} = standardizeMissing (@var{A}, @var{indicator})} returns a
+## @code{@var{B} = standardizeMissing (@var{A}, @var{indicator})} returns a
 ## standardized array @var{B} of the same size and data type as the input array
 ## @var{A} and with all elements specified by @var{indicator} replaced by the
 ## standard missing value corresponding the data type of @var{A}.

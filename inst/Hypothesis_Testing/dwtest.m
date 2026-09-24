@@ -26,8 +26,8 @@
 ## the residuals @var{r} of a linear regression with design matrix @var{x}
 ## (which should include a column of ones if the model has a constant term).
 ## The null hypothesis is that the residuals are uncorrelated, against the
-## alternative that they are autocorrelated.  @var{r} is an @math{N*1} vector and
-## @var{x} is an @math{N*P} matrix.  @var{p} is the p-value of the test.
+## alternative that they are autocorrelated.  @var{r} is an @math{N*1} vector
+## and @var{x} is an @math{N*P} matrix.  @var{p} is the p-value of the test.
 ##
 ## The Durbin-Watson statistic is
 ## @tex
@@ -46,10 +46,10 @@
 ## @multitable @columnfractions 0.18 0.8
 ## @headitem @var{Name} @tab @var{Value}
 ##
-## @item @qcode{'Method'} @tab @qcode{'exact'} to compute the exact p-value
-## from the null distribution of the statistic (a ratio of quadratic forms,
-## evaluated with Imhof's method), or @qcode{'approximate'} to use a normal
-## approximation based on the mean and variance of the statistic.  The default is
+## @item @qcode{'Method'} @tab @qcode{'exact'} to compute the exact p-value from
+## the null distribution of the statistic (a ratio of quadratic forms, evaluated
+## with Imhof's method), or @qcode{'approximate'} to use a normal approximation
+## based on the mean and variance of the statistic.  The default is
 ## @qcode{'exact'} for @math{n < 400} and @qcode{'approximate'} otherwise.
 ##
 ## @item @qcode{'Tail'} @tab The alternative hypothesis: @qcode{'both'}

@@ -37,9 +37,10 @@ classdef InverseGaussianDistribution < prob.ProbabilityDistribution
   ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{prob.InverseGaussianDistribution (@var{mu},
-  ## @var{lambda})} to create a Inverse Gaussian distribution with fixed
-  ## parameter values @var{mu} and @var{lambda}.
+  ## @item Use the constructor
+  ## @qcode{prob.InverseGaussianDistribution (@var{mu}, @var{lambda})} to create
+  ## a Inverse Gaussian distribution with fixed parameter values @var{mu} and
+  ## @var{lambda}.
   ## @item Use the static method @qcode{prob.InverseGaussianDistribution.fit
   ## (@var{x}, @var{alpha}, @var{censor}, @var{freq}, @var{options})} to fit a
   ## distribution to the data in @var{x} using the same input arguments as the

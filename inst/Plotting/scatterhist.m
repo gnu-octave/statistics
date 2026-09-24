@@ -38,8 +38,8 @@
 ##
 ## @item @qcode{"NBins"}
 ## The number of bins for the marginal histograms, either a scalar applied to
-## both or a two-element vector @code{[nx ny]}.  The default is chosen by Scott's
-## rule.
+## both or a two-element vector @code{[nx ny]}.  The default is chosen by
+## Scott's rule.
 ##
 ## @item @qcode{"Kernel"}
 ## @qcode{"off"} (default) draws histograms for the marginals; @qcode{"on"} or

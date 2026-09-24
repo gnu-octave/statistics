@@ -62,10 +62,10 @@
 ## clamps silently, so a p-value reported as @math{0.001} or @math{0.5} there
 ## may be a bound rather than an estimate, with nothing to say so.
 ##
-## @code{[@var{h}, @var{p}, @var{jbstat}, @var{critval}] = jbtest (@dots{})} also
-## returns the test statistic @var{jbstat} and the critical value @var{critval}
-## at significance level @var{alpha}.  The null hypothesis is rejected when
-## @code{@var{jbstat} > @var{critval}}.
+## @code{[@var{h}, @var{p}, @var{jbstat}, @var{critval}] = jbtest (@dots{})}
+## also returns the test statistic @var{jbstat} and the critical value
+## @var{critval} at significance level @var{alpha}.  The null hypothesis is
+## rejected when @code{@var{jbstat} > @var{critval}}.
 ##
 ## Note: for @math{n \le 2000} the p-value and critical value are obtained by
 ## interpolating an embedded critical-value table (the same approach MATLAB
@@ -76,9 +76,9 @@
 ## different simulation, so the two tables agree only to about two decimal
 ## places.  As a result the reported p-value and critical value, and (in a
 ## narrow band of statistic values around the critical value) the test decision
-## @var{h}, can differ slightly from MATLAB in edge cases.  These differences are
-## an unavoidable consequence of the Monte-Carlo origin of both tables, not a
-## difference in method.  Supply @var{mctol} for a direct Monte-Carlo p-value.
+## @var{h}, can differ slightly from MATLAB in edge cases.  These differences
+## are an unavoidable consequence of the Monte-Carlo origin of both tables, not
+## a difference in method.  Supply @var{mctol} for a direct Monte-Carlo p-value.
 ##
 ## If @var{x} has zero variance (or is otherwise degenerate so that skewness
 ## and kurtosis are undefined), @var{jbstat} is @qcode{NaN}; in this case

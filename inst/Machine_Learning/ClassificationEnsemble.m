@@ -826,7 +826,8 @@ classdef ClassificationEnsemble < PredictiveModel
     ## @qcode{'CVPartition'}, a @code{cvpartition} object, may choose the
     ## partition instead.
     ##
-    ## @seealso{ClassificationEnsemble, ClassificationPartitionedEnsemble, cvpartition}
+    ## @seealso{ClassificationEnsemble, ClassificationPartitionedEnsemble,
+    ## cvpartition}
     ## @end deftypefn
     function CVMdl = crossval (this, varargin)
 

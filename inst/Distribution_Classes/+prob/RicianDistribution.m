@@ -35,9 +35,9 @@ classdef RicianDistribution < prob.ProbabilityDistribution
   ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{prob.RicianDistribution (@var{s}, @var{sigma})}
-  ## to create a Rician distribution with fixed parameter values @var{s} and
-  ## @var{sigma}.
+  ## @item Use the constructor
+  ## @qcode{prob.RicianDistribution (@var{s}, @var{sigma})} to create a Rician
+  ## distribution with fixed parameter values @var{s} and @var{sigma}.
   ## @item Use the static method @qcode{prob.RicianDistribution.fit (@var{x},
   ## @var{censor}, @var{freq}, @var{options})} to fit a distribution to data
   ## @var{x}.

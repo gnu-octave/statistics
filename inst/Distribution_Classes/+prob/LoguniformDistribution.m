@@ -22,14 +22,15 @@ classdef LoguniformDistribution < prob.ProbabilityDistribution
   ##
   ## Log-uniform probability distribution object.
   ##
-  ## A @code{prob.LoguniformDistribution} object consists of parameters and a model
-  ## description for a log-uniform probability distribution.
+  ## A @code{prob.LoguniformDistribution} object consists of parameters and a
+  ## model description for a log-uniform probability distribution.
   ##
   ## The log-uniform distribution is a continuous probability distribution that
   ## is constant between locations @var{Lower} and @var{Upper} on a logarithmic
   ## scale.
   ##
-  ## There are several ways to create a @code{prob.LoguniformDistribution} object.
+  ## There are several ways to create a @code{prob.LoguniformDistribution}
+  ## object.
   ##
   ## @itemize
   ## @item Create a distribution with specified parameter values using the

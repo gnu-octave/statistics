@@ -22,15 +22,17 @@ classdef ExtremeValueDistribution < prob.ProbabilityDistribution
   ##
   ## Extreme value probability distribution object.
   ##
-  ## A @code{prob.ExtremeValueDistribution} object consists of parameters, a model
-  ## description, and sample data for an extreme value probability distribution.
+  ## A @code{prob.ExtremeValueDistribution} object consists of parameters, a
+  ## model description, and sample data for an extreme value probability
+  ## distribution.
   ##
   ## The extreme value distribution is also known as the Gumbel distribution for
   ## maxima, and it is a limiting distribution for the maximum of a large number
   ## of samples from a continuous distribution.  It is defined by location
   ## parameter @var{mu} and scale parameter @var{sigma}.
   ##
-  ## There are several ways to create a @code{prob.ExtremeValueDistribution} object.
+  ## There are several ways to create a @code{prob.ExtremeValueDistribution}
+  ## object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
@@ -39,8 +41,8 @@ classdef ExtremeValueDistribution < prob.ProbabilityDistribution
   ## @item Use the constructor @qcode{prob.ExtremeValueDistribution (@var{mu},
   ## @var{sigma})} to create an extreme value distribution with specified
   ## parameter values.
-  ## @item Use the static method @qcode{prob.ExtremeValueDistribution.fit (@var{x},
-  ## @var{alpha}, @var{censor}, @var{freq}, @var{options})} to fit a
+  ## @item Use the static method @qcode{prob.ExtremeValueDistribution.fit
+  ## (@var{x}, @var{alpha}, @var{censor}, @var{freq}, @var{options})} to fit a
   ## distribution to the data in @var{x} using the same input arguments as the
   ## @code{evfit} function.
   ## @end itemize

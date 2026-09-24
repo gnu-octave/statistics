@@ -37,8 +37,8 @@
 ##
 ## The density at an infinite abscissa is @math{0}, no proper distribution
 ## placing mass there.  MATLAB returns @qcode{NaN} here, as it does for
-## @code{poisspdf} and for no other density, which is an inconsistency there rather
-## than a convention: it returns @math{0} at @math{Inf} for every other
+## @code{poisspdf} and for no other density, which is an inconsistency there
+## rather than a convention: it returns @math{0} at @math{Inf} for every other
 ## distribution of the same support.
 ##
 ## The @code{prob.RayleighDistribution} class names this same parameter

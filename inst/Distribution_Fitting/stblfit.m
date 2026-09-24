@@ -29,9 +29,9 @@
 ## estimates of the parameters of the stable distribution, in the Nolan
 ## @qcode{S0} parameterization, given the data in @var{x}.
 ## @qcode{@var{paramhat}(1)} is the tail index @var{alpha},
-## @qcode{@var{paramhat}(2)} is the skewness @var{beta}, @qcode{@var{paramhat}(3)}
-## is the scale @var{gam}, and @qcode{@var{paramhat}(4)} is the location
-## @var{delta}.
+## @qcode{@var{paramhat}(2)} is the skewness @var{beta},
+## @qcode{@var{paramhat}(3)} is the scale @var{gam}, and
+## @qcode{@var{paramhat}(4)} is the location @var{delta}.
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = stblfit (@var{x})} returns the 95%
 ## confidence intervals for the parameter estimates.  The intervals are Wald
@@ -66,10 +66,10 @@
 ## for the closed-form distributions.  Censoring is not supported.
 ##
 ## The estimates are the maximum-likelihood estimates under the mathematically
-## exact density.  MATLAB fits an interpolation-based approximation of the stable
-## density, whose maximum-likelihood estimates deviate from the exact ones by
-## about @math{10^{-2}} (and the resulting confidence intervals by up to roughly
-## 20%); @code{stblfit} returns the exact (more accurate) estimates.
+## exact density.  MATLAB fits an interpolation-based approximation of the
+## stable density, whose maximum-likelihood estimates deviate from the exact
+## ones by about @math{10^{-2}} (and the resulting confidence intervals by up to
+## roughly 20%); @code{stblfit} returns the exact (more accurate) estimates.
 ##
 ## Further information about the stable distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Stable_distribution}

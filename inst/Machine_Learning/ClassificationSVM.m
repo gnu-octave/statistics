@@ -1425,10 +1425,10 @@ classdef ClassificationSVM < PredictiveModel
     ## @var{obj} must be a @qcode{ClassificationSVM} class object.
     ## @end itemize
     ##
-    ## @code{[@var{label}, @var{scores}] = resubPredict (@var{obj}} also
-    ## returns @var{scores}, which contains the decision values for each
-    ## prediction.  A @qcode{ScoreTransform} assigned to @var{obj} is applied
-    ## to them, so @var{scores} holds whatever that transform returns.  Posterior
+    ## @code{[@var{label}, @var{scores}] = resubPredict (@var{obj}} also returns
+    ## @var{scores}, which contains the decision values for each prediction.  A
+    ## @qcode{ScoreTransform} assigned to @var{obj} is applied to them, so
+    ## @var{scores} holds whatever that transform returns.  Posterior
     ## probabilities need a transform fitted to the model, which this package
     ## does not compute yet.
     ##

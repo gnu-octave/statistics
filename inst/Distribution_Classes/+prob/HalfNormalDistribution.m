@@ -29,7 +29,8 @@ classdef HalfNormalDistribution < prob.ProbabilityDistribution
   ## models the time to failure of materials subjected to cyclic loading.  It is
   ## defined by location parameter @var{mu} and scale parameter @var{sigma}.
   ##
-  ## There are several ways to create a @code{prob.HalfNormalDistribution} object.
+  ## There are several ways to create a @code{prob.HalfNormalDistribution}
+  ## object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
@@ -38,9 +39,10 @@ classdef HalfNormalDistribution < prob.ProbabilityDistribution
   ## @item Use the constructor @qcode{prob.HalfNormalDistribution (@var{mu},
   ## @var{sigma})} to create a half-normal distribution with fixed parameter
   ## values @var{mu} and @var{sigma}.
-  ## @item Use the static method @qcode{prob.HalfNormalDistribution.fit (@var{x},
-  ## @var{mu}, @var{freq})} to fit a distribution to the data in @var{x} using
-  ## the same input arguments as the @code{hnfit} function.
+  ## @item Use the static method
+  ## @qcode{prob.HalfNormalDistribution.fit (@var{x}, @var{mu}, @var{freq})} to
+  ## fit a distribution to the data in @var{x} using the same input arguments as
+  ## the @code{hnfit} function.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}

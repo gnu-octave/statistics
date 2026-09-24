@@ -28,11 +28,11 @@
 ## same size as @var{A}.
 ##
 ## @code{[@var{B}, @var{T}] = rotatefactors (@dots{})} also returns the
-## @math{M * M} rotation matrix @var{T}, so that @code{@var{B} = @var{A} *
-## @var{T}}.  For the orthogonal methods @var{T} is orthonormal
-## (@code{@var{T}' * @var{T}} is the identity); for the oblique methods
-## (@qcode{'promax'} and oblique @qcode{'procrustes'}) it is a general invertible
-## matrix.
+## @math{M * M} rotation matrix @var{T}, so that
+## @code{@var{B} = @var{A} * @var{T}}.  For the orthogonal methods @var{T} is
+## orthonormal (@code{@var{T}' * @var{T}} is the identity); for the oblique
+## methods (@qcode{'promax'} and oblique @qcode{'procrustes'}) it is a general
+## invertible matrix.
 ##
 ## The rotation is controlled by @var{Name}/@var{Value} pairs:
 ##
@@ -46,7 +46,8 @@
 ## squared loadings within each factor.
 ##
 ## @item @qcode{'quartimax'}
-## Orthomax with a coefficient of 0; simplifies the description of each variable.
+## Orthomax with a coefficient of 0; simplifies the description of each
+## variable.
 ##
 ## @item @qcode{'equamax'}
 ## Orthomax with a coefficient of @math{M / 2}.
@@ -76,8 +77,8 @@
 ## default is @code{sqrt (eps)}.
 ##
 ## @item @qcode{'Maxit'}
-## Maximum number of iterations for the iterative orthomax rotation.  The default
-## is 250.
+## Maximum number of iterations for the iterative orthomax rotation.  The
+## default is 250.
 ##
 ## @item @qcode{'Coeff'}
 ## The orthomax coefficient used when @qcode{'Method'} is @qcode{'orthomax'}.

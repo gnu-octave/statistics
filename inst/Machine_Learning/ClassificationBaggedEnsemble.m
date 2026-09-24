@@ -159,7 +159,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ##
     ## Behaves as @code{CompactClassificationEnsemble.predict}.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, CompactClassificationEnsemble.predict}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## CompactClassificationEnsemble.predict}
     ## @end deftypefn
     function [label, scores] = predict (this, varargin)
       [label, scores] = predict@ClassificationEnsemble (this, varargin{:});
@@ -183,7 +184,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ## fitted on.  The response may also be given beside the table as
     ## @var{Y}.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, CompactClassificationEnsemble.loss}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## CompactClassificationEnsemble.loss}
     ## @end deftypefn
     function L = loss (this, varargin)
       L = loss@ClassificationEnsemble (this, varargin{:});
@@ -207,7 +209,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ## fitted on.  The response may also be given beside the table as
     ## @var{Y}.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, CompactClassificationEnsemble.edge}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## CompactClassificationEnsemble.edge}
     ## @end deftypefn
     function e = edge (this, varargin)
       e = edge@ClassificationEnsemble (this, varargin{:});
@@ -231,7 +234,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ## fitted on.  The response may also be given beside the table as
     ## @var{Y}.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, CompactClassificationEnsemble.margin}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## CompactClassificationEnsemble.margin}
     ## @end deftypefn
     function m = margin (this, varargin)
       m = margin@ClassificationEnsemble (this, varargin{:});
@@ -245,7 +249,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ##
     ## Behaves as @code{ClassificationEnsemble.resubPredict}.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, ClassificationEnsemble.resubPredict}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## ClassificationEnsemble.resubPredict}
     ## @end deftypefn
     function [label, scores] = resubPredict (this, varargin)
       [label, scores] = resubPredict@ClassificationEnsemble (this, varargin{:});
@@ -287,7 +292,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ##
     ## Behaves as @code{ClassificationEnsemble.resubMargin}.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, ClassificationEnsemble.resubMargin}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## ClassificationEnsemble.resubMargin}
     ## @end deftypefn
     function m = resubMargin (this, varargin)
       m = resubMargin@ClassificationEnsemble (this, varargin{:});
@@ -324,7 +330,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ## is given the class of greatest prior probability.  @qcode{'Learners'}
     ## restricts the trees.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, ClassificationBaggedEnsemble.oobLoss}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## ClassificationBaggedEnsemble.oobLoss}
     ## @end deftypefn
     function [label, scores] = oobPredict (this, varargin)
       caller = 'ClassificationBaggedEnsemble.oobPredict';
@@ -347,7 +354,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ## @code{CompactClassificationEnsemble.loss}, and @qcode{'Learners'}
     ## restricts the trees.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, ClassificationBaggedEnsemble.oobPredict}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## ClassificationBaggedEnsemble.oobPredict}
     ## @end deftypefn
     function L = oobLoss (this, varargin)
       caller = 'ClassificationBaggedEnsemble.oobLoss';
@@ -366,7 +374,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ## The weighted mean of the out-of-bag margins, weighted by @code{W}.
     ## @qcode{'Mode'} and @qcode{'Learners'} are taken as by @code{oobLoss}.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, ClassificationBaggedEnsemble.oobMargin}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## ClassificationBaggedEnsemble.oobMargin}
     ## @end deftypefn
     function e = oobEdge (this, varargin)
       caller = 'ClassificationBaggedEnsemble.oobEdge';
@@ -385,7 +394,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ## The margin of each training observation under its out-of-bag scores,
     ## @code{NaN} for one in the sample of every tree used.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, ClassificationBaggedEnsemble.oobEdge}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## ClassificationBaggedEnsemble.oobEdge}
     ## @end deftypefn
     function m = oobMargin (this, varargin)
       caller = 'ClassificationBaggedEnsemble.oobMargin';

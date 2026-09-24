@@ -51,8 +51,8 @@ classdef StableDistribution < prob.ProbabilityDistribution
   ## constructor or the aforementioned static method.
   ##
   ## Fitting is by maximum likelihood.  Because the stable density has no closed
-  ## form, it is evaluated by numerical inversion of the characteristic function,
-  ## which makes fitting considerably slower than for the closed-form
+  ## form, it is evaluated by numerical inversion of the characteristic
+  ## function, which makes fitting considerably slower than for the closed-form
   ## distributions.
   ##
   ## Further information about the stable distribution can be found at
@@ -229,9 +229,9 @@ classdef StableDistribution < prob.ProbabilityDistribution
     ##
     ## Data used for fitting the distribution
     ##
-    ## A structure containing the data used to fit the distribution.  It is empty
-    ## unless the distribution was fitted with @code{fitdist} or the static
-    ## @code{fit} method.  This property is read-only.
+    ## A structure containing the data used to fit the distribution.  It is
+    ## empty unless the distribution was fitted with @code{fitdist} or the
+    ## static @code{fit} method.  This property is read-only.
     ##
     ## @end deftp
     InputData
@@ -500,8 +500,8 @@ classdef StableDistribution < prob.ProbabilityDistribution
     ## boundaries of the 95% confidence interval for each parameter of the
     ## probability distribution object, @var{pd}.
     ##
-    ## @code{@var{ci} = paramci (@var{pd}, @var{Name}, @var{Value})} computes the
-    ## confidence intervals with additional options specified by
+    ## @code{@var{ci} = paramci (@var{pd}, @var{Name}, @var{Value})} computes
+    ## the confidence intervals with additional options specified by
     ## @qcode{Name-Value} pair arguments listed below.
     ##
     ## @multitable @columnfractions 0.18 0.8
@@ -617,9 +617,9 @@ classdef StableDistribution < prob.ProbabilityDistribution
     ## remaining parameters that maximize the likelihood at the corresponding
     ## value of @var{param}.  A fixed parameter keeps its own value.
     ##
-    ## For the stable distribution, @qcode{@var{pnum} = 1} selects the tail index
-    ## @qcode{alpha}, @qcode{@var{pnum} = 2} selects the skewness @qcode{beta},
-    ## @qcode{@var{pnum} = 3} selects the scale @qcode{gam}, and
+    ## For the stable distribution, @qcode{@var{pnum} = 1} selects the tail
+    ## index @qcode{alpha}, @qcode{@var{pnum} = 2} selects the skewness
+    ## @qcode{beta}, @qcode{@var{pnum} = 3} selects the scale @qcode{gam}, and
     ## @qcode{@var{pnum} = 4} selects the location @qcode{delta}.
     ##
     ## @end deftypefn
