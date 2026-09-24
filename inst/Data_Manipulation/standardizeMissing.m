@@ -79,8 +79,6 @@ function A = standardizeMissing (A, indicator)
   if (isnumeric (A))
     if (! isnumeric (indicator))
       error ("standardizeMissing: incompatible INDICATOR and input data A.");
-    elseif (! isvector (indicator))
-      error ("standardizeMissing: INDICATOR must be a scalar or a vector.");
     endif
     switch (class (A))
       case 'double'
@@ -230,6 +228,17 @@ endfunction
 %! a = standardizeMissing (categorical ({'a','b','c'}), {'a','b'});
 %! assert_equal (double (a), [NaN, NaN, 1]);
 %! assert_equal (categories (a), {'c'});
+%!test
+%! ## empty indicator is accepted
+%! A = [1 2 3];
+%! B = standardizeMissing (A, []);
+%! assert_equal (B, A);
+%!test
+%! ## matrix indicator is accepted
+%! A = [1 2 3; 4 5 6];
+%! indicator = [1 9; 8 5];
+%! B = standardizeMissing (A, indicator);
+%! assert_equal (B, [NaN 2 3; 4 NaN 6]);
 
 %!assert_equal (double (standardizeMissing (categorical (1), categorical (1))), NaN)
 %!assert_equal (double (standardizeMissing (categorical (1), '1')), NaN)
