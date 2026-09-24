@@ -18,9 +18,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} mvtcdf (@var{x}, @var{rho}, @var{df})
-## @deftypefnx {statistics} {@var{p} =} mvncdf (@var{x_lo}, @var{x_up}, @var{rho}, @var{df})
-## @deftypefnx {statistics} {@var{p} =} mvncdf (@dots{}, @var{options})
-## @deftypefnx {statistics} {[@var{p}, @var{err}] =} mvncdf (@dots{})
+## @deftypefnx {statistics} {@var{p} =} mvtcdf (@var{x_lo}, @var{x_up}, @var{rho}, @var{df})
+## @deftypefnx {statistics} {@var{p} =} mvtcdf (@dots{}, @var{options})
+## @deftypefnx {statistics} {[@var{p}, @var{err}] =} mvtcdf (@dots{})
 ##
 ## Multivariate Student's t cumulative distribution function (CDF).
 ##

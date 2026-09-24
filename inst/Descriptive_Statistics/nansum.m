@@ -17,9 +17,9 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{s} =} nansum (@var{x})
-## @deftypefnx {statistics} {@var{s} =} nanmax (@var{x}, @qcode{'all'})
-## @deftypefnx {statistics} {@var{s} =} nanmax (@var{x}, @var{dim})
-## @deftypefnx {statistics} {@var{s} =} nanmax (@var{x}, @var{vecdim})
+## @deftypefnx {statistics} {@var{s} =} nansum (@var{x}, @qcode{'all'})
+## @deftypefnx {statistics} {@var{s} =} nansum (@var{x}, @var{dim})
+## @deftypefnx {statistics} {@var{s} =} nansum (@var{x}, @var{vecdim})
 ##
 ## Compute the sum while ignoring NaN values.
 ##
