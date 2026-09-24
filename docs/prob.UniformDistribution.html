@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: prob.UniformDistribution</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: prob.UniformDistribution</code></p>
 <p> Continuous uniform probability distribution object.
 </p>
 <div class="ms-5">
@@ -1092,7 +1110,7 @@
   <a href="unifstat.html">unifstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Distribution_Classes/+prob/UniformDistribution.m">prob.UniformDistribution</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Distribution_Classes/+prob/UniformDistribution.m">prob.UniformDistribution</a>
 </p>
 </div>
         <p class="lead my-3">The <code>prob.UniformDistribution</code> class contains the following properties:</p>
@@ -1115,7 +1133,6 @@ Lower limit parameter
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_Lower">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar value characterizing the lower bound of the uniform
  distribution.  You can access the <code>Lower</code> property using dot
@@ -1209,7 +1226,6 @@ Upper limit parameter
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_Upper">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar value characterizing the upper bound of the uniform
  distribution.  You can access the <code>Upper</code> property using dot
@@ -1309,7 +1325,6 @@ Probability distribution name
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_DistributionName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector specifying the name of the probability distribution
  object.  This property is read-only.
@@ -1380,7 +1395,6 @@ Number of parameters
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_NumParameters">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar integer value specifying the number of parameters characterizing
  the probability distribution.  This property is read-only.
@@ -1451,7 +1465,6 @@ Names of parameters
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_ParameterNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">2&times;1</em> cell array of character vectors with each element containing
  the name of a distribution parameter.  This property is read-only.
@@ -1522,7 +1535,6 @@ Description of parameters
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_ParameterDescription">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">2&times;1</em> cell array of character vectors with each element containing
  a short description of a distribution parameter.  This property is
@@ -1594,7 +1606,6 @@ Distribution parameter values
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_ParameterValues">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">2&times;1</em> numeric vector containing the values of the distribution
  parameters.  This property is read-only.  You can change the distribution
@@ -1667,7 +1678,6 @@ Truncation interval
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_Truncation">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">1&times;2</em> numeric vector specifying the truncation interval for the
  probability distribution.  First element contains the lower boundary,
@@ -1741,7 +1751,6 @@ Flag for truncated probability distribution
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_IsTruncated">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A logical scalar value specifying whether a probability distribution is
  truncated or not.  This property is read-only.
@@ -1814,10 +1823,8 @@ Compute the cumulative distribution function (CDF).
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_cdf">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.UniformDistribution: <var>p</var> = <b>cdf</b> (<var>pd</var>, <var>x</var>)</code></h5></dt>
-<dt><code><h5 class="fs">prob.UniformDistribution: <var>p</var> = <b>cdf</b> (<var>pd</var>, <var>x</var>, <code>'upper'</code>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>prob.UniformDistribution: <var>p</var> = <b>cdf</b> (<var>pd</var>, <var>x</var>)</code></p>
+<p class="h5 fs fs-last"><code>prob.UniformDistribution: <var>p</var> = <b>cdf</b> (<var>pd</var>, <var>x</var>, <code>'upper'</code>)</code></p>
 <p> </p>
 <p> <code><var>p</var> = cdf (<var>pd</var>, <var>x</var>)</code> computes the CDF of the
  probability distribution object, <var>pd</var>, evaluated at the values in
@@ -1890,9 +1897,7 @@ Compute the inverse cumulative distribution function (iCDF).
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_icdf">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.UniformDistribution: <var>x</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>prob.UniformDistribution: <var>x</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></p>
 <p> </p>
 <p> <code><var>x</var> = icdf (<var>pd</var>, <var>p</var>)</code> computes the quantile (the
  inverse of the CDF) of the probability distribution object, <var>pd</var>,
@@ -1961,9 +1966,7 @@ Compute the interquartile range of a probability distribution.
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_iqr">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.UniformDistribution: <var>r</var> = <b>iqr</b> (<var>pd</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>prob.UniformDistribution: <var>r</var> = <b>iqr</b> (<var>pd</var>)</code></p>
 <p> </p>
 <p> <code><var>r</var> = iqr (<var>pd</var>)</code> computes the interquartile range of the
  probability distribution object, <var>pd</var>.
@@ -2023,9 +2026,7 @@ Compute the mean of a probability distribution.
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_mean">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.UniformDistribution: <var>m</var> = <b>mean</b> (<var>pd</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>prob.UniformDistribution: <var>m</var> = <b>mean</b> (<var>pd</var>)</code></p>
 <p> </p>
 <p> <code><var>m</var> = mean (<var>pd</var>)</code> computes the mean of the probability
  distribution object, <var>pd</var>.
@@ -2082,9 +2083,7 @@ Compute the median of a probability distribution.
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_median">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.UniformDistribution: <var>m</var> = <b>median</b> (<var>pd</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>prob.UniformDistribution: <var>m</var> = <b>median</b> (<var>pd</var>)</code></p>
 <p> </p>
 <p> <code><var>m</var> = median (<var>pd</var>)</code> computes the median of the probability
  distribution object, <var>pd</var>.
@@ -2141,9 +2140,7 @@ Compute the probability distribution function (PDF).
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_pdf">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.UniformDistribution: <var>y</var> = <b>pdf</b> (<var>pd</var>, <var>x</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>prob.UniformDistribution: <var>y</var> = <b>pdf</b> (<var>pd</var>, <var>x</var>)</code></p>
 <p> </p>
 <p> <code><var>y</var> = pdf (<var>pd</var>, <var>x</var>)</code> computes the PDF of the
  probability distribution object, <var>pd</var>, evaluated at the values in
@@ -2212,11 +2209,9 @@ Plot a probability distribution object.
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_plot">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.UniformDistribution: <b>plot</b> (<var>pd</var>)</code></h5></dt>
-<dt><code><h5 class="fs">prob.UniformDistribution: <b>plot</b> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-<dt><code><h5 class="fs">prob.UniformDistribution: <var>h</var> = <b>plot</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>prob.UniformDistribution: <b>plot</b> (<var>pd</var>)</code></p>
+<p class="h5 fs"><code>prob.UniformDistribution: <b>plot</b> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code></p>
+<p class="h5 fs fs-last"><code>prob.UniformDistribution: <var>h</var> = <b>plot</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>plot (<var>pd</var>)</code> plots a probability density function (PDF) of the
  probability distribution object <var>pd</var>.  If <var>pd</var> contains data,
@@ -2356,12 +2351,10 @@ Generate random arrays from the probability distribution object.
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_random">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.UniformDistribution: <var>r</var> = <b>random</b> (<var>pd</var>)</code></h5></dt>
-<dt><code><h5 class="fs">prob.UniformDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></h5></dt>
-<dt><code><h5 class="fs">prob.UniformDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">prob.UniformDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>prob.UniformDistribution: <var>r</var> = <b>random</b> (<var>pd</var>)</code></p>
+<p class="h5 fs"><code>prob.UniformDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></p>
+<p class="h5 fs"><code>prob.UniformDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></p>
+<p class="h5 fs fs-last"><code>prob.UniformDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></p>
 <p> </p>
 <p> <code><var>r</var> = random (<var>pd</var>)</code> returns a random number from the
  distribution object <var>pd</var>.
@@ -2438,9 +2431,7 @@ Compute the standard deviation of a probability distribution.
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_std">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.UniformDistribution: <var>s</var> = <b>std</b> (<var>pd</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>prob.UniformDistribution: <var>s</var> = <b>std</b> (<var>pd</var>)</code></p>
 <p> </p>
 <p> <code><var>s</var> = std (<var>pd</var>)</code> computes the standard deviation of the
  probability distribution object, <var>pd</var>.
@@ -2500,9 +2491,7 @@ Truncate a probability distribution.
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_truncate">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.UniformDistribution: <var>t</var> = <b>truncate</b> (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>prob.UniformDistribution: <var>t</var> = <b>truncate</b> (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code></p>
 <p> </p>
 <p> <code><var>t</var> = truncate (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code> returns a
  probability distribution <var>t</var>, which is the probability distribution
@@ -2592,9 +2581,7 @@ Compute the variance of a probability distribution.
           </div>
           <div class="collapse multi-collapse" id="prob_UniformDistribution_var">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.UniformDistribution: <var>v</var> = <b>var</b> (<var>pd</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>prob.UniformDistribution: <var>v</var> = <b>var</b> (<var>pd</var>)</code></p>
 <p> </p>
 <p> <code><var>v</var> = var (<var>pd</var>)</code> computes the variance of the
  probability distribution object, <var>pd</var>.

@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: cvpartition</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: cvpartition</code></p>
 <p> Partition data for cross-validation
 </p>
 <div class="ms-5">
@@ -1063,7 +1081,7 @@
   <a href="crossval.html">crossval</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Model_Evaluation/cvpartition.m">cvpartition</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Model_Evaluation/cvpartition.m">cvpartition</a>
 </p>
 </div>
         <p class="lead my-3">The <code>cvpartition</code> class contains the following properties:</p>
@@ -1086,7 +1104,6 @@ Number of observations
           </div>
           <div class="collapse multi-collapse" id="cvpartition_NumObservations">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer scalar specifying the number of observations in the
  dataset (including any missing data, where applicable).  This property
@@ -1116,7 +1133,6 @@ Number of test sets
           </div>
           <div class="collapse multi-collapse" id="cvpartition_NumTestSets">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer scalar specifying the number of folds for partition
  types <code>'kfold'</code> and <code>'leaveout'</code>.  When partition type is
@@ -1147,7 +1163,6 @@ Size of each train set
           </div>
           <div class="collapse multi-collapse" id="cvpartition_TrainSize">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer scalar specifying the size of the train set for
  partition types <code>'holdout'</code> and <code>'resubstitution'</code> or a
@@ -1179,7 +1194,6 @@ Size of each test set
           </div>
           <div class="collapse multi-collapse" id="cvpartition_TestSize">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer scalar specifying the size of the test set for
  partition types <code>'holdout'</code> and <code>'resubstitution'</code> or a
@@ -1211,7 +1225,6 @@ Type of validation partition
           </div>
           <div class="collapse multi-collapse" id="cvpartition_Type">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector specifying the type of the <code>cvpartition</code> object.
  It can be <code>kfold</code>, <code>holdout</code>, <code>leaveout</code>, or
@@ -1241,7 +1254,6 @@ Flag for custom partition
           </div>
           <div class="collapse multi-collapse" id="cvpartition_IsCustom">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A logical scalar specifying whether the <code>cvpartition</code> object
  was created using custom partition partitioning (<code>true</code>) or
@@ -1271,7 +1283,6 @@ Flag for grouped partition
           </div>
           <div class="collapse multi-collapse" id="cvpartition_IsGrouped">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A logical scalar specifying whether the <code>cvpartition</code> object was
  created using grouping variables (<code>true</code>) or not (<code>false</code>).
@@ -1301,7 +1312,6 @@ Flag for stratified partition
           </div>
           <div class="collapse multi-collapse" id="cvpartition_IsStratified">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A logical scalar specifying whether the <code>cvpartition</code> object was
  created with a <code>'stratify'</code> value of <code>true</code>.
@@ -1333,24 +1343,22 @@ Repartition data for cross-validation.
           </div>
           <div class="collapse multi-collapse" id="cvpartition_cvpartition">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'KFold'</code>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'KFold'</code>, <var>k</var>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'KFold'</code>, <var>k</var>, <code>'GroupingVariables'</code>, <var>grpvars</var>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'Holdout'</code>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'Holdout'</code>, <var>p</var>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'Holdout'</code>, <var>p</var>, <code>'GroupingVariables'</code>, <var>grpvars</var>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'Leaveout'</code>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'Leaveout'</code>, <code>'GroupingVariables'</code>, <var>grpvars</var>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'Resubstitution'</code>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'KFold'</code>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'KFold'</code>, <var>k</var>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'KFold'</code>, <var>k</var>, <code>'Stratify'</code>, <var>opt</var>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'Holdout'</code>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'Holdout'</code>, <var>p</var>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'Holdout'</code>, <var>p</var>, <code>'Stratify'</code>, <var>opt</var>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<code>'CustomPartition'</code>, <var>testSets</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'KFold'</code>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'KFold'</code>, <var>k</var>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'KFold'</code>, <var>k</var>, <code>'GroupingVariables'</code>, <var>grpvars</var>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'Holdout'</code>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'Holdout'</code>, <var>p</var>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'Holdout'</code>, <var>p</var>, <code>'GroupingVariables'</code>, <var>grpvars</var>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'Leaveout'</code>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'Leaveout'</code>, <code>'GroupingVariables'</code>, <var>grpvars</var>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'Resubstitution'</code>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'KFold'</code>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'KFold'</code>, <var>k</var>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'KFold'</code>, <var>k</var>, <code>'Stratify'</code>, <var>opt</var>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'Holdout'</code>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'Holdout'</code>, <var>p</var>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'Holdout'</code>, <var>p</var>, <code>'Stratify'</code>, <var>opt</var>)</code></p>
+<p class="h5 fs fs-last"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<code>'CustomPartition'</code>, <var>testSets</var>)</code></p>
 <p> </p>
 <p> <code><var>C</var> = cvpartition (<var>n</var>, <code>'KFold'</code>)</code> creates a
  <code>cvpartition</code> object <var>C</var>, which defines a random nonstratified
@@ -1446,7 +1454,7 @@ Repartition data for cross-validation.
 <p> <code><var>C</var> = cvpartition (<var>X</var>, <code>'KFold'</code>)</code> creates a
  <code>cvpartition</code> object <var>C</var>, which defines a stratified random
  partition for k-fold cross-validation according to the class proportions
- in <var>Χ</var>.  <var>X</var> can be a numeric, logical, categorical, or string
+ in <var>X</var>.  <var>X</var> can be a numeric, logical, categorical, or string
  vector, or a character array or a cell array of character vectors.
  Missing values in <var>X</var> are discarded.  The default number of folds is
  10 for <code>numel (<var>X</var>) &gt;= 10</code> or equal to <code>numel (<var>X</var>)</code>
@@ -1465,7 +1473,7 @@ Repartition data for cross-validation.
 <p> <code><var>C</var> = cvpartition (<var>X</var>, <code>'Holdout'</code>)</code> creates a
  <code>cvpartition</code> object <var>C</var>, which defines a stratified random
  partition for holdout validation while maintaining the class proportions
- in <var>Χ</var>.  90% of the observations are assigned to the training set and
+ in <var>X</var>.  90% of the observations are assigned to the training set and
  the remaining 10% to the test set.
 </p>
 <p> <code><var>C</var> = cvpartition (<var>X</var>, <code>'Holdout'</code>, <var>p</var>)</code> also
@@ -1531,11 +1539,9 @@ Repartition data for cross-validation.
           </div>
           <div class="collapse multi-collapse" id="cvpartition_repartition">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">cvpartition: <var>Cnew</var> = <b>repartition</b> (<var>C</var>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>Cnew</var> = <b>repartition</b> (<var>C</var>, <var>sval</var>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>Cnew</var> = <b>repartition</b> (<var>C</var>, <code>'legacy'</code>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>cvpartition: <var>Cnew</var> = <b>repartition</b> (<var>C</var>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>Cnew</var> = <b>repartition</b> (<var>C</var>, <var>sval</var>)</code></p>
+<p class="h5 fs fs-last"><code>cvpartition: <var>Cnew</var> = <b>repartition</b> (<var>C</var>, <code>'legacy'</code>)</code></p>
 <p> </p>
 <p> <code><var>Cnew</var> = repartition (<var>C</var>)</code> creates a <code>cvpartition</code>
  object <var>Cnew</var> that defines a new random partition of the same type as
@@ -1592,9 +1598,7 @@ Summarize stratified or grouped cross-validation partitions.
           </div>
           <div class="collapse multi-collapse" id="cvpartition_summary">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">cvpartition: <var>tbl</var> = <b>summary</b> (<var>c</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>cvpartition: <var>tbl</var> = <b>summary</b> (<var>c</var>)</code></p>
 <p> </p>
 <p> <code><var>tbl</var> = summary (<var>c</var>)</code> returns a summary table <var>tbl</var> of
  the validation partition contained in the <code>cvpartition</code> object
@@ -1999,11 +2003,9 @@ Test indices for cross-validation.
           </div>
           <div class="collapse multi-collapse" id="cvpartition_test">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>test</b> (<var>C</var>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>test</b> (<var>C</var>, <var>i</var>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>test</b> (<var>C</var>, <code>'all'</code>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>cvpartition: <var>idx</var> = <b>test</b> (<var>C</var>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>idx</var> = <b>test</b> (<var>C</var>, <var>i</var>)</code></p>
+<p class="h5 fs fs-last"><code>cvpartition: <var>idx</var> = <b>test</b> (<var>C</var>, <code>'all'</code>)</code></p>
 <p> </p>
 <p> <code><var>idx</var> = test (<var>C</var>)</code> returns a logical vector <var>idx</var> with
  <code>true</code> values indicating the elements corresponding to the test
@@ -2054,11 +2056,9 @@ Training indices for cross-validation.
           </div>
           <div class="collapse multi-collapse" id="cvpartition_training">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>training</b> (<var>C</var>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>training</b> (<var>C</var>, <var>i</var>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>training</b> (<var>C</var>, <code>'all'</code>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>cvpartition: <var>idx</var> = <b>training</b> (<var>C</var>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>idx</var> = <b>training</b> (<var>C</var>, <var>i</var>)</code></p>
+<p class="h5 fs fs-last"><code>cvpartition: <var>idx</var> = <b>training</b> (<var>C</var>, <code>'all'</code>)</code></p>
 <p> </p>
 <p> <code><var>idx</var> = training (<var>C</var>)</code> returns a logical vector <var>idx</var>
  with <code>true</code> values indicating the elements corresponding to the

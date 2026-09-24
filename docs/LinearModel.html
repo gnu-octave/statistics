@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: LinearModel</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: LinearModel</code></p>
 <p> Linear regression model
 </p>
 <div class="ms-5">
@@ -1093,9 +1111,6 @@
  <code>ResponseName</code>, <code>VariableInfo</code>, <code>VariableNames</code>, and
  <code>Variables</code>.</td></tr>
 </table>
-<p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/LinearModel.m">LinearModel</a>
-</p>
 </div>
 
 <p> A categorical predictor expands to indicator columns, one per level bar
@@ -1193,9 +1208,6 @@
  steps of stepwise term selection, returning a new, refitted
  <code>LinearModel</code> without modifying the original.</td></tr>
 </table>
-<p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/LinearModel.m">LinearModel</a>
-</p>
 </div>
 
 <p> Create a <code>LinearModel</code> object by using the <code>fitlm</code> function or
@@ -1205,7 +1217,7 @@
   <a href="fitlm.html">fitlm</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/LinearModel.m">LinearModel</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Regression/LinearModel.m">LinearModel</a>
 </p>
 </div>
         <p class="lead my-3">The <code>LinearModel</code> class contains the following properties:</p>
@@ -1228,7 +1240,6 @@ Covariance matrix of coefficient estimates
           </div>
           <div class="collapse multi-collapse" id="LinearModel_CoefficientCovariance">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">p</em>-by-<em class="math">p</em> numeric matrix of covariance values for the
  coefficient estimates, where <em class="math">p</em> is the number of coefficients in
@@ -1568,7 +1579,6 @@ Coefficient names
           </div>
           <div class="collapse multi-collapse" id="LinearModel_CoefficientNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors, each containing the name of the
  corresponding model term (e.g., <code>'(Intercept)'</code>, <code>'x1'</code>,
@@ -1907,7 +1917,6 @@ Coefficient values
           </div>
           <div class="collapse multi-collapse" id="LinearModel_Coefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row for each coefficient and four columns:
 </p>
@@ -2255,7 +2264,6 @@ Number of model coefficients
           </div>
           <div class="collapse multi-collapse" id="LinearModel_NumCoefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer giving the total number of coefficients in the fitted
  model, including any coefficients set to zero because the model terms are
@@ -2594,7 +2602,6 @@ Number of estimated coefficients
           </div>
           <div class="collapse multi-collapse" id="LinearModel_NumEstimatedCoefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer giving the number of coefficients actually estimated,
  i.e., not set to zero due to rank deficiency.
@@ -2934,7 +2941,6 @@ Degrees of freedom for error
           </div>
           <div class="collapse multi-collapse" id="LinearModel_DFE">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer equal to the number of observations minus the number
  of estimated coefficients: <code>DFE = NumObservations -
@@ -3273,7 +3279,6 @@ Observation diagnostics
           </div>
           <div class="collapse multi-collapse" id="LinearModel_Diagnostics">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per observation and seven columns:
 </p>
@@ -3629,7 +3634,6 @@ Fitted response values
           </div>
           <div class="collapse multi-collapse" id="LinearModel_Fitted">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> An <em class="math">n</em>-by-1 numeric vector of predicted response values based on
  the training data, where <em class="math">n</em> is the total number of observations,
@@ -3975,7 +3979,6 @@ Log-likelihood of the fitted model
           </div>
           <div class="collapse multi-collapse" id="LinearModel_LogLikelihood">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to the log-likelihood of the response
  values, assuming each response is normally distributed with mean equal
@@ -4344,7 +4347,6 @@ Model comparison criteria
           </div>
           <div class="collapse multi-collapse" id="LinearModel_ModelCriterion">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with four fields:
 </p>
@@ -4701,7 +4703,6 @@ F-test of the fitted model versus the null model
           </div>
           <div class="collapse multi-collapse" id="LinearModel_ModelFitVsNullModel">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with three fields:
 </p>
@@ -5047,7 +5048,6 @@ Mean squared error
           </div>
           <div class="collapse multi-collapse" id="LinearModel_MSE">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to <em class="math">SSE / DFE</em>, where <code>SSE</code> is
  the sum of squared errors and <code>DFE</code> is the degrees of freedom for
@@ -5386,7 +5386,6 @@ Residuals for the fitted model
           </div>
           <div class="collapse multi-collapse" id="LinearModel_Residuals">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per observation and four columns:
 </p>
@@ -5737,7 +5736,6 @@ Root mean squared error
           </div>
           <div class="collapse multi-collapse" id="LinearModel_RMSE">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to <em class="math">sqrt(MSE)</em>.  This property is
  read-only.
@@ -6075,7 +6073,6 @@ R-squared goodness-of-fit statistics
           </div>
           <div class="collapse multi-collapse" id="LinearModel_Rsquared">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with two fields:
 </p>
@@ -6421,7 +6418,6 @@ Sum of squared errors
           </div>
           <div class="collapse multi-collapse" id="LinearModel_SSE">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to the sum of squared residuals.  For a
  model with an intercept, <em class="math">SST = SSE + SSR</em>.  For weighted fits,
@@ -6760,7 +6756,6 @@ Regression sum of squares
           </div>
           <div class="collapse multi-collapse" id="LinearModel_SSR">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to the sum of squared deviations of the
  fitted values from the mean of the response.  For a model with an
@@ -7100,7 +7095,6 @@ Total sum of squares
           </div>
           <div class="collapse multi-collapse" id="LinearModel_SST">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to the sum of squared deviations of the
  response from its mean. For a model with an intercept,
@@ -7441,7 +7435,6 @@ Robust fit information
           </div>
           <div class="collapse multi-collapse" id="LinearModel_Robust">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with three fields:
 </p>
@@ -7790,7 +7783,6 @@ Stepwise fitting information
           </div>
           <div class="collapse multi-collapse" id="LinearModel_Steps">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure recording the term-selection trace, populated whenever the
  model was fit by <code>stepwiselm</code> or improved by <code>step</code>, and
@@ -8160,7 +8152,6 @@ Model formula information
           </div>
           <div class="collapse multi-collapse" id="LinearModel_Formula">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <code>LinearFormula</code> object representing the model formula, with
  properties including <code>ResponseName</code>, <code>LinearPredictor</code>,
@@ -8501,7 +8492,6 @@ Number of observations used in the fit
           </div>
           <div class="collapse multi-collapse" id="LinearModel_NumObservations">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer giving the number of observations actually used in
  fitting.  Rows with missing values and rows excluded via the
@@ -8841,7 +8831,6 @@ Number of predictor variables
           </div>
           <div class="collapse multi-collapse" id="LinearModel_NumPredictors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer giving the number of predictor variables used to
  fit the model.  This property is read-only.
@@ -9179,7 +9168,6 @@ Number of variables in the input data
           </div>
           <div class="collapse multi-collapse" id="LinearModel_NumVariables">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer giving the total number of variables in the input
  data, counting predictors, the response, and any unused columns.
@@ -9518,7 +9506,6 @@ Per-observation metadata
           </div>
           <div class="collapse multi-collapse" id="LinearModel_ObservationInfo">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> An <em class="math">n</em>-by-4 table where <em class="math">n</em> is the total number of rows in
  the input data.  The four columns are:
@@ -9868,7 +9855,6 @@ Observation names
           </div>
           <div class="collapse multi-collapse" id="LinearModel_ObservationNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors containing the names of the
  observations.  If the fit was based on a table that has row names,
@@ -10208,7 +10194,6 @@ Names of predictor variables
           </div>
           <div class="collapse multi-collapse" id="LinearModel_PredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors containing the names of the
  predictor variables used to fit the model.  This property is
@@ -10547,7 +10532,6 @@ Response variable name
           </div>
           <div class="collapse multi-collapse" id="LinearModel_ResponseName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector containing the name of the response variable.
  This property is read-only.
@@ -10885,7 +10869,6 @@ Information about input variables
           </div>
           <div class="collapse multi-collapse" id="LinearModel_VariableInfo">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per variable including any unused variables, and
  four columns:
@@ -11237,7 +11220,6 @@ Names of all variables in the input data
           </div>
           <div class="collapse multi-collapse" id="LinearModel_VariableNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors containing the names of all
  variables, including predictors, the response, and unused variables.
@@ -11578,7 +11560,6 @@ Input data as a table
           </div>
           <div class="collapse multi-collapse" id="LinearModel_Variables">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table containing predictor and response values for all observations,
  including unused variables.  For table input this is the full input
@@ -11921,12 +11902,10 @@ Create a <code>LinearModel</code> class object representing a linear
           </div>
           <div class="collapse multi-collapse" id="LinearModel_LinearModel">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <var>mdl</var> = <b>LinearModel</b> (<var>X</var>, <var>y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>mdl</var> = <b>LinearModel</b> (<var>tbl</var>, <var>resp_input</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>mdl</var> = <b>LinearModel</b> (&hellip;, <var>modelspec</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>mdl</var> = <b>LinearModel</b> (&hellip;, <var>Name</var>, <var>Value</var>, &hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>LinearModel: <var>mdl</var> = <b>LinearModel</b> (<var>X</var>, <var>y</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <var>mdl</var> = <b>LinearModel</b> (<var>tbl</var>, <var>resp_input</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <var>mdl</var> = <b>LinearModel</b> (&hellip;, <var>modelspec</var>)</code></p>
+<p class="h5 fs fs-last"><code>LinearModel: <var>mdl</var> = <b>LinearModel</b> (&hellip;, <var>Name</var>, <var>Value</var>, &hellip;)</code></p>
 <p> </p>
 <p> <code><var>mdl</var> = LinearModel (<var>X</var>, <var>y</var>)</code> returns a
  <code>LinearModel</code> object fit to the response <var>y</var> and the
@@ -12381,12 +12360,10 @@ Predict responses from a fitted linear regression model.
           </div>
           <div class="collapse multi-collapse" id="LinearModel_predict">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <var>ypred</var> = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>ypred</var> = <b>predict</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: [<var>ypred</var>, <var>yci</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: [<var>ypred</var>, <var>yci</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>LinearModel: <var>ypred</var> = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <var>ypred</var> = <b>predict</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: [<var>ypred</var>, <var>yci</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs fs-last"><code>LinearModel: [<var>ypred</var>, <var>yci</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>, <var>Name</var>, <var>Value</var>)</code></p>
 <p> </p>
 <p> <code><var>ypred</var> = predict (<var>mdl</var>, <var>Xnew</var>)</code> returns the fitted
  response values at the new predictor locations in <var>Xnew</var>.  <var>Xnew</var>
@@ -12641,9 +12618,7 @@ Simulate responses with random noise from a fitted linear regression
           </div>
           <div class="collapse multi-collapse" id="LinearModel_random">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <var>ysim</var> = <b>random</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>LinearModel: <var>ysim</var> = <b>random</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
 <p> </p>
 <p> <code><var>ysim</var> = random (<var>mdl</var>, <var>Xnew</var>)</code> computes the fitted
  response at each row of <var>Xnew</var> and then adds independent Gaussian
@@ -12841,10 +12816,8 @@ Predict responses of a fitted linear regression model using separate
           </div>
           <div class="collapse multi-collapse" id="LinearModel_feval">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <var>ypred</var> = <b>feval</b> (<var>mdl</var>, <var>X</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>ypred</var> = <b>feval</b> (<var>mdl</var>, <var>x1</var>, <var>x2</var>, &hellip;, <var>xp</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>LinearModel: <var>ypred</var> = <b>feval</b> (<var>mdl</var>, <var>X</var>)</code></p>
+<p class="h5 fs fs-last"><code>LinearModel: <var>ypred</var> = <b>feval</b> (<var>mdl</var>, <var>x1</var>, <var>x2</var>, &hellip;, <var>xp</var>)</code></p>
 <p> </p>
 <p> <code><var>ypred</var> = feval (<var>mdl</var>, <var>X</var>)</code> accepts a single
  numeric matrix <var>X</var> with one column per predictor in the same order
@@ -13053,10 +13026,8 @@ Confidence intervals for the coefficient estimates of a fitted linear
           </div>
           <div class="collapse multi-collapse" id="LinearModel_coefCI">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>, <var>alpha</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>LinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>LinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>, <var>alpha</var>)</code></p>
 <p> </p>
 <p> <code><var>ci</var> = coefCI (<var>mdl</var>)</code> returns 95% confidence intervals
  for every coefficient in <var>mdl</var> using a default significance level of
@@ -13255,13 +13226,11 @@ Linear hypothesis test on the coefficients of a fitted linear regression
           </div>
           <div class="collapse multi-collapse" id="LinearModel_coefTest">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>, <var>H</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>, <var>H</var>, <var>C</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: [<var>p</var>, <var>F</var>] = <b>coefTest</b> (&hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: [<var>p</var>, <var>F</var>, <var>r</var>] = <b>coefTest</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>LinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>, <var>H</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>, <var>H</var>, <var>C</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: [<var>p</var>, <var>F</var>] = <b>coefTest</b> (&hellip;)</code></p>
+<p class="h5 fs fs-last"><code>LinearModel: [<var>p</var>, <var>F</var>, <var>r</var>] = <b>coefTest</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>coefTest</code> tests whether one or more linear combinations of the
  fitted coefficients equal specified constants.  Each linear combination
@@ -13489,12 +13458,10 @@ Durbin-Watson test for serial autocorrelation of linear regression
           </div>
           <div class="collapse multi-collapse" id="LinearModel_dwtest">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <var>p</var> = <b>dwtest</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>p</var> = <b>dwtest</b> (<var>mdl</var>, <var>method</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>p</var> = <b>dwtest</b> (<var>mdl</var>, <var>method</var>, <var>tail</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: [<var>p</var>, <var>DW</var>] = <b>dwtest</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>LinearModel: <var>p</var> = <b>dwtest</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <var>p</var> = <b>dwtest</b> (<var>mdl</var>, <var>method</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <var>p</var> = <b>dwtest</b> (<var>mdl</var>, <var>method</var>, <var>tail</var>)</code></p>
+<p class="h5 fs fs-last"><code>LinearModel: [<var>p</var>, <var>DW</var>] = <b>dwtest</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>dwtest</code> checks whether the raw residuals of <var>mdl</var> are
  correlated with their immediate neighbours in observation order, which
@@ -13684,9 +13651,7 @@ Add terms to a fitted linear regression model.
           </div>
           <div class="collapse multi-collapse" id="LinearModel_addTerms">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <var>NewMdl</var> = <b>addTerms</b> (<var>mdl</var>, <var>terms</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>LinearModel: <var>NewMdl</var> = <b>addTerms</b> (<var>mdl</var>, <var>terms</var>)</code></p>
 <p> </p>
 <p> <code>addTerms</code> returns a new <code>LinearModel</code> refitted on the same
  data and settings as <var>mdl</var> with the specified <var>terms</var> appended
@@ -13800,11 +13765,11 @@ Add terms to a fitted linear regression model.
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mdl_same = addTerms (mdl, 'x1');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: addTerms: There are no new terms among the terms you specified.
 warning: called from
-    addTerms at line 2345 column 9
+    addTerms at line 2336 column 9
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
     __build_demos__ at line 79 column 7
-    classdef_texi2html at line 410 column 9
+    classdef_texi2html at line 403 column 9
     package_texi2html at line 344 column 11</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mdl_same.CoefficientNames</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
@@ -13879,9 +13844,7 @@ Remove terms from a fitted linear regression model.
           </div>
           <div class="collapse multi-collapse" id="LinearModel_removeTerms">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <var>NewMdl</var> = <b>removeTerms</b> (<var>mdl</var>, <var>terms</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>LinearModel: <var>NewMdl</var> = <b>removeTerms</b> (<var>mdl</var>, <var>terms</var>)</code></p>
 <p> </p>
 <p> <code>removeTerms</code> returns a new <code>LinearModel</code> refitted on the same
  data and settings as <var>mdl</var>, but with the specified <var>terms</var>
@@ -13971,11 +13934,11 @@ Remove terms from a fitted linear regression model.
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mdl_same = removeTerms (mdl_add, 'x1:x2');</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: removeTerms: No specified terms appear in the model.
 warning: called from
-    removeTerms at line 2593 column 9
+    removeTerms at line 2584 column 9
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
     __build_demos__ at line 79 column 7
-    classdef_texi2html at line 410 column 9
+    classdef_texi2html at line 403 column 9
     package_texi2html at line 344 column 11</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mdl_same.CoefficientNames</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
@@ -14049,13 +14012,11 @@ Plot residuals of a fitted linear regression model.
           </div>
           <div class="collapse multi-collapse" id="LinearModel_plotResiduals">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <b>plotResiduals</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <b>plotResiduals</b> (<var>mdl</var>, <var>plottype</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <b>plotResiduals</b> (<var>mdl</var>, <var>plottype</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <b>plotResiduals</b> (<var>ax</var>, &hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>h</var> = <b>plotResiduals</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>LinearModel: <b>plotResiduals</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <b>plotResiduals</b> (<var>mdl</var>, <var>plottype</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <b>plotResiduals</b> (<var>mdl</var>, <var>plottype</var>, <var>Name</var>, <var>Value</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <b>plotResiduals</b> (<var>ax</var>, &hellip;)</code></p>
+<p class="h5 fs fs-last"><code>LinearModel: <var>h</var> = <b>plotResiduals</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>plotResiduals (<var>mdl</var>)</code> creates a probability density histogram
  of the raw residuals.  Bin width follows Scott&rsquo;s rule
@@ -14265,13 +14226,11 @@ Plot observation diagnostics of a fitted linear regression model.
           </div>
           <div class="collapse multi-collapse" id="LinearModel_plotDiagnostics">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <b>plotDiagnostics</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <b>plotDiagnostics</b> (<var>mdl</var>, <var>plottype</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <b>plotDiagnostics</b> (<var>mdl</var>, <var>plottype</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <b>plotDiagnostics</b> (<var>ax</var>, &hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>h</var> = <b>plotDiagnostics</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>LinearModel: <b>plotDiagnostics</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <b>plotDiagnostics</b> (<var>mdl</var>, <var>plottype</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <b>plotDiagnostics</b> (<var>mdl</var>, <var>plottype</var>, <var>Name</var>, <var>Value</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <b>plotDiagnostics</b> (<var>ax</var>, &hellip;)</code></p>
+<p class="h5 fs fs-last"><code>LinearModel: <var>h</var> = <b>plotDiagnostics</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>plotDiagnostics (<var>mdl</var>)</code> creates a case-order plot of the
  leverage of each observation.  The x-axis is the observation row number
@@ -14471,11 +14430,9 @@ Plot the main effects of each predictor in a fitted linear regression
           </div>
           <div class="collapse multi-collapse" id="LinearModel_plotEffects">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <b>plotEffects</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <b>plotEffects</b> (<var>ax</var>, <var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>h</var> = <b>plotEffects</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>LinearModel: <b>plotEffects</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <b>plotEffects</b> (<var>ax</var>, <var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>LinearModel: <var>h</var> = <b>plotEffects</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>plotEffects (<var>mdl</var>)</code> creates a horizontal dot-and-line plot
  with one row per predictor.  Each dot shows the estimated main effect on
@@ -14652,12 +14609,10 @@ Plot the adjusted response of a fitted linear regression model against
           </div>
           <div class="collapse multi-collapse" id="LinearModel_plotAdjustedResponse">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <b>plotAdjustedResponse</b> (<var>mdl</var>, <var>var</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <b>plotAdjustedResponse</b> (<var>mdl</var>, <var>var</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <b>plotAdjustedResponse</b> (<var>ax</var>, &hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>h</var> = <b>plotAdjustedResponse</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>LinearModel: <b>plotAdjustedResponse</b> (<var>mdl</var>, <var>var</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <b>plotAdjustedResponse</b> (<var>mdl</var>, <var>var</var>, <var>Name</var>, <var>Value</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <b>plotAdjustedResponse</b> (<var>ax</var>, &hellip;)</code></p>
+<p class="h5 fs fs-last"><code>LinearModel: <var>h</var> = <b>plotAdjustedResponse</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>plotAdjustedResponse (<var>mdl</var>, <var>var</var>)</code> creates an adjusted
  response plot for the predictor <var>var</var> in the linear regression
@@ -14822,13 +14777,11 @@ Create an added variable plot for a fitted linear regression model.
           </div>
           <div class="collapse multi-collapse" id="LinearModel_plotAdded">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <b>plotAdded</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <b>plotAdded</b> (<var>mdl</var>, <var>coef</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <b>plotAdded</b> (<var>mdl</var>, <var>coef</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <b>plotAdded</b> (<var>ax</var>, &hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>h</var> = <b>plotAdded</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>LinearModel: <b>plotAdded</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <b>plotAdded</b> (<var>mdl</var>, <var>coef</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <b>plotAdded</b> (<var>mdl</var>, <var>coef</var>, <var>Name</var>, <var>Value</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <b>plotAdded</b> (<var>ax</var>, &hellip;)</code></p>
+<p class="h5 fs fs-last"><code>LinearModel: <var>h</var> = <b>plotAdded</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>plotAdded (<var>mdl</var>)</code> creates an added variable plot for the
  whole model <var>mdl</var> except the constant (intercept) term.
@@ -15216,11 +15169,9 @@ Create a default diagnostic plot for a fitted linear regression model.
           </div>
           <div class="collapse multi-collapse" id="LinearModel_plot">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <b>plot</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <b>plot</b> (<var>ax</var>, <var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>h</var> = <b>plot</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>LinearModel: <b>plot</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <b>plot</b> (<var>ax</var>, <var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>LinearModel: <var>h</var> = <b>plot</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>plot (<var>mdl</var>)</code> creates a plot whose type depends on the
  number of predictors in <var>mdl</var>.  If <var>mdl</var> has two or more
@@ -15584,12 +15535,10 @@ Plot the interaction effects of two predictors in a fitted linear
           </div>
           <div class="collapse multi-collapse" id="LinearModel_plotInteraction">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <b>plotInteraction</b> (<var>mdl</var>, <var>var1</var>, <var>var2</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <b>plotInteraction</b> (<var>mdl</var>, <var>var1</var>, <var>var2</var>, <var>ptype</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <b>plotInteraction</b> (<var>ax</var>, &hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>h</var> = <b>plotInteraction</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>LinearModel: <b>plotInteraction</b> (<var>mdl</var>, <var>var1</var>, <var>var2</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <b>plotInteraction</b> (<var>mdl</var>, <var>var1</var>, <var>var2</var>, <var>ptype</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <b>plotInteraction</b> (<var>ax</var>, &hellip;)</code></p>
+<p class="h5 fs fs-last"><code>LinearModel: <var>h</var> = <b>plotInteraction</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>plotInteraction (<var>mdl</var>, <var>var1</var>, <var>var2</var>)</code> creates a
  plot of the main effects of <var>var1</var> and <var>var2</var> together with
@@ -15789,9 +15738,7 @@ Create a compact version of a fitted linear regression model.
           </div>
           <div class="collapse multi-collapse" id="LinearModel_compact">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <var>cmdl</var> = <b>compact</b> (<var>mdl</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>LinearModel: <var>cmdl</var> = <b>compact</b> (<var>mdl</var>)</code></p>
 <p> </p>
 <p> <code><var>cmdl</var> = compact (<var>mdl</var>)</code> returns a
  <code>CompactLinearModel</code> object that retains the coefficient
@@ -16152,11 +16099,9 @@ Analysis of variance for a linear regression model.
           </div>
           <div class="collapse multi-collapse" id="LinearModel_anova">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>, <var>anovatype</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>, <code>&quot;components&quot;</code>, <var>sstype</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>LinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>LinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>, <var>anovatype</var>)</code></p>
+<p class="h5 fs fs-last"><code>LinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>, <code>&quot;components&quot;</code>, <var>sstype</var>)</code></p>
 <p> </p>
 <p> <code>anova (<var>mdl</var>)</code> returns a table <var>tbl</var> with component
  ANOVA statistics for every term in <var>mdl</var> except the constant
@@ -16540,10 +16485,8 @@ Improve a fitted linear regression model by one or more steps of
           </div>
           <div class="collapse multi-collapse" id="LinearModel_step">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearModel: <var>NewMdl</var> = <b>step</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearModel: <var>NewMdl</var> = <b>step</b> (<var>mdl</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>LinearModel: <var>NewMdl</var> = <b>step</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>LinearModel: <var>NewMdl</var> = <b>step</b> (<var>mdl</var>, <var>Name</var>, <var>Value</var>)</code></p>
 <p> </p>
 <p> <code>step</code> examines whether adding or removing a single term from
  <var>mdl</var> improves the fit, and returns the resulting model as

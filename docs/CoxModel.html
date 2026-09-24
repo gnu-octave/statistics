@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: CoxModel</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: CoxModel</code></p>
 <p> Cox proportional hazards regression model class.
 </p>
 <div class="ms-5">
@@ -1106,7 +1124,7 @@
   <a href="LinearModel.html">LinearModel</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/CoxModel.m">CoxModel</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Regression/CoxModel.m">CoxModel</a>
 </p>
 </div>
         <p class="lead my-3">The <code>CoxModel</code> class contains the following properties:</p>
@@ -1129,7 +1147,6 @@ Coefficient estimates and their statistics
           </div>
           <div class="collapse multi-collapse" id="CoxModel_Coefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per encoded predictor column, its row names the
  encoded column names, and the variables <code>Beta</code>, <code>SE</code>,
@@ -1240,7 +1257,6 @@ Number of predictors
           </div>
           <div class="collapse multi-collapse" id="CoxModel_NumPredictors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer counting the predictor variables of the model,
  before any categorical predictor is encoded.  This property is
@@ -1351,7 +1367,6 @@ Log-likelihood of the fitted model
           </div>
           <div class="collapse multi-collapse" id="CoxModel_LogLikelihood">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar, the maximised Cox partial log-likelihood.  This property is
  read-only.
@@ -1461,7 +1476,6 @@ Estimated baseline cumulative hazard
           </div>
           <div class="collapse multi-collapse" id="CoxModel_Hazard">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric matrix of event times in its first column and the cumulative
  hazard at them in its second.  A stratified model adds a third column
@@ -1572,7 +1586,6 @@ Names of the predictor variables
           </div>
           <div class="collapse multi-collapse" id="CoxModel_PredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors with one name per predictor.  This
  property is read-only.
@@ -1682,7 +1695,6 @@ Name of the response variable
           </div>
           <div class="collapse multi-collapse" id="CoxModel_ResponseName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector naming the response, which is the survival time.
  This property is read-only.
@@ -1792,7 +1804,6 @@ Model formula
           </div>
           <div class="collapse multi-collapse" id="CoxModel_Formula">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <code>LinearFormula</code> object describing the terms of the model.  This
  property is read-only.
@@ -1902,7 +1913,6 @@ Predictor values the baseline hazard is evaluated at
           </div>
           <div class="collapse multi-collapse" id="CoxModel_Baseline">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> The baseline the fit used, one row per stratum.  It is reported as it
  was given when <code>fitcox</code> was given one, a scalar staying a scalar,
@@ -2014,7 +2024,6 @@ Stratification levels used in the fit
           </div>
           <div class="collapse multi-collapse" id="CoxModel_Stratification">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> The distinct levels of the stratification variable.  It is empty when
  the model is not stratified.  This property is read-only.
@@ -2124,7 +2133,6 @@ Estimated covariance of the coefficients
           </div>
           <div class="collapse multi-collapse" id="CoxModel_CoefficientCovariance">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A square numeric matrix, one row and column per encoded predictor
  column, holding the estimated covariance of the estimates in
@@ -2235,7 +2243,6 @@ Standard errors of the coefficients
           </div>
           <div class="collapse multi-collapse" id="CoxModel_StandardError">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric column vector, the square roots of the diagonal of
  <code>CoefficientCovariance</code>, which is column <code>SE</code> of
@@ -2346,7 +2353,6 @@ Residuals of the fitted model
           </div>
           <div class="collapse multi-collapse" id="CoxModel_Residuals">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per observation and the variables
  <code>CoxSnell</code>, <code>Deviance</code>, <code>Martingale</code>,
@@ -2458,7 +2464,6 @@ Proportional hazards test, one predictor at a time
           </div>
           <div class="collapse multi-collapse" id="CoxModel_ProportionalHazardsPValue">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric vector with one <em class="math">p</em> value per predictor, testing whether
  that predictor&rsquo;s effect is constant over time.  A small value is
@@ -2570,7 +2575,6 @@ Proportional hazards test over the whole model
           </div>
           <div class="collapse multi-collapse" id="CoxModel_ProportionalHazardsPValueGlobal">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar <em class="math">p</em> value testing the proportional hazards assumption for
  all predictors at once.  This property is read-only.
@@ -2680,7 +2684,6 @@ Likelihood ratio test against the null model
           </div>
           <div class="collapse multi-collapse" id="CoxModel_LikelihoodRatioTestPValue">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar <em class="math">p</em> value comparing the fitted model with the model that
  carries no predictors.  This property is read-only.
@@ -2790,7 +2793,6 @@ Information about the variables
           </div>
           <div class="collapse multi-collapse" id="CoxModel_VariableInfo">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per variable, its row names the variable names,
  and the variables <code>Class</code>, <code>Range</code>, <code>InModel</code> and
@@ -2903,11 +2905,9 @@ Fit a Cox proportional hazards regression model.
           </div>
           <div class="collapse multi-collapse" id="CoxModel_CoxModel">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CoxModel: <var>mdl</var> = <b>CoxModel</b> (<var>X</var>, <var>T</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CoxModel: <var>mdl</var> = <b>CoxModel</b> (<var>tbl</var>, <var>respvar</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CoxModel: <var>mdl</var> = <b>CoxModel</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CoxModel: <var>mdl</var> = <b>CoxModel</b> (<var>X</var>, <var>T</var>)</code></p>
+<p class="h5 fs"><code>CoxModel: <var>mdl</var> = <b>CoxModel</b> (<var>tbl</var>, <var>respvar</var>)</code></p>
+<p class="h5 fs fs-last"><code>CoxModel: <var>mdl</var> = <b>CoxModel</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></p>
 <p> </p>
 <p> <code><var>mdl</var> = CoxModel (<var>X</var>, <var>T</var>)</code> fits the model to the
  <em class="math">n</em>-by-<em class="math">p</em> numeric predictor matrix <var>X</var> and the
@@ -3063,10 +3063,8 @@ Confidence intervals for the coefficients of a Cox model.
           </div>
           <div class="collapse multi-collapse" id="CoxModel_coefci">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CoxModel: <var>ci</var> = <b>coefci</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CoxModel: <var>ci</var> = <b>coefci</b> (<var>obj</var>, <var>level</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CoxModel: <var>ci</var> = <b>coefci</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>CoxModel: <var>ci</var> = <b>coefci</b> (<var>obj</var>, <var>level</var>)</code></p>
 <p> </p>
 <p> <code><var>ci</var> = coefci (<var>obj</var>)</code> returns a two-column matrix with one
  row per coefficient, holding the 95% confidence interval of each.
@@ -3207,9 +3205,7 @@ Drop the stored residuals of a Cox model.
           </div>
           <div class="collapse multi-collapse" id="CoxModel_discardResiduals">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CoxModel: <var>obj</var> = <b>discardResiduals</b> (<var>obj</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>CoxModel: <var>obj</var> = <b>discardResiduals</b> (<var>obj</var>)</code></p>
 <p> </p>
 <p> <code><var>obj</var> = discardResiduals (<var>obj</var>)</code> returns the model with an
  empty <code>Residuals</code> property.  The residual table holds one row per
@@ -3315,11 +3311,9 @@ Hazard of a Cox model relative to its baseline.
           </div>
           <div class="collapse multi-collapse" id="CoxModel_hazardratio">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CoxModel: <var>hr</var> = <b>hazardratio</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CoxModel: <var>hr</var> = <b>hazardratio</b> (<var>obj</var>, <var>X</var>, <var>S</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CoxModel: <var>hr</var> = <b>hazardratio</b> (&hellip;, <code>&quot;Baseline&quot;</code>, <var>B</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CoxModel: <var>hr</var> = <b>hazardratio</b> (<var>obj</var>, <var>X</var>)</code></p>
+<p class="h5 fs"><code>CoxModel: <var>hr</var> = <b>hazardratio</b> (<var>obj</var>, <var>X</var>, <var>S</var>)</code></p>
+<p class="h5 fs fs-last"><code>CoxModel: <var>hr</var> = <b>hazardratio</b> (&hellip;, <code>&quot;Baseline&quot;</code>, <var>B</var>)</code></p>
 <p> </p>
 <p> <code><var>hr</var> = hazardratio (<var>obj</var>, <var>X</var>)</code> returns the hazard at
  the predictor values <var>X</var> relative to the baseline the model was
@@ -3517,9 +3511,7 @@ Sequential tests on the coefficients of a Cox model.
           </div>
           <div class="collapse multi-collapse" id="CoxModel_linhyptest">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CoxModel: <var>tbl</var> = <b>linhyptest</b> (<var>obj</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>CoxModel: <var>tbl</var> = <b>linhyptest</b> (<var>obj</var>)</code></p>
 <p> </p>
 <p> <code><var>tbl</var> = linhyptest (<var>obj</var>)</code> returns a table with one row
  per predictor, whose <em class="math">k</em>-th row tests the hypothesis that the
@@ -3671,12 +3663,10 @@ Plot the survival function of a Cox model.
           </div>
           <div class="collapse multi-collapse" id="CoxModel_plotSurvival">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CoxModel: <b>plotSurvival</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CoxModel: <b>plotSurvival</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CoxModel: <b>plotSurvival</b> (<var>obj</var>, <var>X</var>, <var>S</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CoxModel: <var>h</var> = <b>plotSurvival</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CoxModel: <b>plotSurvival</b> (<var>obj</var>)</code></p>
+<p class="h5 fs"><code>CoxModel: <b>plotSurvival</b> (<var>obj</var>, <var>X</var>)</code></p>
+<p class="h5 fs"><code>CoxModel: <b>plotSurvival</b> (<var>obj</var>, <var>X</var>, <var>S</var>)</code></p>
+<p class="h5 fs fs-last"><code>CoxModel: <var>h</var> = <b>plotSurvival</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>plotSurvival (<var>obj</var>)</code> draws the survival function at the
  model&rsquo;s baseline as a stairstep plot.  <code>plotSurvival (<var>obj</var>,
@@ -3807,13 +3797,11 @@ Survival function of a Cox model.
           </div>
           <div class="collapse multi-collapse" id="CoxModel_survival">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CoxModel: <var>s</var> = <b>survival</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CoxModel: <var>s</var> = <b>survival</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CoxModel: <var>s</var> = <b>survival</b> (<var>obj</var>, <var>X</var>, <var>S</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CoxModel: <var>s</var> = <b>survival</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CoxModel: [<var>s</var>, <var>T</var>] = <b>survival</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CoxModel: <var>s</var> = <b>survival</b> (<var>obj</var>)</code></p>
+<p class="h5 fs"><code>CoxModel: <var>s</var> = <b>survival</b> (<var>obj</var>, <var>X</var>)</code></p>
+<p class="h5 fs"><code>CoxModel: <var>s</var> = <b>survival</b> (<var>obj</var>, <var>X</var>, <var>S</var>)</code></p>
+<p class="h5 fs"><code>CoxModel: <var>s</var> = <b>survival</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></p>
+<p class="h5 fs fs-last"><code>CoxModel: [<var>s</var>, <var>T</var>] = <b>survival</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code><var>s</var> = survival (<var>obj</var>)</code> returns the survival probability at
  the model&rsquo;s baseline, evaluated at each row of the <code>Hazard</code>

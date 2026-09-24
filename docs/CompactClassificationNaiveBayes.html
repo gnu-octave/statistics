@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -164,9 +173,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Supervised Learning">
+                  <a class="nav-link" href="index.html#Machine Learning">
                     <i class="fas fa-list-alt"></i>
-                    Supervised Learning
+                    Machine Learning
                   </a>
                 </li>
                 <li class="nav-item">
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox" checked>
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: CompactClassificationNaiveBayes</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: CompactClassificationNaiveBayes</code></p>
 <p> Compact naive Bayes classification
 </p>
 <div class="ms-5">
@@ -1070,7 +1088,7 @@
   <a href="fitcnb.html">fitcnb</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Supervised_Learning/CompactClassificationNaiveBayes.m">CompactClassificationNaiveBayes</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Machine_Learning/CompactClassificationNaiveBayes.m">CompactClassificationNaiveBayes</a>
 </p>
 </div>
         <p class="lead my-3">The <code>CompactClassificationNaiveBayes</code> class contains the following properties:</p>
@@ -1093,7 +1111,6 @@ Predictor distributions
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_DistributionNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors with one entry per predictor, naming
  the distribution fitted to it.  This property is read-only.
@@ -1122,7 +1139,6 @@ Predictor means
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_Mu">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> The means used to center the predictors, when the model standardizes
  them, and empty otherwise.  This property is read-only.
@@ -1151,7 +1167,6 @@ Predictor standard deviations
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_Sigma">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> The standard deviations used to scale the predictors, when the model
  standardizes them, and empty otherwise.  This property is read-only.
@@ -1180,7 +1195,6 @@ Fitted distribution parameters
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_DistributionParameters">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array with one row per class and one column per predictor,
  holding the parameters fitted to each.  This property is read-only.
@@ -1209,7 +1223,6 @@ Levels of the categorical predictors
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_CategoricalLevels">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array with one entry per predictor, holding the distinct levels
  of each categorical predictor and empty for every other.  This property
@@ -1239,7 +1252,6 @@ Kernel smoothing functions
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_Kernel">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array naming the smoothing kernel of each kernel predictor, and
  empty for every other.  This property is read-only.
@@ -1268,7 +1280,6 @@ Kernel smoothing supports
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_Support">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array giving the support of each kernel predictor&rsquo;s density, and
  empty for every other.  This property is read-only.
@@ -1297,7 +1308,6 @@ Kernel smoothing bandwidths
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_Width">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric matrix with one row per class and one column per predictor,
  and empty when no predictor uses a kernel density.  This property is
@@ -1327,7 +1337,6 @@ Class labels of the fitted model
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_ClassNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> The distinct classes the model was fitted on, in the order the other
  per-class properties use.  This property is read-only.
@@ -1356,7 +1365,6 @@ Class prior probabilities
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_Prior">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric row vector with one entry per class, in the order of
  <code>ClassNames</code>, summing to one.
@@ -1385,7 +1393,6 @@ Misclassification cost
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_Cost">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A square numeric matrix where <code>Cost(i,j)</code> is the cost of
  classifying an observation of class <em class="math">i</em> into class <em class="math">j</em>.
@@ -1414,7 +1421,6 @@ Score transformation
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_ScoreTransform">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector naming the function applied to the posterior
  returned by <code>predict</code>, or a function handle.
@@ -1443,7 +1449,6 @@ Predictor variable names
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_PredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors naming the predictors.  This property
  is read-only.
@@ -1472,7 +1477,6 @@ Categorical predictor indices
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_CategoricalPredictors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> The column indices treated as categorical, or empty when none is.  This
  property is read-only.
@@ -1501,7 +1505,6 @@ Response variable name
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_ResponseName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector naming the response variable.  This property is
  read-only.
@@ -1530,7 +1533,6 @@ Expanded predictor variable names
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_ExpandedPredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors naming the predictors as the model
  sees them.  This property is read-only.
@@ -1561,14 +1563,18 @@ Classify new data with a compact naive Bayes model.
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_predict">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactClassificationNaiveBayes: <var>label</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactClassificationNaiveBayes: [<var>label</var>, <var>score</var>, <var>cost</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactClassificationNaiveBayes: <var>label</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactClassificationNaiveBayes: [<var>label</var>, <var>score</var>, <var>cost</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></p>
 <p> </p>
 <p> The same classification the model it came from would give: the label of
  least expected cost, the posterior of each class, and the expected
  misclassification cost of each.
+</p>
+<p> The new data may be a table, whose variables are matched to the
+ predictors the model was fitted on by name and not by position:
+ one the model was not fitted on is passed over, one it needs and
+ cannot find is named, and a value holding a level is coded as that
+ level was coded at fitting.
 </p>
 
 
@@ -1594,10 +1600,18 @@ Classification margin on new data.
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_margin">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactClassificationNaiveBayes: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactClassificationNaiveBayes: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>CompactClassificationNaiveBayes: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactClassificationNaiveBayes: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>Tbl</var>)</code></p>
 <p> </p>
+<p> <var>X</var> may also be a table <var>Tbl</var>, whose variables are matched to
+ the predictors the model was fitted on by name and not by position.
+ <code>margin (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code> takes the
+ response from the variable <var>ResponseVarName</var> names, and
+ <code>margin (<var>obj</var>, <var>Tbl</var>)</code> from the variable the model was
+ fitted on.  The response may also be given beside the table as
+ <var>Y</var>.
+</p>
 
 
             </div>
@@ -1617,15 +1631,22 @@ Classification margin on new data.
                 </div>
                 <div class="col-8">
 Classification edge on new data.
+ <var>X</var> may also be a table <var>Tbl</var>, whose variables are matched to
+ the predictors the model was fitted on by name and not by position.
+ <code>edge (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code> takes the
+ response from the variable <var>ResponseVarName</var> names, and
+ <code>edge (<var>obj</var>, <var>Tbl</var>)</code> from the variable the model was
+ fitted on.  The response may also be given beside the table as
+ <var>Y</var>.
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_edge">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactClassificationNaiveBayes: <var>e</var> = <b>edge</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactClassificationNaiveBayes: <var>e</var> = <b>edge</b> (&hellip;, <code>'Weights'</code>, <var>w</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactClassificationNaiveBayes: <var>e</var> = <b>edge</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>CompactClassificationNaiveBayes: <var>e</var> = <b>edge</b> (&hellip;, <code>'Weights'</code>, <var>w</var>)</code></p>
+<p class="h5 fs"><code>CompactClassificationNaiveBayes: <var>e</var> = <b>edge</b> (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactClassificationNaiveBayes: <var>e</var> = <b>edge</b> (<var>obj</var>, <var>Tbl</var>)</code></p>
 <p> </p>
 
 
@@ -1651,13 +1672,21 @@ Classification loss on new data.
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_loss">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactClassificationNaiveBayes: <var>l</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactClassificationNaiveBayes: <var>l</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactClassificationNaiveBayes: <var>l</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>CompactClassificationNaiveBayes: <var>l</var> = <b>loss</b> (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code></p>
+<p class="h5 fs"><code>CompactClassificationNaiveBayes: <var>l</var> = <b>loss</b> (<var>obj</var>, <var>Tbl</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactClassificationNaiveBayes: <var>l</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> Takes the <code>'LossFun'</code> and <code>'Weights'</code> options that
  <code>ClassificationNaiveBayes.loss</code> takes.
+</p>
+<p> <var>X</var> may also be a table <var>Tbl</var>, whose variables are matched to
+ the predictors the model was fitted on by name and not by position.
+ <code>loss (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code> takes the
+ response from the variable <var>ResponseVarName</var> names, and
+ <code>loss (<var>obj</var>, <var>Tbl</var>)</code> from the variable the model was
+ fitted on.  The response may also be given beside the table as
+ <var>Y</var>.
 </p>
 
 
@@ -1683,10 +1712,20 @@ Log unconditional probability density of new data.
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_logp">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactClassificationNaiveBayes: <var>lp</var> = <b>logp</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>CompactClassificationNaiveBayes: <var>lp</var> = <b>logp</b> (<var>obj</var>, <var>X</var>)</code></p>
 <p> </p>
+<p> <code><var>lp</var> = logp (<var>obj</var>, <var>X</var>)</code> returns one value per
+ observation, the logarithm of its density under the fitted model taken
+ over all the classes, each weighted by its prior.  A markedly low value
+ marks an observation the model finds unlike anything it was trained on,
+ whatever class it would be assigned to.
+</p>
+<p> <var>X</var> may also be a table, whose variables are matched to the
+ predictors the model was fitted on by name and not by position: one
+ the model was not fitted on is passed over, one it needs and cannot
+ find is named, and a value holding a level is coded as that level was
+ coded at fitting.
+</p>
 
 
             </div>
@@ -1711,9 +1750,7 @@ Save a CompactClassificationNaiveBayes object.
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationNaiveBayes_savemodel">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactClassificationNaiveBayes: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>CompactClassificationNaiveBayes: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></p>
 <p> </p>
 <p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves each property of a
  CompactClassificationNaiveBayes object into an Octave binary file, the

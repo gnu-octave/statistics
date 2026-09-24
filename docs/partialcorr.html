@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,22 +1069,21 @@
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: <var>rho</var> = <b>partialcorr</b> (<var>x</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>rho</var> = <b>partialcorr</b> (<var>x</var>, <var>z</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>rho</var> = <b>partialcorr</b> (<var>x</var>, <var>y</var>, <var>z</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [<var>rho</var>, <var>pval</var>] = <b>partialcorr</b> (&hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [&hellip;] = <b>partialcorr</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>statistics: <var>rho</var> = <b>partialcorr</b> (<var>x</var>)</code></p>
+<p class="h5 fs"><code>statistics: <var>rho</var> = <b>partialcorr</b> (<var>x</var>, <var>z</var>)</code></p>
+<p class="h5 fs"><code>statistics: <var>rho</var> = <b>partialcorr</b> (<var>x</var>, <var>y</var>, <var>z</var>)</code></p>
+<p class="h5 fs"><code>statistics: [<var>rho</var>, <var>pval</var>] = <b>partialcorr</b> (&hellip;)</code></p>
+<p class="h5 fs fs-last"><code>statistics: [&hellip;] = <b>partialcorr</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></p>
 <p> Linear or rank partial correlation coefficients.
 </p>
 <div class="ms-5">
 <p> <code><var>rho</var> = partialcorr (<var>x</var>)</code> returns the sample linear partial
- correlation coefficients between pairs of variables in the <em class="math">n</em>-by-<em class="math">p</em>
- matrix <var>x</var>, controlling for the remaining columns of <var>x</var>.  Each element
- <code><var>rho</var>(i,j)</code> is the partial correlation between <code><var>x</var>(:,i)</code>
- and <code><var>x</var>(:,j)</code>, adjusted for the other <em class="math">p-2</em> columns.  <var>rho</var>
- is a symmetric <em class="math">p</em>-by-<em class="math">p</em> matrix with ones on the diagonal.
+ correlation coefficients between pairs of variables in the
+ <em class="math">n</em>-by-<em class="math">p</em> matrix <var>x</var>, controlling for the remaining columns of
+ <var>x</var>.  Each element <code><var>rho</var>(i,j)</code> is the partial correlation
+ between <code><var>x</var>(:,i)</code> and <code><var>x</var>(:,j)</code>, adjusted for the other
+ <em class="math">p-2</em> columns.  <var>rho</var> is a symmetric <em class="math">p</em>-by-<em class="math">p</em> matrix
+ with ones on the diagonal.
 </p>
 <p> <code><var>rho</var> = partialcorr (<var>x</var>, <var>z</var>)</code> controls instead for the
  variables in the <em class="math">n</em>-by-<em class="math">q</em> matrix <var>z</var>, returning the
@@ -1075,12 +1092,12 @@
 <p> <code><var>rho</var> = partialcorr (<var>x</var>, <var>y</var>, <var>z</var>)</code> returns the
  <em class="math">p1</em>-by-<em class="math">p2</em> matrix of partial correlations between the columns of
  the <em class="math">n</em>-by-<em class="math">p1</em> matrix <var>x</var> and the <em class="math">n</em>-by-<em class="math">p2</em> matrix
- <var>y</var>, controlling for <var>z</var>.  Element <code><var>rho</var>(i,j)</code> is the partial
- correlation between <code><var>x</var>(:,i)</code> and <code><var>y</var>(:,j)</code>.
+ <var>y</var>, controlling for <var>z</var>.  Element <code><var>rho</var>(i,j)</code> is the
+ partial correlation between <code><var>x</var>(:,i)</code> and <code><var>y</var>(:,j)</code>.
 </p>
-<p> <code>[<var>rho</var>, <var>pval</var>] = partialcorr (&hellip;)</code> also returns <var>pval</var>,
- a matrix of p-values for testing the hypothesis of no partial correlation
- against the alternative selected by <code>'Tail'</code>.
+<p> <code>[<var>rho</var>, <var>pval</var>] = partialcorr (&hellip;)</code> also returns
+ <var>pval</var>, a matrix of p-values for testing the hypothesis of no partial
+ correlation against the alternative selected by <code>'Tail'</code>.
 </p>
 <p> A coefficient is <code>NaN</code> where the controlling variables explain either
  of the two variables completely, since the partial correlation is then
@@ -1098,20 +1115,20 @@
 <dt> <code>'Rows'</code></dt>
 <dd> <code>'all'</code> (default) uses all rows regardless of missing values (any
  <code>NaN</code> yields a <code>NaN</code> result); <code>'complete'</code> uses only the rows
- with no missing values across all supplied variables; <code>'pairwise'</code> uses,
- for each computed coefficient, the rows with no missing values among just the
- variables involved in that coefficient.</dd>
+ with no missing values across all supplied variables; <code>'pairwise'</code>
+ uses, for each computed coefficient, the rows with no missing values among
+ just the variables involved in that coefficient.</dd>
 <dt> <code>'Tail'</code></dt>
 <dd> The alternative hypothesis for <var>pval</var>: <code>'both'</code> (default, nonzero
- correlation), <code>'right'</code> (greater than zero), or <code>'left'</code> (less than
- zero).</dd>
+ correlation), <code>'right'</code> (greater than zero), or <code>'left'</code> (less
+ than zero).</dd>
 </dl>
 
-<p> The partial correlation is computed by regressing each of the two variables on
- the controlling variables (with an intercept) and correlating the residuals.
- The p-value uses a Student&rsquo;s <em class="math">t</em> statistic with <em class="math">n - 2 - k</em> degrees
- of freedom, where <em class="math">k</em> is the number of controlling variables and <em class="math">n</em>
- the number of observations used.
+<p> The partial correlation is computed by regressing each of the two variables
+ on the controlling variables (with an intercept) and correlating the
+ residuals.  The p-value uses a Student&rsquo;s <em class="math">t</em> statistic with
+ <em class="math">n - 2 - k</em> degrees of freedom, where <em class="math">k</em> is the number of
+ controlling variables and <em class="math">n</em> the number of observations used.
 </p>
 <p> The data are centered, and the controlling variables rescaled, before the
  regression, which leaves the result unchanged in exact arithmetic and keeps
@@ -1128,7 +1145,8 @@ corrcoef,
   <a href="tiedrank.html">tiedrank</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Descriptive_Statistics/partialcorr.m">partialcorr</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Descriptive_Statistics/partialcorr.m">partialcorr</a>
+</p>
 </div>
         <div class="card rounded my-4">
           <div class="card-header card-header-mod">

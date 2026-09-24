@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -164,9 +173,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Supervised Learning">
+                  <a class="nav-link" href="index.html#Machine Learning">
                     <i class="fas fa-list-alt"></i>
-                    Supervised Learning
+                    Machine Learning
                   </a>
                 </li>
                 <li class="nav-item">
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox" checked>
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: ClassificationPartitionedKernel</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: ClassificationPartitionedKernel</code></p>
 <p> Cross-validated Gaussian kernel binary classifier.
 </p>
 <div class="ms-5">
@@ -1079,7 +1097,7 @@
   <a href="ClassificationPartitionedKernel.html">ClassificationPartitionedKernel</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Supervised_Learning/ClassificationPartitionedKernel.m">ClassificationPartitionedKernel</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Machine_Learning/ClassificationPartitionedKernel.m">ClassificationPartitionedKernel</a>
 </p>
 </div>
         <p class="lead my-3">The <code>ClassificationPartitionedKernel</code> class contains the following properties:</p>
@@ -1102,7 +1120,6 @@ Names of the two classes
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_ClassNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A column of the same type as the response, shared by every fold.
  This property is read-only.
@@ -1138,7 +1155,7 @@ Names of the two classes
           NumObservations: 100
                     KFold: 5</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> outOfSample = kfoldLoss (CVMdl)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.040000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.030000</pre>
 
             </div>
           </div>
@@ -1167,7 +1184,6 @@ Cost of misclassifying an observation
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_Cost">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A square numeric matrix with one row and one column per class.  It is
  handed to every fold rather than re-derived by each.  This property is
@@ -1204,7 +1220,7 @@ Cost of misclassifying an observation
           NumObservations: 100
                     KFold: 5</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> outOfSample = kfoldLoss (CVMdl)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.040000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.080000</pre>
 
             </div>
           </div>
@@ -1233,7 +1249,6 @@ Prior probability of each class
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_Prior">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric row vector summing to one, in the order of
  <code>ClassNames</code>.  Like the cost it is the parent&rsquo;s and is handed to
@@ -1271,7 +1286,7 @@ Prior probability of each class
           NumObservations: 100
                     KFold: 5</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> outOfSample = kfoldLoss (CVMdl)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.050000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.070000</pre>
 
             </div>
           </div>
@@ -1300,7 +1315,6 @@ Transformation applied to the predicted scores
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_ScoreTransform">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector naming a transformation, or the text of the
  function handle that was supplied, which may be assigned after the
@@ -1340,7 +1354,7 @@ Transformation applied to the predicted scores
           NumObservations: 100
                     KFold: 5</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> outOfSample = kfoldLoss (CVMdl)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.040000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.050000</pre>
 
             </div>
           </div>
@@ -1369,7 +1383,6 @@ Name of the model that was cross-validated
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_CrossValidatedModel">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Always <code>'Linear'</code>, the short name MATLAB uses.  This property is
  read-only.
@@ -1434,7 +1447,6 @@ Number of observations the partition covers
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_NumObservations">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer scalar, counting the rows that survived the removal
  of missing values.  This property is read-only.
@@ -1470,7 +1482,7 @@ Number of observations the partition covers
           NumObservations: 100
                     KFold: 5</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> outOfSample = kfoldLoss (CVMdl)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.060000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.040000</pre>
 
             </div>
           </div>
@@ -1499,7 +1511,6 @@ Response of the retained observations
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_Y">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> In the type it was supplied in.  This property is read-only.
 </p>
@@ -1563,7 +1574,6 @@ Observation weights
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_W">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> An <em class="math">Nx1</em> numeric vector summing to one, normalized within each
  class to that class&rsquo;s cost-adjusted prior.  This property is
@@ -1600,7 +1610,7 @@ Observation weights
           NumObservations: 100
                     KFold: 5</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> outOfSample = kfoldLoss (CVMdl)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.030000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.040000</pre>
 
             </div>
           </div>
@@ -1629,7 +1639,6 @@ Names of the predictors
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_PredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors.  This property is read-only.
 </p>
@@ -1664,7 +1673,7 @@ Names of the predictors
           NumObservations: 100
                     KFold: 5</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> outOfSample = kfoldLoss (CVMdl)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.040000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.030000</pre>
 
             </div>
           </div>
@@ -1693,7 +1702,6 @@ Indices of the categorical predictors
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_CategoricalPredictors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A row vector of column indices, empty when every predictor is
  numeric.  This property is read-only.
@@ -1729,7 +1737,7 @@ Indices of the categorical predictors
           NumObservations: 100
                     KFold: 5</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> outOfSample = kfoldLoss (CVMdl)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.050000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.020000</pre>
 
             </div>
           </div>
@@ -1758,7 +1766,6 @@ Name of the response
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_ResponseName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector, defaulting to <code>'Y'</code>.  This property is
  read-only.
@@ -1794,7 +1801,7 @@ Name of the response
           NumObservations: 100
                     KFold: 5</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> outOfSample = kfoldLoss (CVMdl)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.060000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.040000</pre>
 
             </div>
           </div>
@@ -1823,7 +1830,6 @@ The models fitted to the folds
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_Trained">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell column with one <code>ClassificationKernel</code> per fold, each
  fitted to the observations its fold trains on.  This property is
@@ -1860,7 +1866,7 @@ The models fitted to the folds
           NumObservations: 100
                     KFold: 5</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> outOfSample = kfoldLoss (CVMdl)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.050000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 1.0000e-02</pre>
 
             </div>
           </div>
@@ -1889,7 +1895,6 @@ Number of folds
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_KFold">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer scalar.  A holdout partition has one fold and a
  leave-one-out partition has as many as there are observations.  This
@@ -1955,7 +1960,6 @@ The partition itself
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_Partition">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <code>cvpartition</code> object over the retained observations.  This
  property is read-only.
@@ -2020,7 +2024,6 @@ What was cross-validated, and how
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_ModelParameters">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure holding the parameters the folds were fitted with, carried
  through from the learner that was cross validated, beside
@@ -2075,7 +2078,7 @@ What was cross-validated, and how
           NumObservations: 100
                     KFold: 5</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> outOfSample = kfoldLoss (CVMdl)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.060000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.070000</pre>
 
             </div>
           </div>
@@ -2106,10 +2109,8 @@ Cross-validate a linear binary classifier.
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_ClassificationPartitionedKernel">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">ClassificationPartitionedKernel: <var>obj</var> = <b>ClassificationPartitionedKernel</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">ClassificationPartitionedKernel: <var>obj</var> = <b>ClassificationPartitionedKernel</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>ClassificationPartitionedKernel: <var>obj</var> = <b>ClassificationPartitionedKernel</b> (<var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs fs-last"><code>ClassificationPartitionedKernel: <var>obj</var> = <b>ClassificationPartitionedKernel</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> <code><var>obj</var> = ClassificationPartitionedKernel (<var>X</var>, <var>Y</var>)</code>
  partitions the data into ten stratified folds and fits a
@@ -2193,10 +2194,8 @@ Out-of-fold class of every observation.
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_kfoldPredict">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">ClassificationPartitionedKernel: <var>labels</var> = <b>kfoldPredict</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">ClassificationPartitionedKernel: [<var>labels</var>, <var>scores</var>] = <b>kfoldPredict</b> (<var>obj</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>ClassificationPartitionedKernel: <var>labels</var> = <b>kfoldPredict</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>ClassificationPartitionedKernel: [<var>labels</var>, <var>scores</var>] = <b>kfoldPredict</b> (<var>obj</var>)</code></p>
 <p> </p>
 <p> Each observation is classified by the fold that held it out, so the
  labels are out-of-sample.  An observation that no fold held out, which
@@ -2234,7 +2233,7 @@ Out-of-fold class of every observation.
           NumObservations: 100
                     KFold: 5</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> outOfSample = kfoldLoss (CVMdl)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.050000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.040000</pre>
 
             </div>
           </div>
@@ -2263,9 +2262,7 @@ Out-of-fold classification margin of every observation.
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_kfoldMargin">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">ClassificationPartitionedKernel: <var>m</var> = <b>kfoldMargin</b> (<var>obj</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>ClassificationPartitionedKernel: <var>m</var> = <b>kfoldMargin</b> (<var>obj</var>)</code></p>
 <p> </p>
 <p> The score the out-of-fold model gives the true class, less the score
  it gives the other one.  An observation no fold held out comes back
@@ -2331,10 +2328,8 @@ Weighted mean of the out-of-fold classification margins.
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_kfoldEdge">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">ClassificationPartitionedKernel: <var>e</var> = <b>kfoldEdge</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">ClassificationPartitionedKernel: <var>e</var> = <b>kfoldEdge</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>ClassificationPartitionedKernel: <var>e</var> = <b>kfoldEdge</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>ClassificationPartitionedKernel: <var>e</var> = <b>kfoldEdge</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> <code><var>e</var> = kfoldEdge (&hellip;, <var>name</var>, <var>value</var>)</code> takes
  <code>'Folds'</code>, a subset of the folds to average over, and
@@ -2372,7 +2367,7 @@ Weighted mean of the out-of-fold classification margins.
           NumObservations: 100
                     KFold: 5</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> outOfSample = kfoldLoss (CVMdl)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.050000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.030000</pre>
 
             </div>
           </div>
@@ -2401,10 +2396,8 @@ Out-of-fold classification loss.
           </div>
           <div class="collapse multi-collapse" id="ClassificationPartitionedKernel_kfoldLoss">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">ClassificationPartitionedKernel: <var>l</var> = <b>kfoldLoss</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">ClassificationPartitionedKernel: <var>l</var> = <b>kfoldLoss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>ClassificationPartitionedKernel: <var>l</var> = <b>kfoldLoss</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>ClassificationPartitionedKernel: <var>l</var> = <b>kfoldLoss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> <code><var>l</var> = kfoldLoss (<var>obj</var>)</code> returns the out-of-fold
  misclassification rate.
@@ -2446,7 +2439,7 @@ Out-of-fold classification loss.
           NumObservations: 100
                     KFold: 5</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> outOfSample = kfoldLoss (CVMdl)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.030000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.050000</pre>
 
             </div>
           </div>
@@ -2490,7 +2483,7 @@ Cross-validate a Gaussian kernel classifier on the two overlapping iris species 
           NumObservations: 100
                     KFold: 5</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> outOfSample = kfoldLoss (CVMdl)</pre>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.060000</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">outOfSample = 0.040000</pre>
 
             </div>
           </div>

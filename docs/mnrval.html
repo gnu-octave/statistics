@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,23 +1069,22 @@
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: <var>pihat</var> = <b>mnrval</b> (<var>B</var>, <var>X</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [<var>pihat</var>, <var>dlo</var>, <var>dhi</var>] = <b>mnrval</b> (<var>B</var>, <var>X</var>, <var>stats</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>yhat</var> = <b>mnrval</b> (<var>B</var>, <var>X</var>, <var>ssize</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [<var>yhat</var>, <var>dlo</var>, <var>dhi</var>] = <b>mnrval</b> (<var>B</var>, <var>X</var>, <var>ssize</var>, <var>stats</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [&hellip;] = <b>mnrval</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>statistics: <var>pihat</var> = <b>mnrval</b> (<var>B</var>, <var>X</var>)</code></p>
+<p class="h5 fs"><code>statistics: [<var>pihat</var>, <var>dlo</var>, <var>dhi</var>] = <b>mnrval</b> (<var>B</var>, <var>X</var>, <var>stats</var>)</code></p>
+<p class="h5 fs"><code>statistics: <var>yhat</var> = <b>mnrval</b> (<var>B</var>, <var>X</var>, <var>ssize</var>)</code></p>
+<p class="h5 fs"><code>statistics: [<var>yhat</var>, <var>dlo</var>, <var>dhi</var>] = <b>mnrval</b> (<var>B</var>, <var>X</var>, <var>ssize</var>, <var>stats</var>)</code></p>
+<p class="h5 fs fs-last"><code>statistics: [&hellip;] = <b>mnrval</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> Predict values for a multinomial logistic regression model.
 </p>
 <div class="ms-5">
-<p> <code><var>pihat</var> = mnrval (<var>B</var>, <var>X</var>)</code> returns the predicted
- category probabilities <var>pihat</var> of a multinomial logistic regression with
+<p> <code><var>pihat</var> = mnrval (<var>B</var>, <var>X</var>)</code> returns the predicted category
+ probabilities <var>pihat</var> of a multinomial logistic regression with
  coefficients <var>B</var>, evaluated at the predictor values in <var>X</var>.  <var>X</var>
  is an <em class="math">N&times;P</em> numeric matrix of <em class="math">N</em> observations on <em class="math">P</em>
- predictors.  <var>pihat</var> is an <em class="math">N&times;K</em> matrix, where <em class="math">K</em> is the number
- of response categories and each row sums to one.  <var>B</var> is the coefficient
- matrix returned by <code>mnrfit</code> (see below for its shape under each model).
+ predictors.  <var>pihat</var> is an <em class="math">N&times;K</em> matrix, where <em class="math">K</em> is the
+ number of response categories and each row sums to one.  <var>B</var> is the
+ coefficient matrix returned by <code>mnrfit</code> (see below for its shape under
+ each model).
 </p>
 <p> <code>mnrval</code> is the prediction companion of <code>mnrfit</code>.  Unlike the
  current <code>mnrfit</code>, which only fits ordinal and two-category nominal
@@ -1098,8 +1115,8 @@
  category-specific intercepts only.  Default is <code>'on'</code> for nominal and
  hierarchical models and <code>'off'</code> for ordinal models.  With
  <code>'interactions','on'</code>, <var>B</var> is a <em class="math">(P+1)&times;(K-1)</em> matrix.  With
- <code>'interactions','off'</code>, <var>B</var> is a <em class="math">(K-1+P)&times;1</em> vector holding the
- <em class="math">K-1</em> intercepts followed by the <em class="math">P</em> common slopes.</td></tr>
+ <code>'interactions','off'</code>, <var>B</var> is a <em class="math">(K-1+P)&times;1</em> vector holding
+ the <em class="math">K-1</em> intercepts followed by the <em class="math">P</em> common slopes.</td></tr>
 <tr><td width="18%"><code>'link'</code></td><td width="80%">The link function for ordinal and hierarchical
  models: <code>'logit'</code> (default), <code>'probit'</code>, <code>'comploglog'</code>, or
  <code>'loglog'</code>.  Nominal models always use the multinomial logit link.</td></tr>
@@ -1111,8 +1128,6 @@
 <tr><td width="18%"><code>'confidence'</code></td><td width="80%">The confidence level for <var>dlo</var> and
  <var>dhi</var>, a scalar in the range <em class="math">(0,1)</em>.  Default is <em class="math">0.95</em>.</td></tr>
 </table>
-<p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/mnrval.m">mnrval</a>
 </div>
 
 <p> <strong>See also: </strong>
@@ -1121,7 +1136,8 @@
   <a href="logistic_regression.html">logistic_regression</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/mnrval.m">mnrval</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Regression/mnrval.m">mnrval</a>
+</p>
 </div>
         <div class="card rounded my-4">
           <div class="card-header card-header-mod">

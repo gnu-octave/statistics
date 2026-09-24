@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: rocmetrics</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: rocmetrics</code></p>
 <p> Receiver operating characteristic (ROC) metrics for classifier output.
 </p>
 <div class="ms-5">
@@ -1075,7 +1093,7 @@
   <a href="confusionchart.html">confusionchart</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Model_Evaluation/rocmetrics.m">rocmetrics</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Model_Evaluation/rocmetrics.m">rocmetrics</a>
 </p>
 </div>
         <p class="lead my-3">The <code>rocmetrics</code> class contains the following properties:</p>
@@ -1098,7 +1116,6 @@ Performance metrics table
           </div>
           <div class="collapse multi-collapse" id="rocmetrics_Metrics">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Table of performance metrics, vertically concatenated across the classes
  in <code>ClassNames</code> order with one row per distinct threshold.  The
@@ -1199,7 +1216,6 @@ Area under the ROC curve
           </div>
           <div class="collapse multi-collapse" id="rocmetrics_AUC">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Row vector holding the area under the one-versus-all ROC curve for each
  class, in <code>ClassNames</code> order.  This property is read-only.
@@ -1296,7 +1312,6 @@ Class names
           </div>
           <div class="collapse multi-collapse" id="rocmetrics_ClassNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Class names for which the ROC metrics are computed, in the column order
  of <code>Scores</code>.  This property is read-only.
@@ -1393,7 +1408,6 @@ Misclassification cost matrix
           </div>
           <div class="collapse multi-collapse" id="rocmetrics_Cost">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Square misclassification-cost matrix, with zero diagonal and unit
  off-diagonal entries by default.  It is used by the <code>ExpectedCost</code>
@@ -1491,7 +1505,6 @@ Prior class probabilities
           </div>
           <div class="collapse multi-collapse" id="rocmetrics_Prior">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Row vector of prior class probabilities, in <code>ClassNames</code> order,
  summing to one.  This property is read-only.
@@ -1588,7 +1601,6 @@ Observation labels
           </div>
           <div class="collapse multi-collapse" id="rocmetrics_Labels">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> True class labels supplied at construction, one per observation.  This
  property is read-only.
@@ -1685,7 +1697,6 @@ Classification scores
           </div>
           <div class="collapse multi-collapse" id="rocmetrics_Scores">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Classification scores supplied at construction, as an
  <em class="math">N</em>-by-<em class="math">K</em> matrix.  This property is read-only.
@@ -1782,7 +1793,6 @@ Observation weights
           </div>
           <div class="collapse multi-collapse" id="rocmetrics_Weights">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Non-negative observation weights, one per observation.  Defaults to a
  vector of ones.  This property is read-only.
@@ -1881,10 +1891,8 @@ Create a <code>rocmetrics</code> object from labels and classification scores.
           </div>
           <div class="collapse multi-collapse" id="rocmetrics_rocmetrics">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">rocmetrics: <var>obj</var> = <b>rocmetrics</b> (<var>labels</var>, <var>scores</var>, <var>classnames</var>)</code></h5></dt>
-<dt><code><h5 class="fs">rocmetrics: <var>obj</var> = <b>rocmetrics</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>rocmetrics: <var>obj</var> = <b>rocmetrics</b> (<var>labels</var>, <var>scores</var>, <var>classnames</var>)</code></p>
+<p class="h5 fs fs-last"><code>rocmetrics: <var>obj</var> = <b>rocmetrics</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></p>
 <p> </p>
 <p> <var>labels</var> is a vector of true class labels with one element per
  observation; it may be numeric, logical, a character matrix, or a cell
@@ -2023,9 +2031,7 @@ Append additional performance metrics to an existing <code>rocmetrics</code>
           </div>
           <div class="collapse multi-collapse" id="rocmetrics_addMetrics">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">rocmetrics: <var>obj</var> = <b>addMetrics</b> (<var>obj</var>, <var>metrics</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>rocmetrics: <var>obj</var> = <b>addMetrics</b> (<var>obj</var>, <var>metrics</var>)</code></p>
 <p> </p>
 <p> <var>metrics</var> is a metric name or a cell array of metric names, chosen
  from the list supported by the <code>'AdditionalMetrics'</code> constructor
@@ -2125,9 +2131,7 @@ Compute an averaged ROC curve across the classes of a <code>rocmetrics</code>
           </div>
           <div class="collapse multi-collapse" id="rocmetrics_average">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">rocmetrics: [<var>FPR</var>, <var>TPR</var>, <var>Thresholds</var>, <var>AUC</var>] = <b>average</b> (<var>obj</var>, <var>type</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>rocmetrics: [<var>FPR</var>, <var>TPR</var>, <var>Thresholds</var>, <var>AUC</var>] = <b>average</b> (<var>obj</var>, <var>type</var>)</code></p>
 <p> </p>
 <p> <var>type</var> selects the averaging method: <code>'macro'</code> (unweighted
  mean of the per-class curves), <code>'micro'</code> (a single curve pooling
@@ -2234,10 +2238,8 @@ Plot the per-class ROC curves of a <code>rocmetrics</code> object.
           </div>
           <div class="collapse multi-collapse" id="rocmetrics_plot">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">rocmetrics: <b>plot</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">rocmetrics: <var>h</var> = <b>plot</b> (<var>obj</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>rocmetrics: <b>plot</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>rocmetrics: <var>h</var> = <b>plot</b> (<var>obj</var>)</code></p>
 <p> </p>
 <p> Each class in <code>ClassNames</code> contributes one true-positive-rate
  versus false-positive-rate curve.  A handle to the line objects is

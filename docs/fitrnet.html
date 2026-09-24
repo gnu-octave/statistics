@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -164,9 +173,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Supervised Learning">
+                  <a class="nav-link" href="index.html#Machine Learning">
                     <i class="fas fa-list-alt"></i>
-                    Supervised Learning
+                    Machine Learning
                   </a>
                 </li>
                 <li class="nav-item">
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox" checked>
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,10 +1069,11 @@
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: <var>Mdl</var> = <b>fitrnet</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>Mdl</var> = <b>fitrnet</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>statistics: <var>Mdl</var> = <b>fitrnet</b> (<var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>statistics: <var>Mdl</var> = <b>fitrnet</b> (<var>Tbl</var>, <var>ResponseVarName</var>)</code></p>
+<p class="h5 fs"><code>statistics: <var>Mdl</var> = <b>fitrnet</b> (<var>Tbl</var>, <var>formula</var>)</code></p>
+<p class="h5 fs"><code>statistics: <var>Mdl</var> = <b>fitrnet</b> (<var>Tbl</var>, <var>Y</var>)</code></p>
+<p class="h5 fs fs-last"><code>statistics: <var>Mdl</var> = <b>fitrnet</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> Fit a neural network regression model.
 </p>
 <div class="ms-5">
@@ -1094,7 +1113,10 @@
  <code>'all'</code>.  Each is dummy coded in its place, one column of zeros and
  ones per level seen in training, named as in <code>'x1 == 2'</code> in
  <code>ExpandedPredictorNames</code>, and the coded columns are not standardized.
- An observation holding a level the training data did not has no prediction.</td></tr>
+ An observation holding a level the training data did not has no prediction.
+ A predictor may be named rather than indexed, as a character matrix of one
+ padded name per row, a string array or a cellstr; a name must match an entry
+ of <code>'PredictorNames'</code> exactly, its case included.</td></tr>
 <tr><td width="32%"><code>'PredictorNames'</code></td><td width="68%">A cell array of character vectors
  specifying the predictor variable names, in the order they appear in
  <var>X</var>.</td></tr>
@@ -1152,9 +1174,14 @@
  <code>'lbfgs'</code> solver iterations.</td></tr>
 <tr><td width="32%"><code>'DisplayInfo'</code></td><td width="68%">A logical scalar indicating whether to
  print information during training.  Default is <code>false</code>.</td></tr>
+<tr><td width="32%"><code>'Weights'</code></td><td width="68%">A nonnegative single or double vector of
+ observation weights, one per row of <var>X</var>.  The network is trained on the
+ loss weighted by them, standardization and the prediction for a row missing
+ a predictor weigh the observations the same way, and a row of zero or
+ missing weight is left out.  The model&rsquo;s <code>W</code> keeps the class of the
+ weights, while every computation runs in double, so the predictions are
+ double where MATLAB returns single.  The default is uniform.</td></tr>
 </table>
-<p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Supervised_Learning/fitrnet.m">fitrnet</a>
 </div>
 
 <p> The weights of each layer are drawn from a uniform range whose half-width
@@ -1176,7 +1203,8 @@
   <a href="fcnnpredict.html">fcnnpredict</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Supervised_Learning/fitrnet.m">fitrnet</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Machine_Learning/fitrnet.m">fitrnet</a>
+</p>
 </div>
         <div class="card rounded my-4">
           <div class="card-header card-header-mod">
@@ -1314,6 +1342,48 @@
                 <div class="text-center">
                   <img src="assets/fitrnet-401.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
                 </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#fitrnet-example5" aria-expanded="true"
+                  aria-controls="fitrnet-example5">
+                Example: 5
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse show" id="fitrnet-example5">
+            <div class="card-body">
+                <p>Fit from a table, and predict on one</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ T = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+            'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+ T.Wide = categorical (meas(:,2) &gt; 3, [false true], {'narrow', 'wide'});</pre>
+                <p>A model formula names the response and the predictors together, and holds main effects only</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Mdl = fitrnet (T, 'SL ~ PL + Wide');
+ Mdl.PredictorNames</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+  1x2 cell array
+
+    {'PL'}    {'Wide'}</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Mdl.ResponseName</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = SL</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Mdl.CategoricalPredictors</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 2</pre>
+                <p>predict matches the table's variables by name, so a column the model was not fitted on is passed over</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> yFit = predict (Mdl, T(1:5,:));
+ yFit'</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+
+   5.0283   4.6703   4.9826   5.0741   5.0283</pre>
 
             </div>
           </div>

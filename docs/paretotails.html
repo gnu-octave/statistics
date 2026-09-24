@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: paretotails</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: paretotails</code></p>
 <p> Piecewise distribution with generalized Pareto tails.
 </p>
 <div class="ms-5">
@@ -1085,10 +1103,10 @@
   <a href="gpinv.html">gpinv</a>, 
   <a href="ecdf.html">ecdf</a>, 
   <a href="fitdist.html">fitdist</a>, 
-GeneralizedParetoDistribution
+  <a href="prob.GeneralizedParetoDistribution.html">prob.GeneralizedParetoDistribution</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Distribution_Classes/paretotails.m">paretotails</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Distribution_Classes/paretotails.m">paretotails</a>
 </p>
 </div>
         <p class="lead my-3">The <code>paretotails</code> class contains the following properties:</p>
@@ -1112,7 +1130,6 @@ Number of segments in the piecewise distribution (a lower tail, a middle,
           </div>
           <div class="collapse multi-collapse" id="paretotails_NumSegments">
             <div class="border-bottom py-2">
-
 <p> </p>
 
         <div class="card rounded my-4">
@@ -1179,7 +1196,6 @@ Number of estimated parameters (two per fitted generalized Pareto tail).
           </div>
           <div class="collapse multi-collapse" id="paretotails_NumParameters">
             <div class="border-bottom py-2">
-
 <p> </p>
 
         <div class="card rounded my-4">
@@ -1248,10 +1264,8 @@ Fit a piecewise distribution with generalized Pareto tails to <var>x</var>.
           </div>
           <div class="collapse multi-collapse" id="paretotails_paretotails">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">paretotails: <var>pt</var> = <b>paretotails</b> (<var>x</var>, <var>pl</var>, <var>pu</var>)</code></h5></dt>
-<dt><code><h5 class="fs">paretotails: <var>pt</var> = <b>paretotails</b> (<var>x</var>, <var>pl</var>, <var>pu</var>, <var>cdffun</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>paretotails: <var>pt</var> = <b>paretotails</b> (<var>x</var>, <var>pl</var>, <var>pu</var>)</code></p>
+<p class="h5 fs fs-last"><code>paretotails: <var>pt</var> = <b>paretotails</b> (<var>x</var>, <var>pl</var>, <var>pu</var>, <var>cdffun</var>)</code></p>
 <p> </p>
 <p> <var>pl</var> and <var>pu</var> are the cumulative probabilities of the lower and
  upper tail boundaries, with <code>0 &lt;= <var>pl</var> &lt; <var>pu</var> &lt;= 1</code>.  A
@@ -1328,9 +1342,7 @@ Cumulative distribution function of the <code>paretotails</code> object
           </div>
           <div class="collapse multi-collapse" id="paretotails_cdf">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">paretotails: <var>p</var> = <b>cdf</b> (<var>pt</var>, <var>x</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>paretotails: <var>p</var> = <b>cdf</b> (<var>pt</var>, <var>x</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -1398,9 +1410,7 @@ Probability density function of the <code>paretotails</code> object <var>pt</var
           </div>
           <div class="collapse multi-collapse" id="paretotails_pdf">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">paretotails: <var>y</var> = <b>pdf</b> (<var>pt</var>, <var>x</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>paretotails: <var>y</var> = <b>pdf</b> (<var>pt</var>, <var>x</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -1469,9 +1479,7 @@ Inverse cumulative distribution function (quantile function) of the
           </div>
           <div class="collapse multi-collapse" id="paretotails_icdf">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">paretotails: <var>x</var> = <b>icdf</b> (<var>pt</var>, <var>p</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>paretotails: <var>x</var> = <b>icdf</b> (<var>pt</var>, <var>p</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -1539,11 +1547,9 @@ Random values drawn from the <code>paretotails</code> object <var>pt</var>, by
           </div>
           <div class="collapse multi-collapse" id="paretotails_random">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">paretotails: <var>r</var> = <b>random</b> (<var>pt</var>)</code></h5></dt>
-<dt><code><h5 class="fs">paretotails: <var>r</var> = <b>random</b> (<var>pt</var>, <var>sz</var>)</code></h5></dt>
-<dt><code><h5 class="fs">paretotails: <var>r</var> = <b>random</b> (<var>pt</var>, <var>m</var>, <var>n</var>, &hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>paretotails: <var>r</var> = <b>random</b> (<var>pt</var>)</code></p>
+<p class="h5 fs"><code>paretotails: <var>r</var> = <b>random</b> (<var>pt</var>, <var>sz</var>)</code></p>
+<p class="h5 fs fs-last"><code>paretotails: <var>r</var> = <b>random</b> (<var>pt</var>, <var>m</var>, <var>n</var>, &hellip;)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -1611,9 +1617,7 @@ Boundary probabilities <var>p</var> and quantiles <var>q</var> of the segments o
           </div>
           <div class="collapse multi-collapse" id="paretotails_boundary">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">paretotails: [<var>p</var>, <var>q</var>] = <b>boundary</b> (<var>pt</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>paretotails: [<var>p</var>, <var>q</var>] = <b>boundary</b> (<var>pt</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -1680,9 +1684,7 @@ Number of segments in the <code>paretotails</code> object <var>pt</var>.
           </div>
           <div class="collapse multi-collapse" id="paretotails_nsegments">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">paretotails: <var>n</var> = <b>nsegments</b> (<var>pt</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>paretotails: <var>n</var> = <b>nsegments</b> (<var>pt</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -1750,9 +1752,7 @@ Shape and scale parameters <code>[<var>k</var>, <var>sigma</var>]</code> of the
           </div>
           <div class="collapse multi-collapse" id="paretotails_lowerparams">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">paretotails: <var>params</var> = <b>lowerparams</b> (<var>pt</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>paretotails: <var>params</var> = <b>lowerparams</b> (<var>pt</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -1820,9 +1820,7 @@ Shape and scale parameters <code>[<var>k</var>, <var>sigma</var>]</code> of the
           </div>
           <div class="collapse multi-collapse" id="paretotails_upperparams">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">paretotails: <var>params</var> = <b>upperparams</b> (<var>pt</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>paretotails: <var>params</var> = <b>upperparams</b> (<var>pt</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -1892,9 +1890,7 @@ Segment indices for the <code>paretotails</code> object <var>pt</var>.  Supply t
           </div>
           <div class="collapse multi-collapse" id="paretotails_segment">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">paretotails: <var>s</var> = <b>segment</b> (<var>pt</var>, <var>x</var>, <var>p</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>paretotails: <var>s</var> = <b>segment</b> (<var>pt</var>, <var>x</var>, <var>p</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">

@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: ConfusionMatrixChart</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: ConfusionMatrixChart</code></p>
 <p> Confusion matrix chart for classification results
 </p>
 <div class="ms-5">
@@ -1073,7 +1091,7 @@
   <a href="confusionchart.html">confusionchart</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Model_Evaluation/ConfusionMatrixChart.m">ConfusionMatrixChart</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Model_Evaluation/ConfusionMatrixChart.m">ConfusionMatrixChart</a>
 </p>
 </div>
         <p class="lead my-3">The <code>ConfusionMatrixChart</code> class contains the following properties:</p>
@@ -1096,7 +1114,6 @@ X-axis label
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_XLabel">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector specifying the label for the x-axis.  Default is
  &quot;Predicted Class&quot;.
@@ -1166,7 +1183,6 @@ Y-axis label
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_YLabel">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector specifying the label for the y-axis.  Default is
  &quot;True Class&quot;.
@@ -1236,7 +1252,6 @@ Chart title
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_Title">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector specifying the title of the confusion matrix chart.
  Default is empty string.
@@ -1306,7 +1321,6 @@ Font name for text elements
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_FontName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector specifying the font name used for all text elements
  in the chart.  Default is empty string, which uses the axes font name.
@@ -1376,7 +1390,6 @@ Font size for text elements
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_FontSize">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric scalar specifying the font size used for all text elements
  in the chart.  Default is 0, which uses the axes font size.
@@ -1446,7 +1459,6 @@ Color for diagonal elements
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_DiagonalColor">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A 1x3 RGB vector specifying the color for the diagonal elements of the
  confusion matrix, which represent correct classifications.  Default is
@@ -1517,7 +1529,6 @@ Color for off-diagonal elements
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_OffDiagonalColor">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A 1x3 RGB vector specifying the color for the off-diagonal elements of
  the confusion matrix, which represent misclassifications.  Default is
@@ -1588,7 +1599,6 @@ Normalization method for confusion matrix values
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_Normalization">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector specifying how to normalize the confusion matrix
  values.  Supported values are:
@@ -1666,7 +1676,6 @@ Column summary display
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_ColumnSummary">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector specifying whether and how to display column
  summaries. Supported values are:
@@ -1743,7 +1752,6 @@ Row summary display
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_RowSummary">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector specifying whether and how to display row summaries.
  Supported values are:
@@ -1820,7 +1828,6 @@ Grid visibility
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_GridVisible">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector specifying whether to display grid lines in the
  confusion matrix.  Supported values are:
@@ -1895,7 +1902,6 @@ Handle visibility
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_HandleVisibility">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector specifying the visibility of the object&rsquo;s handle.
  Supported values are <code>'on'</code>, <code>'off'</code>, and <code>'callback'</code>.
@@ -1965,7 +1971,6 @@ Outer position of the chart
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_OuterPosition">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A 1x4 numeric vector specifying the outer position of the chart in the
  format [left, bottom, width, height].
@@ -2035,7 +2040,6 @@ Position of the chart
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_Position">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A 1x4 numeric vector specifying the position of the chart in the
  format [left, bottom, width, height].
@@ -2105,7 +2109,6 @@ Position units
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_Units">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector specifying the units for the position properties.
  Supported values are <code>'centimeters'</code>, <code>'characters'</code>,
@@ -2177,7 +2180,6 @@ Class labels
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_ClassLabels">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors containing the class labels used in
  the confusion matrix.  This property is read-only.
@@ -2247,7 +2249,6 @@ Normalized confusion matrix values
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_NormalizedValues">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric matrix containing the normalized confusion matrix values
  according to the current normalization setting.  This property is
@@ -2318,7 +2319,6 @@ Parent object
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_Parent">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A handle to the parent figure or container object.  This property is
  read-only.
@@ -2391,10 +2391,8 @@ Create a <code>ConfusionMatrixChart</code> object for visualizing
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_ConfusionMatrixChart">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">statistics: <var>cmc</var> = <b>ConfusionMatrixChart</b> (<var>hax</var>, <var>cm</var>, <var>cl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>cmc</var> = <b>ConfusionMatrixChart</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>ConfusionMatrixChart: <var>cmc</var> = <b>ConfusionMatrixChart</b> (<var>hax</var>, <var>cm</var>, <var>cl</var>)</code></p>
+<p class="h5 fs fs-last"><code>ConfusionMatrixChart: <var>cmc</var> = <b>ConfusionMatrixChart</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> <code><var>cmc</var> = ConfusionMatrixChart (<var>hax</var>, <var>cm</var>, <var>cl</var>)</code>
  returns a ConfusionMatrixChart object with parent axes <var>hax</var>,
@@ -2533,9 +2531,7 @@ Sort the classes in the confusion matrix chart.
           </div>
           <div class="collapse multi-collapse" id="ConfusionMatrixChart_sortClasses">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">ConfusionMatrixChart: <b>sortClasses</b> (<var>cmc</var>, <var>order</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>ConfusionMatrixChart: <b>sortClasses</b> (<var>cmc</var>, <var>order</var>)</code></p>
 <p> </p>
 <p> <code>sortClasses (<var>cmc</var>, <var>order</var>)</code> sorts the classes in the
  confusion matrix chart <var>cmc</var> according to the specified <var>order</var>.

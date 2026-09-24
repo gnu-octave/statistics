@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,39 +1069,26 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: gmdistribution</h5></code></dl>
-<p> Create an object of the gmdistribution class which represents a Gaussian
- mixture model with k components of n-dimensional Gaussians.
+<p class="h5 description mb-3"><code>statistics: gmdistribution</code></p>
+<p> Gaussian mixture distribution.
 </p>
 <div class="ms-5">
-<p> Input <var>mu</var> is a k-by-n matrix specifying the n-dimensional mean of
- each of the k components of the distribution.
+<p> A <code>gmdistribution</code> object represents a mixture of k multivariate
+ Gaussian components in d variables: their means <code>mu</code>, their
+ covariances <code>Sigma</code> and their mixing proportions
+ <code>ComponentProportion</code>.  The methods <code>pdf</code>, <code>cdf</code> and
+ <code>random</code> evaluate and sample the mixture, while <code>cluster</code>,
+ <code>posterior</code> and <code>mahal</code> assign observations to its components.
 </p>
-<p> Input <var>Sigma</var> is an array that specifies the variances of the
- distributions, in one of four forms depending on its dimension.
-</p>
-<ul>
-<li> n-by-n-by-k: Slice <var>Sigma</var>(:,:,i) is the variance of the
-         i&rsquo;th component
-</li><li> 1-by-n-by-k: Slice diag(<var>Sigma</var>(1,:,i)) is the variance of the
-         i&rsquo;th component
-</li><li> n-by-n: <var>Sigma</var> is the variance of every component
-</li><li> 1-by-n-by-k: Slice diag(<var>Sigma</var>) is the variance of every
-         component
-</li></ul>
-
-<p> If <var>p</var> is specified, it is a vector of length k specifying the
- proportion of each component.  If it is omitted or empty, each component
- has an equal proportion.
-</p>
-<p> Input <var>extra</var> is used by fitgmdist to indicate the parameters of the
- fitting process.
+<p> Create a <code>gmdistribution</code> object with the class constructor from
+ known parameters, or with <code>fitgmdist</code> from data, which also records
+ the results of the fit.
 </p>
 <p> <strong>See also: </strong>
   <a href="fitgmdist.html">fitgmdist</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Clustering/gmdistribution.m">gmdistribution</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Clustering/gmdistribution.m">gmdistribution</a>
 </p>
 </div>
         <p class="lead my-3">The <code>gmdistribution</code> class contains the following properties:</p>
@@ -1106,7 +1111,6 @@ Component means
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_mu">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A k-by-d matrix holding the mean of each of the k components, one
  per row, where d is the number of variables.  This property is
@@ -1136,7 +1140,6 @@ Component covariances
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_Sigma">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> The covariances of the components, in the form they were given in.
  A full covariance per component is d-by-d-by-k, a diagonal one per
@@ -1168,7 +1171,6 @@ Mixing proportions
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_ComponentProportion">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A 1-by-k row vector holding the proportion of each component.  The
  proportions are scaled to sum to 1, and are all equal when none was
@@ -1198,7 +1200,6 @@ Name of the distribution
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_DistributionName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> The character vector <code>'gaussian mixture distribution'</code>.  This
  property is read-only.
@@ -1227,7 +1228,6 @@ Number of mixture components
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_NumComponents">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer, the number of rows of <code>mu</code>.  This property
  is read-only.
@@ -1256,7 +1256,6 @@ Number of variables
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_NumVariables">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer, the dimension of each component, which is the
  number of columns of <code>mu</code>.  This property is read-only.
@@ -1285,7 +1284,6 @@ Form of the component covariances
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_CovarianceType">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector, <code>'diagonal'</code> when each covariance was
  given as a row of variances and <code>'full'</code> when it was given as
@@ -1315,7 +1313,6 @@ Whether the components share one covariance
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_SharedCovariance">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A logical scalar, true when a single covariance was given for every
  component and false when one was given per component.  This property
@@ -1345,7 +1342,6 @@ Akaike information criterion
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_AIC">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar, twice the negative log-likelihood plus twice the number of
  estimated parameters.  It is empty unless the object came from
@@ -1375,7 +1371,6 @@ Bayesian information criterion
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_BIC">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar, twice the negative log-likelihood plus the number of
  estimated parameters times the log of the number of observations.
@@ -1406,7 +1401,6 @@ Whether the fit converged
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_Converged">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A logical scalar, true when the fit reached its tolerance within the
  iteration limit.  It is empty unless the object came from
@@ -1436,7 +1430,6 @@ Negative log-likelihood at the fit
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_NegativeLogLikelihood">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar, the negative of the log-likelihood of the data under the
  fitted mixture.  It is empty unless the object came from
@@ -1466,7 +1459,6 @@ Iterations the fit took
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_NumIterations">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer.  It is empty unless the object came from
  <code>fitgmdist</code>.  This property is read-only.
@@ -1495,7 +1487,6 @@ Regularization added to the covariance diagonal
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_RegularizationValue">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A nonnegative scalar added to the diagonal of each covariance to
  keep it positive definite.  It is empty unless the object came from
@@ -1527,11 +1518,9 @@ Create a Gaussian mixture distribution.
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_gmdistribution">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">gmdistribution: <var>obj</var> = <b>gmdistribution</b> (<var>mu</var>, <var>Sigma</var>)</code></h5></dt>
-<dt><code><h5 class="fs">gmdistribution: <var>obj</var> = <b>gmdistribution</b> (<var>mu</var>, <var>Sigma</var>, <var>p</var>)</code></h5></dt>
-<dt><code><h5 class="fs">gmdistribution: <var>obj</var> = <b>gmdistribution</b> (<var>mu</var>, <var>Sigma</var>, <var>p</var>, <var>extra</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>gmdistribution: <var>obj</var> = <b>gmdistribution</b> (<var>mu</var>, <var>Sigma</var>)</code></p>
+<p class="h5 fs"><code>gmdistribution: <var>obj</var> = <b>gmdistribution</b> (<var>mu</var>, <var>Sigma</var>, <var>p</var>)</code></p>
+<p class="h5 fs fs-last"><code>gmdistribution: <var>obj</var> = <b>gmdistribution</b> (<var>mu</var>, <var>Sigma</var>, <var>p</var>, <var>extra</var>)</code></p>
 <p> </p>
 <p> <var>mu</var> is a k-by-d matrix holding the mean of each of the k
  components, one per row, where d is the number of variables.
@@ -1576,9 +1565,7 @@ Cumulative distribution function of a Gaussian mixture distribution.
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_cdf">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">gmdistribution: <var>c</var> = <b>cdf</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>gmdistribution: <var>c</var> = <b>cdf</b> (<var>obj</var>, <var>X</var>)</code></p>
 <p> </p>
 <p> <var>X</var> is an n-by-d matrix of points at which the distribution is
  evaluated, one point per row, where d is the number of variables of
@@ -1611,13 +1598,11 @@ Assign each observation to a mixture component.
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_cluster">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">gmdistribution: <var>idx</var> = <b>cluster</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-<dt><code><h5 class="fs">gmdistribution: [<var>idx</var>, <var>nlogl</var>] = <b>cluster</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-<dt><code><h5 class="fs">gmdistribution: [<var>idx</var>, <var>nlogl</var>, <var>P</var>] = <b>cluster</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-<dt><code><h5 class="fs">gmdistribution: [<var>idx</var>, <var>nlogl</var>, <var>P</var>, <var>logpdf</var>] = <b>cluster</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-<dt><code><h5 class="fs">gmdistribution: [<var>idx</var>, <var>nlogl</var>, <var>P</var>, <var>logpdf</var>, <var>M</var>] = <b>cluster</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>gmdistribution: <var>idx</var> = <b>cluster</b> (<var>obj</var>, <var>X</var>)</code></p>
+<p class="h5 fs"><code>gmdistribution: [<var>idx</var>, <var>nlogl</var>] = <b>cluster</b> (<var>obj</var>, <var>X</var>)</code></p>
+<p class="h5 fs"><code>gmdistribution: [<var>idx</var>, <var>nlogl</var>, <var>P</var>] = <b>cluster</b> (<var>obj</var>, <var>X</var>)</code></p>
+<p class="h5 fs"><code>gmdistribution: [<var>idx</var>, <var>nlogl</var>, <var>P</var>, <var>logpdf</var>] = <b>cluster</b> (<var>obj</var>, <var>X</var>)</code></p>
+<p class="h5 fs fs-last"><code>gmdistribution: [<var>idx</var>, <var>nlogl</var>, <var>P</var>, <var>logpdf</var>, <var>M</var>] = <b>cluster</b> (<var>obj</var>, <var>X</var>)</code></p>
 <p> </p>
 <p> <var>X</var> is an n-by-d matrix of observations, one per row, where d is
  the number of variables of <var>obj</var>.  Each is assigned to the
@@ -1655,9 +1640,7 @@ Squared Mahalanobis distance to each mixture component.
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_mahal">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">gmdistribution: <var>D</var> = <b>mahal</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>gmdistribution: <var>D</var> = <b>mahal</b> (<var>obj</var>, <var>X</var>)</code></p>
 <p> </p>
 <p> <var>X</var> is an n-by-d matrix of observations, one per row, where d is
  the number of variables of <var>obj</var>.  <var>D</var> is an n-by-k matrix
@@ -1689,9 +1672,7 @@ Probability density function of a Gaussian mixture distribution.
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_pdf">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">gmdistribution: <var>c</var> = <b>pdf</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>gmdistribution: <var>c</var> = <b>pdf</b> (<var>obj</var>, <var>X</var>)</code></p>
 <p> </p>
 <p> <var>X</var> is an n-by-d matrix of points at which the density is
  evaluated, one point per row, where d is the number of variables of
@@ -1723,9 +1704,7 @@ Posterior probability of each mixture component.
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_posterior">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">gmdistribution: <var>c</var> = <b>posterior</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>gmdistribution: <var>c</var> = <b>posterior</b> (<var>obj</var>, <var>X</var>)</code></p>
 <p> </p>
 <p> <var>X</var> is an n-by-d matrix of observations, one per row, where d is
  the number of variables of <var>obj</var>.  <var>c</var> is an n-by-k matrix
@@ -1756,10 +1735,8 @@ Random numbers from a Gaussian mixture distribution.
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_random">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">gmdistribution: <var>c</var> = <b>random</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">gmdistribution: <var>c</var> = <b>random</b> (<var>obj</var>, <var>n</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>gmdistribution: <var>c</var> = <b>random</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>gmdistribution: <var>c</var> = <b>random</b> (<var>obj</var>, <var>n</var>)</code></p>
 <p> </p>
 <p> <var>n</var> is the number of observations to draw and defaults to 1.
  <var>c</var> is an <var>n</var>-by-d matrix holding one observation per row,
@@ -1790,10 +1767,8 @@ Fit a Gaussian mixture distribution to data.
           </div>
           <div class="collapse multi-collapse" id="gmdistribution_fit">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">gmdistribution: <var>obj</var> = <b>fit</b> (<var>X</var>, <var>k</var>)</code></h5></dt>
-<dt><code><h5 class="fs">gmdistribution: <var>obj</var> = <b>fit</b> (<var>X</var>, <var>k</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>gmdistribution: <var>obj</var> = <b>fit</b> (<var>X</var>, <var>k</var>)</code></p>
+<p class="h5 fs fs-last"><code>gmdistribution: <var>obj</var> = <b>fit</b> (<var>X</var>, <var>k</var>, <var>Name</var>, <var>Value</var>)</code></p>
 <p> </p>
 <p> <var>X</var> is an n-by-d matrix of observations, one per row, and <var>k</var>
  is the number of components to fit.  Any <var>Name</var>-<var>Value</var> pair

@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,13 +1069,11 @@
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: <var>mdl</var> = <b>stepwiseglm</b> (<var>X</var>, <var>y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>mdl</var> = <b>stepwiseglm</b> (<var>X</var>, <var>y</var>, <var>modelspec</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>mdl</var> = <b>stepwiseglm</b> (<var>tbl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>mdl</var> = <b>stepwiseglm</b> (<var>tbl</var>, <var>modelspec</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>mdl</var> = <b>stepwiseglm</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>statistics: <var>mdl</var> = <b>stepwiseglm</b> (<var>X</var>, <var>y</var>)</code></p>
+<p class="h5 fs"><code>statistics: <var>mdl</var> = <b>stepwiseglm</b> (<var>X</var>, <var>y</var>, <var>modelspec</var>)</code></p>
+<p class="h5 fs"><code>statistics: <var>mdl</var> = <b>stepwiseglm</b> (<var>tbl</var>)</code></p>
+<p class="h5 fs"><code>statistics: <var>mdl</var> = <b>stepwiseglm</b> (<var>tbl</var>, <var>modelspec</var>)</code></p>
+<p class="h5 fs fs-last"><code>statistics: <var>mdl</var> = <b>stepwiseglm</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></p>
 <p> Fit a generalized linear regression model by stepwise term selection.
 </p>
 <div class="ms-5">
@@ -1102,8 +1118,6 @@
 <tr><td width="20%"><code>'Verbose'</code></td><td width="75%"><em class="math">0</em> to run silently, or <em class="math">1</em> (default)
  to print each accepted step.</td></tr>
 </table>
-<p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/stepwiseglm.m">stepwiseglm</a>
 </div>
 
 <p> As in <code>fitglm</code>, a <code>'binomial'</code> response is the number of
@@ -1143,8 +1157,6 @@
  <code>BIC</code>, holding the criterion&rsquo;s value after the step, the starting
  model included.</td></tr>
 </table>
-<p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/stepwiseglm.m">stepwiseglm</a>
 </div>
 
 <p> The first row is the starting model, named by its right-hand side.
@@ -1176,7 +1188,8 @@
   <a href="glmval.html">glmval</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/stepwiseglm.m">stepwiseglm</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Regression/stepwiseglm.m">stepwiseglm</a>
+</p>
 </div>
         <div class="card rounded my-4">
           <div class="card-header card-header-mod">
@@ -1251,22 +1264,22 @@ Chi^2-statistic vs. constant model: 15.7459, p-value = 7.24432e-05</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: glmfit: maximum number of iterations has been reached.
 warning: called from
     glmfit at line 386 column 5
-    GeneralizedLinearModel at line 1074 column 8
+    GeneralizedLinearModel at line 1065 column 8
     stepwiseglm at line 416 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
     __build_demos__ at line 79 column 7
-    function_texi2html at line 135 column 5
+    function_texi2html at line 138 column 5
     package_texi2html at line 350 column 9
 
 warning: matrix singular to machine precision
 warning: called from
-    GeneralizedLinearModel at line 1235 column 7
+    GeneralizedLinearModel at line 1226 column 7
     stepwiseglm at line 416 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
     __build_demos__ at line 79 column 7
-    function_texi2html at line 135 column 5
+    function_texi2html at line 138 column 5
     package_texi2html at line 350 column 9
 
 mdl =

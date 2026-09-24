@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,12 +1069,10 @@
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: <var>R</var> = <b>rmmissing</b> (<var>A</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>R</var> = <b>rmmissing</b> (<var>A</var>, <var>dim</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>R</var> = <b>rmmissing</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [<var>R</var>, <var>TF</var>] = <b>rmmissing</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>statistics: <var>R</var> = <b>rmmissing</b> (<var>A</var>)</code></p>
+<p class="h5 fs"><code>statistics: <var>R</var> = <b>rmmissing</b> (<var>A</var>, <var>dim</var>)</code></p>
+<p class="h5 fs"><code>statistics: <var>R</var> = <b>rmmissing</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></p>
+<p class="h5 fs fs-last"><code>statistics: [<var>R</var>, <var>TF</var>] = <b>rmmissing</b> (&hellip;)</code></p>
 <p> Remove missing data from arrays.
 </p>
 <div class="ms-5">
@@ -1078,8 +1094,7 @@
 </li></ul>
 
 <p> For any data types that do not support missing values, <code>rmmissing</code>
- returns <code><var>R</var> == <var>A</var></code> and if a second output argument is
- requested it also returns <code><var>TF</var> = false (size (<var>A</var>))</code>.
+ returns <code><var>R</var> == <var>A</var></code> and an all-false <var>TF</var>.
 </p>
 <p> Given an input matrix (2-D array) <var>A</var>, <code><var>R</var> = rmmissing
  (<var>A</var>, <var>dim</var>)</code> further specifies whether rows or columns containing
@@ -1099,21 +1114,22 @@
 <div class="table-responsive">
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="20%">Name</th><th width="75%">Value</th></tr></thead>
-<tr><td width="20%"><code>'MinNumMissing'</code></td><td width="75%">A positive integer scalar value
+<tr><td width="20%"><code>'MinNumMissing'</code></td><td width="75%">A non-negative integer scalar value
  specifying the required minimum number of missing values for removing any
- particular row or column from a matrix input.  Note that this argument is
- ignored if input <var>A</var> is a vector.</td></tr>
+ particular row or column from a matrix input, or element from a vector
+ input (default 1).  With 0, everything is removed; above 1, nothing is
+ removed from a vector, whose elements are each missing at most once.</td></tr>
 <tr><td width="20%"><code>'MissingLocations'</code></td><td width="75%">A logical array of the same size
  as input <var>A</var> indexing the locations of missing values in input array
  <var>A</var>.  Note that specifying <code>'MissingLocations'</code> overrides any
  standard missing values in <var>A</var>.</td></tr>
 </table>
-<p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Data_Manipulation/rmmissing.m">rmmissing</a>
 </div>
 
 <p> Optional return value <var>TF</var> is a logical array where <code>true</code> values
  represent removed entries, rows or columns from the original data <var>A</var>.
+ It has one element per element of a vector, and one per row or column of a
+ matrix, an empty <var>A</var> included.
 </p>
 <p> <strong>See also: </strong>
   <a href="fillmissing.html">fillmissing</a>, 
@@ -1121,7 +1137,8 @@
   <a href="standardizeMissing.html">standardizeMissing</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Data_Manipulation/rmmissing.m">rmmissing</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Data_Manipulation/rmmissing.m">rmmissing</a>
+</p>
 </div>
 
             </div>

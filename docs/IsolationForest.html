@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,25 +1069,25 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: IsolationForest</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: IsolationForest</code></p>
 <p> Isolation Forest model for anomaly detection.
 </p>
 <div class="ms-5">
-<p> An <code>IsolationForest</code> object stores an ensemble of isolation trees fitted
- to a set of observations and detects anomalies through the <code>isanomaly</code>
- method.  Create a model with the <code>iforest</code> function rather than by
- calling this constructor directly.
+<p> An <code>IsolationForest</code> object stores an ensemble of isolation trees
+ fitted to a set of observations and detects anomalies through the
+ <code>isanomaly</code> method.  Create an <code>IsolationForest</code> object with
+ <code>iforest</code> or the class constructor.
 </p>
 <p> Anomalies are easier to isolate, so they sit closer to the root of a random
- isolation tree; the shorter its average path length across the ensemble, the
- higher an observation&rsquo;s anomaly score.
+ isolation tree; the shorter its average path length across the ensemble,
+ the higher an observation&rsquo;s anomaly score.
 </p>
 <p> <strong>See also: </strong>
   <a href="iforest.html">iforest</a>, 
   <a href="IsolationForest.html#IsolationForest_isanomaly">IsolationForest.isanomaly</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Anomaly_Detection/IsolationForest.m">IsolationForest</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Anomaly_Detection/IsolationForest.m">IsolationForest</a>
 </p>
 </div>
         <p class="lead my-3">The <code>IsolationForest</code> class contains the following properties:</p>
@@ -1092,7 +1110,6 @@ The number of isolation trees in the ensemble.
           </div>
           <div class="collapse multi-collapse" id="IsolationForest_NumLearners">
             <div class="border-bottom py-2">
-
 <p> </p>
 
 
@@ -1118,7 +1135,6 @@ The number of observations subsampled to grow each isolation tree.
           </div>
           <div class="collapse multi-collapse" id="IsolationForest_NumObservationsPerLearner">
             <div class="border-bottom py-2">
-
 <p> </p>
 
 
@@ -1144,7 +1160,6 @@ The assumed fraction of anomalies in the training data, in <em class="math">[0, 
           </div>
           <div class="collapse multi-collapse" id="IsolationForest_ContaminationFraction">
             <div class="border-bottom py-2">
-
 <p> </p>
 
 
@@ -1170,7 +1185,6 @@ The score above which an observation is flagged as an anomaly.
           </div>
           <div class="collapse multi-collapse" id="IsolationForest_ScoreThreshold">
             <div class="border-bottom py-2">
-
 <p> </p>
 
 
@@ -1192,18 +1206,53 @@ The score above which an observation is flagged as an anomaly.
                   </h4>
                 </div>
                 <div class="col-8">
-Fit an isolation forest to the <em class="math">N</em>-by-<em class="math">P</em> matrix <var>X</var>.
- Prefer the <code>iforest</code> function to this constructor.
+Fit an isolation forest.
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="IsolationForest_IsolationForest">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">IsolationForest: <var>Mdl</var> = <b>IsolationForest</b> (<var>X</var>)</code></h5></dt>
-<dt><code><h5 class="fs">IsolationForest: <var>Mdl</var> = <b>IsolationForest</b> (<var>X</var>, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>IsolationForest: <var>Mdl</var> = <b>IsolationForest</b> (<var>X</var>)</code></p>
+<p class="h5 fs fs-last"><code>IsolationForest: <var>Mdl</var> = <b>IsolationForest</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
+<p> <code><var>Mdl</var> = IsolationForest (<var>X</var>)</code> fits an isolation forest to
+ the <em class="math">N</em>-by-<em class="math">P</em> matrix <var>X</var>, whose rows are observations and
+ columns are variables, and returns a <code>IsolationForest</code> object
+ <var>Mdl</var>.  <var>X</var> must have at least 3 observations, the smallest
+ subsample MATLAB accepts too; MATLAB takes fewer by default and returns
+ a model that cannot tell one observation from another.
+</p>
+<p> <code><var>Mdl</var> = IsolationForest (&hellip;, <var>name</var>, <var>value</var>)</code>
+ takes the following <code>Name-Value</code> pairs.
+</p>
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="34%"><var>Name</var></th><th width="66%"><var>Value</var></th></tr></thead>
+<tr><td width="34%"><code>'NumLearners'</code></td><td width="66%">the number of isolation trees, a
+ positive integer (default 100).</td></tr>
+<tr><td width="34%"><code>'NumObservationsPerLearner'</code></td><td width="66%">the subsample size used to
+ grow each tree, an integer in <em class="math">[3, N]</em> (default <code>min (<var>N</var>,
+ 256)</code>).</td></tr>
+<tr><td width="34%"><code>'ContaminationFraction'</code></td><td width="66%">the assumed fraction of
+ anomalies in <var>X</var>, a scalar in <em class="math">[0, 1]</em> (default 0).  It sets
+ <code><var>Mdl</var>.ScoreThreshold</code> to the <em class="math">1 -</em>
+ <var>ContaminationFraction</var> quantile of the anomaly scores of <var>X</var>;
+ when it is 0 the threshold is the maximum score and no training
+ observation is flagged.</td></tr>
+</table>
+</div>
+
+<p> Because the trees are grown from random subsamples and random splits, the
+ model depends on the state of the random number generator and is not
+ reproducible across runs unless the generator is seeded.
+</p>
+<p> <code>iforest</code> fits the same model and also returns the anomaly
+ indicators and the anomaly scores of the observations in <var>X</var>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="iforest.html">iforest</a>, 
+  <a href="IsolationForest.html#IsolationForest_isanomaly">IsolationForest.isanomaly</a>
+</p>
 
 
             </div>
@@ -1233,11 +1282,9 @@ Detect anomalies in the new observations <var>Xnew</var> using the fitted
           </div>
           <div class="collapse multi-collapse" id="IsolationForest_isanomaly">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">IsolationForest: <var>tf</var> = <b>isanomaly</b> (<var>Mdl</var>, <var>Xnew</var>)</code></h5></dt>
-<dt><code><h5 class="fs">IsolationForest: [<var>tf</var>, <var>scores</var>] = <b>isanomaly</b> (<var>Mdl</var>, <var>Xnew</var>)</code></h5></dt>
-<dt><code><h5 class="fs">IsolationForest: [&hellip;] = <b>isanomaly</b> (&hellip;, <code>'ScoreThreshold'</code>, <var>t</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>IsolationForest: <var>tf</var> = <b>isanomaly</b> (<var>Mdl</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs"><code>IsolationForest: [<var>tf</var>, <var>scores</var>] = <b>isanomaly</b> (<var>Mdl</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs fs-last"><code>IsolationForest: [&hellip;] = <b>isanomaly</b> (&hellip;, <code>'ScoreThreshold'</code>, <var>t</var>)</code></p>
 <p> </p>
 
 

@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: anova</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: anova</code></p>
 <p> Object-oriented interface for analysis of variance.
 </p>
 <div class="ms-5">
@@ -1075,7 +1093,7 @@
   <a href="multcompare.html">multcompare</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Hypothesis_Testing/anova.m">anova</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Hypothesis_Testing/anova.m">anova</a>
 </p>
 </div>
         <p class="lead my-3">The <code>anova</code> class contains the following properties:</p>
@@ -1098,7 +1116,6 @@ Response data
           </div>
           <div class="collapse multi-collapse" id="anova_Y">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Numeric response vector (or matrix, for the one-way column form) used to
  fit the ANOVA model.  This property is read-only.
@@ -1185,9 +1202,9 @@ Response data
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50577              -0.494229    0.024092    
-         1         3                -9               -11.5058               -6.49423     7.1e-05    
-         2         3                -6               -8.50577               -3.49423    0.000824</pre>
+         1         2                -3               -5.50561              -0.494388     0.02419    
+         1         3                -9               -11.5056               -6.49439     8.9e-05    
+         2         3                -6               -8.50561               -3.49439    0.000809</pre>
 
             </div>
           </div>
@@ -1244,7 +1261,6 @@ Factor data
           </div>
           <div class="collapse multi-collapse" id="anova_Factors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Table containing one variable for each factor used to fit the ANOVA
  model.  This property is read-only.
@@ -1331,9 +1347,9 @@ Factor data
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.49902              -0.500976    0.023931    
-         1         3                -9                -11.499               -6.50098     8.7e-05    
-         2         3                -6               -8.49902               -3.50098    0.000765</pre>
+         1         2                -3               -5.50187              -0.498133     0.02412    
+         1         3                -9               -11.5019               -6.49813       9e-05    
+         2         3                -6               -8.50187               -3.49813    0.000796</pre>
 
             </div>
           </div>
@@ -1390,7 +1406,6 @@ Model formula
           </div>
           <div class="collapse multi-collapse" id="anova_Formula">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Read-only structural formula value with response, predictor, term,
  nesting, and linear-predictor fields matching MATLAB&rsquo;s formula object.
@@ -1477,9 +1492,9 @@ Model formula
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50526              -0.494736    0.024147    
-         1         3                -9               -11.5053               -6.49474     9.2e-05    
-         2         3                -6               -8.50526               -3.49474    0.000816</pre>
+         1         2                -3               -5.50574              -0.494264    0.024268    
+         1         3                -9               -11.5057               -6.49426     9.6e-05    
+         2         3                -6               -8.50574               -3.49426    0.000823</pre>
 
             </div>
           </div>
@@ -1536,7 +1551,6 @@ Factor names
           </div>
           <div class="collapse multi-collapse" id="anova_FactorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> String row vector containing the factor names used by the fitted ANOVA
  model.  This property is read-only.
@@ -1623,9 +1637,9 @@ Factor names
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50424              -0.495763    0.024201    
-         1         3                -9               -11.5042               -6.49576     8.1e-05    
-         2         3                -6               -8.50424               -3.49576    0.000825</pre>
+         1         2                -3               -5.50924              -0.490758    0.024039    
+         1         3                -9               -11.5092               -6.49076     7.9e-05    
+         2         3                -6               -8.50924               -3.49076      0.0008</pre>
 
             </div>
           </div>
@@ -1682,7 +1696,6 @@ Coefficient names
           </div>
           <div class="collapse multi-collapse" id="anova_ExpandedFactorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Cell array of character vectors naming the model coefficients when the
  selected backend exposes them, otherwise an empty cell array.  This
@@ -1770,9 +1783,9 @@ Coefficient names
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50373              -0.496272    0.024179    
-         1         3                -9               -11.5037               -6.49627     9.3e-05    
-         2         3                -6               -8.50373               -3.49627    0.000765</pre>
+         1         2                -3               -5.50832              -0.491681    0.024343    
+         1         3                -9               -11.5083               -6.49168       9e-05    
+         2         3                -6               -8.50832               -3.49168     0.00081</pre>
 
             </div>
           </div>
@@ -1829,7 +1842,6 @@ Sum-of-squares type
           </div>
           <div class="collapse multi-collapse" id="anova_SumOfSquaresType">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> String scalar selecting <code>&quot;one&quot;</code>, <code>&quot;two&quot;</code>,
  <code>'three'</code>, or <code>'hierarchical'</code> sums of squares.  This
@@ -1917,9 +1929,9 @@ Sum-of-squares type
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50909              -0.490907    0.024097    
-         1         3                -9               -11.5091               -6.49091     7.4e-05    
-         2         3                -6               -8.50909               -3.49091    0.000778</pre>
+         1         2                -3               -5.50578              -0.494217    0.024162    
+         1         3                -9               -11.5058               -6.49422     9.6e-05    
+         2         3                -6               -8.50578               -3.49422    0.000809</pre>
 
             </div>
           </div>
@@ -1976,7 +1988,6 @@ Random factors
           </div>
           <div class="collapse multi-collapse" id="anova_RandomFactors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Positive integer indices of random factors.  This property is
  read-only.
@@ -2063,9 +2074,9 @@ Random factors
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50864              -0.491364    0.024444    
-         1         3                -9               -11.5086               -6.49136     6.4e-05    
-         2         3                -6               -8.50864               -3.49136    0.000743</pre>
+         1         2                -3               -5.50021              -0.499794    0.024274    
+         1         3                -9               -11.5002               -6.49979     8.7e-05    
+         2         3                -6               -8.50021               -3.49979    0.000792</pre>
 
             </div>
           </div>
@@ -2122,7 +2133,6 @@ Categorical factors
           </div>
           <div class="collapse multi-collapse" id="anova_CategoricalFactors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Positive integer indices of factors treated as categorical.  This
  property is read-only.
@@ -2209,9 +2219,9 @@ Categorical factors
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50033               -0.49967    0.024056    
-         1         3                -9               -11.5003               -6.49967     9.2e-05    
-         2         3                -6               -8.50033               -3.49967    0.000796</pre>
+         1         2                -3               -5.50598              -0.494017    0.024469    
+         1         3                -9                -11.506               -6.49402     7.7e-05    
+         2         3                -6               -8.50598               -3.49402    0.000796</pre>
 
             </div>
           </div>
@@ -2268,7 +2278,6 @@ Response variable name
           </div>
           <div class="collapse multi-collapse" id="anova_ResponseName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Character vector used as the response name in formula display.
  This property is read-only.
@@ -2355,9 +2364,9 @@ Response variable name
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50572              -0.494278    0.024179    
-         1         3                -9               -11.5057               -6.49428     7.4e-05    
-         2         3                -6               -8.50572               -3.49428    0.000728</pre>
+         1         2                -3               -5.50806              -0.491942    0.024361    
+         1         3                -9               -11.5081               -6.49194       7e-05    
+         2         3                -6               -8.50806               -3.49194    0.000819</pre>
 
             </div>
           </div>
@@ -2414,7 +2423,6 @@ Number of observations
           </div>
           <div class="collapse multi-collapse" id="anova_NumObservations">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Scalar number of response observations used by the model.  This
  property is read-only.
@@ -2501,9 +2509,9 @@ Number of observations
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50495              -0.495051    0.023975    
-         1         3                -9               -11.5049               -6.49505     8.8e-05    
-         2         3                -6               -8.50495               -3.49505    0.000818</pre>
+         1         2                -3               -5.50863              -0.491369    0.024226    
+         1         3                -9               -11.5086               -6.49137     6.6e-05    
+         2         3                -6               -8.50863               -3.49137    0.000797</pre>
 
             </div>
           </div>
@@ -2560,7 +2568,6 @@ Model coefficient estimates
           </div>
           <div class="collapse multi-collapse" id="anova_Coefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Numeric vector of fitted coefficient estimates.  This property is
  read-only.
@@ -2647,9 +2654,9 @@ Model coefficient estimates
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50112              -0.498882    0.023893    
-         1         3                -9               -11.5011               -6.49888     7.4e-05    
-         2         3                -6               -8.50112               -3.49888    0.000771</pre>
+         1         2                -3               -5.49904              -0.500961    0.024062    
+         1         3                -9                -11.499               -6.50096       8e-05    
+         2         3                -6               -8.49904               -3.50096    0.000838</pre>
 
             </div>
           </div>
@@ -2706,7 +2713,6 @@ Model residuals
           </div>
           <div class="collapse multi-collapse" id="anova_Residuals">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Table with variables <code>Raw</code> (observed minus fitted values) and
  <code>Pearson</code> (raw residuals scaled by the root mean squared error)
@@ -2795,9 +2801,9 @@ Model residuals
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50607              -0.493928    0.024361    
-         1         3                -9               -11.5061               -6.49393      0.0001    
-         2         3                -6               -8.50607               -3.49393    0.000779</pre>
+         1         2                -3               -5.50718              -0.492821    0.024407    
+         1         3                -9               -11.5072               -6.49282     8.8e-05    
+         2         3                -6               -8.50718               -3.49282    0.000826</pre>
 
             </div>
           </div>
@@ -2854,7 +2860,6 @@ Model fit metrics
           </div>
           <div class="collapse multi-collapse" id="anova_Metrics">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Table with variables <code>MSE</code>, <code>RMSE</code>, <code>SSE</code>, <code>SSR</code>,
  <code>SST</code>, <code>RSquared</code>, and <code>AdjustedRSquared</code> summarising the
@@ -2942,9 +2947,9 @@ Model fit metrics
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50162              -0.498376    0.024145    
-         1         3                -9               -11.5016               -6.49838     8.7e-05    
-         2         3                -6               -8.50162               -3.49838    0.000803</pre>
+         1         2                -3               -5.50702               -0.49298    0.024248    
+         1         3                -9                -11.507               -6.49298     6.3e-05    
+         2         3                -6               -8.50702               -3.49298    0.000789</pre>
 
             </div>
           </div>
@@ -3003,14 +3008,12 @@ Create an object-oriented analysis of variance model.
           </div>
           <div class="collapse multi-collapse" id="anova_anova">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">anova: <var>obj</var> = <b>anova</b> (<var>Y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">anova: <var>obj</var> = <b>anova</b> (<var>factors</var>, <var>Y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">anova: <var>obj</var> = <b>anova</b> (<var>tbl</var>, <var>Y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">anova: <var>obj</var> = <b>anova</b> (<var>tbl</var>, <var>responseVarName</var>)</code></h5></dt>
-<dt><code><h5 class="fs">anova: <var>obj</var> = <b>anova</b> (<var>tbl</var>, <var>formula</var>)</code></h5></dt>
-<dt><code><h5 class="fs">anova: <var>obj</var> = <b>anova</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>anova: <var>obj</var> = <b>anova</b> (<var>Y</var>)</code></p>
+<p class="h5 fs"><code>anova: <var>obj</var> = <b>anova</b> (<var>factors</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>anova: <var>obj</var> = <b>anova</b> (<var>tbl</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>anova: <var>obj</var> = <b>anova</b> (<var>tbl</var>, <var>responseVarName</var>)</code></p>
+<p class="h5 fs"><code>anova: <var>obj</var> = <b>anova</b> (<var>tbl</var>, <var>formula</var>)</code></p>
+<p class="h5 fs fs-last"><code>anova: <var>obj</var> = <b>anova</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> <var>Y</var> is a non-empty numeric response vector or matrix.
  <var>factors</var> contains grouping variables for vector responses and may
@@ -3113,9 +3116,9 @@ Create an object-oriented analysis of variance model.
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50704              -0.492958    0.024449    
-         1         3                -9                -11.507               -6.49296     7.1e-05    
-         2         3                -6               -8.50704               -3.49296    0.000779</pre>
+         1         2                -3                -5.5039              -0.496098    0.024129    
+         1         3                -9               -11.5039                -6.4961     8.3e-05    
+         2         3                -6                -8.5039                -3.4961    0.000776</pre>
 
             </div>
           </div>
@@ -3172,12 +3175,10 @@ Return component or summary ANOVA statistics as a table.
           </div>
           <div class="collapse multi-collapse" id="anova_stats">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">anova: <var>s</var> = <b>stats</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">anova: <var>s</var> = <b>stats</b> (<var>obj</var>, <var>type</var>)</code></h5></dt>
-<dt><code><h5 class="fs">anova: <var>s</var> = <b>stats</b> (<var>obj</var>, <code>&quot;Component&quot;</code>, <var>sstype</var>)</code></h5></dt>
-<dt><code><h5 class="fs">anova: [<var>s</var>, <var>ems</var>] = <b>stats</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>anova: <var>s</var> = <b>stats</b> (<var>obj</var>)</code></p>
+<p class="h5 fs"><code>anova: <var>s</var> = <b>stats</b> (<var>obj</var>, <var>type</var>)</code></p>
+<p class="h5 fs"><code>anova: <var>s</var> = <b>stats</b> (<var>obj</var>, <code>&quot;Component&quot;</code>, <var>sstype</var>)</code></p>
+<p class="h5 fs fs-last"><code>anova: [<var>s</var>, <var>ems</var>] = <b>stats</b> (&hellip;)</code></p>
 <p> </p>
 <p> With no <var>type</var>, or with <code>&quot;component&quot;</code>, return statistics for
  each model term, error, and total.  With <code>&quot;summary&quot;</code>, group terms
@@ -3276,9 +3277,9 @@ Return component or summary ANOVA statistics as a table.
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50581              -0.494191    0.024149    
-         1         3                -9               -11.5058               -6.49419     9.1e-05    
-         2         3                -6               -8.50581               -3.49419    0.000815</pre>
+         1         2                -3               -5.50055              -0.499452    0.024222    
+         1         3                -9               -11.5005               -6.49945     8.8e-05    
+         2         3                -6               -8.50055               -3.49945    0.000767</pre>
 
             </div>
           </div>
@@ -3335,10 +3336,8 @@ Return mean response estimates by factor level.
           </div>
           <div class="collapse multi-collapse" id="anova_groupmeans">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">anova: <var>means</var> = <b>groupmeans</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">anova: <var>means</var> = <b>groupmeans</b> (<var>obj</var>, <var>factors</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>anova: <var>means</var> = <b>groupmeans</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>anova: <var>means</var> = <b>groupmeans</b> (<var>obj</var>, <var>factors</var>)</code></p>
 <p> </p>
 <p> The returned value is a <code>table</code> with one row per factor-level
  combination and columns for the level, mean, standard error, and
@@ -3426,9 +3425,9 @@ Return mean response estimates by factor level.
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50667              -0.493332    0.024098    
-         1         3                -9               -11.5067               -6.49333     9.7e-05    
-         2         3                -6               -8.50667               -3.49333    0.000789</pre>
+         1         2                -3               -5.50203              -0.497971    0.024244    
+         1         3                -9                -11.502               -6.49797     7.1e-05    
+         2         3                -6               -8.50203               -3.49797    0.000726</pre>
 
             </div>
           </div>
@@ -3485,10 +3484,8 @@ Plot response values grouped by up to two categorical factors.
           </div>
           <div class="collapse multi-collapse" id="anova_boxchart">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">anova: <b>boxchart</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">anova: <var>h</var> = <b>boxchart</b> (<var>obj</var>, &hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>anova: <b>boxchart</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>anova: <var>h</var> = <b>boxchart</b> (<var>obj</var>, &hellip;)</code></p>
 <p> </p>
 <p> This method uses <code>boxplot</code> as the graphics backend in Octave and
  returns the native box graphics handles.  A target axes may be supplied
@@ -3576,9 +3573,9 @@ Plot response values grouped by up to two categorical factors.
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50685              -0.493147    0.024227    
-         1         3                -9               -11.5069               -6.49315       9e-05    
-         2         3                -6               -8.50685               -3.49315    0.000791</pre>
+         1         2                -3               -5.50645              -0.493546    0.024266    
+         1         3                -9               -11.5065               -6.49355     9.2e-05    
+         2         3                -6               -8.50645               -3.49355    0.000793</pre>
 
             </div>
           </div>
@@ -3635,10 +3632,8 @@ Plot multiple-comparison intervals for model-adjusted group means.
           </div>
           <div class="collapse multi-collapse" id="anova_plotComparisons">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">anova: <b>plotComparisons</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">anova: <var>h</var> = <b>plotComparisons</b> (<var>obj</var>, &hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>anova: <b>plotComparisons</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>anova: <var>h</var> = <b>plotComparisons</b> (<var>obj</var>, &hellip;)</code></p>
 <p> </p>
 <p> Clicking a group highlights it and distinguishes groups whose adjusted
  comparison is significant at the requested alpha level.  A target axes
@@ -3726,9 +3721,9 @@ Plot multiple-comparison intervals for model-adjusted group means.
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50603              -0.493968    0.024362    
-         1         3                -9                -11.506               -6.49397     7.2e-05    
-         2         3                -6               -8.50603               -3.49397    0.000823</pre>
+         1         2                -3               -5.50636              -0.493644    0.024285    
+         1         3                -9               -11.5064               -6.49364     7.6e-05    
+         2         3                -6               -8.50636               -3.49364    0.000781</pre>
 
             </div>
           </div>
@@ -3785,10 +3780,8 @@ Return variance component estimates for random model terms and error.
           </div>
           <div class="collapse multi-collapse" id="anova_varianceComponent">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">anova: <var>v</var> = <b>varianceComponent</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">anova: <var>v</var> = <b>varianceComponent</b> (<var>obj</var>, &hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>anova: <var>v</var> = <b>varianceComponent</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>anova: <var>v</var> = <b>varianceComponent</b> (<var>obj</var>, &hellip;)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -3872,9 +3865,9 @@ Return variance component estimates for random model terms and error.
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50842              -0.491583    0.024208    
-         1         3                -9               -11.5084               -6.49158     7.6e-05    
-         2         3                -6               -8.50842               -3.49158    0.000827</pre>
+         1         2                -3               -5.51279              -0.487212    0.024487    
+         1         3                -9               -11.5128               -6.48721    0.000103    
+         2         3                -6               -8.51279               -3.48721    0.000851</pre>
 
             </div>
           </div>
@@ -3931,11 +3924,9 @@ Perform post-hoc multiple comparisons for a fitted ANOVA object.
           </div>
           <div class="collapse multi-collapse" id="anova_multcompare">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">anova: <var>m</var> = <b>multcompare</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">anova: <var>m</var> = <b>multcompare</b> (<var>obj</var>, <var>factors</var>)</code></h5></dt>
-<dt><code><h5 class="fs">anova: <var>m</var> = <b>multcompare</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>anova: <var>m</var> = <b>multcompare</b> (<var>obj</var>)</code></p>
+<p class="h5 fs"><code>anova: <var>m</var> = <b>multcompare</b> (<var>obj</var>, <var>factors</var>)</code></p>
+<p class="h5 fs fs-last"><code>anova: <var>m</var> = <b>multcompare</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> The returned table contains the compared groups, estimated mean
  difference, confidence limits, and p-value.  The default critical value
@@ -4023,9 +4014,9 @@ Perform post-hoc multiple comparisons for a fitted ANOVA object.
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.49977              -0.500231    0.024016    
-         1         3                -9               -11.4998               -6.50023     7.9e-05    
-         2         3                -6               -8.49977               -3.50023    0.000741</pre>
+         1         2                -3               -5.50723              -0.492774    0.024243    
+         1         3                -9               -11.5072               -6.49277     9.1e-05    
+         2         3                -6               -8.50723               -3.49277    0.000773</pre>
 
             </div>
           </div>
@@ -4148,9 +4139,9 @@ Estimate group means and perform post-hoc comparisons
     Group1    Group2    MeanDifference    MeanDifferenceLower    MeanDifferenceUpper     pValue     
     ______    ______    ______________    ___________________    ___________________    ________    
 
-         1         2                -3               -5.50136              -0.498639    0.024093    
-         1         3                -9               -11.5014               -6.49864     6.6e-05    
-         2         3                -6               -8.50136               -3.49864    0.000735</pre>
+         1         2                -3               -5.50064               -0.49936    0.024081    
+         1         3                -9               -11.5006               -6.49936     8.2e-05    
+         2         3                -6               -8.50064               -3.49936     0.00086</pre>
 
             </div>
           </div>

@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -164,9 +173,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Supervised Learning">
+                  <a class="nav-link" href="index.html#Machine Learning">
                     <i class="fas fa-list-alt"></i>
-                    Supervised Learning
+                    Machine Learning
                   </a>
                 </li>
                 <li class="nav-item">
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox" checked>
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: CompactClassificationDiscriminant</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: CompactClassificationDiscriminant</code></p>
 <p> Compact discriminant analysis classification
 </p>
 <div class="ms-5">
@@ -1091,7 +1109,7 @@
   <a href="ClassificationDiscriminant.html">ClassificationDiscriminant</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Supervised_Learning/CompactClassificationDiscriminant.m">CompactClassificationDiscriminant</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Machine_Learning/CompactClassificationDiscriminant.m">CompactClassificationDiscriminant</a>
 </p>
 </div>
         <p class="lead my-3">The <code>CompactClassificationDiscriminant</code> class contains the following properties:</p>
@@ -1114,7 +1132,6 @@ Number of predictors
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_NumPredictors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer value specifying the number of predictors in the
  training dataset used for training the CompactClassificationDiscriminant
@@ -1192,7 +1209,6 @@ Names of predictor variables
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_PredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors specifying the names of the predictor
  variables.  The names are in the order in which they appear in the
@@ -1270,7 +1286,6 @@ Between-class covariance matrix
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_BetweenSigma">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">P</em>-by-<em class="math">P</em> matrix holding the covariance of the class means
  about the overall mean, weighted by how many observations each class
@@ -1360,7 +1375,6 @@ Indices of the categorical predictors
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_CategoricalPredictors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric vector of column indices into <code>X</code> naming the predictors
  treated as categorical, and empty when none is.  This property is
@@ -1438,7 +1452,6 @@ Names of the predictors as the model expanded them
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_ExpandedPredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors.  It matches <code>PredictorNames</code>
  unless a categorical predictor was expanded into indicator variables.
@@ -1516,7 +1529,6 @@ Response variable name
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_ResponseName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector specifying the name of the response variable <var>Y</var>.
  This property is read-only.
@@ -1593,7 +1605,6 @@ Names of classes in the response variable
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_ClassNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> An array of unique values of the response variable <var>Y</var>, which has the
  same data types as the data in <var>Y</var>.  This property is read-only.
@@ -1678,7 +1689,6 @@ Within-class covariance
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_Sigma">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric array whose shape follows <code>DiscrimType</code>, with <em class="math">P</em>
  predictors and <em class="math">K</em> classes:
@@ -1772,7 +1782,6 @@ Class means
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_Mu">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">K&times;P</em> numeric matrix specifying the mean of the multivariate
  normal distribution of each corresponding class, where <em class="math">K</em> is the
@@ -1851,7 +1860,6 @@ Coefficient matrices
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_Coeffs">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">K&times;K</em> structure containing the coefficient matrices, where
  <em class="math">K</em> is the number of classes.  If the <code>'FillCoeffs'</code> parameter
@@ -1949,7 +1957,6 @@ Minimum Delta at which each predictor drops out
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_DeltaPredictor">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A row vector with one entry per predictor, the value of <code>Delta</code> at
  which that predictor&rsquo;s coefficient is zero for every class and the
@@ -2031,7 +2038,6 @@ Minimum value for the Gamma regularization parameter
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_MinGamma">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar from 0 to 1, the least regularization that leaves the
  correlation matrix invertible.  It is 0 when the matrix is already
@@ -2113,7 +2119,6 @@ Logarithm of the determinant of the within-class covariance matrix
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_LogDetSigma">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar for the linear family and a <em class="math">Kx1</em> vector for the quadratic
  one, one entry per class.  It is computed in correlation space, as the
@@ -2197,7 +2202,6 @@ Discriminant type
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_DiscrimType">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector naming the discriminant model, one of
  <code>'linear'</code>, <code>'quadratic'</code>, <code>'diagLinear'</code>,
@@ -2286,7 +2290,6 @@ Gamma regularization parameter
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_Gamma">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar from 0 to 1 shrinking the covariance towards its diagonal.
  <code>Gamma</code> and <code>DiscrimType</code> are one state: a value of 1 is the
@@ -2371,7 +2374,6 @@ Delta threshold for the linear coefficients
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_Delta">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A nonnegative scalar that eliminates predictors.  A per-class linear
  coefficient is set to zero when it falls below <code>Delta</code>, and the
@@ -2460,7 +2462,6 @@ Cost of Misclassification
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_Cost">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A square matrix specifying the cost of misclassification of a point.
  <code>Cost(i,j)</code> is the cost of classifying a point into class <code>j</code>
@@ -2557,7 +2558,6 @@ Prior probability for each class
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_Prior">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric vector specifying the prior probabilities for each class.  The
  order of the elements in <code>Prior</code> corresponds to the order of the
@@ -2643,7 +2643,6 @@ Transformation function for classification scores
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_ScoreTransform">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Specified as a function handle for transforming the classification
  scores.  This property is read-only.
@@ -2745,10 +2744,8 @@ Number of nonzero linear coefficients at a regularization threshold.
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_nLinearCoeffs">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactClassificationDiscriminant: <var>n</var> = <b>nLinearCoeffs</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactClassificationDiscriminant: <var>n</var> = <b>nLinearCoeffs</b> (<var>obj</var>, <var>delta</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactClassificationDiscriminant: <var>n</var> = <b>nLinearCoeffs</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactClassificationDiscriminant: <var>n</var> = <b>nLinearCoeffs</b> (<var>obj</var>, <var>delta</var>)</code></p>
 <p> </p>
 <p> <code><var>n</var> = nLinearCoeffs (<var>obj</var>)</code> returns the number of
  predictors the discriminant keeps at its own <code>Delta</code>.
@@ -2843,10 +2840,8 @@ Classify new data points into categories using the discriminant
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_predict">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactClassificationDiscriminant: <var>label</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactClassificationDiscriminant: [<var>label</var>, <var>score</var>, <var>cost</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactClassificationDiscriminant: <var>label</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactClassificationDiscriminant: [<var>label</var>, <var>score</var>, <var>cost</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></p>
 <p> </p>
 <p> <code><var>label</var> = predict (<var>obj</var>, <var>XC</var>)</code> returns the vector of
  labels predicted for the corresponding instances in <var>XC</var>, using the
@@ -2877,6 +2872,12 @@ Classify new data points into categories using the discriminant
 <p> The <var>cost</var> matrix contains the expected classification cost for each
  class, computed based on the posterior probabilities and the specified
  misclassification costs.
+</p>
+<p> The new data may be a table, whose variables are matched to the
+ predictors the model was fitted on by name and not by position:
+ one the model was not fitted on is passed over, one it needs and
+ cannot find is named, and a value holding a level is coded as that
+ level was coded at fitting.
 </p>
 <p> <strong>See also: </strong>
   <a href="CompactClassificationDiscriminant.html">CompactClassificationDiscriminant</a>, 
@@ -2954,10 +2955,10 @@ Compute loss for a trained CompactClassificationDiscriminant object.
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_loss">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactClassificationDiscriminant: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactClassificationDiscriminant: <var>L</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactClassificationDiscriminant: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>CompactClassificationDiscriminant: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code></p>
+<p class="h5 fs"><code>CompactClassificationDiscriminant: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>Tbl</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactClassificationDiscriminant: <var>L</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> <code><var>L</var> = loss (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> computes the loss,
  <var>L</var>, using the default loss function <code>'mincost'</code>.
@@ -2975,6 +2976,14 @@ Compute loss for a trained CompactClassificationDiscriminant object.
  numbers of rows as <var>X</var>.
 </li></ul>
 
+<p> <var>X</var> may also be a table <var>Tbl</var>, whose variables are matched to
+ the predictors the model was fitted on by name and not by position.
+ <code>loss (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code> takes the
+ response from the variable <var>ResponseVarName</var> names, and
+ <code>loss (<var>obj</var>, <var>Tbl</var>)</code> from the variable the model was
+ fitted on.  The response may also be given beside the table as
+ <var>Y</var>.
+</p>
 <p> <code><var>L</var> = loss (&hellip;, <var>name</var>, <var>value</var>)</code> allows
  additional options specified by <var>name</var>-<var>value</var> pairs:
 </p>
@@ -3088,9 +3097,9 @@ Classification margins for discriminant analysis classifier.
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_margin">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactClassificationDiscriminant: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactClassificationDiscriminant: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>CompactClassificationDiscriminant: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactClassificationDiscriminant: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>Tbl</var>)</code></p>
 <p> </p>
 <p> <code><var>m</var> = margin (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns
  the classification margins for <var>obj</var> with data <var>X</var> and
@@ -3112,6 +3121,14 @@ Classification margins for discriminant analysis classifier.
 <p> The classification margin for each observation is the difference between
  the classification score for the true class and the maximal
  classification score for the false classes.
+</p>
+<p> <var>X</var> may also be a table <var>Tbl</var>, whose variables are matched to
+ the predictors the model was fitted on by name and not by position.
+ <code>margin (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code> takes the
+ response from the variable <var>ResponseVarName</var> names, and
+ <code>margin (<var>obj</var>, <var>Tbl</var>)</code> from the variable the model was
+ fitted on.  The response may also be given beside the table as
+ <var>Y</var>.
 </p>
 <p> <strong>See also: </strong>
   <a href="fitcdiscr.html">fitcdiscr</a>, 
@@ -3189,10 +3206,10 @@ Classification edge, the mean of the classification margins.
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_edge">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactClassificationDiscriminant: <var>e</var> = <b>edge</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactClassificationDiscriminant: <var>e</var> = <b>edge</b> (&hellip;, <code>&quot;Weights&quot;</code>, <var>w</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactClassificationDiscriminant: <var>e</var> = <b>edge</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>CompactClassificationDiscriminant: <var>e</var> = <b>edge</b> (&hellip;, <code>&quot;Weights&quot;</code>, <var>w</var>)</code></p>
+<p class="h5 fs"><code>CompactClassificationDiscriminant: <var>e</var> = <b>edge</b> (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactClassificationDiscriminant: <var>e</var> = <b>edge</b> (<var>obj</var>, <var>Tbl</var>)</code></p>
 <p> </p>
 <p> <code><var>e</var> = edge (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> reduces the vector
  that <code>margin</code> returns to a single number, the mean margin over the
@@ -3203,6 +3220,13 @@ Classification edge, the mean of the classification margins.
 </p>
 <p> <code><var>e</var> = edge (&hellip;, <code>&quot;Weights&quot;</code>, <var>w</var>)</code> takes the
  weighted mean instead, with one weight per row of <var>X</var>.
+ <var>X</var> may also be a table <var>Tbl</var>, whose variables are matched to
+ the predictors the model was fitted on by name and not by position.
+ <code>edge (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code> takes the
+ response from the variable <var>ResponseVarName</var> names, and
+ <code>edge (<var>obj</var>, <var>Tbl</var>)</code> from the variable the model was
+ fitted on.  The response may also be given beside the table as
+ <var>Y</var>.
 </p>
 
         <div class="card rounded my-4">
@@ -3276,10 +3300,8 @@ Squared Mahalanobis distance to the class means.
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_mahal">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactClassificationDiscriminant: <var>M</var> = <b>mahal</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactClassificationDiscriminant: <var>M</var> = <b>mahal</b> (&hellip;, <code>'ClassLabels'</code>, <var>labels</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactClassificationDiscriminant: <var>M</var> = <b>mahal</b> (<var>obj</var>, <var>X</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactClassificationDiscriminant: <var>M</var> = <b>mahal</b> (&hellip;, <code>'ClassLabels'</code>, <var>labels</var>)</code></p>
 <p> </p>
 <p> <code><var>M</var> = mahal (<var>obj</var>, <var>X</var>)</code> returns an <em class="math">NxK</em>
  matrix whose element <em class="math">(i,j)</em> is the squared Mahalanobis distance
@@ -3292,7 +3314,7 @@ Squared Mahalanobis distance to the class means.
  <var>obj</var> must be a <code>CompactClassificationDiscriminant</code> object.
 </li><li>
  <var>X</var> must be an <em class="math">NxP</em> numeric matrix with one column per
- predictor of the trained model.
+ predictor of the trained model, or a table holding them.
 </li></ul>
 
 <p> <code><var>M</var> = mahal (&hellip;, <code>'ClassLabels'</code>, <var>labels</var>)</code>
@@ -3304,6 +3326,11 @@ Squared Mahalanobis distance to the class means.
 <p> The distance is measured against the covariance the model reports, so
  a regularized model is measured against its regularized covariance.
  The prior does not enter it.
+</p>
+<p> A table&rsquo;s variables are matched to the predictors the model was
+ fitted on by name and not by position: one the model was not fitted on
+ is passed over, one it needs and cannot find is named, and a value
+ holding a level is coded as that level was coded at fitting.
 </p>
 
         <div class="card rounded my-4">
@@ -3377,9 +3404,7 @@ Log unconditional probability density of the observations.
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_logp">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactClassificationDiscriminant: <var>lp</var> = <b>logp</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>CompactClassificationDiscriminant: <var>lp</var> = <b>logp</b> (<var>obj</var>, <var>X</var>)</code></p>
 <p> </p>
 <p> <code><var>lp</var> = logp (<var>obj</var>, <var>X</var>)</code> returns an <em class="math">Nx1</em>
  vector holding, for each row of <var>X</var>, the natural logarithm of
@@ -3393,12 +3418,17 @@ Log unconditional probability density of the observations.
  <var>obj</var> must be a <code>CompactClassificationDiscriminant</code> object.
 </li><li>
  <var>X</var> must be an <em class="math">NxP</em> numeric matrix with one column per
- predictor of the trained model.
+ predictor of the trained model, or a table holding them.
 </li></ul>
 
 <p> An unusually low value marks an observation the model finds unlikely
  under every class, which is what makes this an outlier test rather
  than a classification.
+</p>
+<p> A table&rsquo;s variables are matched to the predictors the model was
+ fitted on by name and not by position: one the model was not fitted on
+ is passed over, one it needs and cannot find is named, and a value
+ holding a level is coded as that level was coded at fitting.
 </p>
 
         <div class="card rounded my-4">
@@ -3472,9 +3502,7 @@ Save a CompactClassificationDiscriminant object.
           </div>
           <div class="collapse multi-collapse" id="CompactClassificationDiscriminant_savemodel">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactClassificationDiscriminant: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>CompactClassificationDiscriminant: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></p>
 <p> </p>
 <p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves each property of a
  CompactClassificationDiscriminant object into an Octave binary file, the

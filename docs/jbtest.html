@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,13 +1069,11 @@
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: <var>h</var> = <b>jbtest</b> (<var>x</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>h</var> = <b>jbtest</b> (<var>x</var>, <var>alpha</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>h</var> = <b>jbtest</b> (<var>x</var>, <var>alpha</var>, <var>mctol</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [<var>h</var>, <var>p</var>] = <b>jbtest</b> (&hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [<var>h</var>, <var>p</var>, <var>jbstat</var>, <var>critval</var>] = <b>jbtest</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>statistics: <var>h</var> = <b>jbtest</b> (<var>x</var>)</code></p>
+<p class="h5 fs"><code>statistics: <var>h</var> = <b>jbtest</b> (<var>x</var>, <var>alpha</var>)</code></p>
+<p class="h5 fs"><code>statistics: <var>h</var> = <b>jbtest</b> (<var>x</var>, <var>alpha</var>, <var>mctol</var>)</code></p>
+<p class="h5 fs"><code>statistics: [<var>h</var>, <var>p</var>] = <b>jbtest</b> (&hellip;)</code></p>
+<p class="h5 fs fs-last"><code>statistics: [<var>h</var>, <var>p</var>, <var>jbstat</var>, <var>critval</var>] = <b>jbtest</b> (&hellip;)</code></p>
 <p> Jarque-Bera hypothesis test of composite normality.
 </p>
 <div class="ms-5">
@@ -1093,10 +1109,10 @@
  clamps silently, so a p-value reported as <em class="math">0.001</em> or <em class="math">0.5</em> there
  may be a bound rather than an estimate, with nothing to say so.
 </p>
-<p> <code>[<var>h</var>, <var>p</var>, <var>jbstat</var>, <var>critval</var>] = jbtest (&hellip;)</code> also
- returns the test statistic <var>jbstat</var> and the critical value <var>critval</var>
- at significance level <var>alpha</var>.  The null hypothesis is rejected when
- <code><var>jbstat</var> &gt; <var>critval</var></code>.
+<p> <code>[<var>h</var>, <var>p</var>, <var>jbstat</var>, <var>critval</var>] = jbtest (&hellip;)</code>
+ also returns the test statistic <var>jbstat</var> and the critical value
+ <var>critval</var> at significance level <var>alpha</var>.  The null hypothesis is
+ rejected when <code><var>jbstat</var> &gt; <var>critval</var></code>.
 </p>
 <p> Note: for <em class="math">n \le 2000</em> the p-value and critical value are obtained by
  interpolating an embedded critical-value table (the same approach MATLAB
@@ -1107,9 +1123,9 @@
  different simulation, so the two tables agree only to about two decimal
  places.  As a result the reported p-value and critical value, and (in a
  narrow band of statistic values around the critical value) the test decision
- <var>h</var>, can differ slightly from MATLAB in edge cases.  These differences are
- an unavoidable consequence of the Monte-Carlo origin of both tables, not a
- difference in method.  Supply <var>mctol</var> for a direct Monte-Carlo p-value.
+ <var>h</var>, can differ slightly from MATLAB in edge cases.  These differences
+ are an unavoidable consequence of the Monte-Carlo origin of both tables, not
+ a difference in method.  Supply <var>mctol</var> for a direct Monte-Carlo p-value.
 </p>
 <p> If <var>x</var> has zero variance (or is otherwise degenerate so that skewness
  and kurtosis are undefined), <var>jbstat</var> is <code>NaN</code>; in this case
@@ -1122,7 +1138,8 @@
   <a href="swtest.html">swtest</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Hypothesis_Testing/jbtest.m">jbtest</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Hypothesis_Testing/jbtest.m">jbtest</a>
+</p>
 </div>
         <div class="card rounded my-4">
           <div class="card-header card-header-mod">
@@ -1148,7 +1165,7 @@ warning: called from
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
     __build_demos__ at line 79 column 7
-    function_texi2html at line 135 column 5
+    function_texi2html at line 138 column 5
     package_texi2html at line 350 column 9
 
 h = 1

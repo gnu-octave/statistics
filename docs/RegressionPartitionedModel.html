@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -164,9 +173,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Supervised Learning">
+                  <a class="nav-link" href="index.html#Machine Learning">
                     <i class="fas fa-list-alt"></i>
-                    Supervised Learning
+                    Machine Learning
                   </a>
                 </li>
                 <li class="nav-item">
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox" checked>
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace fw-bolder"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,40 +1069,26 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: RegressionPartitionedModel</h5></code></dl>
-<p> Create a <code>RegressionPartitionedModel</code> object, a regression model
- cross validated over a partition of its training data.
+<p class="h5 description mb-3"><code>statistics: RegressionPartitionedModel</code></p>
+<p> Cross-validated regression model.
 </p>
 <div class="ms-5">
-<p> <code><var>obj</var> = RegressionPartitionedModel (<var>Mdl</var>, <var>Partition</var>)</code>
- refits <var>Mdl</var> once per fold of <var>Partition</var>, each time on the
- observations that fold holds out of its test set, and stores the compact
- form of every fit in <code>Trained</code>.  It is normally reached through
- <code>crossval (<var>Mdl</var>)</code> rather than called directly.
+<p> A <code>RegressionPartitionedModel</code> object holds a regression model cross
+ validated over a partition of its training data: one compact model per
+ fold, in <code>Trained</code>, each fitted without the observations that fold
+ tests on.  <code>kfoldPredict</code>, <code>kfoldLoss</code> and <code>kfoldfun</code> answer
+ for every observation with a model that never saw it.
 </p>
-<ul>
-<li>
- <var>Mdl</var> must be a <code>RegressionGAM</code>, a
- <code>RegressionNeuralNetwork</code>, or a <code>RegressionSVM</code> object.
-</li><li>
- <var>Partition</var> must be a <code>cvpartition</code> object over as many
- observations as <var>Mdl</var> was trained on.
-</li></ul>
-
-<p> Every observation is held out by exactly one fold under <em class="math">k</em>-fold or
- leave-one-out partitioning, so <code>kfoldPredict</code> can answer for it with a
- model that never saw it.  Under a holdout partition only the test set is
- answered for, and the rest come back <code>NaN</code>.
+<p> Create a <code>RegressionPartitionedModel</code> object with the <code>crossval</code>
+ method of a regression model or with the class constructor.
 </p>
 <p> <strong>See also: </strong>
   <a href="crossval.html">crossval</a>, 
   <a href="cvpartition.html">cvpartition</a>, 
-  <a href="RegressionGAM.html">RegressionGAM</a>, 
-  <a href="RegressionNeuralNetwork.html">RegressionNeuralNetwork</a>, 
-  <a href="RegressionSVM.html">RegressionSVM</a>
+  <a href="ClassificationPartitionedModel.html">ClassificationPartitionedModel</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Supervised_Learning/RegressionPartitionedModel.m">RegressionPartitionedModel</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Machine_Learning/RegressionPartitionedModel.m">RegressionPartitionedModel</a>
 </p>
 </div>
         <p class="lead my-3">The <code>RegressionPartitionedModel</code> class contains the following properties:</p>
@@ -1107,7 +1111,6 @@ Transformation applied to the predicted response
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_ResponseTransform">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A function handle, carried over from the model that was cross
  validated.  This property is read-only.
@@ -1136,7 +1139,6 @@ Name of the cross-validated model
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_CrossValidatedModel">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector holding the short name of the learner that was
  cross validated, as MATLAB reports it: <code>'GAM'</code>, <code>'GP'</code>,
@@ -1168,7 +1170,6 @@ Names of the predictors
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_PredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors.  This property is read-only.
 </p>
@@ -1196,7 +1197,6 @@ Indices of the categorical predictors
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_CategoricalPredictors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric vector of column indices, and empty when none is.  This
  property is read-only.
@@ -1225,7 +1225,6 @@ Name of the response variable
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_ResponseName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector.  This property is read-only.
 </p>
@@ -1253,7 +1252,6 @@ Number of observations
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_NumObservations">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer scalar.  This property is read-only.
 </p>
@@ -1281,11 +1279,14 @@ Predictor data
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_X">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric matrix holding the observations the model was trained on,
  the rows carrying missing values already removed.  This property is
  read-only.
+</p>
+<p> Where the model was fitted from a table, the predictors are the coded
+ matrix and not the table: a variable holding levels is stored as its
+ level codes, and the coding is kept with the model.
 </p>
 
 
@@ -1311,7 +1312,6 @@ Response data
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_Y">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric column vector with one entry per row of <code>X</code>.  This
  property is read-only.
@@ -1340,7 +1340,6 @@ Observation weights
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_W">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric column vector with one entry per observation.  This property
  is read-only.
@@ -1369,7 +1368,6 @@ Parameters the folds were fitted with
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_ModelParameters">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure holding the parameters the folds were fitted with, carried
  through from the learner that was cross validated, beside
@@ -1416,7 +1414,6 @@ The models fitted to each fold
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_Trained">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array with one compact model per fold, each fitted on the
  observations its fold holds out of the test set.  This property is
@@ -1446,7 +1443,6 @@ Number of folds
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_KFold">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer scalar.  This property is read-only.
 </p>
@@ -1474,7 +1470,6 @@ The partition the folds came from
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_Partition">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <code>cvpartition</code> object.  This property is read-only.
 </p>
@@ -1502,7 +1497,6 @@ Bin edges of the predictors
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_BinEdges">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array with one entry per predictor, holding that predictor&rsquo;s bin
  edges where the learner discretized it before fitting.  It is carried
@@ -1537,7 +1531,6 @@ Whether the folds fitted a standard deviation model
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_IsStandardDeviationFit">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A logical scalar for a generalized additive model backing, taken from
  the model that was cross validated, and empty for every other backing.
@@ -1578,7 +1571,6 @@ How many trees each fold fitted
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_NumTrainedPerFold">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar structure with fields <code>PredictorTrees</code> and
  <code>InteractionTrees</code>, each a row with one entry per fold, for a
@@ -1615,21 +1607,43 @@ How many trees each fold fitted
                   </h4>
                 </div>
                 <div class="col-8">
-Create a <code>RegressionPartitionedModel</code> object.
+Cross-validate a regression model over a partition of its training data.
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_RegressionPartitionedModel">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionPartitionedModel: <var>obj</var> = <b>RegressionPartitionedModel</b> (<var>Mdl</var>, <var>Partition</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>RegressionPartitionedModel: <var>obj</var> = <b>RegressionPartitionedModel</b> (<var>Mdl</var>, <var>Partition</var>)</code></p>
 <p> </p>
-<p> See the class documentation for what it holds and how it is reached.
+<p> <code><var>obj</var> = RegressionPartitionedModel (<var>Mdl</var>,
+ <var>Partition</var>)</code> refits <var>Mdl</var> once per fold of <var>Partition</var>,
+ each time on the observations that fold holds out of its test set, and
+ stores the compact form of every fit in <code>Trained</code>.  It is normally
+ reached through <code>crossval (<var>Mdl</var>)</code> rather than called directly.
+</p>
+<ul>
+<li>
+ <var>Mdl</var> must be a <code>RegressionGAM</code>, a <code>RegressionGP</code>, a
+ <code>RegressionNeuralNetwork</code>, a <code>RegressionSVM</code> or a
+ <code>RegressionTree</code> object.
+</li><li>
+ <var>Partition</var> must be a <code>cvpartition</code> object over as many
+ observations as <var>Mdl</var> was trained on.
+</li></ul>
+
+<p> Every observation is held out by exactly one fold under <em class="math">k</em>-fold or
+ leave-one-out partitioning, so <code>kfoldPredict</code> can answer for it with
+ a model that never saw it.  Under a holdout partition only the test set
+ is answered for, and the rest come back <code>NaN</code>.
 </p>
 <p> <strong>See also: </strong>
   <a href="crossval.html">crossval</a>, 
-  <a href="RegressionPartitionedModel.html">RegressionPartitionedModel</a>
+  <a href="cvpartition.html">cvpartition</a>, 
+  <a href="RegressionGAM.html">RegressionGAM</a>, 
+  <a href="RegressionGP.html">RegressionGP</a>, 
+  <a href="RegressionNeuralNetwork.html">RegressionNeuralNetwork</a>, 
+  <a href="RegressionSVM.html">RegressionSVM</a>, 
+  <a href="RegressionTree.html">RegressionTree</a>
 </p>
 
 
@@ -1656,11 +1670,9 @@ Predict the response of every observation from the fold that held it
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_kfoldPredict">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionPartitionedModel: <var>yFit</var> = <b>kfoldPredict</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionPartitionedModel: [<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = <b>kfoldPredict</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionPartitionedModel: [&hellip;] = <b>kfoldPredict</b> (&hellip;, <code>'Alpha'</code>, <var>alpha</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionPartitionedModel: <var>yFit</var> = <b>kfoldPredict</b> (<var>obj</var>)</code></p>
+<p class="h5 fs"><code>RegressionPartitionedModel: [<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = <b>kfoldPredict</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionPartitionedModel: [&hellip;] = <b>kfoldPredict</b> (&hellip;, <code>'Alpha'</code>, <var>alpha</var>)</code></p>
 <p> </p>
 <p> <code><var>yFit</var> = kfoldPredict (<var>obj</var>)</code> returns a column vector
  with one entry per observation, each predicted by the fold&rsquo;s model that
@@ -1717,10 +1729,8 @@ Compute the cross-validated regression loss.
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_kfoldLoss">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionPartitionedModel: <var>L</var> = <b>kfoldLoss</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionPartitionedModel: <var>L</var> = <b>kfoldLoss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionPartitionedModel: <var>L</var> = <b>kfoldLoss</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionPartitionedModel: <var>L</var> = <b>kfoldLoss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> <code><var>L</var> = kfoldLoss (<var>obj</var>)</code> returns the weighted mean
  squared error between the response and the out-of-fold predictions of
@@ -1778,9 +1788,7 @@ Apply a function to each fold of a cross-validated model.
           </div>
           <div class="collapse multi-collapse" id="RegressionPartitionedModel_kfoldfun">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionPartitionedModel: <var>vals</var> = <b>kfoldfun</b> (<var>obj</var>, <var>fun</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>RegressionPartitionedModel: <var>vals</var> = <b>kfoldfun</b> (<var>obj</var>, <var>fun</var>)</code></p>
 <p> </p>
 <p> <code><var>vals</var> = kfoldfun (<var>obj</var>, <var>fun</var>)</code> calls <var>fun</var> once
  per fold and returns a <em class="math">K&times;M</em> numeric matrix whose row <em class="math">k</em> is
@@ -1789,8 +1797,8 @@ Apply a function to each fold of a cross-validated model.
 <p> <var>fun</var> is a function handle taking seven inputs and returning a
  numeric vector of the same length every time it is called:
 </p>
-<table><tr><td>&nbsp;</td><td><pre class="example"> <var>testvals</var> = <var>fun</var> (<var>M</var>, <var>Xtrain</var>, <var>Ytrain</var>, <var>Wtrain</var>, &hellip;
-                <var>Xtest</var>, <var>Ytest</var>, <var>Wtest</var>)
+<table><tr><td>&nbsp;</td><td><pre class="example"> <var>testvals</var> = <var>fun</var> (<var>M</var>, <var>Xtrain</var>, <var>Ytrain</var>, &hellip;
+                <var>Wtrain</var>, <var>Xtest</var>, <var>Ytest</var>, <var>Wtest</var>)
 </pre></td></tr></table>
 
 <p> <var>M</var> is the model the fold was fitted with, taken from

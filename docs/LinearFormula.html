@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: LinearFormula</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: LinearFormula</code></p>
 <p> Model formula of a linear or generalized linear regression.
 </p>
 <div class="ms-5">
@@ -1074,7 +1092,7 @@
  response carries its link function, as in <code>&quot;logit(y) ~ 1 + x1&quot;</code>.
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/LinearFormula.m">LinearFormula</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Regression/LinearFormula.m">LinearFormula</a>
 </p>
 </div>
         <p class="lead my-3">The <code>LinearFormula</code> class contains the following properties:</p>
@@ -1097,7 +1115,6 @@ Name of the response variable
           </div>
           <div class="collapse multi-collapse" id="LinearFormula_ResponseName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector naming the variable on the left-hand side of the
  formula.  This property is read-only.
@@ -1208,7 +1225,6 @@ Names of all variables available to the model
           </div>
           <div class="collapse multi-collapse" id="LinearFormula_VariableNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors naming every variable the model was
  given, whether or not it is used, in the order the data lists them.  The
@@ -1320,7 +1336,6 @@ Names of the variables the model actually uses
           </div>
           <div class="collapse multi-collapse" id="LinearFormula_PredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors holding those elements of
  <code>VariableNames</code> that appear in at least one term.  This property is
@@ -1432,7 +1447,6 @@ Name of each term of the model
           </div>
           <div class="collapse multi-collapse" id="LinearFormula_TermNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A column cell array of character vectors, one per row of <code>Terms</code>,
  naming the term over the model&rsquo;s <em>variables</em>: the intercept is
@@ -1547,7 +1561,6 @@ Terms matrix of the model
           </div>
           <div class="collapse multi-collapse" id="LinearFormula_Terms">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric matrix with one row per term and one column per variable of
  <code>VariableNames</code>, each entry giving the power that variable carries
@@ -1660,7 +1673,6 @@ Which variables take part in the model
           </div>
           <div class="collapse multi-collapse" id="LinearFormula_InModel">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A logical row vector with one element per variable of
  <code>VariableNames</code>, true where that variable appears in at least one
@@ -1772,7 +1784,6 @@ Whether the model carries an intercept
           </div>
           <div class="collapse multi-collapse" id="LinearFormula_HasIntercept">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A logical scalar, true when <code>Terms</code> holds an all-zero row.  This
  property is read-only.
@@ -1883,7 +1894,6 @@ Right-hand side of the formula
           </div>
           <div class="collapse multi-collapse" id="LinearFormula_LinearPredictor">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector rendering the model&rsquo;s terms, such as
  <code>&quot;1 + x1 + x2&quot;</code>.  A pair of variables appearing both on their own
@@ -1997,7 +2007,6 @@ Link function applied to the response
           </div>
           <div class="collapse multi-collapse" id="LinearFormula_Link">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> The link of a generalized linear model, given as its name, its numeric
  exponent, or a structure of function handles.  It is <code>&quot;identity&quot;</code>
@@ -2109,7 +2118,6 @@ Function computing the linear predictor
           </div>
           <div class="collapse multi-collapse" id="LinearFormula_ModelFun">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A function handle taking the coefficient vector and the design matrix.
  This property is read-only.
@@ -2220,7 +2228,6 @@ Functions called from within the formula
           </div>
           <div class="collapse multi-collapse" id="LinearFormula_FunctionCalls">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors, empty unless the formula applies a
  function to a variable.  This property is read-only.
@@ -2331,7 +2338,6 @@ Number of terms in the model
           </div>
           <div class="collapse multi-collapse" id="LinearFormula_NTerms">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A non-negative integer, the number of rows of <code>Terms</code>.  This
  property is read-only.
@@ -2442,7 +2448,6 @@ Number of variables available to the model
           </div>
           <div class="collapse multi-collapse" id="LinearFormula_NVars">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A non-negative integer, the number of elements of
  <code>VariableNames</code>.  This property is read-only.
@@ -2553,7 +2558,6 @@ Number of variables the model uses
           </div>
           <div class="collapse multi-collapse" id="LinearFormula_NPredictors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A non-negative integer, the number of true elements of <code>InModel</code>.
  This property is read-only.
@@ -2666,11 +2670,9 @@ Create a model formula from a terms matrix.
           </div>
           <div class="collapse multi-collapse" id="LinearFormula_LinearFormula">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearFormula: <var>obj</var> = <b>LinearFormula</b> ()</code></h5></dt>
-<dt><code><h5 class="fs">LinearFormula: <var>obj</var> = <b>LinearFormula</b> (<var>terms</var>, <var>varnames</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LinearFormula: <var>obj</var> = <b>LinearFormula</b> (<var>terms</var>, <var>varnames</var>, <var>name</var>, <var>value</var>, &hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>LinearFormula: <var>obj</var> = <b>LinearFormula</b> ()</code></p>
+<p class="h5 fs"><code>LinearFormula: <var>obj</var> = <b>LinearFormula</b> (<var>terms</var>, <var>varnames</var>)</code></p>
+<p class="h5 fs fs-last"><code>LinearFormula: <var>obj</var> = <b>LinearFormula</b> (<var>terms</var>, <var>varnames</var>, <var>name</var>, <var>value</var>, &hellip;)</code></p>
 <p> </p>
 <p> <code><var>obj</var> = LinearFormula ()</code> returns an empty formula.
 </p>
@@ -2805,9 +2807,7 @@ Render a model formula as a character vector.
           </div>
           <div class="collapse multi-collapse" id="LinearFormula_char">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearFormula: <var>str</var> = <b>char</b> (<var>obj</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>LinearFormula: <var>str</var> = <b>char</b> (<var>obj</var>)</code></p>
 <p> </p>
 <p> <code><var>str</var> = char (<var>obj</var>)</code> returns the whole formula, response
  included, as in <code>&quot;y ~ 1 + x1 + x2&quot;</code>.  The response carries the
@@ -2920,9 +2920,7 @@ Render a model formula as a string scalar.
           </div>
           <div class="collapse multi-collapse" id="LinearFormula_string">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">LinearFormula: <var>str</var> = <b>string</b> (<var>obj</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>LinearFormula: <var>str</var> = <b>string</b> (<var>obj</var>)</code></p>
 <p> </p>
 <p> <code><var>str</var> = string (<var>obj</var>)</code> is the <code>string</code> counterpart of
  <code>char</code>.

@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: prob.RicianDistribution</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: prob.RicianDistribution</code></p>
 <p> Rician probability distribution object.
 </p>
 <div class="ms-5">
@@ -1068,9 +1086,9 @@
 <li> Fit a distribution to data using the <code>fitdist</code> function.
 </li><li> Create a distribution with fixed parameter values using the
  <code>makedist</code> function.
-</li><li> Use the constructor <code>prob.RicianDistribution (<var>s</var>, <var>sigma</var>)</code>
- to create a Rician distribution with fixed parameter values <var>s</var> and
- <var>sigma</var>.
+</li><li> Use the constructor
+ <code>prob.RicianDistribution (<var>s</var>, <var>sigma</var>)</code> to create a Rician
+ distribution with fixed parameter values <var>s</var> and <var>sigma</var>.
 </li><li> Use the static method <code>prob.RicianDistribution.fit (<var>x</var>,
  <var>censor</var>, <var>freq</var>, <var>options</var>)</code> to fit a distribution to data
  <var>x</var>.
@@ -1095,7 +1113,7 @@
   <a href="ricestat.html">ricestat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Distribution_Classes/+prob/RicianDistribution.m">prob.RicianDistribution</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Distribution_Classes/+prob/RicianDistribution.m">prob.RicianDistribution</a>
 </p>
 </div>
         <p class="lead my-3">The <code>prob.RicianDistribution</code> class contains the following properties:</p>
@@ -1118,7 +1136,6 @@ Noncentrality parameter
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_s">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A non-negative scalar value characterizing the noncentrality of the
  Rician distribution.  You can access the <code>s</code> property using dot
@@ -1215,7 +1232,6 @@ Scale parameter
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_sigma">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive scalar value characterizing the scale of the Rician
  distribution.  You can access the <code>sigma</code> property using dot name
@@ -1343,7 +1359,6 @@ Probability distribution name
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_DistributionName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector specifying the name of the probability distribution
  object.  This property is read-only.
@@ -1418,7 +1433,6 @@ Number of parameters
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_NumParameters">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar integer value specifying the number of parameters characterizing
  the probability distribution.  This property is read-only.
@@ -1493,7 +1507,6 @@ Names of parameters
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_ParameterNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">2&times;1</em> cell array of character vectors with each element containing
  the name of a distribution parameter.  This property is read-only.
@@ -1568,7 +1581,6 @@ Description of parameters
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_ParameterDescription">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">2&times;1</em> cell array of character vectors with each element containing
  a short description of a distribution parameter.  This property is
@@ -1644,7 +1656,6 @@ Distribution parameter values
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_ParameterValues">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">2&times;1</em> numeric vector containing the values of the distribution
  parameters.  This property is read-only.  You can change the distribution
@@ -1721,7 +1732,6 @@ Truncation interval
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_Truncation">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">1&times;2</em> numeric vector specifying the truncation interval for the
  probability distribution.  First element contains the lower boundary,
@@ -1799,7 +1809,6 @@ Flag for truncated probability distribution
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_IsTruncated">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A logical scalar value specifying whether a probability distribution is
  truncated or not.  This property is read-only.
@@ -1874,7 +1883,6 @@ Covariance matrix of the parameter estimates
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_ParameterCovariance">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">2&times;2</em> numeric matrix containing the variance-covariance of the
  parameter estimates.  Diagonal elements contain the variance of each
@@ -1955,7 +1963,6 @@ Flag for fixed parameters
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_ParameterIsFixed">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">1&times;2</em> logical vector specifying which parameters are fixed and
  which are estimated.  <code>true</code> values correspond to fixed parameters,
@@ -2032,7 +2039,6 @@ Data used for fitting a probability distribution
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_InputData">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar structure containing the following fields:
 </p>
@@ -2121,10 +2127,8 @@ Compute the cumulative distribution function (CDF).
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_cdf">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>p</var> = <b>cdf</b> (<var>pd</var>, <var>x</var>)</code></h5></dt>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>p</var> = <b>cdf</b> (<var>pd</var>, <var>x</var>, <code>'upper'</code>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>prob.RicianDistribution: <var>p</var> = <b>cdf</b> (<var>pd</var>, <var>x</var>)</code></p>
+<p class="h5 fs fs-last"><code>prob.RicianDistribution: <var>p</var> = <b>cdf</b> (<var>pd</var>, <var>x</var>, <code>'upper'</code>)</code></p>
 <p> </p>
 <p> <code><var>p</var> = cdf (<var>pd</var>, <var>x</var>)</code> computes the CDF of the
  probability distribution object, <var>pd</var>, evaluated at the values in
@@ -2202,9 +2206,7 @@ Compute the inverse cumulative distribution function (iCDF).
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_icdf">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>x</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>prob.RicianDistribution: <var>x</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></p>
 <p> </p>
 <p> <code><var>x</var> = icdf (<var>pd</var>, <var>p</var>)</code> computes the quantile (the
  inverse of the CDF) of the probability distribution object, <var>pd</var>,
@@ -2278,9 +2280,7 @@ Compute the interquartile range of a probability distribution.
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_iqr">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>r</var> = <b>iqr</b> (<var>pd</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>prob.RicianDistribution: <var>r</var> = <b>iqr</b> (<var>pd</var>)</code></p>
 <p> </p>
 <p> <code><var>r</var> = iqr (<var>pd</var>)</code> computes the interquartile range of the
  probability distribution object, <var>pd</var>.
@@ -2337,9 +2337,7 @@ Compute the mean of a probability distribution.
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_mean">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>m</var> = <b>mean</b> (<var>pd</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>prob.RicianDistribution: <var>m</var> = <b>mean</b> (<var>pd</var>)</code></p>
 <p> </p>
 <p> <code><var>m</var> = mean (<var>pd</var>)</code> computes the mean of the probability
  distribution object, <var>pd</var>.
@@ -2400,9 +2398,7 @@ Compute the median of a probability distribution.
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_median">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>m</var> = <b>median</b> (<var>pd</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>prob.RicianDistribution: <var>m</var> = <b>median</b> (<var>pd</var>)</code></p>
 <p> </p>
 <p> <code><var>m</var> = median (<var>pd</var>)</code> computes the median of the probability
  distribution object, <var>pd</var>.
@@ -2463,9 +2459,7 @@ Compute the negative loglikelihood of a probability distribution.
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_negloglik">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>nlogL</var> = <b>negloglik</b> (<var>pd</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>prob.RicianDistribution: <var>nlogL</var> = <b>negloglik</b> (<var>pd</var>)</code></p>
 <p> </p>
 <p> <code><var>nlogL</var> = negloglik (<var>pd</var>)</code> computes the negative
  loglikelihood of the probability distribution object, <var>pd</var>.
@@ -2523,10 +2517,8 @@ Compute the confidence intervals for probability distribution parameters.
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_paramci">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>ci</var> = <b>paramci</b> (<var>pd</var>)</code></h5></dt>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>ci</var> = <b>paramci</b> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>prob.RicianDistribution: <var>ci</var> = <b>paramci</b> (<var>pd</var>)</code></p>
+<p class="h5 fs fs-last"><code>prob.RicianDistribution: <var>ci</var> = <b>paramci</b> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code></p>
 <p> </p>
 <p> <code><var>ci</var> = paramci (<var>pd</var>)</code> computes the lower and upper
  boundaries of the 95% confidence interval for each parameter of the
@@ -2608,9 +2600,7 @@ Compute the probability distribution function (PDF).
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_pdf">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>y</var> = <b>pdf</b> (<var>pd</var>, <var>x</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>prob.RicianDistribution: <var>y</var> = <b>pdf</b> (<var>pd</var>, <var>x</var>)</code></p>
 <p> </p>
 <p> <code><var>y</var> = pdf (<var>pd</var>, <var>x</var>)</code> computes the PDF of the
  probability distribution object, <var>pd</var>, evaluated at the values in
@@ -2684,11 +2674,9 @@ Plot a probability distribution object.
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_plot">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.RicianDistribution: <b>plot</b> (<var>pd</var>)</code></h5></dt>
-<dt><code><h5 class="fs">prob.RicianDistribution: <b>plot</b> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>h</var> = <b>plot</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>prob.RicianDistribution: <b>plot</b> (<var>pd</var>)</code></p>
+<p class="h5 fs"><code>prob.RicianDistribution: <b>plot</b> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code></p>
+<p class="h5 fs fs-last"><code>prob.RicianDistribution: <var>h</var> = <b>plot</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>plot (<var>pd</var>)</code> plots a probability density function (PDF) of the
  probability distribution object <var>pd</var>.  If <var>pd</var> contains data,
@@ -2847,14 +2835,12 @@ Profile likelihood function for a probability distribution object.
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_proflik">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.RicianDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>, <var>pnum</var>)</code></h5></dt>
-<dt><code><h5 class="fs">prob.RicianDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>, <var>pnum</var>, <code>'Display'</code>, <var>display</var>)</code></h5></dt>
-<dt><code><h5 class="fs">prob.RicianDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>, <var>pnum</var>, <var>setparam</var>)</code></h5></dt>
-<dt><code><h5 class="fs">prob.RicianDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>, <var>pnum</var>, <var>setparam</var>, <code>'Display'</code>, <var>display</var>)</code></h5></dt>
-<dt><code><h5 class="fs">prob.RicianDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>)</code></h5></dt>
-<dt><code><h5 class="fs">prob.RicianDistribution: [<var>nlogL</var>, <var>param</var>, <var>other</var>] = <b>proflik</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>prob.RicianDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>, <var>pnum</var>)</code></p>
+<p class="h5 fs"><code>prob.RicianDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>, <var>pnum</var>, <code>'Display'</code>, <var>display</var>)</code></p>
+<p class="h5 fs"><code>prob.RicianDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>, <var>pnum</var>, <var>setparam</var>)</code></p>
+<p class="h5 fs"><code>prob.RicianDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>, <var>pnum</var>, <var>setparam</var>, <code>'Display'</code>, <var>display</var>)</code></p>
+<p class="h5 fs"><code>prob.RicianDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>)</code></p>
+<p class="h5 fs fs-last"><code>prob.RicianDistribution: [<var>nlogL</var>, <var>param</var>, <var>other</var>] = <b>proflik</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>[<var>nlogL</var>, <var>param</var>] = proflik (<var>pd</var>, <var>pnum</var>)</code>
  returns a vector <var>nlogL</var> of negative loglikelihood values and a
@@ -2949,12 +2935,10 @@ Generate random arrays from the probability distribution object.
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_random">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>r</var> = <b>random</b> (<var>pd</var>)</code></h5></dt>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></h5></dt>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>prob.RicianDistribution: <var>r</var> = <b>random</b> (<var>pd</var>)</code></p>
+<p class="h5 fs"><code>prob.RicianDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></p>
+<p class="h5 fs"><code>prob.RicianDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></p>
+<p class="h5 fs fs-last"><code>prob.RicianDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></p>
 <p> </p>
 <p> <code><var>r</var> = random (<var>pd</var>)</code> returns a random number from the
  distribution object <var>pd</var>.
@@ -3023,9 +3007,7 @@ Compute the standard deviation of a probability distribution.
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_std">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>s</var> = <b>std</b> (<var>pd</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>prob.RicianDistribution: <var>s</var> = <b>std</b> (<var>pd</var>)</code></p>
 <p> </p>
 <p> <code><var>s</var> = std (<var>pd</var>)</code> computes the standard deviation of the
  probability distribution object, <var>pd</var>.
@@ -3082,9 +3064,7 @@ Truncate a probability distribution.
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_truncate">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>t</var> = <b>truncate</b> (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>prob.RicianDistribution: <var>t</var> = <b>truncate</b> (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code></p>
 <p> </p>
 <p> <code><var>t</var> = truncate (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code> returns a
  probability distribution <var>t</var>, which is the probability distribution
@@ -3162,9 +3142,7 @@ Compute the variance of a probability distribution.
           </div>
           <div class="collapse multi-collapse" id="prob_RicianDistribution_var">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">prob.RicianDistribution: <var>v</var> = <b>var</b> (<var>pd</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>prob.RicianDistribution: <var>v</var> = <b>var</b> (<var>pd</var>)</code></p>
 <p> </p>
 <p> <code><var>v</var> = var (<var>pd</var>)</code> computes the variance of the
  probability distribution object, <var>pd</var>.

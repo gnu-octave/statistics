@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: CompactLinearModel</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: CompactLinearModel</code></p>
 <p> Compact linear regression model
 </p>
 <div class="ms-5">
@@ -1086,9 +1104,6 @@
  <code>NumPredictors</code>, <code>NumVariables</code>, <code>PredictorNames</code>,
  <code>ResponseName</code>, <code>VariableInfo</code>, and <code>VariableNames</code>.</td></tr>
 </table>
-<p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/CompactLinearModel.m">CompactLinearModel</a>
-</p>
 </div>
 
 <p> Because the training data is discarded, a <code>CompactLinearModel</code>
@@ -1132,9 +1147,6 @@
  of its terms, since a <code>CompactLinearModel</code> object has no data to
  refit with.</td></tr>
 </table>
-<p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/CompactLinearModel.m">CompactLinearModel</a>
-</p>
 </div>
 
 <p> Create a <code>CompactLinearModel</code> object by using the <code>compact</code>
@@ -1145,7 +1157,7 @@
   <a href="LinearModel.html#LinearModel_compact">LinearModel.compact</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/CompactLinearModel.m">CompactLinearModel</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Regression/CompactLinearModel.m">CompactLinearModel</a>
 </p>
 </div>
         <p class="lead my-3">The <code>CompactLinearModel</code> class contains the following properties:</p>
@@ -1168,7 +1180,6 @@ Covariance matrix of coefficient estimates
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_CoefficientCovariance">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">p</em>-by-<em class="math">p</em> numeric matrix of covariance values for the
  coefficient estimates, where <em class="math">p</em> is the number of coefficients in
@@ -1199,7 +1210,6 @@ Coefficient names
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_CoefficientNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors, each containing the name of the
  corresponding model term (e.g., <code>'(Intercept)'</code>, <code>'x1'</code>,
@@ -1229,7 +1239,6 @@ Coefficient values
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_Coefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row for each coefficient and four columns:
 </p>
@@ -1268,7 +1277,6 @@ Number of model coefficients
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_NumCoefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer giving the total number of coefficients in the fitted
  model, including any coefficients set to zero because the model terms are
@@ -1298,7 +1306,6 @@ Number of estimated coefficients
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_NumEstimatedCoefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer giving the number of coefficients actually estimated,
  i.e., not set to zero due to rank deficiency.
@@ -1329,7 +1336,6 @@ Degrees of freedom for error
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_DFE">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer equal to the number of observations minus the number
  of estimated coefficients: <code>DFE = NumObservations -
@@ -1359,7 +1365,6 @@ Log-likelihood of the fitted model
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_LogLikelihood">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to the log-likelihood of the response
  values, assuming each response is normally distributed with mean equal
@@ -1390,7 +1395,6 @@ Model comparison criteria
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_ModelCriterion">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with four fields:
 </p>
@@ -1433,7 +1437,6 @@ Mean squared error
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_MSE">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to <em class="math">SSE / DFE</em>, where <code>SSE</code> is
  the sum of squared errors and <code>DFE</code> is the degrees of freedom for
@@ -1463,7 +1466,6 @@ Root mean squared error
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_RMSE">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to <em class="math">sqrt(MSE)</em>.  This property is
  read-only.
@@ -1492,7 +1494,6 @@ R-squared goodness-of-fit statistics
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_Rsquared">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with two fields:
 </p>
@@ -1529,7 +1530,6 @@ Sum of squared errors
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_SSE">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to the sum of squared residuals.  For a
  model with an intercept, <em class="math">SST = SSE + SSR</em>.  For weighted fits,
@@ -1559,7 +1559,6 @@ Regression sum of squares
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_SSR">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to the sum of squared deviations of the
  fitted values from the mean of the response.  For a model with an
@@ -1590,7 +1589,6 @@ Total sum of squares
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_SST">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to the sum of squared deviations of the
  response from its mean. For a model with an intercept,
@@ -1622,7 +1620,6 @@ Robust fit information
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_Robust">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with three fields:
 </p>
@@ -1662,7 +1659,6 @@ Model formula information
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_Formula">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure representing the model formula with fields including
  <code>ResponseName</code>, <code>LinearPredictor</code>, <code>PredictorNames</code>,
@@ -1693,7 +1689,6 @@ Number of observations used in the fit
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_NumObservations">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer giving the number of observations actually used in
  fitting the original model.  Rows with missing values and rows
@@ -1724,7 +1719,6 @@ Number of predictor variables
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_NumPredictors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer giving the number of predictor variables used to
  fit the model.  This property is read-only.
@@ -1753,7 +1747,6 @@ Number of variables in the input data
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_NumVariables">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer giving the total number of variables in the input
  data used to fit the original model, counting predictors, the
@@ -1783,7 +1776,6 @@ Names of predictor variables
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_PredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors containing the names of the
  predictor variables used to fit the model.  This property is
@@ -1813,7 +1805,6 @@ Response variable name
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_ResponseName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector containing the name of the response variable.
  This property is read-only.
@@ -1842,7 +1833,6 @@ Information about input variables
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_VariableInfo">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per variable including any unused variables, and
  four columns:
@@ -1885,7 +1875,6 @@ Names of all variables in the input data
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_VariableNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors containing the names of all
  variables used to fit the original model, including predictors, the
@@ -1918,10 +1907,8 @@ Confidence intervals for the coefficient estimates of a fitted linear
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_coefCI">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>, <var>alpha</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>, <var>alpha</var>)</code></p>
 <p> </p>
 <p> <code><var>ci</var> = coefCI (<var>mdl</var>)</code> returns 95% confidence intervals
  for every coefficient in <var>mdl</var> using a default significance level of
@@ -1974,13 +1961,11 @@ Linear hypothesis test on the coefficients of a fitted linear regression
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_coefTest">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactLinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>, <var>H</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>, <var>H</var>, <var>C</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: [<var>p</var>, <var>F</var>] = <b>coefTest</b> (&hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: [<var>p</var>, <var>F</var>, <var>r</var>] = <b>coefTest</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactLinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>CompactLinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>, <var>H</var>)</code></p>
+<p class="h5 fs"><code>CompactLinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>, <var>H</var>, <var>C</var>)</code></p>
+<p class="h5 fs"><code>CompactLinearModel: [<var>p</var>, <var>F</var>] = <b>coefTest</b> (&hellip;)</code></p>
+<p class="h5 fs fs-last"><code>CompactLinearModel: [<var>p</var>, <var>F</var>, <var>r</var>] = <b>coefTest</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>coefTest</code> tests whether one or more linear combinations of the
  fitted coefficients equal specified constants.  Each linear combination
@@ -2043,11 +2028,9 @@ Predict responses from a fitted linear regression model.
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_predict">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactLinearModel: <var>ypred</var> = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: [<var>ypred</var>, <var>yci</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: [<var>ypred</var>, <var>yci</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactLinearModel: <var>ypred</var> = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs"><code>CompactLinearModel: [<var>ypred</var>, <var>yci</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactLinearModel: [<var>ypred</var>, <var>yci</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>, <var>Name</var>, <var>Value</var>)</code></p>
 <p> </p>
 <p> <code><var>ypred</var> = predict (<var>mdl</var>, <var>Xnew</var>)</code> returns the fitted
  response values at the new predictor locations in <var>Xnew</var>.  <var>Xnew</var>
@@ -2112,9 +2095,7 @@ Simulate responses with random noise from a fitted linear regression
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_random">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactLinearModel: <var>ysim</var> = <b>random</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>CompactLinearModel: <var>ysim</var> = <b>random</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
 <p> </p>
 <p> <code><var>ysim</var> = random (<var>mdl</var>, <var>Xnew</var>)</code> computes the fitted
  response at each row of <var>Xnew</var> and then adds independent Gaussian
@@ -2162,10 +2143,8 @@ Predict responses of a fitted linear regression model using separate
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_feval">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactLinearModel: <var>ypred</var> = <b>feval</b> (<var>mdl</var>, <var>X</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <var>ypred</var> = <b>feval</b> (<var>mdl</var>, <var>x1</var>, <var>x2</var>, &hellip;, <var>xp</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactLinearModel: <var>ypred</var> = <b>feval</b> (<var>mdl</var>, <var>X</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactLinearModel: <var>ypred</var> = <b>feval</b> (<var>mdl</var>, <var>x1</var>, <var>x2</var>, &hellip;, <var>xp</var>)</code></p>
 <p> </p>
 <p> <code><var>ypred</var> = feval (<var>mdl</var>, <var>X</var>)</code> accepts a single
  numeric matrix <var>X</var> with one column per predictor in the same order
@@ -2216,11 +2195,9 @@ Plot the main effects of each predictor in a compact linear regression
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_plotEffects">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactLinearModel: <b>plotEffects</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <b>plotEffects</b> (<var>ax</var>, <var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <var>h</var> = <b>plotEffects</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactLinearModel: <b>plotEffects</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>CompactLinearModel: <b>plotEffects</b> (<var>ax</var>, <var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactLinearModel: <var>h</var> = <b>plotEffects</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>plotEffects (<var>mdl</var>)</code> creates a horizontal dot-and-line plot
  with one row per predictor.  Each dot shows the estimated main effect on
@@ -2279,12 +2256,10 @@ Plot the interaction effects of two predictors in a compact linear
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_plotInteraction">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactLinearModel: <b>plotInteraction</b> (<var>mdl</var>, <var>var1</var>, <var>var2</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <b>plotInteraction</b> (<var>mdl</var>, <var>var1</var>, <var>var2</var>, <var>ptype</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <b>plotInteraction</b> (<var>ax</var>, &hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <var>h</var> = <b>plotInteraction</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactLinearModel: <b>plotInteraction</b> (<var>mdl</var>, <var>var1</var>, <var>var2</var>)</code></p>
+<p class="h5 fs"><code>CompactLinearModel: <b>plotInteraction</b> (<var>mdl</var>, <var>var1</var>, <var>var2</var>, <var>ptype</var>)</code></p>
+<p class="h5 fs"><code>CompactLinearModel: <b>plotInteraction</b> (<var>ax</var>, &hellip;)</code></p>
+<p class="h5 fs fs-last"><code>CompactLinearModel: <var>h</var> = <b>plotInteraction</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>plotInteraction (<var>mdl</var>, <var>var1</var>, <var>var2</var>)</code> creates a
  plot of the main effects of <var>var1</var> and <var>var2</var> together with
@@ -2364,11 +2339,9 @@ Analysis of variance for a compact linear regression model.
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_anova">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactLinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>, <var>anovatype</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>, <code>&quot;components&quot;</code>, <var>sstype</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactLinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>CompactLinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>, <var>anovatype</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactLinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>, <code>&quot;components&quot;</code>, <var>sstype</var>)</code></p>
 <p> </p>
 <p> <code>anova (<var>mdl</var>)</code> returns a table <var>tbl</var> with component
  ANOVA statistics for every term in <var>mdl</var> except the constant

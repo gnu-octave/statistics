@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -164,9 +173,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Supervised Learning">
+                  <a class="nav-link" href="index.html#Machine Learning">
                     <i class="fas fa-list-alt"></i>
-                    Supervised Learning
+                    Machine Learning
                   </a>
                 </li>
                 <li class="nav-item">
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox" checked>
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: CompactRegressionGP</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: CompactRegressionGP</code></p>
 <p> Compact Gaussian process regression
 </p>
 <div class="ms-5">
@@ -1063,8 +1081,8 @@
  method of a <code>RegressionGP</code> object.
 </p>
 <p> A compact model keeps the active set it predicts from, the prediction
- weights, the covariance function and its parameters, the explicit basis and
- its coefficients, the noise standard deviation and the standardizing
+ weights, the covariance function and its parameters, the explicit basis
+ and its coefficients, the noise standard deviation and the standardizing
  location and scale.  It drops the response, the observation weights, the
  rows used, the count of observations and the maximized log likelihood, so
  it can predict but cannot be cross validated, refitted, or asked for its
@@ -1079,7 +1097,7 @@
   <a href="fitrgp.html">fitrgp</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Supervised_Learning/CompactRegressionGP.m">CompactRegressionGP</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Machine_Learning/CompactRegressionGP.m">CompactRegressionGP</a>
 </p>
 </div>
         <p class="lead my-3">The <code>CompactRegressionGP</code> class contains the following properties:</p>
@@ -1102,7 +1120,6 @@ Predictor variable names
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_PredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors.  This property is read-only.
 </p>
@@ -1177,7 +1194,6 @@ Expanded predictor variable names
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_ExpandedPredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors.  This property is read-only.
 </p>
@@ -1252,7 +1268,6 @@ Response variable name
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_ResponseName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector.  This property is read-only.
 </p>
@@ -1327,7 +1342,6 @@ Indices of the categorical predictors
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_CategoricalPredictors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A vector of positive integers, or empty.  This property is read-only.
 </p>
@@ -1402,7 +1416,6 @@ Method used to estimate the parameters
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_FitMethod">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> <code>'Exact'</code> or <code>'None'</code>.  This property is read-only.
 </p>
@@ -1477,7 +1490,6 @@ Explicit basis of the model
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_BasisFunction">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector or a function handle.  This property is read-only.
 </p>
@@ -1552,7 +1564,6 @@ Estimated coefficients of the explicit basis
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_Beta">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric vector, empty when the basis is <code>'None'</code>.  This property
  is read-only.
@@ -1628,7 +1639,6 @@ Estimated noise standard deviation
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_Sigma">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive scalar.  This property is read-only.
 </p>
@@ -1703,7 +1713,6 @@ Form of the covariance function
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_KernelFunction">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector or a function handle.  This property is read-only.
 </p>
@@ -1778,7 +1787,6 @@ Covariance function and its parameters
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_KernelInformation">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with fields <code>Name</code>, <code>KernelParameters</code> and
  <code>KernelParameterNames</code>.  This property is read-only.
@@ -1854,7 +1862,6 @@ Method used to make predictions
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_PredictMethod">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> <code>'Exact'</code>.  This property is read-only.
 </p>
@@ -1929,7 +1936,6 @@ Weights the predictions are made from
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_Alpha">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric vector with one weight per active set vector.  This property
  is read-only.
@@ -2005,7 +2011,6 @@ Subset of the training data used for predictions
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_ActiveSetVectors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> An <em class="math">MxP</em> numeric matrix, standardized where the model standardized
  its predictors.  This property is read-only.
@@ -2081,7 +2086,6 @@ Method used to select the active set
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_ActiveSetMethod">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> <code>'Random'</code>.  This property is read-only.
 </p>
@@ -2156,7 +2160,6 @@ Size of the active set
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_ActiveSetSize">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer scalar.  This property is read-only.
 </p>
@@ -2231,7 +2234,6 @@ Means the predictors were centred by
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_PredictorLocation">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">1xP</em> numeric vector, or empty.  This property is read-only.
 </p>
@@ -2306,7 +2308,6 @@ Standard deviations the predictors were scaled by
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_PredictorScale">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">1xP</em> numeric vector, or empty.  This property is read-only.
 </p>
@@ -2381,7 +2382,6 @@ Transformation applied to the predicted response
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_ResponseTransform">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector, or the text of the function handle that was
  supplied.  Assigning to it accepts either.
@@ -2459,17 +2459,21 @@ Predict the response for new data with a compact Gaussian process model.
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_predict">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactRegressionGP: <var>yFit</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactRegressionGP: [<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactRegressionGP: [&hellip;] = <b>predict</b> (&hellip;, <code>'Alpha'</code>, <var>alpha</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactRegressionGP: <var>yFit</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></p>
+<p class="h5 fs"><code>CompactRegressionGP: [<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactRegressionGP: [&hellip;] = <b>predict</b> (&hellip;, <code>'Alpha'</code>, <var>alpha</var>)</code></p>
 <p> </p>
 <p> <code><var>yFit</var> = predict (<var>obj</var>, <var>XC</var>)</code> returns the predicted
  response of the <code>CompactRegressionGP</code> model <var>obj</var> at the
  points in <var>XC</var>, and the further outputs are the standard deviation
  of each predicted response and the prediction intervals, exactly as the
  full model returns them.
+</p>
+<p> The new data may be a table, whose variables are matched to the
+ predictors the model was fitted on by name and not by position:
+ one the model was not fitted on is passed over, one it needs and
+ cannot find is named, and a value holding a level is coded as that
+ level was coded at fitting.
 </p>
 
         <div class="card rounded my-4">
@@ -2542,15 +2546,23 @@ Compute the regression loss of a compact Gaussian process model.
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_loss">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactRegressionGP: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactRegressionGP: <var>L</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactRegressionGP: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>CompactRegressionGP: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code></p>
+<p class="h5 fs"><code>CompactRegressionGP: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>Tbl</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactRegressionGP: <var>L</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> <code><var>L</var> = loss (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns the mean
  squared error of the model <var>obj</var> on the data <var>X</var> and <var>Y</var>,
  and accepts the same <code>'LossFun'</code> and <code>'Weights'</code> pairs the
  full model accepts.
+</p>
+<p> <var>X</var> may also be a table <var>Tbl</var>, whose variables are matched to
+ the predictors the model was fitted on by name and not by position.
+ <code>loss (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code> takes the
+ response from the variable <var>ResponseVarName</var> names, and
+ <code>loss (<var>obj</var>, <var>Tbl</var>)</code> from the variable the model was
+ fitted on.  The response may also be given beside the table as
+ <var>Y</var>.
 </p>
 
         <div class="card rounded my-4">
@@ -2623,9 +2635,7 @@ Save a compact Gaussian process model to a file.
           </div>
           <div class="collapse multi-collapse" id="CompactRegressionGP_savemodel">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactRegressionGP: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>CompactRegressionGP: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></p>
 <p> </p>
 <p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves the model <var>obj</var>
  into <var>filename</var> in a form <code>loadmodel</code> can read back.

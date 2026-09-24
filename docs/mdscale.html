@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,12 +1069,10 @@
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: <var>Y</var> = <b>mdscale</b> (<var>D</var>, <var>p</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [<var>Y</var>, <var>stress</var>] = <b>mdscale</b> (<var>D</var>, <var>p</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [<var>Y</var>, <var>stress</var>, <var>disparities</var>] = <b>mdscale</b> (<var>D</var>, <var>p</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [&hellip;] = <b>mdscale</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>statistics: <var>Y</var> = <b>mdscale</b> (<var>D</var>, <var>p</var>)</code></p>
+<p class="h5 fs"><code>statistics: [<var>Y</var>, <var>stress</var>] = <b>mdscale</b> (<var>D</var>, <var>p</var>)</code></p>
+<p class="h5 fs"><code>statistics: [<var>Y</var>, <var>stress</var>, <var>disparities</var>] = <b>mdscale</b> (<var>D</var>, <var>p</var>)</code></p>
+<p class="h5 fs fs-last"><code>statistics: [&hellip;] = <b>mdscale</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></p>
 <p> Nonclassical (metric and nonmetric) multidimensional scaling.
 </p>
 <div class="ms-5">
@@ -1064,9 +1080,9 @@
  <var>D</var> and returns a configuration <var>Y</var> of <var>n</var> points in <var>p</var>
  dimensions (an <em class="math"><var>n</var> &times; <var>p</var> </em> matrix) whose interpoint distances
  approximate <var>D</var>, by minimizing a stress criterion.  <var>D</var> may be given
- either as a full <em class="math"><var>n</var> &times; <var>n</var></em> symmetric matrix with zero diagonal,
- or as the vector of the <em class="math"><var>n</var> (<var>n</var> - 1) / 2</em> upper-triangle
- dissimilarities returned by <code>pdist</code>.
+ either as a full <em class="math"><var>n</var> &times; <var>n</var></em> symmetric matrix with zero
+ diagonal, or as the vector of the <em class="math"><var>n</var> (<var>n</var> - 1) / 2</em>
+ upper-triangle dissimilarities returned by <code>pdist</code>.
 </p>
 <p> <code>[<var>Y</var>, <var>stress</var>, <var>disparities</var>] = mdscale (&hellip;)</code> also
  returns the final value of the <var>stress</var> criterion and the
@@ -1100,18 +1116,18 @@
 
 </dd>
 <dt> <code>'Weights'</code></dt>
-<dd> A matrix or vector of nonnegative weights, the same size as <var>D</var>, weighting
- each dissimilarity in the criterion.</dd>
+<dd> A matrix or vector of nonnegative weights, the same size as <var>D</var>,
+ weighting each dissimilarity in the criterion.</dd>
 <dt> <code>'Start'</code></dt>
 <dd> The initial configuration: <code>'cmdscale'</code> (default, classical scaling),
  <code>'random'</code>, or an explicit <em class="math"><var>n</var> &times; <var>p</var> </em> matrix.</dd>
 <dt> <code>'Replicates'</code></dt>
-<dd> The number of times to repeat the minimization from different starting points,
- keeping the best (lowest-stress) result.  The default is 1.</dd>
+<dd> The number of times to repeat the minimization from different starting
+ points, keeping the best (lowest-stress) result.  The default is 1.</dd>
 <dt> <code>'Options'</code></dt>
 <dd> A structure of algorithm options (as returned by <code>statset</code>) whose
- <code>MaxIter</code>, <code>TolFun</code>, and <code>TolX</code> fields control the iterative
- minimization.</dd>
+ <code>MaxIter</code>, <code>TolFun</code>, and <code>TolX</code> fields control the
+ iterative minimization.</dd>
 </dl>
 
 <a name="Non-uniqueness-of-the-solution"></a>
@@ -1124,16 +1140,16 @@
  (with the largest-magnitude coordinate on each axis made positive), matching
  the convention used by MATLAB.
 </p>
-<p> Beyond that rigid ambiguity, the <strong>nonmetric</strong> criteria (<code>'stress'</code>
- and <code>'sstress'</code>) are non-convex and typically have several local minima;
- the one reached depends on the starting configuration and the details of the
- optimizer.  As a result the returned configuration for these criteria may
- differ from the one another program (including MATLAB) reports even when the
- <strong>stress value</strong> agrees, and different runs may find configurations with
- slightly different stress.  Use <code>'Replicates'</code> with a <code>'random'</code>
- start to search for a lower-stress solution.  The metric criteria and
- <code>'strain'</code> have an essentially unique solution and are reproducible up to
- the rigid ambiguity above.
+<p> Beyond that rigid ambiguity, the <strong>nonmetric</strong> criteria
+ (<code>'stress'</code> and <code>'sstress'</code>) are non-convex and typically have
+ several local minima; the one reached depends on the starting configuration
+ and the details of the optimizer.  As a result the returned configuration for
+ these criteria may differ from the one another program (including MATLAB)
+ reports even when the <strong>stress value</strong> agrees, and different runs may
+ find configurations with slightly different stress.  Use <code>'Replicates'</code>
+ with a <code>'random'</code> start to search for a lower-stress solution.  The
+ metric criteria and <code>'strain'</code> have an essentially unique solution and
+ are reproducible up to the rigid ambiguity above.
 </p>
 <p> <strong>See also: </strong>
   <a href="cmdscale.html">cmdscale</a>, 
@@ -1143,7 +1159,8 @@
   <a href="statset.html">statset</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Dimensionality_Reduction/mdscale.m">mdscale</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Dimensionality_Reduction/mdscale.m">mdscale</a>
+</p>
 </div>
         <div class="card rounded my-4">
           <div class="card-header card-header-mod">

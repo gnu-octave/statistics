@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: GeneralizedLinearMixedModel</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: GeneralizedLinearMixedModel</code></p>
 <p> Generalized linear mixed-effects model fitted to data.
 </p>
 <div class="ms-5">
@@ -1072,7 +1090,7 @@
   <a href="GeneralizedLinearModel.html">GeneralizedLinearModel</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/GeneralizedLinearMixedModel.m">GeneralizedLinearMixedModel</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Regression/GeneralizedLinearMixedModel.m">GeneralizedLinearMixedModel</a>
 </p>
 </div>
         <p class="lead my-3">The <code>GeneralizedLinearMixedModel</code> class contains the following properties:</p>
@@ -1095,7 +1113,6 @@ Response distribution
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_Distribution">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector naming the distribution of the response, one of
  <code>'binomial'</code>, <code>'poisson'</code> and <code>'normal'</code>.  This
@@ -1125,7 +1142,6 @@ Link function
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_Link">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector naming the link, one of <code>'logit'</code>,
  <code>'log'</code> and <code>'identity'</code>.  This property is read-only.
@@ -1154,7 +1170,6 @@ Estimation method
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_FitMethod">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector naming the method that fitted the model, one of
  <code>'MPL'</code>, <code>'REMPL'</code>, <code>'Laplace'</code> and
@@ -1184,7 +1199,6 @@ Dispersion parameter
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_Dispersion">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive scalar.  It is estimated for a normal response and fixed at
  1 for a binomial or Poisson one.  This property is read-only.
@@ -1213,7 +1227,6 @@ Number of observations
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_NumObservations">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer counting the observations used for the fit.  This
  property is read-only.
@@ -1242,7 +1255,6 @@ Number of fixed-effects coefficients
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_NumCoefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer counting the fixed-effects coefficients of the
  model.  This property is read-only.
@@ -1271,7 +1283,6 @@ Fixed-effects estimates and their statistics
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_Coefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per fixed-effects coefficient, its row names taken
  from <code>CoefficientNames</code>, and the variables <code>Estimate</code>,
@@ -1303,7 +1314,6 @@ Covariance of the fixed-effects estimates
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_CoefficientCovariance">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A square numeric matrix, one row and column per fixed-effects
  coefficient, holding the estimated covariance of the estimates in
@@ -1333,7 +1343,6 @@ Names of the fixed-effects coefficients
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_CoefficientNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors with one name per fixed-effects
  coefficient.  This property is read-only.
@@ -1362,7 +1371,6 @@ Log-likelihood of the fitted model
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_LogLikelihood">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar.  It is a pseudo log-likelihood when <code>FitMethod</code> is
  <code>'MPL'</code> or <code>'REMPL'</code>, and a Laplace approximation to the
@@ -1392,7 +1400,6 @@ Information criteria
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_ModelCriterion">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar structure with the fields <code>AIC</code>, <code>BIC</code>,
  <code>LogLikelihood</code> and <code>Deviance</code>.  The parameter count behind
@@ -1423,7 +1430,6 @@ Residual degrees of freedom
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_DFE">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A nonnegative integer, <code>NumObservations</code> less
  <code>NumCoefficients</code>.  This property is read-only.
@@ -1452,7 +1458,6 @@ Model formula
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_Formula">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector describing the model.  It is empty for a fit built
  from design matrices, which carries no formula.  This property is
@@ -1482,7 +1487,6 @@ Name of the response variable
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_ResponseName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector naming the response.  It is empty for a fit built
  from design matrices.  This property is read-only.
@@ -1514,9 +1518,7 @@ Construct from a fitted-model info struct.  Used internally by
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_GeneralizedLinearMixedModel">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearMixedModel: <var>glme</var> = <b>GeneralizedLinearMixedModel</b> (<var>info</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearMixedModel: <var>glme</var> = <b>GeneralizedLinearMixedModel</b> (<var>info</var>)</code></p>
 <p> </p>
 
 
@@ -1542,9 +1544,7 @@ Return the fixed-effects coefficients and, optionally, their names.
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_fixedEffects">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearMixedModel: [<var>beta</var>, <var>names</var>] = <b>fixedEffects</b> (<var>glme</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearMixedModel: [<var>beta</var>, <var>names</var>] = <b>fixedEffects</b> (<var>glme</var>)</code></p>
 <p> </p>
 
 
@@ -1570,9 +1570,7 @@ Return the estimated random-effects (the conditional modes).
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_randomEffects">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearMixedModel: <var>b</var> = <b>randomEffects</b> (<var>glme</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearMixedModel: <var>b</var> = <b>randomEffects</b> (<var>glme</var>)</code></p>
 <p> </p>
 
 
@@ -1598,9 +1596,7 @@ Return the random-effects covariance matrices and the dispersion.
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_covarianceParameters">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearMixedModel: [<var>psi</var>, <var>disp</var>] = <b>covarianceParameters</b> (<var>glme</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearMixedModel: [<var>psi</var>, <var>disp</var>] = <b>covarianceParameters</b> (<var>glme</var>)</code></p>
 <p> </p>
 
 
@@ -1626,9 +1622,7 @@ Return the fitted mean response (conditional on the random effects).
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_fitted">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearMixedModel: <var>yf</var> = <b>fitted</b> (<var>glme</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearMixedModel: <var>yf</var> = <b>fitted</b> (<var>glme</var>)</code></p>
 <p> </p>
 
 
@@ -1654,10 +1648,8 @@ Return <code>&quot;Raw&quot;</code> (default) or <code>&quot;Pearson&quot;</code
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_residuals">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearMixedModel: <var>r</var> = <b>residuals</b> (<var>glme</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearMixedModel: <var>r</var> = <b>residuals</b> (<var>glme</var>, <code>&quot;ResidualType&quot;</code>, <var>type</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>GeneralizedLinearMixedModel: <var>r</var> = <b>residuals</b> (<var>glme</var>)</code></p>
+<p class="h5 fs fs-last"><code>GeneralizedLinearMixedModel: <var>r</var> = <b>residuals</b> (<var>glme</var>, <code>&quot;ResidualType&quot;</code>, <var>type</var>)</code></p>
 <p> </p>
 
 
@@ -1685,9 +1677,7 @@ Predict the mean response at new data.  With <code>&quot;Conditional&quot;</code
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_predict">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearMixedModel: <var>ypred</var> = <b>predict</b> (<var>glme</var>, <var>Xnew</var>, <var>Znew</var>, <var>Gnew</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearMixedModel: <var>ypred</var> = <b>predict</b> (<var>glme</var>, <var>Xnew</var>, <var>Znew</var>, <var>Gnew</var>)</code></p>
 <p> </p>
 
 
@@ -1714,9 +1704,7 @@ Analysis-of-deviance table of F-tests for the fixed-effects terms, using
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_anova">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearMixedModel: <var>tbl</var> = <b>anova</b> (<var>glme</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearMixedModel: <var>tbl</var> = <b>anova</b> (<var>glme</var>)</code></p>
 <p> </p>
 
 
@@ -1742,9 +1730,7 @@ F-test of the linear hypothesis <code>H*beta = 0</code>.
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_coefTest">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearMixedModel: [<var>p</var>, <var>F</var>, <var>df1</var>, <var>df2</var>] = <b>coefTest</b> (<var>glme</var>, <var>H</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearMixedModel: [<var>p</var>, <var>F</var>, <var>df1</var>, <var>df2</var>] = <b>coefTest</b> (<var>glme</var>, <var>H</var>)</code></p>
 <p> </p>
 
 
@@ -1770,9 +1756,7 @@ Confidence intervals for the fixed-effects coefficients.
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_coefCI">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearMixedModel: <var>ci</var> = <b>coefCI</b> (<var>glme</var>, <var>alpha</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearMixedModel: <var>ci</var> = <b>coefCI</b> (<var>glme</var>, <var>alpha</var>)</code></p>
 <p> </p>
 
 
@@ -1799,9 +1783,7 @@ Return the fixed (<code>&quot;Fixed&quot;</code>, default) design matrix as a fu
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearMixedModel_designMatrix">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearMixedModel: <var>D</var> = <b>designMatrix</b> (<var>glme</var>, <var>type</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearMixedModel: <var>D</var> = <b>designMatrix</b> (<var>glme</var>, <var>type</var>)</code></p>
 <p> </p>
 
 

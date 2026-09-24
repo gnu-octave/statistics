@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: GeneralizedLinearModel</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: GeneralizedLinearModel</code></p>
 <p> Generalized linear regression model class.
 </p>
 <div class="ms-5">
@@ -1110,7 +1128,7 @@
   <a href="glmval.html">glmval</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/GeneralizedLinearModel.m">GeneralizedLinearModel</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Regression/GeneralizedLinearModel.m">GeneralizedLinearModel</a>
 </p>
 </div>
         <p class="lead my-3">The <code>GeneralizedLinearModel</code> class contains the following properties:</p>
@@ -1133,7 +1151,6 @@ Coefficient values
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Coefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per coefficient and four columns:
 </p>
@@ -1212,7 +1229,6 @@ Names of the coefficients
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_CoefficientNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors, one per coefficient, in the order the
  coefficients appear.  The intercept is <code>'(Intercept)'</code>, an
@@ -1281,7 +1297,6 @@ Covariance matrix of the coefficient estimates
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_CoefficientCovariance">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A square matrix with one row and column per coefficient, whose diagonal
  is the square of <code>Coefficients.SE</code>.  It is scaled by
@@ -1349,7 +1364,6 @@ Number of coefficients
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_NumCoefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer counting every coefficient the model carries, those
  dropped as rank deficient included.  A categorical predictor with
@@ -1416,7 +1430,6 @@ Number of coefficients actually estimated
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_NumEstimatedCoefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer counting the coefficients that carry a degree of
  freedom, which is <code>NumCoefficients</code> less however many were dropped
@@ -1484,7 +1497,6 @@ Number of predictor variables
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_NumPredictors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A nonnegative integer counting the predictors the model was given,
  whether or not each appears in a term.  It counts variables, so a
@@ -1551,7 +1563,6 @@ Number of observations used in the fit
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_NumObservations">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer giving the number of observations the fit actually
  used. Rows holding a missing value and rows named by the
@@ -1618,7 +1629,6 @@ Deviance of the fitted model
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Deviance">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A nonnegative scalar, twice the difference between the log-likelihood of
  the saturated model and that of this one.  It is the generalized linear
@@ -1686,7 +1696,6 @@ Error degrees of freedom
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_DFE">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A nonnegative integer, <code>NumObservations</code> less
  <code>NumEstimatedCoefficients</code>.
@@ -1752,7 +1761,6 @@ Dispersion parameter
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Dispersion">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive scalar.  It is estimated from the Pearson statistic for the
  normal, gamma, and inverse Gaussian families, and fixed at <em class="math">1</em> for
@@ -1821,7 +1829,6 @@ Whether the dispersion was estimated
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_DispersionEstimated">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A logical scalar, true where <code>Dispersion</code> was estimated from the
  data and false where it was held at <em class="math">1</em>.  It decides whether a
@@ -1889,7 +1896,6 @@ The response distribution
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Distribution">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with three fields: <code>Name</code>, the distribution&rsquo;s name;
  <code>DevianceFunction</code>, a function handle giving the deviance
@@ -1958,7 +1964,6 @@ The link function
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Link">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with four fields: <code>Name</code>, the link&rsquo;s name; <code>Link</code>,
  a function handle mapping the mean to the linear predictor;
@@ -2026,7 +2031,6 @@ Fitted values
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Fitted">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per input observation and two columns,
  <code>Response</code> on the scale of the response and <code>LinearPredictor</code>
@@ -2097,7 +2101,6 @@ Residuals for the fitted model
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Residuals">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per input observation and five columns:
 </p>
@@ -2175,7 +2178,6 @@ Per-observation diagnostics
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Diagnostics">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per input observation and three columns:
  <code>Leverage</code>, the diagonal of the weighted hat matrix;
@@ -2244,7 +2246,6 @@ Log-likelihood of the fitted model
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_LogLikelihood">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar, the log-likelihood of the observations under the fitted
  coefficients and the family&rsquo;s own density.  It is what the information
@@ -2311,7 +2312,6 @@ Information criteria
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_ModelCriterion">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with four fields, <code>AIC</code>, <code>AICc</code>, <code>BIC</code>, and
  <code>CAIC</code>, each penalising <code>LogLikelihood</code> by a different function
@@ -2379,7 +2379,6 @@ Measures of fit
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Rsquared">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with five fields: <code>Ordinary</code> and <code>Adjusted</code>,
  computed from the sums of squares on the response scale; <code>Deviance</code>,
@@ -2450,7 +2449,6 @@ Error sum of squares
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_SSE">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A nonnegative scalar, the weighted sum of squared raw residuals on the
  response scale.  For a generalized linear model this is a descriptive
@@ -2517,7 +2515,6 @@ Regression sum of squares
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_SSR">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A nonnegative scalar, the weighted sum of squared differences between the
  fitted values and the weighted mean of the response, on the response
@@ -2584,7 +2581,6 @@ Total sum of squares
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_SST">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A nonnegative scalar, the weighted sum of squared differences between the
  response and its weighted mean.  Unlike a linear model, a generalized
@@ -2651,7 +2647,6 @@ Offset added to the linear predictor
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Offset">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A column vector with one element per input observation, added to the
  linear predictor with a coefficient fixed at one, so that it shifts the
@@ -2719,7 +2714,6 @@ Penalty applied to the likelihood
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_LikelihoodPenalty">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector, always <code>'none'</code>: no penalized-likelihood
  fitting is offered, so the coefficients are always the plain
@@ -2786,7 +2780,6 @@ Name of the response variable
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_ResponseName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector.  It is taken from the table column, the
  <code>'ResponseVar'</code> or <code>'VarNames'</code> argument, or the formula, and
@@ -2853,7 +2846,6 @@ Names of the predictor variables
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_PredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors naming the predictors in the order the
  data lists them.  A predictor matrix gives them the names <code>'x1'</code>,
@@ -2920,7 +2912,6 @@ Names of all the variables
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_VariableNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors naming every variable the model was
  given, the response included, in the order the data lists them.
@@ -2986,7 +2977,6 @@ Number of variables
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_NumVariables">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer, the number of elements of <code>VariableNames</code>: the
  predictors and the response together, whether or not each appears in a
@@ -3053,7 +3043,6 @@ Per-variable information
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_VariableInfo">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per variable, named by it, and four columns:
  <code>Class</code>, the class of the data column; <code>Range</code>, its two-element
@@ -3122,7 +3111,6 @@ The data the model was built from
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Variables">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table holding every variable, the response included, with one row per
  input observation.  A model fitted from a predictor matrix gets a table
@@ -3189,7 +3177,6 @@ Per-observation status
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_ObservationInfo">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per input observation and four columns:
  <code>Weights</code>, the weight it was given; <code>Excluded</code>, true where
@@ -3258,7 +3245,6 @@ Names of the observations
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_ObservationNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors, one per input observation, and empty
  unless the data carried row names.
@@ -3324,7 +3310,6 @@ The model formula
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Formula">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <code>LinearFormula</code> object describing the fitted model, with
  properties including <code>ResponseName</code>, <code>LinearPredictor</code>,
@@ -3394,7 +3379,6 @@ Stepwise fitting information
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Steps">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure recording the term-selection trace, populated whenever the
  model was fit by <code>stepwiseglm</code> and <code>[]</code> otherwise.  It has
@@ -3497,10 +3481,8 @@ Fit a generalized linear model.  Prefer the <code>fitglm</code> function, which
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_GeneralizedLinearModel">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>mdl</var> = <b>GeneralizedLinearModel</b> (<var>data</var>, <var>resp</var>, <var>modelspec</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>mdl</var> = <b>GeneralizedLinearModel</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>GeneralizedLinearModel: <var>mdl</var> = <b>GeneralizedLinearModel</b> (<var>data</var>, <var>resp</var>, <var>modelspec</var>)</code></p>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>mdl</var> = <b>GeneralizedLinearModel</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -3565,11 +3547,9 @@ Predict the response of the model <var>mdl</var> at the new predictor data
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_predict">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>yhat</var> = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: [<var>yhat</var>, <var>yci</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: [&hellip;] = <b>predict</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>GeneralizedLinearModel: <var>yhat</var> = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs"><code>GeneralizedLinearModel: [<var>yhat</var>, <var>yci</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: [&hellip;] = <b>predict</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -3632,9 +3612,7 @@ Predict the response by passing each predictor as a separate argument (a
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_feval">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>yhat</var> = <b>feval</b> (<var>mdl</var>, <var>x1</var>, <var>x2</var>, &hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>yhat</var> = <b>feval</b> (<var>mdl</var>, <var>x1</var>, <var>x2</var>, &hellip;)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -3698,10 +3676,8 @@ Confidence intervals for the coefficient estimates.  <var>ci</var> is a
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_coefCI">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>, <var>alpha</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>GeneralizedLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>, <var>alpha</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -3766,10 +3742,8 @@ Wald test of the linear hypothesis <em class="math">H b = 0</em> on the coeffici
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_coefTest">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: [<var>p</var>, <var>stat</var>, <var>df</var>] = <b>coefTest</b> (<var>mdl</var>, <var>H</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>GeneralizedLinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: [<var>p</var>, <var>stat</var>, <var>df</var>] = <b>coefTest</b> (<var>mdl</var>, <var>H</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -3834,9 +3808,7 @@ Likelihood-ratio (deviance) test of the fitted model against the
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_devianceTest">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>tbl</var> = <b>devianceTest</b> (<var>mdl</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>tbl</var> = <b>devianceTest</b> (<var>mdl</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -3900,10 +3872,8 @@ Simulate responses from the fitted model.  With one argument the fitted
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_random">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>ysim</var> = <b>random</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>ysim</var> = <b>random</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>GeneralizedLinearModel: <var>ysim</var> = <b>random</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>ysim</var> = <b>random</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -3968,11 +3938,9 @@ Plot the model residuals.  <var>plottype</var> is one of <code>'histogram'</code
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_plotResiduals">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotResiduals</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotResiduals</b> (<var>mdl</var>, <var>plottype</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotResiduals</b> (&hellip;, <code>'ResidualType'</code>, <var>rt</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>GeneralizedLinearModel: <var>h</var> = <b>plotResiduals</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>GeneralizedLinearModel: <var>h</var> = <b>plotResiduals</b> (<var>mdl</var>, <var>plottype</var>)</code></p>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>h</var> = <b>plotResiduals</b> (&hellip;, <code>'ResidualType'</code>, <var>rt</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -4035,10 +4003,8 @@ Plot observation diagnostics.  <var>plottype</var> is <code>'leverage'</code>
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_plotDiagnostics">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotDiagnostics</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotDiagnostics</b> (<var>mdl</var>, <var>plottype</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>GeneralizedLinearModel: <var>h</var> = <b>plotDiagnostics</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>h</var> = <b>plotDiagnostics</b> (<var>mdl</var>, <var>plottype</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -4101,9 +4067,7 @@ Main-effects plot: for each predictor, the change in the fitted mean
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_plotEffects">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotEffects</b> (<var>mdl</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>h</var> = <b>plotEffects</b> (<var>mdl</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -4167,9 +4131,7 @@ Adjusted-response plot for the predictor <var>var</var> (a name or index): the
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_plotAdjustedResponse">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotAdjustedResponse</b> (<var>mdl</var>, <var>var</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>h</var> = <b>plotAdjustedResponse</b> (<var>mdl</var>, <var>var</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -4233,9 +4195,7 @@ Added-variable (partial-regression) plot for the predictor <var>var</var> (a
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_plotAdded">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotAdded</b> (<var>mdl</var>, <var>var</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>h</var> = <b>plotAdded</b> (<var>mdl</var>, <var>var</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">

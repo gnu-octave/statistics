@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -164,9 +173,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Supervised Learning">
+                  <a class="nav-link" href="index.html#Machine Learning">
                     <i class="fas fa-list-alt"></i>
-                    Supervised Learning
+                    Machine Learning
                   </a>
                 </li>
                 <li class="nav-item">
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox" checked>
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace fw-bolder"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1069,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: RegressionBaggedEnsemble</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: RegressionBaggedEnsemble</code></p>
 <p> Bagged ensemble of regression trees
 </p>
 <div class="ms-5">
@@ -1075,7 +1093,7 @@
   <a href="TreeBagger.html">TreeBagger</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Supervised_Learning/RegressionBaggedEnsemble.m">RegressionBaggedEnsemble</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Machine_Learning/RegressionBaggedEnsemble.m">RegressionBaggedEnsemble</a>
 </p>
 </div>
         <p class="lead my-3">The <code>RegressionBaggedEnsemble</code> class contains the following properties:</p>
@@ -1098,7 +1116,6 @@ Share of the observations each tree draws
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_FResample">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A number greater than 0 and no greater than 1, each tree drawing
  <code>ceil (FResample * N)</code> observations.  This property is read-only.
@@ -1127,7 +1144,6 @@ Whether the trees draw with replacement
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_Replace">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A logical scalar, true by default.  This property is read-only.
 </p>
@@ -1155,7 +1171,6 @@ Which observations each tree drew
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_UseObsForLearner">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> An <em class="math">NxNumTrained</em> logical matrix, true where a tree&rsquo;s sample holds
  an observation.  This property is read-only.
@@ -1184,7 +1199,6 @@ Result of regularizing the ensemble
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_Regularization">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Empty until <code>regularize</code> fills it with a structure of lasso
  weights for the trees, and emptied again by <code>resume</code>.  This
@@ -1214,7 +1228,6 @@ Response data
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_Y">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> The response the ensemble was fitted on, a row missing a value having
  been left out.  This property is read-only.
@@ -1243,10 +1256,14 @@ Predictor data
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_X">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> The predictors the ensemble was fitted on, one row per observation.
- This property is read-only.
+</p>
+<p> Where the model was fitted from a table, the predictors are the coded
+ matrix and not the table: a variable holding levels is stored as its
+ level codes, and the coding is kept with the model.
+</p>
+<p> This property is read-only.
 </p>
 
 
@@ -1272,7 +1289,6 @@ Rows of the data that were used
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_RowsUsed">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A logical column over the rows as supplied.  This property is
  read-only.
@@ -1301,10 +1317,9 @@ Observation weights
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_W">
             <div class="border-bottom py-2">
-
 <p> </p>
-<p> The weights given, normalized to sum to one.  This property is
- read-only.
+<p> The weights given, normalized to sum to one.  It has the class of the
+ <code>'Weights'</code> given, single or double.  This property is read-only.
 </p>
 
 
@@ -1330,7 +1345,6 @@ Parameters of the fit
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_ModelParameters">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with the fields <code>Type</code>, <code>Method</code>,
  <code>LearnerTemplates</code>, <code>NLearn</code>, the number of learning
@@ -1361,7 +1375,6 @@ Number of observations used
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_NumObservations">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> This property is read-only.
 </p>
@@ -1389,7 +1402,6 @@ Bin edges of the predictors
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_BinEdges">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Always empty, binning not being implemented.  This property is
  read-only.
@@ -1418,7 +1430,6 @@ Results of optimizing the hyperparameters
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_HyperparameterOptimizationResults">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Always empty, such optimization not being implemented.  This property
  is read-only.
@@ -1447,7 +1458,6 @@ Names of the predictors
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_PredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors.  This property is read-only.
 </p>
@@ -1475,7 +1485,6 @@ Indices of categorical predictors
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_CategoricalPredictors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> The predictors every tree treats as categorical, empty when none
  is.  This property is read-only.
@@ -1504,7 +1513,6 @@ Name of the response variable
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_ResponseName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> This property is read-only.
 </p>
@@ -1532,7 +1540,6 @@ Names of the predictors as the learners saw them
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_ExpandedPredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> The same as <code>PredictorNames</code>.  This property is read-only.
 </p>
@@ -1560,7 +1567,6 @@ Ensemble method
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_Method">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> <code>'LSBoost'</code> or <code>'Bag'</code>.  This property is read-only.
 </p>
@@ -1588,7 +1594,6 @@ Names of the weak learners
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_LearnerNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Always <code>{'Tree'}</code>.  This property is read-only.
 </p>
@@ -1616,7 +1621,6 @@ Why the fit stopped adding trees
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_ReasonForTermination">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> This property is read-only.
 </p>
@@ -1644,7 +1648,6 @@ Fit information
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_FitInfo">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> For LSBoost, a column with the weighted mean squared error of each
  tree against the residual it was fitted to.  Empty for Bag.  This
@@ -1674,7 +1677,6 @@ Description of <code>FitInfo</code>
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_FitInfoDescription">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> This property is read-only.
 </p>
@@ -1702,7 +1704,6 @@ Which predictors each learner uses
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_UsePredForLearner">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> Always empty, as MATLAB returns it for tree learners.  This property
  is read-only.
@@ -1731,7 +1732,6 @@ Number of trained trees
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_NumTrained">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> This property is read-only.
 </p>
@@ -1759,7 +1759,6 @@ Trained trees
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_Trained">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A column cell array of <code>CompactRegressionTree</code> objects.  This
  property is read-only.
@@ -1788,7 +1787,6 @@ Weights of the trained trees
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_TrainedWeights">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A column with one weight per tree.  This property is read-only.
 </p>
@@ -1816,7 +1814,6 @@ How the trees are combined
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_CombineWeights">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> <code>'WeightedSum'</code> for LSBoost, <code>'WeightedAverage'</code> for Bag.
  This property is read-only.
@@ -1845,7 +1842,6 @@ Transform applied to the predicted response
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_ResponseTransform">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> See <code>CompactRegressionEnsemble.ResponseTransform</code>.
 </p>
@@ -1875,10 +1871,8 @@ Fit a bagged ensemble of regression trees.
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_RegressionBaggedEnsemble">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>obj</var> = <b>RegressionBaggedEnsemble</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>obj</var> = <b>RegressionBaggedEnsemble</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionBaggedEnsemble: <var>obj</var> = <b>RegressionBaggedEnsemble</b> (<var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionBaggedEnsemble: <var>obj</var> = <b>RegressionBaggedEnsemble</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> <code>fitrensemble</code> with <code>'Method'</code> set to <code>'Bag'</code> is the
  documented way in, and its help lists the options both take.
@@ -1911,10 +1905,8 @@ Cross-validate a bagged ensemble.
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_crossval">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>CVMdl</var> = <b>crossval</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>CVMdl</var> = <b>crossval</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionBaggedEnsemble: <var>CVMdl</var> = <b>crossval</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionBaggedEnsemble: <var>CVMdl</var> = <b>crossval</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> Behaves as <code>RegressionEnsemble.crossval</code>, returning a
  <code>RegressionPartitionedEnsemble</code>.
@@ -1947,10 +1939,8 @@ Find lasso weights for the trees of a bagged ensemble.
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_regularize">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>B</var> = <b>regularize</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>B</var> = <b>regularize</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionBaggedEnsemble: <var>B</var> = <b>regularize</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionBaggedEnsemble: <var>B</var> = <b>regularize</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> Behaves as <code>RegressionEnsemble.regularize</code>.
 </p>
@@ -1982,10 +1972,8 @@ Keep the trees of a bagged ensemble that a lasso weight retains.
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_shrink">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>C</var> = <b>shrink</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>C</var> = <b>shrink</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionBaggedEnsemble: <var>C</var> = <b>shrink</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionBaggedEnsemble: <var>C</var> = <b>shrink</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> Behaves as <code>RegressionEnsemble.shrink</code>, returning a
  <code>CompactRegressionEnsemble</code>.
@@ -2018,10 +2006,8 @@ Cross-validate the shrinking of a bagged ensemble.
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_cvshrink">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: [<var>vals</var>, <var>nlearn</var>] = <b>cvshrink</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: [<var>vals</var>, <var>nlearn</var>] = <b>cvshrink</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionBaggedEnsemble: [<var>vals</var>, <var>nlearn</var>] = <b>cvshrink</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionBaggedEnsemble: [<var>vals</var>, <var>nlearn</var>] = <b>cvshrink</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> Behaves as <code>RegressionEnsemble.cvshrink</code>.
 </p>
@@ -2053,9 +2039,7 @@ Drop the training data from a bagged regression ensemble.
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_compact">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>CMdl</var> = <b>compact</b> (<var>obj</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>RegressionBaggedEnsemble: <var>CMdl</var> = <b>compact</b> (<var>obj</var>)</code></p>
 <p> </p>
 <p> Returns a <code>CompactRegressionEnsemble</code>, as
  <code>RegressionEnsemble.compact</code> does.
@@ -2088,10 +2072,8 @@ Grow more trees in a bagged regression ensemble.
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_resume">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>B</var> = <b>resume</b> (<var>obj</var>, <var>NumLearningCycles</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>B</var> = <b>resume</b> (&hellip;, &rsquo;NPrint&rsquo;, <var>n</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionBaggedEnsemble: <var>B</var> = <b>resume</b> (<var>obj</var>, <var>NumLearningCycles</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionBaggedEnsemble: <var>B</var> = <b>resume</b> (&hellip;, &rsquo;NPrint&rsquo;, <var>n</var>)</code></p>
 <p> </p>
 <p> Behaves as <code>RegressionEnsemble.resume</code>, the new trees&rsquo; samples
  added to <code>UseObsForLearner</code>.
@@ -2124,10 +2106,8 @@ Predict the response with a bagged regression ensemble.
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_predict">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>yfit</var> = <b>predict</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>yfit</var> = <b>predict</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionBaggedEnsemble: <var>yfit</var> = <b>predict</b> (<var>obj</var>, <var>X</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionBaggedEnsemble: <var>yfit</var> = <b>predict</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> Behaves as <code>CompactRegressionEnsemble.predict</code>.
 </p>
@@ -2159,12 +2139,20 @@ Regression loss of a bagged ensemble.
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_loss">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>L</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionBaggedEnsemble: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>RegressionBaggedEnsemble: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code></p>
+<p class="h5 fs"><code>RegressionBaggedEnsemble: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>Tbl</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionBaggedEnsemble: <var>L</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> Behaves as <code>CompactRegressionEnsemble.loss</code>.
+</p>
+<p> <var>X</var> may also be a table <var>Tbl</var>, whose variables are matched to
+ the predictors the model was fitted on by name and not by position.
+ <code>loss (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code> takes the
+ response from the variable <var>ResponseVarName</var> names, and
+ <code>loss (<var>obj</var>, <var>Tbl</var>)</code> from the variable the model was
+ fitted on.  The response may also be given beside the table as
+ <var>Y</var>.
 </p>
 <p> <strong>See also: </strong>
   <a href="RegressionBaggedEnsemble.html">RegressionBaggedEnsemble</a>, 
@@ -2194,10 +2182,8 @@ Predict the response of the training data with a bagged ensemble.
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_resubPredict">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>yfit</var> = <b>resubPredict</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>yfit</var> = <b>resubPredict</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionBaggedEnsemble: <var>yfit</var> = <b>resubPredict</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionBaggedEnsemble: <var>yfit</var> = <b>resubPredict</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> Behaves as <code>RegressionEnsemble.resubPredict</code>.
 </p>
@@ -2229,10 +2215,8 @@ Regression loss of a bagged ensemble on the training data.
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_resubLoss">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>L</var> = <b>resubLoss</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>L</var> = <b>resubLoss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionBaggedEnsemble: <var>L</var> = <b>resubLoss</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionBaggedEnsemble: <var>L</var> = <b>resubLoss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> Behaves as <code>RegressionEnsemble.resubLoss</code>.
 </p>
@@ -2264,10 +2248,8 @@ Estimate the importance of each predictor.
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_predictorImportance">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>imp</var> = <b>predictorImportance</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: [<var>imp</var>, <var>ma</var>] = <b>predictorImportance</b> (<var>obj</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionBaggedEnsemble: <var>imp</var> = <b>predictorImportance</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionBaggedEnsemble: [<var>imp</var>, <var>ma</var>] = <b>predictorImportance</b> (<var>obj</var>)</code></p>
 <p> </p>
 <p> The mean over the trees of each tree&rsquo;s <code>predictorImportance</code>, as
  <code>CompactRegressionEnsemble.predictorImportance</code> computes it.
@@ -2300,10 +2282,8 @@ Out-of-bag predictions for the training data.
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_oobPredict">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>yfit</var> = <b>oobPredict</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>yfit</var> = <b>oobPredict</b> (&hellip;, &rsquo;Learners&rsquo;, <var>idx</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionBaggedEnsemble: <var>yfit</var> = <b>oobPredict</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionBaggedEnsemble: <var>yfit</var> = <b>oobPredict</b> (&hellip;, &rsquo;Learners&rsquo;, <var>idx</var>)</code></p>
 <p> </p>
 <p> Each training observation is predicted by the trees whose samples left
  it out, as <code>predict</code> predicts it with <code>'UseObsForLearner'</code>
@@ -2338,10 +2318,8 @@ Out-of-bag regression loss.
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_oobLoss">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>L</var> = <b>oobLoss</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>L</var> = <b>oobLoss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionBaggedEnsemble: <var>L</var> = <b>oobLoss</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionBaggedEnsemble: <var>L</var> = <b>oobLoss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> The loss of the out-of-bag predictions against <code>Y</code>, weighted by
  <code>W</code>, an observation in the sample of every tree used being left
@@ -2377,10 +2355,8 @@ Out-of-bag predictor importance by permutation.
           </div>
           <div class="collapse multi-collapse" id="RegressionBaggedEnsemble_oobPermutedPredictorImportance">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>imp</var> = <b>oobPermutedPredictorImportance</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionBaggedEnsemble: <var>imp</var> = <b>oobPermutedPredictorImportance</b> (&hellip;, &rsquo;Learners&rsquo;, <var>idx</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionBaggedEnsemble: <var>imp</var> = <b>oobPermutedPredictorImportance</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionBaggedEnsemble: <var>imp</var> = <b>oobPermutedPredictorImportance</b> (&hellip;, &rsquo;Learners&rsquo;, <var>idx</var>)</code></p>
 <p> </p>
 <p> For each tree, the values of each predictor are permuted among the
  observations out of its bag, and the tree&rsquo;s mean squared error on them,

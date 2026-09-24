@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -373,8 +382,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +447,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +463,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -929,6 +943,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -985,6 +1000,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
@@ -1003,6 +1019,8 @@
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,12 +1069,11 @@
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: <var>terms</var> = <b>parseWilkinsonFormula</b> (<var>formula</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>result</var> = <b>parseWilkinsonFormula</b> (<var>formula</var>, <var>mode</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [<var>X</var>, <var>y</var>, <var>names</var>] = <b>parseWilkinsonFormula</b> (<var>formula</var>, &quot;model_matrix&quot;, <var>data</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>S</var> = <b>parseWilkinsonFormula</b> (<var>formula</var>, &quot;mixed&quot;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>statistics: <var>terms</var> = <b>parseWilkinsonFormula</b> (<var>formula</var>)</code></p>
+<p class="h5 fs"><code>statistics: <var>result</var> = <b>parseWilkinsonFormula</b> (<var>formula</var>, <var>mode</var>)</code></p>
+<p class="h5 fs"><code>statistics: [<var>X</var>, <var>y</var>, <var>names</var>] = <b>parseWilkinsonFormula</b> (<var>formula</var>, &quot;model_matrix&quot;, <var>data</var>)</code></p>
+<p class="h5 fs"><code>statistics: <var>S</var> = <b>parseWilkinsonFormula</b> (<var>formula</var>, &quot;mixed&quot;)</code></p>
+<p class="h5 fs fs-last"><code>statistics: &hellip; = <b>parseWilkinsonFormula</b> (&hellip;, <var>setOrder</var>)</code></p>
 <p> Parse and expand statistical model formulae using the Wilkinson notation.
 </p>
 <div class="ms-5">
@@ -1089,8 +1106,6 @@
 <tr><td width="15%"><code>^</code></td><td width="35%">Power (Limit)</td><td width="50%"><code>(A+B)^2</code> expands to A, B, A:B</td></tr>
 <tr><td width="15%"><code>1</code></td><td width="35%">Intercept</td><td width="50%"><code>y ~ A - 1</code> removes intercept</td></tr>
 </table>
-<p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Experimental_Design/parseWilkinsonFormula.m">parseWilkinsonFormula</a>
 </div>
 
 <p> <strong>Left-Hand Side (Response) Operators</strong>
@@ -1104,8 +1119,6 @@
 <tr><td width="15%"><code>,</code></td><td width="35%">List separator</td><td width="50%"><code>y1, y2 ~ x</code></td></tr>
 <tr><td width="15%"><code>-</code></td><td width="35%">Range operator</td><td width="50%"><code>T1 - T3 ~ x</code></td></tr>
 </table>
-<p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Experimental_Design/parseWilkinsonFormula.m">parseWilkinsonFormula</a>
 </div>
 
 <p> <strong>Processing Modes</strong>
@@ -1130,8 +1143,6 @@
 <tr><td width="40%"><code>y ~ x^2</code></td><td width="60%"><code>&quot;y = c1 + c2*x + c3*x^2&quot;</code></td></tr>
 <tr><td width="40%"><code>y1 - y2 ~ Trt</code></td><td width="60%"><code>[&quot;y1 = c1 + c2*Trt&quot;, &quot;y2 = ...&quot;]</code></td></tr>
 </table>
-<p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Experimental_Design/parseWilkinsonFormula.m">parseWilkinsonFormula</a>
 </div>
 
 
@@ -1146,6 +1157,16 @@
  fixed and random parts.  See <strong>Mixed-Effects Formulae</strong> below.
 </li></ul>
 
+<p> <strong>Order of the reported variables</strong>
+ <var>setOrder</var> is <code>'sorted'</code> or <code>'stable'</code> and comes last,
+ after every other argument, so that it may be given whatever else the mode
+ takes.  <code>'sorted'</code> is the default and reports the variables in
+ alphabetical order; <code>'stable'</code> reports them in the order the formula
+ wrote them, as <code>unique</code> uses the same two words.  It applies wherever
+ a mode reports variable names, which is <code>'matrix'</code> and
+ <code>'model_matrix'</code>, and the order carries into <var>ResponseIdx</var> and
+ into the columns of <var>Terms</var> and of <var>X</var> beside it.
+</p>
 <p> <strong>Data Handling (&rsquo;model_matrix&rsquo; mode)</strong>
  When using the <code>'model_matrix'</code> mode, a <var>data</var> argument must be
  provided as an Octave <code>table</code>.
@@ -1191,6 +1212,10 @@
 <p> <strong>Outputs</strong>
 </p>
 <dl compact="compact">
+<dt> <var>setOrder</var></dt>
+<dd> Whether the variables are reported alphabetically, <code>'sorted'</code>, or in
+ the order the formula wrote them, <code>'stable'</code>.  The default is
+ <code>'sorted'</code>.</dd>
 <dt> <var>terms / result</var></dt>
 <dd> The processed model structure, string array, or cell array depending on the
  selected <var>mode</var>.</dd>
@@ -1220,7 +1245,8 @@
  present, and so cannot fit the reference group.
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Experimental_Design/parseWilkinsonFormula.m">parseWilkinsonFormula</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Experimental_Design/parseWilkinsonFormula.m">parseWilkinsonFormula</a>
+</p>
 </div>
         <div class="card rounded my-4">
           <div class="card-header card-header-mod">
@@ -1403,7 +1429,7 @@ names =
                 <p>Polynomial Regression : Uses the power operator (^) to model non-linear relationships.</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Distance = [20; 45; 80; 125];
  Speed    = [30; 50; 70; 90];
- Speed_2  = Speed .^ 2; 
+ Speed_2  = Speed .^ 2;
  t = table (Distance, Speed, Speed_2, 'VariableNames', {'Distance', 'Speed', 'Speed^2'});
  formula = 'Distance ~ Speed^2';
  disp (['Formula: ', formula]);</pre>
