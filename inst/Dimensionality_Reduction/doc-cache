@@ -15,7 +15,8 @@ ReconstructionICA
 # elements: 1
 # length: 307
 statistics: ReconstructionICA
-Reconstruction independent component analysis (RICA) feature-extraction model.
+Reconstruction independent component analysis (RICA) feature-extraction
+model.
 
 A ReconstructionICA object stores the transformation learned by
 rica for extracting features from data. Create one with rica;
@@ -249,8 +250,8 @@ ReconstructionICA.ReconstructionICA
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 149
-statistics: Mdl = ReconstructionICA (X, Q, ...)
+# length: 156
+ReconstructionICA: Mdl = ReconstructionICA (X, Q, ...)
 Fit a reconstruction ICA model. This constructor is invoked by
 rica; see help rica for the arguments.
 
@@ -327,8 +328,8 @@ ReconstructionICA.transform
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 125
-statistics: Z = transform (Mdl, X)
+# length: 132
+ReconstructionICA: Z = transform (Mdl, X)
 Transform data X into the learned feature space, returning the
 N x Q matrix Z of features.
 
@@ -582,8 +583,8 @@ SparseFiltering.SparseFiltering
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 157
-statistics: Mdl = SparseFiltering (X, Q, ...)
+# length: 162
+SparseFiltering: Mdl = SparseFiltering (X, Q, ...)
 Fit a sparse filtering model. This constructor is invoked by
 sparsefilt; see help sparsefilt for the arguments.
 
@@ -632,8 +633,8 @@ SparseFiltering.transform
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 132
-statistics: Z = transform (Mdl, X)
+# length: 137
+SparseFiltering: Z = transform (Mdl, X)
 Transform data X into the learned feature space, returning the
 N x Q matrix Z of sparse features.
 
@@ -938,9 +939,9 @@ Y = mdscale (D, p) takes a matrix of dissimilarities
 D and returns a configuration Y of n points in p
 dimensions (an n x p matrix) whose interpoint distances
 approximate D, by minimizing a stress criterion. D may be given
-either as a full n x n symmetric matrix with zero diagonal,
-or as the vector of the n (n - 1) / 2 upper-triangle
-dissimilarities returned by pdist.
+either as a full n x n symmetric matrix with zero
+diagonal, or as the vector of the n (n - 1) / 2
+upper-triangle dissimilarities returned by pdist.
 
 [Y, stress, disparities] = mdscale (...) also
 returns the final value of the stress criterion and the
@@ -971,18 +972,18 @@ Sammon's nonlinear mapping criterion,
 The classical scaling criterion; equivalent to cmdscale.
 
 'Weights'
-A matrix or vector of nonnegative weights, the same size as D, weighting
-each dissimilarity in the criterion.
+A matrix or vector of nonnegative weights, the same size as D,
+weighting each dissimilarity in the criterion.
 'Start'
 The initial configuration: 'cmdscale' (default, classical scaling),
 'random', or an explicit n x p matrix.
 'Replicates'
-The number of times to repeat the minimization from different starting points,
-keeping the best (lowest-stress) result. The default is 1.
+The number of times to repeat the minimization from different starting
+points, keeping the best (lowest-stress) result. The default is 1.
 'Options'
 A structure of algorithm options (as returned by statset) whose
-MaxIter, TolFun, and TolX fields control the iterative
-minimization.
+MaxIter, TolFun, and TolX fields control the
+iterative minimization.
 
 Non-uniqueness of the solution
 
@@ -993,16 +994,16 @@ returning Y centred at the origin and rotated to its principal axes
 (with the largest-magnitude coordinate on each axis made positive), matching
 the convention used by MATLAB.
 
-Beyond that rigid ambiguity, the nonmetric criteria ('stress'
-and 'sstress') are non-convex and typically have several local minima;
-the one reached depends on the starting configuration and the details of the
-optimizer. As a result the returned configuration for these criteria may
-differ from the one another program (including MATLAB) reports even when the
-stress value agrees, and different runs may find configurations with
-slightly different stress. Use 'Replicates' with a 'random'
-start to search for a lower-stress solution. The metric criteria and
-'strain' have an essentially unique solution and are reproducible up to
-the rigid ambiguity above.
+Beyond that rigid ambiguity, the nonmetric criteria
+('stress' and 'sstress') are non-convex and typically have
+several local minima; the one reached depends on the starting configuration
+and the details of the optimizer. As a result the returned configuration for
+these criteria may differ from the one another program (including MATLAB)
+reports even when the stress value agrees, and different runs may
+find configurations with slightly different stress. Use 'Replicates'
+with a 'random' start to search for a lower-stress solution. The
+metric criteria and 'strain' have an essentially unique solution and
+are reproducible up to the rigid ambiguity above.
 
 See also:
 cmdscale,
@@ -1324,23 +1325,23 @@ Probabilistic principal component analysis.
 
 coeff = ppca (Y, K) fits a probabilistic principal
 component analysis (PPCA) model with K components to the N x P
-data matrix Y (rows are observations, columns are variables) and returns
-the P x K matrix coeff of orthonormal principal component
-coefficients, ordered by decreasing component variance. Y may contain
-NaN values marking missing observations; the model is fitted by an
-expectation-maximization algorithm that accounts for them. K must be a
-positive integer smaller than P.
+data matrix Y (rows are observations, columns are variables) and
+returns the P x K matrix coeff of orthonormal principal
+component coefficients, ordered by decreasing component variance. Y
+may contain NaN values marking missing observations; the model is
+fitted by an expectation-maximization algorithm that accounts for them.
+K must be a positive integer smaller than P.
 
 [coeff, score, pcvar, mu, v, S] =
 ppca (...) returns further outputs:
 
 score
-The N x K principal component scores (the data projected onto the
-components; missing entries are reconstructed from the model before
+The N x K principal component scores (the data projected onto
+the components; missing entries are reconstructed from the model before
 projection).
 pcvar
-A K x 1 vector of the principal component variances (the variance
-explained by each component).
+A K x 1 vector of the principal component variances (the
+variance explained by each component).
 mu
 A 1 x P vector of the estimated mean of Y.
 v
@@ -1348,7 +1349,8 @@ The estimated residual (isotropic noise) variance.
 S
 A structure with the fitted model details: the loadings W, the
 expected scores Xexp, the reconstruction Recon, the number of
-iterations NumIter, and the root-mean-square residual RMSResid.
+iterations NumIter, and the root-mean-square residual
+RMSResid.
 
 Name/Value pairs control the fit:
 
@@ -1357,14 +1359,14 @@ A P x K initial value for the loadings used by the
 expectation-maximization algorithm (missing-data case).
 'Options'
 A structure of algorithm options, as returned by statset, whose
-MaxIter, TolFun, and TolX fields set the maximum number
-of iterations and the convergence tolerances of the
+MaxIter, TolFun, and TolX fields set the maximum
+number of iterations and the convergence tolerances of the
 expectation-maximization algorithm.
 
 When Y has no missing values the model is fitted directly from the
 eigendecomposition of its covariance matrix; coeff, pcvar, and
-v are then the principal component directions, the leading variances, and
-the mean of the trailing variances, respectively.
+v are then the principal component directions, the leading variances,
+and the mean of the trailing variances, respectively.
 
 See also:
 pca,
@@ -1530,8 +1532,9 @@ Reconstruction independent component analysis (RICA) for feature extraction.
 Mdl = rica (X, Q) learns Q features from the
 N x P data matrix X (rows are observations, columns are
 predictors) and returns a ReconstructionICA object Mdl. Apply
-the learned transformation to data with transform (Mdl, X),
-which returns X * Mdl.TransformWeights.
+the learned transformation to data with
+transform (Mdl, X), which returns
+X * Mdl.TransformWeights.
 
 The P x Q weight matrix (with unit-length columns) minimizes the
 objective
@@ -1580,11 +1583,11 @@ value tighter than the default carries it further.
 
 Note on reproducibility
 
-The RICA objective is not convex and is minimized by a quasi-Newton solver, so
-the learned weights depend on the starting point and the solver, and are only
-defined up to a permutation and sign of the feature columns. Different runs
-(or different software, including MATLAB) may return different weights that
-nonetheless describe an equally valid feature transformation. Fix
+The RICA objective is not convex and is minimized by a quasi-Newton solver,
+so the learned weights depend on the starting point and the solver, and are
+only defined up to a permutation and sign of the feature columns. Different
+runs (or different software, including MATLAB) may return different weights
+that nonetheless describe an equally valid feature transformation. Fix
 'InitialTransformWeights' for a reproducible result.
 
 See also:
@@ -1623,11 +1626,11 @@ the 'varimax' criterion and returns the rotated loadings B, the
 same size as A.
 
 [B, T] = rotatefactors (...) also returns the
-M x M rotation matrix T, so that B = A *
-T. For the orthogonal methods T is orthonormal
-(T' * T is the identity); for the oblique methods
-('promax' and oblique 'procrustes') it is a general invertible
-matrix.
+M x M rotation matrix T, so that
+B = A * T. For the orthogonal methods T is
+orthonormal (T' * T is the identity); for the oblique
+methods ('promax' and oblique 'procrustes') it is a general
+invertible matrix.
 
 The rotation is controlled by Name/Value pairs:
 
@@ -1638,7 +1641,8 @@ The rotation criterion, one of:
 Orthomax with a criterion coefficient of 1; maximizes the variance of the
 squared loadings within each factor.
 'quartimax'
-Orthomax with a coefficient of 0; simplifies the description of each variable.
+Orthomax with a coefficient of 0; simplifies the description of each
+variable.
 'equamax'
 Orthomax with a coefficient of M / 2.
 'parsimax'
@@ -1660,8 +1664,8 @@ scaled to unit length before the orthomax rotation and unscaled afterwards);
 Relative convergence tolerance for the iterative orthomax rotation. The
 default is sqrt (eps).
 'Maxit'
-Maximum number of iterations for the iterative orthomax rotation. The default
-is 250.
+Maximum number of iterations for the iterative orthomax rotation. The
+default is 250.
 'Coeff'
 The orthomax coefficient used when 'Method' is 'orthomax'.
 The default is 1 (equivalent to 'varimax').
@@ -1716,8 +1720,9 @@ Sparse filtering for feature extraction.
 
 Mdl = sparsefilt (X, Q) learns Q features from
 the N x P data matrix X (rows are observations, columns are
-predictors) and returns a SparseFiltering object Mdl. Apply the
-learned transformation to data with transform (Mdl, X).
+predictors) and returns a SparseFiltering object Mdl. Apply
+the learned transformation to data with
+transform (Mdl, X).
 
 The N x Q features returned by transform are the
 soft-absolute activations sqrt ((X * W) .^ 2 + 1e-8),
@@ -1829,8 +1834,8 @@ pdist (default 'euclidean').
 'NumDimensions'
 The dimension of the embedding Y (default min (P, 2)).
 'NumPCAComponents'
-If positive, reduce X to this many principal components before embedding
-(default 0, no reduction).
+If positive, reduce X to this many principal components before
+embedding (default 0, no reduction).
 'Standardize'
 Logical; center and scale each column of X before embedding (default
 false).

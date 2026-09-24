@@ -1203,9 +1203,9 @@ nansum
 # elements: 1
 # length: 1350
 statistics: s = nansum (x)
-statistics: s = nanmax (x, 'all')
-statistics: s = nanmax (x, dim)
-statistics: s = nanmax (x, vecdim)
+statistics: s = nansum (x, 'all')
+statistics: s = nansum (x, dim)
+statistics: s = nansum (x, vecdim)
 Compute the sum while ignoring NaN values.
 
 s = nansum (x) returns the sum of x, after removing
@@ -1327,11 +1327,12 @@ statistics: [...] = partialcorr (..., Name, Value)
 Linear or rank partial correlation coefficients.
 
 rho = partialcorr (x) returns the sample linear partial
-correlation coefficients between pairs of variables in the n-by-p
-matrix x, controlling for the remaining columns of x. Each element
-rho(i,j) is the partial correlation between x(:,i)
-and x(:,j), adjusted for the other p-2 columns. rho
-is a symmetric p-by-p matrix with ones on the diagonal.
+correlation coefficients between pairs of variables in the
+n-by-p matrix x, controlling for the remaining columns of
+x. Each element rho(i,j) is the partial correlation
+between x(:,i) and x(:,j), adjusted for the other
+p-2 columns. rho is a symmetric p-by-p matrix
+with ones on the diagonal.
 
 rho = partialcorr (x, z) controls instead for the
 variables in the n-by-q matrix z, returning the
@@ -1340,12 +1341,12 @@ p-by-p partial correlations among the columns of x.
 rho = partialcorr (x, y, z) returns the
 p1-by-p2 matrix of partial correlations between the columns of
 the n-by-p1 matrix x and the n-by-p2 matrix
-y, controlling for z. Element rho(i,j) is the partial
-correlation between x(:,i) and y(:,j).
+y, controlling for z. Element rho(i,j) is the
+partial correlation between x(:,i) and y(:,j).
 
-[rho, pval] = partialcorr (...) also returns pval,
-a matrix of p-values for testing the hypothesis of no partial correlation
-against the alternative selected by 'Tail'.
+[rho, pval] = partialcorr (...) also returns
+pval, a matrix of p-values for testing the hypothesis of no partial
+correlation against the alternative selected by 'Tail'.
 
 A coefficient is NaN where the controlling variables explain either
 of the two variables completely, since the partial correlation is then
@@ -1362,19 +1363,19 @@ MATLAB.
 'Rows'
 'all' (default) uses all rows regardless of missing values (any
 NaN yields a NaN result); 'complete' uses only the rows
-with no missing values across all supplied variables; 'pairwise' uses,
-for each computed coefficient, the rows with no missing values among just the
-variables involved in that coefficient.
+with no missing values across all supplied variables; 'pairwise'
+uses, for each computed coefficient, the rows with no missing values among
+just the variables involved in that coefficient.
 'Tail'
 The alternative hypothesis for pval: 'both' (default, nonzero
-correlation), 'right' (greater than zero), or 'left' (less than
-zero).
+correlation), 'right' (greater than zero), or 'left' (less
+than zero).
 
-The partial correlation is computed by regressing each of the two variables on
-the controlling variables (with an intercept) and correlating the residuals.
-The p-value uses a Student's t statistic with n - 2 - k degrees
-of freedom, where k is the number of controlling variables and n
-the number of observations used.
+The partial correlation is computed by regressing each of the two variables
+on the controlling variables (with an intercept) and correlating the
+residuals. The p-value uses a Student's t statistic with
+n - 2 - k degrees of freedom, where k is the number of
+controlling variables and n the number of observations used.
 
 The data are centered, and the controlling variables rescaled, before the
 regression, which leaves the result unchanged in exact arithmetic and keeps
@@ -1426,13 +1427,13 @@ columns of x (that is, all columns of x except the j-th).
 rho is a p-by-q matrix.
 
 rho = partialcorri (y, x, z) additionally
-controls for the variables in the n-by-r matrix z, so that
-rho(i,j) is adjusted for both the other columns of x and all
-columns of z.
+controls for the variables in the n-by-r matrix z, so
+that rho(i,j) is adjusted for both the other columns of x
+and all columns of z.
 
-[rho, pval] = partialcorri (...) also returns pval,
-a matrix of p-values for testing the hypothesis of no partial correlation
-against the alternative selected by 'Tail'.
+[rho, pval] = partialcorri (...) also returns
+pval, a matrix of p-values for testing the hypothesis of no partial
+correlation against the alternative selected by 'Tail'.
 
 The 'Type', 'Rows', and 'Tail' Name/Value
 options are accepted with the same meaning as in partialcorr.

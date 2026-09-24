@@ -747,7 +747,7 @@ expfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2623
+# length: 2622
 statistics: muhat = expfit (x)
 statistics: [muhat, muci] = expfit (x)
 statistics: [muhat, muci] = expfit (x, alpha)
@@ -805,7 +805,7 @@ https://en.wikipedia.org/wiki/Exponential_distribution
 See also:
 expcdf,
 expinv,
-explpdf,
+exppdf,
 exprnd,
 explike,
 expstat
@@ -1312,7 +1312,7 @@ gpfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3132
+# length: 3136
 statistics: paramhat = gpfit (x)
 statistics: [paramhat, paramci] = gpfit (x)
 statistics: [paramhat, paramci] = gpfit (x, alpha)
@@ -1371,9 +1371,9 @@ gplike returns Inf.
 
 When k = 0 and theta = 0, the Generalized Pareto
 is equivalent to the exponential distribution. When k > 0 and
-theta = k / k the Generalized Pareto is equivalent
-to the Pareto distribution. The mean of the Generalized Pareto is not finite
-when k >= 1 and the variance is not finite when
+theta = sigma / k the Generalized Pareto is
+equivalent to the Pareto distribution. The mean of the Generalized Pareto is
+not finite when k >= 1 and the variance is not finite when
 k >= 1/2. When k >= 0, the Generalized Pareto
 has positive density for x > theta, or, when
 theta < 0, for
@@ -3134,9 +3134,9 @@ paramhat = stblfit (x) returns the maximum likelihood
 estimates of the parameters of the stable distribution, in the Nolan
 S0 parameterization, given the data in x.
 paramhat(1) is the tail index alpha,
-paramhat(2) is the skewness beta, paramhat(3)
-is the scale gam, and paramhat(4) is the location
-delta.
+paramhat(2) is the skewness beta,
+paramhat(3) is the scale gam, and
+paramhat(4) is the location delta.
 
 [paramhat, paramci] = stblfit (x) returns the 95%
 confidence intervals for the parameter estimates. The intervals are Wald
@@ -3170,10 +3170,10 @@ of the characteristic function, which makes fitting considerably slower than
 for the closed-form distributions. Censoring is not supported.
 
 The estimates are the maximum-likelihood estimates under the mathematically
-exact density. MATLAB fits an interpolation-based approximation of the stable
-density, whose maximum-likelihood estimates deviate from the exact ones by
-about 10^{-2} (and the resulting confidence intervals by up to roughly
-20%); stblfit returns the exact (more accurate) estimates.
+exact density. MATLAB fits an interpolation-based approximation of the
+stable density, whose maximum-likelihood estimates deviate from the exact
+ones by about 10^{-2} (and the resulting confidence intervals by up to
+roughly 20%); stblfit returns the exact (more accurate) estimates.
 
 Further information about the stable distribution can be found at
 https://en.wikipedia.org/wiki/Stable_distribution
@@ -3219,8 +3219,8 @@ alpha, (2) skewness beta, (3) scale gam, and (4) location
 delta given in the four-element vector params.
 
 [nlogL, acov] = stbllike (params, x) also
-returns the inverse of the observed Fisher information matrix, acov. If
-the input parameter values in params are the maximum likelihood
+returns the inverse of the observed Fisher information matrix, acov.
+If the input parameter values in params are the maximum likelihood
 estimates, the diagonal elements of acov are their asymptotic
 variances. acov is based on the numerically evaluated Hessian of the
 negative log-likelihood, since the stable density has no closed form.

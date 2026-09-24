@@ -148,9 +148,10 @@ number of columns in X specifying the covariance matrix for the
 Mahalanobis distance. Valid only when 'Distance' is
 'mahalanobis'. Default is cov (X).
 
-'Distance', 'P', 'Cov' and 'Scale' override
-the searcher's own metric for that call only; the Distance and
-DistParameter properties keep their values, as they do in MATLAB.
+'Distance', 'P', 'Cov' and 'Scale'
+override the searcher's own metric for that call only; the
+Distance and DistParameter properties keep their values,
+as they do in MATLAB.
 
 See also:
 ExhaustiveSearcher,

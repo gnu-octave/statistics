@@ -517,7 +517,7 @@ isoutlier
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6527
+# length: 6501
 statistics: TF = isoutlier (x)
 statistics: TF = isoutlier (x, method)
 statistics: TF = isoutlier (x, 'percentiles', threshold)
@@ -653,8 +653,6 @@ C is the average between U and L thresholds. For the
 percentiles.
 
 See also:
-filloutliers,
-rmoutliers,
 ismissing
 
 
@@ -925,11 +923,11 @@ standardizeMissing
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1912
+# length: 1911
 statistics: B = standardizeMissing (A, indicator)
 Replace selected values by standard missing values.
 
-Β = standardizeMissing (A, indicator) returns a
+B = standardizeMissing (A, indicator) returns a
 standardized array B of the same size and data type as the input array
 A and with all elements specified by indicator replaced by the
 standard missing value corresponding the data type of A.

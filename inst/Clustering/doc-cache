@@ -55,8 +55,8 @@ CalinskiHarabaszEvaluation.CalinskiHarabaszEvaluation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 958
-statistics: obj = CalinskiHarabaszEvaluation (x, clust, KList)
+# length: 974
+CalinskiHarabaszEvaluation: obj = CalinskiHarabaszEvaluation (x, clust, KList)
 Construct a CalinskiHarabaszEvaluation object to evaluate
 clustering solutions with the Calinski-Harabasz criterion.
 
@@ -913,8 +913,8 @@ DaviesBouldinEvaluation.DaviesBouldinEvaluation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 946
-statistics: obj = DaviesBouldinEvaluation (x, clust, KList)
+# length: 959
+DaviesBouldinEvaluation: obj = DaviesBouldinEvaluation (x, clust, KList)
 Construct a DaviesBouldinEvaluation object to evaluate clustering
 solutions with the Davies-Bouldin criterion.
 
@@ -1366,10 +1366,10 @@ GapEvaluation.GapEvaluation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 870
-statistics: obj = GapEvaluation (x, clust, KList)
-statistics: obj = GapEvaluation (x, clust, KList, B)
-statistics: obj = GapEvaluation (..., name, value)
+# length: 879
+GapEvaluation: obj = GapEvaluation (x, clust, KList)
+GapEvaluation: obj = GapEvaluation (x, clust, KList, B)
+GapEvaluation: obj = GapEvaluation (..., name, value)
 Construct a GapEvaluation object to evaluate clustering solutions using
 the gap statistic.
 
@@ -2108,9 +2108,9 @@ SilhouetteEvaluation.SilhouetteEvaluation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 787
-statistics: obj = SilhouetteEvaluation (x, clust, KList)
-statistics: obj = SilhouetteEvaluation (..., Name, Value)
+# length: 807
+SilhouetteEvaluation: obj = SilhouetteEvaluation (x, clust, KList)
+SilhouetteEvaluation: obj = SilhouetteEvaluation (..., Name, Value)
 Create a SilhouetteEvaluation object to evaluate clustering
 solutions for data x using clustering method clust over the
 list of cluster numbers KList.
@@ -2654,33 +2654,20 @@ gmdistribution
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1053
-statistics: GMdist = gmdistribution (mu, Sigma)
-statistics: GMdist = gmdistribution (mu, Sigma, p)
-statistics: GMdist = gmdistribution (mu, Sigma, p, extra)
-Create an object of the gmdistribution class which represents a Gaussian
-mixture model with k components of n-dimensional Gaussians.
+# length: 561
+statistics: gmdistribution
+Gaussian mixture distribution.
 
-Input mu is a k-by-n matrix specifying the n-dimensional mean of
-each of the k components of the distribution.
+A gmdistribution object represents a mixture of k multivariate
+Gaussian components in d variables: their means mu, their
+covariances Sigma and their mixing proportions
+ComponentProportion. The methods pdf, cdf and
+random evaluate and sample the mixture, while cluster,
+posterior and mahal assign observations to its components.
 
-Input Sigma is an array that specifies the variances of the
-distributions, in one of four forms depending on its dimension.
-
-n-by-n-by-k: Slice Sigma(:,:,i) is the variance of the
-i'th component
-1-by-n-by-k: Slice diag(Sigma(1,:,i)) is the variance of the
-i'th component
-n-by-n: Sigma is the variance of every component
-1-by-n-by-k: Slice diag(Sigma) is the variance of every
-component
-
-If p is specified, it is a vector of length k specifying the
-proportion of each component. If it is omitted or empty, each component
-has an equal proportion.
-
-Input extra is used by fitgmdist to indicate the parameters of the
-fitting process.
+Create a gmdistribution object with the class constructor from
+known parameters, or with fitgmdist from data, which also records
+the results of the fit.
 
 See also:
 fitgmdist
@@ -2689,8 +2676,8 @@ fitgmdist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 132
-Create an object of the gmdistribution class which represents a Gaussian mixture model with k components of n-dimensional Gaussians.
+# length: 30
+Gaussian mixture distribution.
 
 
 

@@ -684,7 +684,7 @@ ecdfhist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1244
+# length: 1233
 statistics: [n, c] = ecdfhist (f, x)
 statistics: [n, c] = ecdfhist (f, x, m)
 statistics: [n, c] = ecdfhist (f, x, centers)
@@ -720,8 +720,7 @@ center. Each bar height is that mass divided by the bin width.
 See also:
 ecdf,
 cdfplot,
-hist,
-histogram
+hist
 
 
 # name: <cell-element>
@@ -865,19 +864,19 @@ Create a matrix of scatter plots grouped by a categorical variable.
 
 gplotmatrix (x, y, group) creates a matrix of
 scatter plots. Each subplot in the resulting figure is a scatter plot of a
-column of x against a column of y. If x is n-by-p
-and y is n-by-q, the resulting figure holds a
-q-by-p grid of subplots; the subplot in row i and column
-j plots x(:,j) on the horizontal axis against
+column of x against a column of y. If x is
+n-by-p and y is n-by-q, the resulting figure
+holds a q-by-p grid of subplots; the subplot in row i and
+column j plots x(:,j) on the horizontal axis against
 y(:,i) on the vertical axis. Points are grouped and colored
 according to group, which is a grouping variable (numeric, logical,
 character, string, or cell array of strings) with one entry per row of
 x.
 
 gplotmatrix (x, [], group) is equivalent to
-gplotmatrix (x, x, group) except that the diagonal of
-the p-by-p grid is replaced by grouped histograms of the columns
-of x.
+gplotmatrix (x, x, group) except that the diagonal
+of the p-by-p grid is replaced by grouped histograms of the
+columns of x.
 
 The appearance of the plot is controlled by further positional arguments:
 
@@ -901,18 +900,18 @@ Controls the diagonal of the grid when y is empty: "stairs"
 diagonal empty, or "variable" to write the variable names on the
 diagonal.
 xnam, ynam
-Character vectors or cell arrays of strings giving the names of the columns of
-x and y, used to label the outer axes.
+Character vectors or cell arrays of strings giving the names of the columns
+of x and y, used to label the outer axes.
 
-An optional leading parent argument (a figure or uipanel handle) selects
-the container for the plot.
+An optional leading parent argument (a figure or uipanel handle)
+selects the container for the plot.
 
 The optional outputs are h, an array of handles to the plotted objects
-with size ny-by-p-by-k (where ny is the number of rows
-of the grid and k the number of groups); ax, the matrix of handles
-to the subplot axes (with an extra row of hidden axes for the diagonal
-histograms); and bigax, the handle to the invisible enclosing axes used
-for titles and labels.
+with size ny-by-p-by-k (where ny is the number of
+rows of the grid and k the number of groups); ax, the matrix of
+handles to the subplot axes (with an extra row of hidden axes for the
+diagonal histograms); and bigax, the handle to the invisible enclosing
+axes used for titles and labels.
 
 See also:
 gscatter,
@@ -1343,19 +1342,19 @@ dist falls approximately along a straight line. Systematic departures
 from the reference line indicate departures from the distribution.
 
 dist is one of "normal" (the default when dist is
-omitted), "lognormal", "exponential", "extreme value",
-"weibull", "rayleigh", "logistic", or
-"loglogistic". For "lognormal", "weibull", and
-"loglogistic" the data axis is logarithmic.
+omitted), "lognormal", "exponential",
+"extreme value", "weibull", "rayleigh",
+"logistic", or "loglogistic". For "lognormal",
+"weibull", and "loglogistic" the data axis is logarithmic.
 
 y is a numeric vector, or a matrix in which case each column is plotted
 as a separate sample. NaN values are ignored.
 
 cens is a logical vector the same size as y that is true for
 right-censored observations; censored points are not plotted and the plotting
-positions of the remaining points follow the Kaplan-Meier estimate. freq
-is a vector of nonnegative integer frequencies (counts) the same size as
-y. Pass [] to omit either one.
+positions of the remaining points follow the Kaplan-Meier estimate.
+freq is a vector of nonnegative integer frequencies (counts) the same
+size as y. Pass [] to omit either one.
 
 probplot (ax, ...) plots into the axes ax instead of
 the current axes. The trailing option "noref" suppresses the
@@ -1365,11 +1364,11 @@ h = probplot (...) returns a column vector of handles to the
 plotted line objects (the data markers, followed by the reference line unless
 "noref" was given).
 
-The reference line is a robust fit through the first and third quartiles of the
-data on the transformed scale. For censored data the quartiles are taken from
-the Kaplan-Meier plotting positions; when heavy censoring prevents the data
-from reaching a quartile the position is linearly extrapolated, which may
-deviate slightly from MATLAB.
+The reference line is a robust fit through the first and third quartiles of
+the data on the transformed scale. For censored data the quartiles are taken
+from the Kaplan-Meier plotting positions; when heavy censoring prevents the
+data from reaching a quartile the position is linearly extrapolated, which
+may deviate slightly from MATLAB.
 
 See also:
 normplot,
@@ -1472,8 +1471,8 @@ strings) with one entry per point. The scatter points and the marginal
 histograms are separated and colored by group.
 "NBins"
 The number of bins for the marginal histograms, either a scalar applied to
-both or a two-element vector [nx ny]. The default is chosen by Scott's
-rule.
+both or a two-element vector [nx ny]. The default is chosen by
+Scott's rule.
 "Kernel"
 "off" (default) draws histograms for the marginals; "on" or
 "overlay" draws kernel density estimates instead.
@@ -1716,8 +1715,8 @@ stats.chart.BoxChart.BoxEdgeColor
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 104
-BoxChart: property BoxEdgeColor
+# length: 116
+stats.chart.BoxChart: property BoxEdgeColor
 Colour of the box outline. Setting it puts
 BoxEdgeColorMode at 'manual'.
 
@@ -1740,8 +1739,8 @@ stats.chart.BoxChart.BoxEdgeColorMode
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 96
-BoxChart: property BoxEdgeColorMode
+# length: 108
+stats.chart.BoxChart: property BoxEdgeColorMode
 Whether BoxEdgeColor was chosen. This property is read-only.
 
 
@@ -1763,8 +1762,8 @@ stats.chart.BoxChart.BoxFaceAlpha
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 92
-BoxChart: property BoxFaceAlpha
+# length: 104
+stats.chart.BoxChart: property BoxFaceAlpha
 How opaque the box fill is, from 0 to 1. The default is 0.2.
 
 
@@ -1786,8 +1785,8 @@ stats.chart.BoxChart.BoxFaceColor
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 130
-BoxChart: property BoxFaceColor
+# length: 142
+stats.chart.BoxChart: property BoxFaceColor
 Colour the boxes are filled with, as an RGB triplet. Setting it puts
 BoxFaceColorMode at 'manual'.
 
@@ -1810,8 +1809,8 @@ stats.chart.BoxChart.BoxFaceColorMode
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 136
-BoxChart: property BoxFaceColorMode
+# length: 148
+stats.chart.BoxChart: property BoxFaceColorMode
 Whether BoxFaceColor was chosen, 'manual', or left to
 the chart, 'auto'. This property is read-only.
 
@@ -1834,8 +1833,8 @@ stats.chart.BoxChart.BoxMedianLineColor
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 128
-BoxChart: property BoxMedianLineColor
+# length: 140
+stats.chart.BoxChart: property BoxMedianLineColor
 Colour of the line marking the median. Setting it puts
 BoxMedianLineColorMode at 'manual'.
 
@@ -1858,8 +1857,8 @@ stats.chart.BoxChart.BoxMedianLineColorMode
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 108
-BoxChart: property BoxMedianLineColorMode
+# length: 120
+stats.chart.BoxChart: property BoxMedianLineColorMode
 Whether BoxMedianLineColor was chosen. This property is
 read-only.
 
@@ -1882,8 +1881,8 @@ stats.chart.BoxChart.BoxWidth
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 103
-BoxChart: property BoxWidth
+# length: 115
+stats.chart.BoxChart: property BoxWidth
 Width of each box, in the units of the horizontal axis. The default
 is 0.5.
 
@@ -1906,8 +1905,8 @@ stats.chart.BoxChart.CapWidth
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 130
-BoxChart: property CapWidth
+# length: 142
+stats.chart.BoxChart: property CapWidth
 Width of the cap at the end of each whisker, in the units of the
 horizontal axis. The default is 0.25.
 
@@ -1930,8 +1929,8 @@ stats.chart.BoxChart.CapWidthMode
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 88
-BoxChart: property CapWidthMode
+# length: 100
+stats.chart.BoxChart: property CapWidthMode
 Whether CapWidth was chosen. This property is read-only.
 
 
@@ -1953,8 +1952,8 @@ stats.chart.BoxChart.JitterOutliers
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 143
-BoxChart: property JitterOutliers
+# length: 155
+stats.chart.BoxChart: property JitterOutliers
 Whether outlier markers are spread across the width of the box rather
 than drawn in a line, 'off' by default.
 
@@ -1977,8 +1976,8 @@ stats.chart.BoxChart.LineWidth
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 82
-BoxChart: property LineWidth
+# length: 94
+stats.chart.BoxChart: property LineWidth
 Width of the box and whisker lines. The default is 1.
 
 
@@ -2000,8 +1999,8 @@ stats.chart.BoxChart.MarkerColor
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 104
-BoxChart: property MarkerColor
+# length: 116
+stats.chart.BoxChart: property MarkerColor
 Colour of an outlier marker. Setting it puts
 MarkerColorMode at 'manual'.
 
@@ -2024,8 +2023,8 @@ stats.chart.BoxChart.MarkerColorMode
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 94
-BoxChart: property MarkerColorMode
+# length: 106
+stats.chart.BoxChart: property MarkerColorMode
 Whether MarkerColor was chosen. This property is read-only.
 
 
@@ -2047,8 +2046,8 @@ stats.chart.BoxChart.MarkerSize
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 74
-BoxChart: property MarkerSize
+# length: 86
+stats.chart.BoxChart: property MarkerSize
 Size of an outlier marker. The default is 6.
 
 
@@ -2070,8 +2069,8 @@ stats.chart.BoxChart.MarkerStyle
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 103
-BoxChart: property MarkerStyle
+# length: 115
+stats.chart.BoxChart: property MarkerStyle
 Marker an outlier is drawn with, 'o' by default, or
 'none' to draw none.
 
@@ -2094,8 +2093,8 @@ stats.chart.BoxChart.Notch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 251
-BoxChart: property Notch
+# length: 263
+stats.chart.BoxChart: property Notch
 Whether the box is notched about its median, 'off' by default.
 A notch spans the median plus and minus
 1.57 IQR / sqrt (n), so two boxes whose notches do not overlap
@@ -2120,8 +2119,8 @@ stats.chart.BoxChart.Orientation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 100
-BoxChart: property Orientation
+# length: 112
+stats.chart.BoxChart: property Orientation
 Whether the boxes stand 'vertical', the default, or lie
 'horizontal'.
 
@@ -2144,8 +2143,8 @@ stats.chart.BoxChart.Parent
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 87
-BoxChart: property Parent
+# length: 99
+stats.chart.BoxChart: property Parent
 The axes the chart is drawn into. This property is read-only.
 
 
@@ -2167,8 +2166,8 @@ stats.chart.BoxChart.SourceTable
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 226
-BoxChart: property SourceTable
+# length: 238
+stats.chart.BoxChart: property SourceTable
 The table the data is read from, empty where it came from vectors.
 Assigning it again re-reads the columns XVariable and
 YVariable name, so a table changed after the chart was drawn is
@@ -2193,8 +2192,8 @@ stats.chart.BoxChart.WhiskerLineColor
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 74
-BoxChart: property WhiskerLineColor
+# length: 86
+stats.chart.BoxChart: property WhiskerLineColor
 Colour of the whiskers and their caps.
 
 
@@ -2216,8 +2215,8 @@ stats.chart.BoxChart.WhiskerLineStyle
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 109
-BoxChart: property WhiskerLineStyle
+# length: 121
+stats.chart.BoxChart: property WhiskerLineStyle
 Line style of the whiskers: '-' by default, or '--',
 ':', '-.' or 'none'.
 
@@ -2240,8 +2239,8 @@ stats.chart.BoxChart.XData
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 333
-BoxChart: property XData
+# length: 345
+stats.chart.BoxChart: property XData
 Where each observation's box stands, one value per observation: a
 grouping variable, numeric or categorical. Where no grouping was
 given every observation shares one position and this is a
@@ -2268,8 +2267,8 @@ stats.chart.BoxChart.XDataMode
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 260
-BoxChart: property XDataMode
+# length: 272
+stats.chart.BoxChart: property XDataMode
 Where XData came from: 'manual' where it was given as a
 grouping vector, and 'auto' where the chart derived it, from a
 table or from there being no grouping at all. This property is
@@ -2294,8 +2293,8 @@ stats.chart.BoxChart.XVariable
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 164
-BoxChart: property XVariable
+# length: 176
+stats.chart.BoxChart: property XVariable
 The column of SourceTable the boxes are grouped by, empty where
 none was named. Naming one is refused while the data came from
 vectors.
@@ -2319,8 +2318,8 @@ stats.chart.BoxChart.YData
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 134
-BoxChart: property YData
+# length: 146
+stats.chart.BoxChart: property YData
 The observations themselves, one value per observation. Setting it is
 refused while YVariable names a column.
 
@@ -2343,8 +2342,8 @@ stats.chart.BoxChart.YDataMode
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 201
-BoxChart: property YDataMode
+# length: 213
+stats.chart.BoxChart: property YDataMode
 Where YData came from: 'manual' where it was given as a
 vector and 'auto' where it was read from a table. This
 property is read-only, where MATLAB allows it to be assigned.
@@ -2368,8 +2367,8 @@ stats.chart.BoxChart.YVariable
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 136
-BoxChart: property YVariable
+# length: 148
+stats.chart.BoxChart: property YVariable
 The column of SourceTable holding the observations. Naming one
 is refused while the data came from vectors.
 

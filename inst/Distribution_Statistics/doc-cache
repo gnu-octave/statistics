@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 36
+# columns: 37
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -675,6 +675,63 @@ gplike
 # elements: 1
 # length: 58
 Compute statistics of the generalized Pareto distribution.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+gumbelstat
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1202
+statistics: [m, v] = gumbelstat (mu, beta)
+Compute statistics of the Gumbel distribution.
+
+[m, v] = gumbelstat (mu, beta) returns the
+mean and variance of the Gumbel distribution (also known as the extreme value
+or the type I generalized extreme value distribution) with location
+parameter mu and scale parameter beta.
+
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the
+same size as the other inputs.
+
+The mean is mu + gamma * beta, where gamma
+is the Euler-Mascheroni constant, and the variance is
+pi^2 * beta^2 / 6. A non-positive beta returns
+NaN for both.
+
+The Gumbel distribution is used to model the distribution of the maximum (or
+the minimum) of a number of samples of various distributions. This version
+is suitable for modeling maxima. For modeling minima, use the alternative
+extreme value statistics, evstat.
+
+Further information about the Gumbel distribution can be found at
+https://en.wikipedia.org/wiki/Gumbel_distribution
+
+Input arguments must be double or single; integer, logical,
+and character arrays are rejected.
+
+See also:
+gumbelcdf,
+gumbelinv,
+gumbelpdf,
+gumbelrnd,
+gumbelfit,
+gumbellike,
+evstat
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 46
+Compute statistics of the Gumbel distribution.
 
 
 

@@ -1592,12 +1592,12 @@ ClassificationDiscriminant.ClassificationDiscriminant
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3564
-statistics: obj = ClassificationDiscriminant (X, Y)
-statistics: obj = ClassificationDiscriminant (Tbl, ResponseVarName)
-statistics: obj = ClassificationDiscriminant (Tbl, formula)
-statistics: obj = ClassificationDiscriminant (Tbl, Y)
-statistics: obj = ClassificationDiscriminant (..., name, value)
+# length: 3644
+ClassificationDiscriminant: obj = ClassificationDiscriminant (X, Y)
+ClassificationDiscriminant: obj = ClassificationDiscriminant (Tbl, ResponseVarName)
+ClassificationDiscriminant: obj = ClassificationDiscriminant (Tbl, formula)
+ClassificationDiscriminant: obj = ClassificationDiscriminant (Tbl, Y)
+ClassificationDiscriminant: obj = ClassificationDiscriminant (..., name, value)
 Create a ClassificationDiscriminant class object containing a
 discriminant analysis model.
 
@@ -5534,12 +5534,12 @@ ClassificationGAM.ClassificationGAM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3945
-statistics: obj = ClassificationGAM (X, Y)
-statistics: obj = ClassificationGAM (Tbl, ResponseVarName)
-statistics: obj = ClassificationGAM (Tbl, formula)
-statistics: obj = ClassificationGAM (Tbl, Y)
-statistics: obj = ClassificationGAM (..., name, value)
+# length: 3980
+ClassificationGAM: obj = ClassificationGAM (X, Y)
+ClassificationGAM: obj = ClassificationGAM (Tbl, ResponseVarName)
+ClassificationGAM: obj = ClassificationGAM (Tbl, formula)
+ClassificationGAM: obj = ClassificationGAM (Tbl, Y)
+ClassificationGAM: obj = ClassificationGAM (..., name, value)
 Create a ClassificationGAM class object containing a generalized
 additive classification model.
 
@@ -7306,12 +7306,12 @@ ClassificationKNN.ClassificationKNN
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5577
-statistics: obj = ClassificationKNN (X, Y)
-statistics: obj = ClassificationKNN (Tbl, ResponseVarName)
-statistics: obj = ClassificationKNN (Tbl, formula)
-statistics: obj = ClassificationKNN (Tbl, Y)
-statistics: obj = ClassificationKNN (..., name, value)
+# length: 5612
+ClassificationKNN: obj = ClassificationKNN (X, Y)
+ClassificationKNN: obj = ClassificationKNN (Tbl, ResponseVarName)
+ClassificationKNN: obj = ClassificationKNN (Tbl, formula)
+ClassificationKNN: obj = ClassificationKNN (Tbl, Y)
+ClassificationKNN: obj = ClassificationKNN (..., name, value)
 Create a ClassificationKNN class object containing a k-Nearest
 Neighbor classification model.
 
@@ -11626,12 +11626,12 @@ ClassificationNeuralNetwork.ClassificationNeuralNetwork
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5443
-statistics: obj = ClassificationNeuralNetwork (X, Y)
-statistics: obj = ClassificationNeuralNetwork (Tbl, ResponseVarName)
-statistics: obj = ClassificationNeuralNetwork (Tbl, formula)
-statistics: obj = ClassificationNeuralNetwork (Tbl, Y)
-statistics: obj = ClassificationNeuralNetwork (..., name, value)
+# length: 5528
+ClassificationNeuralNetwork: obj = ClassificationNeuralNetwork (X, Y)
+ClassificationNeuralNetwork: obj = ClassificationNeuralNetwork (Tbl, ResponseVarName)
+ClassificationNeuralNetwork: obj = ClassificationNeuralNetwork (Tbl, formula)
+ClassificationNeuralNetwork: obj = ClassificationNeuralNetwork (Tbl, Y)
+ClassificationNeuralNetwork: obj = ClassificationNeuralNetwork (..., name, value)
 Create a ClassificationNeuralNetwork class object containing a
 neural network classification model.
 
@@ -16586,8 +16586,8 @@ what fun returned for fold k.
 fun is a function handle taking seven inputs and returning a
 numeric vector of the same length every time it is called:
 
-testvals = fun (M, Xtrain, Ytrain, Wtrain, ...
-Xtest, Ytest, Wtest)
+testvals = fun (M, Xtrain, Ytrain, ...
+Wtrain, Xtest, Ytest, Wtest)
 
 M is the model the fold was fitted with, taken from
 obj.Trained{k}; Xtrain, Ytrain and
@@ -16868,12 +16868,12 @@ ClassificationSVM.ClassificationSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4314
-statistics: obj = ClassificationSVM (X, Y)
-statistics: obj = ClassificationSVM (Tbl, ResponseVarName)
-statistics: obj = ClassificationSVM (Tbl, formula)
-statistics: obj = ClassificationSVM (Tbl, Y)
-statistics: obj = ClassificationSVM (..., name, value)
+# length: 4349
+ClassificationSVM: obj = ClassificationSVM (X, Y)
+ClassificationSVM: obj = ClassificationSVM (Tbl, ResponseVarName)
+ClassificationSVM: obj = ClassificationSVM (Tbl, formula)
+ClassificationSVM: obj = ClassificationSVM (Tbl, Y)
+ClassificationSVM: obj = ClassificationSVM (..., name, value)
 Create a ClassificationSVM class object containing a Support
 Vector Machine classification model for one-class or two-class problems.
 
@@ -18150,10 +18150,10 @@ obj. For one-class model, +1 or -1 is returned.
 
 obj must be a ClassificationSVM class object.
 
-[label, scores] = resubPredict (obj also
-returns scores, which contains the decision values for each
-prediction. A ScoreTransform assigned to obj is applied
-to them, so scores holds whatever that transform returns. Posterior
+[label, scores] = resubPredict (obj also returns
+scores, which contains the decision values for each prediction. A
+ScoreTransform assigned to obj is applied to them, so
+scores holds whatever that transform returns. Posterior
 probabilities need a transform fitted to the model, which this package
 does not compute yet.
 
@@ -23344,7 +23344,7 @@ CompactClassificationGAM.edge
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 921
+# length: 943
 CompactClassificationGAM: e = edge (obj, X, Y)
 CompactClassificationGAM: e = edge (..., "Weights", w)
 CompactClassificationGAM: e = edge (obj, Tbl, ResponseVarName)
@@ -23370,8 +23370,7 @@ CompactClassificationGAM,
 ClassificationGAM,
 CompactClassificationGAM.margin,
 CompactClassificationGAM.loss,
-##
-predict
+CompactClassificationGAM.predict
 
 
 # name: <cell-element>
@@ -23392,7 +23391,7 @@ CompactClassificationGAM.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1407
+# length: 1429
 CompactClassificationGAM: L = loss (obj, X, Y)
 CompactClassificationGAM: L = loss (obj, Tbl, ResponseVarName)
 CompactClassificationGAM: L = loss (obj, Tbl)
@@ -23430,8 +23429,7 @@ CompactClassificationGAM,
 ClassificationGAM,
 CompactClassificationGAM.margin,
 CompactClassificationGAM.edge,
-##
-predict
+CompactClassificationGAM.predict
 
 
 # name: <cell-element>
@@ -23452,7 +23450,7 @@ CompactClassificationGAM.margin
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 968
+# length: 990
 CompactClassificationGAM: m = margin (obj, X, Y)
 CompactClassificationGAM: m = margin (obj, Tbl, ResponseVarName)
 CompactClassificationGAM: m = margin (obj, Tbl)
@@ -23477,7 +23475,7 @@ CompactClassificationGAM,
 ClassificationGAM,
 CompactClassificationGAM.edge,
 CompactClassificationGAM.loss,
-## predict
+CompactClassificationGAM.predict
 
 
 # name: <cell-element>
@@ -24835,7 +24833,7 @@ CompactClassificationNeuralNetwork.edge
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1035
+# length: 1032
 CompactClassificationNeuralNetwork: e = edge (obj, X, Y)
 CompactClassificationNeuralNetwork: e = edge (..., "Weights", w)
 CompactClassificationNeuralNetwork: e = edge (obj, Tbl, ResponseVarName)
@@ -24858,7 +24856,6 @@ Y.
 
 See also:
 CompactClassificationNeuralNetwork,
-##
 ClassificationNeuralNetwork,
 CompactClassificationNeuralNetwork.margin,
 CompactClassificationNeuralNetwork.loss,
@@ -24883,7 +24880,7 @@ CompactClassificationNeuralNetwork.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1693
+# length: 1690
 CompactClassificationNeuralNetwork: L = loss (obj, X, Y)
 CompactClassificationNeuralNetwork: L = loss (obj, Tbl, ResponseVarName)
 CompactClassificationNeuralNetwork: L = loss (obj, Tbl)
@@ -24921,7 +24918,6 @@ sum to one before it is applied.
 
 See also:
 CompactClassificationNeuralNetwork,
-##
 ClassificationNeuralNetwork,
 CompactClassificationNeuralNetwork.margin,
 CompactClassificationNeuralNetwork.edge,
@@ -24946,7 +24942,7 @@ CompactClassificationNeuralNetwork.margin
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1080
+# length: 1077
 CompactClassificationNeuralNetwork: m = margin (obj, X, Y)
 CompactClassificationNeuralNetwork: m = margin (obj, Tbl, ResponseVarName)
 CompactClassificationNeuralNetwork: m = margin (obj, Tbl)
@@ -24968,7 +24964,6 @@ Y.
 
 See also:
 CompactClassificationNeuralNetwork,
-##
 ClassificationNeuralNetwork,
 CompactClassificationNeuralNetwork.edge,
 CompactClassificationNeuralNetwork.loss,
@@ -34550,145 +34545,38 @@ RegressionGAM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6310
-statistics: obj = RegressionGAM (X, Y)
-statistics: obj = RegressionGAM (..., name, value)
-Create a RegressionGAM class object containing a Generalized Additive
-Model (GAM) for regression.
+# length: 872
+statistics: RegressionGAM
+Generalized additive model for regression.
 
-A RegressionGAM class object can store the predictors and response
-data along with various parameters for the GAM model. It is recommended to
-use the fitrgam function to create a RegressionGAM object.
+A RegressionGAM object holds a generalized additive model fitted to
+a continuous response, and predicts the response for new data with the
+predict method. The model is a sum of one shape function per
+predictor, and optionally one per pair of predictors, each learned from the
+data rather than assumed.
 
-obj = RegressionGAM (X, Y) returns an object of
-class RegressionGAM, with matrix X containing the predictor data and
-vector Y containing the continuous response data.
+Two engines fit it. 'boostedtrees', the default, boosts shallow
+decision trees one predictor at a time; 'splines' boosts smoothing
+splines. The properties describing the engine that was not used are empty.
 
-X must be a NxP numeric matrix of input data where rows
-correspond to observations and columns correspond to features or variables.
-X will be used to train the GAM model.
+The object keeps its training data, which resubPredict,
+resubLoss and crossval work on; compact drops it and
+returns a CompactRegressionGAM, which still predicts.
 
-Y must be Nx1 numeric vector containing the response data
-corresponding to the predictor data in X. Y must have same
-number of rows as X.
-
-obj = RegressionGAM (..., name, value) returns
-an object of class RegressionGAM with additional properties specified by
-Name-Value pair arguments listed below.
-
-Name Value
-'Predictors' Predictor Variable names, specified as
-a row vector cell of strings with the same length as the columns in X.
-If omitted, the program will generate default variable names
-(x1, x2, ..., xn) for each column in X.
-'responsename' Response Variable Name, specified as
-a string. If omitted, the default value is 'Y'.
-'formula' (spline option) a model specification given as a
-string in
-the form 'Y ~ terms' where Y represents the response variable
-and terms the predictor variables. The formula can be used to
-specify a subset of variables for training model. For example:
-'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3' specifies four linear terms
-for the first four columns of for predictor data, and x1:x2 and
-x2:x3 specify the two interaction terms for 1st-2nd and 3rd-4th
-columns respectively. Only these terms will be used for training the model,
-but X must have at least as many columns as referenced in the formula.
-If Predictor Variable names have been defined, then the terms in the formula
-must reference to those. When 'formula' is specified, all terms used
-for training the model are referenced in the IntMatrix field of the
-obj class object as a matrix containing the column indexes for each
-term including both the predictors and the interactions used.
-'interactions' a logical matrix, a positive integer
-scalar, or the string 'all' for defining the interactions between
-predictor variables. When given a logical matrix, it must have the same
-number of columns as X and each row corresponds to a different
-interaction term combining the predictors indexed as true. Each
-interaction term is appended as a column vector after the available predictor
-column in X. When 'all' is defined, then all possible
-combinations of interactions are appended in X before training. At the
-moment, parsing a positive integer has the same effect as the 'all'
-option. When 'interactions' is specified, only the interaction terms
-appended to X are referenced in the IntMatrix field of the
-obj class object.
-'knots' (spline option) a scalar or a row vector with the
-same
-columns as X. It defines the knots for fitting a polynomial when
-training the GAM. As a scalar, it is expanded to a row vector. The default
-value is 5, hence expanded to ones (1, columns (X)) * 5. You can
-parse a row vector with different number of knots for each predictor
-variable to be fitted with, although not recommended.
-'order' (spline option) a scalar or a row vector with the
-same
-columns as X. It defines the order of the polynomial when training the
-GAM. As a scalar, it is expanded to a row vector. The default values is 3,
-hence expanded to ones (1, columns (X)) * 3. You can parse a row
-vector with different number of polynomial order for each predictor variable
-to be fitted with, although not recommended.
-'dof' (spline option) a scalar or a row vector with the
-same columns
-as X. It defines the degrees of freedom for fitting a polynomial when
-training the GAM. As a scalar, it is expanded to a row vector. The default
-value is 8, hence expanded to ones (1, columns (X)) * 8. You can
-parse a row vector with different degrees of freedom for each predictor
-variable to be fitted with, although not recommended.
-'tol' (spline option) a positive scalar to set the
-tolerance for
-convergence during training. By default, it is set to 1e-3.
-
-A row marked (spline option) belongs to the spline
-engine and requires 'FitMethod', 'splines'; passing one
-under the default boosted-tree engine is an error rather than
-being ignored. The boosted-tree engine's own options are
-documented under fitrgam.
-
-You can parse either a 'formula' or an 'interactions'
-optional parameter. Parsing both parameters will result an error.
-Accordingly, you can only pass up to two parameters among 'knots',
-'order', and 'dof' to define the required polynomial for
-training the GAM model.
-
-Two weak learners are available, selected by FitMethod.
-
-'boostedtrees', the default, boosts one shallow decision tree per
-predictor in each round, which is the scheme MATLAB's generalized additive
-model uses. A second phase then boosts trees over pairs of predictors,
-where interactions are asked for.
-
-'splines' boosts a smoothing spline per predictor until the
-residual sum of squares changes by less than 'Tol'. It has no
-MATLAB counterpart and is an Octave extension, kept because a smooth
-additive fit is a genuinely different and often better answer than a
-staircase of stumps. A standard deviation and a prediction interval are
-available from it alone.
-
-The two take different arguments, and an argument meant for one is refused
-by the other rather than ignored.
-
-The choice is visible in the properties. Knots, Order,
-DoF, Formula, Tol, BaseModel,
-ModelwInt and IntMatrix describe a spline fit and are empty
-under the boosted-tree engine, while ModelParameters,
-ReasonForTermination, BinEdges,
-PairDetectionBinEdges and TreeModel describe a tree fit and
-are empty under the spline engine.
-
-Fitted values are not expected to equal MATLAB's even under
-'boostedtrees'. The stopping rule and the step-reduction limit are
-not recoverable from anything MATLAB reports, so this engine documents its
-own; what the two share is the estimator and the reported surface, not the
-arithmetic.
+Create a RegressionGAM object with fitrgam or the class
+constructor.
 
 See also:
 fitrgam,
-regress,
-regress_gp
+CompactRegressionGAM,
+ClassificationGAM
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 97
-Create a RegressionGAM class object containing a Generalized Additive Model (GAM) for regression.
+# length: 42
+Generalized additive model for regression.
 
 
 
@@ -35300,7 +35188,7 @@ RegressionGAM.RegressionGAM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 674
+# length: 6217
 RegressionGAM: obj = RegressionGAM (X, Y)
 RegressionGAM: obj = RegressionGAM (Tbl, ResponseVarName)
 RegressionGAM: obj = RegressionGAM (Tbl, formula)
@@ -35308,15 +35196,127 @@ RegressionGAM: obj = RegressionGAM (Tbl, Y)
 RegressionGAM: obj = RegressionGAM (..., name, value)
 Fit a generalized additive model for regression.
 
-X is an NxP numeric matrix of predictor data, one
-observation per row, and Y is the continuous response of those
-N observations. The fit runs at construction, so obj
-arrives fitted.
+obj = RegressionGAM (X, Y) returns an object of
+class RegressionGAM, with matrix X containing the predictor data
+and vector Y containing the continuous response data.
 
-The name/value pairs the fit accepts, and the validation
-each one is held to, are listed in help RegressionGAM.
-fitrgam is the documented way to reach this constructor and
-takes the same pairs.
+X must be a NxP numeric matrix of input data where rows
+correspond to observations and columns correspond to features or
+variables. X will be used to train the GAM model.
+
+Y must be Nx1 numeric vector containing the response data
+corresponding to the predictor data in X. Y must have same
+number of rows as X.
+
+obj = RegressionGAM (..., name, value)
+returns an object of class RegressionGAM with additional properties
+specified by Name-Value pair arguments listed below.
+
+Name Value
+'Predictors' Predictor Variable names, specified as a
+row vector cell of strings with the same length as the columns in
+X. If omitted, the program will generate default variable names
+(x1, x2, ..., xn) for each column in X.
+'responsename' Response Variable Name, specified as
+a string. If omitted, the default value is 'Y'.
+'formula' (spline option) a model specification given
+as a string in the form 'Y ~ terms' where Y represents
+the response variable and terms the predictor variables. The
+formula can be used to specify a subset of variables for training model.
+For example: 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3' specifies
+four linear terms for the first four columns of for predictor data, and
+x1:x2 and x2:x3 specify the two interaction terms for
+1st-2nd and 3rd-4th columns respectively. Only these terms will be used
+for training the model, but X must have at least as many columns as
+referenced in the formula. If Predictor Variable names have been
+defined, then the terms in the formula must reference to those. When
+'formula' is specified, all terms used for training the model are
+referenced in the IntMatrix field of the obj class object
+as a matrix containing the column indexes for each term including both
+the predictors and the interactions used.
+'interactions' a logical matrix, a positive integer
+scalar, or the string 'all' for defining the interactions between
+predictor variables. When given a logical matrix, it must have the same
+number of columns as X and each row corresponds to a different
+interaction term combining the predictors indexed as true. Each
+interaction term is appended as a column vector after the available
+predictor column in X. When 'all' is defined, then all
+possible combinations of interactions are appended in X before
+training. At the moment, parsing a positive integer has the same effect
+as the 'all' option. When 'interactions' is specified,
+only the interaction terms appended to X are referenced in the
+IntMatrix field of the obj class object.
+'knots' (spline option) a scalar or a row vector with
+the same columns as X. It defines the knots for fitting a
+polynomial when training the GAM. As a scalar, it is expanded to a row
+vector. The default value is 5, hence expanded to
+ones (1, columns (X)) * 5. You can parse a row vector with
+different number of knots for each predictor variable to be fitted with,
+although not recommended.
+'order' (spline option) a scalar or a row vector with
+the same columns as X. It defines the order of the polynomial when
+training the GAM. As a scalar, it is expanded to a row vector. The
+default values is 3, hence expanded to ones (1, columns (X)) * 3.
+You can parse a row vector with different number of polynomial order for
+each predictor variable to be fitted with, although not recommended.
+'dof' (spline option) a scalar or a row vector with
+the same columns as X. It defines the degrees of freedom for
+fitting a polynomial when training the GAM. As a scalar, it is expanded
+to a row vector. The default value is 8, hence expanded to
+ones (1, columns (X)) * 8. You can parse a row vector with
+different degrees of freedom for each predictor variable to be fitted
+with, although not recommended.
+'tol' (spline option) a positive scalar to set the
+tolerance for
+convergence during training. By default, it is set to 1e-3.
+
+A row marked (spline option) belongs to the spline
+engine and requires 'FitMethod', 'splines'; passing one
+under the default boosted-tree engine is an error rather than
+being ignored. The boosted-tree engine's own options are
+documented under fitrgam.
+
+You can parse either a 'formula' or an 'interactions'
+optional parameter. Parsing both parameters will result an error.
+Accordingly, you can only pass up to two parameters among
+'knots', 'order', and 'dof' to define the
+required polynomial for training the GAM model.
+
+Two weak learners are available, selected by FitMethod.
+
+'boostedtrees', the default, boosts one shallow decision tree per
+predictor in each round, which is the scheme MATLAB's generalized
+additive model uses. A second phase then boosts trees over pairs of
+predictors, where interactions are asked for.
+
+'splines' boosts a smoothing spline per predictor until the
+residual sum of squares changes by less than 'Tol'. It has no
+MATLAB counterpart and is an Octave extension, kept because a smooth
+additive fit is a genuinely different and often better answer than a
+staircase of stumps. A standard deviation and a prediction interval are
+available from it alone.
+
+The two take different arguments, and an argument meant for one is
+refused by the other rather than ignored.
+
+The choice is visible in the properties. Knots, Order,
+DoF, Formula, Tol, BaseModel,
+ModelwInt and IntMatrix describe a spline fit and are empty
+under the boosted-tree engine, while ModelParameters,
+ReasonForTermination, BinEdges,
+PairDetectionBinEdges and TreeModel describe a tree fit and
+are empty under the spline engine.
+
+Fitted values are not expected to equal MATLAB's even under
+'boostedtrees'. The stopping rule and the step-reduction limit
+are not recoverable from anything MATLAB reports, so this engine
+documents its own; what the two share is the estimator and the reported
+surface, not the arithmetic.
+
+See also:
+fitrgam,
+regress,
+regress_gp
 
 
 # name: <cell-element>
@@ -35965,144 +35965,36 @@ RegressionGP
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5845
-statistics: obj = RegressionGP (X, Y)
-statistics: obj = RegressionGP (Tbl, ResponseVarName)
-statistics: obj = RegressionGP (Tbl, formula)
-statistics: obj = RegressionGP (Tbl, Y)
-statistics: obj = RegressionGP (..., name, value)
-Create a RegressionGP object containing a Gaussian process
-regression model.
+# length: 838
+statistics: RegressionGP
+Gaussian process regression model.
 
-obj = RegressionGP (X, Y) returns a Gaussian
-process regression model, obj, with X being the predictor data
-and Y the continuous response of the observations in X.
+A RegressionGP object holds a Gaussian process fitted to a
+continuous response, and predicts the response for new data with the
+predict method, which also returns the standard deviation of each
+prediction and a prediction interval. The response is modelled as an
+explicit basis times Beta, plus a draw from a process whose
+covariance is given by the kernel function, plus independent noise of
+standard deviation Sigma. The kernel parameters and Sigma
+are estimated by maximizing the log marginal likelihood.
 
-X must be an NxP numeric matrix of predictor data, where rows
-correspond to observations and columns to features.
+The object keeps its training data, which resubPredict,
+resubLoss and crossval work on; compact drops it and
+returns a CompactRegressionGP, which still predicts.
 
-Y must be an Nx1 numeric vector holding the response of the
-corresponding predictor data in X. Y must have the same number
-of rows as X.
-
-A Gaussian process places a prior over functions, given by the covariance
-function, and conditions it on the observations. The response is modelled
-as HxBeta plus a draw from that process plus independent noise of
-standard deviation Sigma, where H is the explicit basis. The
-covariance parameters and Sigma are estimated by maximizing the log
-marginal likelihood, and Beta follows from them in closed form as
-the generalized least squares estimate.
-
-obj = RegressionGP (..., name, value) returns a
-model with additional options specified by Name-Value pair
-arguments listed below.
-
-Name Value
-'KernelFunction' A character vector naming the covariance
-function, or a function handle taking two matrices of points and a parameter
-vector. The default is 'squaredexponential'. The supported names
-are listed below.
-'KernelParameters' A numeric vector of initial values for
-the covariance parameters. Its length depends on the covariance function.
-These are starting values for the optimization, not fixed values.
-'BasisFunction' A character vector naming the explicit
-basis, one of 'none', 'constant', 'linear' or
-'pureQuadratic', or a function handle taking X and returning
-the basis matrix. The default is 'constant'.
-'Beta' A numeric vector of basis coefficients. These are
-used as known values only when 'FitMethod' is 'none'.
-'Sigma' A positive scalar, the initial value of the noise
-standard deviation. The default is std (Y) / sqrt (2).
-'ConstantSigma' A logical scalar. When true the
-noise standard deviation is held at its initial value instead of being
-estimated. The default is false.
-'SigmaLowerBound' A positive scalar bounding the noise
-standard deviation from below. The default is
-1e-2 * std (Y).
-'FitMethod' A character vector, either 'exact' to
-estimate the parameters or 'none' to keep them at their initial
-values. The default is 'exact'.
-'PredictMethod' A character vector. Only 'exact'
-is implemented, which is also the only method under which a standard
-deviation and a prediction interval are available.
-'Optimizer' A character vector naming the optimizer used
-to maximize the log marginal likelihood. 'quasinewton' and
-'fminunc' name the same dense solver and are the default,
-'lbfgs' selects limited-memory BFGS, which holds a fixed number of
-curvature pairs rather than a full inverse Hessian and is the cheaper
-choice when the kernel carries many parameters, and 'fminsearch'
-is derivative-free.
-'Standardize' A logical scalar specifying whether the
-predictor data should be centred and scaled before training. The same
-transformation is applied by predict. The default is false.
-'CategoricalPredictors' The categorical predictors, as
-indices, as a logical vector with one element per predictor, or as
-'all'. Each is dummy coded in its place, one column of zeros and
-ones per distinct value it takes in the training data, named as in
-'x1 == 2', and the coded columns are not standardized.
-X keeps the predictors as given. A row holding a value the
-training data did not is predicted as a row missing a predictor, the
-weighted lower median of the training response.
-A predictor may be named rather than indexed, as a character matrix of one
-padded name per row, a string array or a cellstr; a name must match an entry
-of 'PredictorNames' exactly, its case included.
-'Weights' An Nx1 numeric vector of non-negative
-observation weights. The default is a vector of ones.
-'PredictorNames' A cell array of character vectors
-naming the predictors, in the order they appear in X.
-'ResponseName' A character vector naming the response.
-The default is 'Y'.
-'ResponseTransform' A character vector or a function
-handle applied to the response the model predicts. The default is
-'none'.
-
-The supported values for 'KernelFunction' are:
-
-Value Parameters
-'exponential' [SigmaL; SigmaF]
-'squaredexponential' [SigmaL; SigmaF]
-'matern32' [SigmaL; SigmaF]
-'matern52' [SigmaL; SigmaF]
-'rationalquadratic' [SigmaL; AlphaRQ; SigmaF]
-'ardexponential' [LengthScale1; ...; SigmaF]
-'ardsquaredexponential' [LengthScale1; ...; SigmaF]
-'ardmatern32' [LengthScale1; ...; SigmaF]
-'ardmatern52' [LengthScale1; ...; SigmaF]
-'ardrationalquadratic' [LengthScale1; ...; AlphaRQ; SigmaF]
-
-The automatic relevance determination kernels carry one length scale per
-predictor, so a predictor the response does not depend on is given a large
-length scale and stops contributing.
-
-The supported values for 'ResponseTransform' are:
-
-Value Description
-'none' x (no transformation)
-'identity' x (no transformation)
-'exp' exp (x)
-'log' log (x)
-
-Two deviations from MATLAB are deliberate and documented. The distance
-between points is accumulated one predictor at a time instead of by the
-expanded form MATLAB uses by default, because the expanded form does not
-return exactly zero for a point against itself and the rough kernels
-amplify that residue through their square root. The approximate fitting
-and prediction methods, 'sd', 'sr', 'fic' and
-'bcd', together with the active set options that serve them, are
-not implemented and are refused rather than silently ignored.
+Create a RegressionGP object with fitrgp or the class
+constructor.
 
 See also:
 fitrgp,
-CompactRegressionGP,
-RegressionSVM,
-RegressionGAM
+CompactRegressionGP
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 76
-Create a RegressionGP object containing a Gaussian process regression model.
+# length: 34
+Gaussian process regression model.
 
 
 
@@ -36749,20 +36641,139 @@ RegressionGP.RegressionGP
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 508
+# length: 5819
 RegressionGP: obj = RegressionGP (X, Y)
+RegressionGP: obj = RegressionGP (Tbl, ResponseVarName)
+RegressionGP: obj = RegressionGP (Tbl, formula)
+RegressionGP: obj = RegressionGP (Tbl, Y)
 RegressionGP: obj = RegressionGP (..., name, value)
 Fit a Gaussian process regression model.
 
-X is an NxP numeric matrix of predictor data, one
-observation per row, and Y is the continuous response of those
-N observations. The fit runs at construction, so obj
-arrives fitted.
+obj = RegressionGP (X, Y) returns a Gaussian
+process regression model, obj, with X being the predictor
+data and Y the continuous response of the observations in X.
 
-The name/value pairs the fit accepts, and the validation
-each one is held to, are listed in help RegressionGP.
-fitrgp is the documented way to reach this constructor and
-takes the same pairs.
+X must be an NxP numeric matrix of predictor data, where
+rows correspond to observations and columns to features.
+
+Y must be an Nx1 numeric vector holding the response of the
+corresponding predictor data in X. Y must have the same
+number of rows as X.
+
+A Gaussian process places a prior over functions, given by the covariance
+function, and conditions it on the observations. The response is
+modelled as HxBeta plus a draw from that process plus independent
+noise of standard deviation Sigma, where H is the explicit
+basis. The covariance parameters and Sigma are estimated by
+maximizing the log marginal likelihood, and Beta follows from
+them in closed form as the generalized least squares estimate.
+
+obj = RegressionGP (..., name, value)
+returns a model with additional options specified by Name-Value
+pair arguments listed below.
+
+Name Value
+'KernelFunction' A character vector naming the
+covariance function, or a function handle taking two matrices of points
+and a parameter vector. The default is 'squaredexponential'.
+The supported names are listed below.
+'KernelParameters' A numeric vector of initial values
+for the covariance parameters. Its length depends on the covariance
+function. These are starting values for the optimization, not fixed
+values.
+'BasisFunction' A character vector naming the explicit
+basis, one of 'none', 'constant', 'linear' or
+'pureQuadratic', or a function handle taking X and
+returning the basis matrix. The default is 'constant'.
+'Beta' A numeric vector of basis coefficients. These
+are used as known values only when 'FitMethod' is 'none'.
+'Sigma' A positive scalar, the initial value of the
+noise standard deviation. The default is
+std (Y) / sqrt (2).
+'ConstantSigma' A logical scalar. When true
+the noise standard deviation is held at its initial value instead of
+being estimated. The default is false.
+'SigmaLowerBound' A positive scalar bounding the noise
+standard deviation from below. The default is
+1e-2 * std (Y).
+'FitMethod' A character vector, either 'exact'
+to estimate the parameters or 'none' to keep them at their
+initial values. The default is 'exact'.
+'PredictMethod' A character vector. Only
+'exact' is implemented, which is also the only method under which
+a standard deviation and a prediction interval are available.
+'Optimizer' A character vector naming the optimizer
+used to maximize the log marginal likelihood. 'quasinewton' and
+'fminunc' name the same dense solver and are the default,
+'lbfgs' selects limited-memory BFGS, which holds a fixed number
+of curvature pairs rather than a full inverse Hessian and is the cheaper
+choice when the kernel carries many parameters, and 'fminsearch'
+is derivative-free.
+'Standardize' A logical scalar specifying whether the
+predictor data should be centred and scaled before training. The same
+transformation is applied by predict. The default is
+false.
+'CategoricalPredictors' The categorical predictors, as
+indices, as a logical vector with one element per predictor, or as
+'all'. Each is dummy coded in its place, one column of zeros and
+ones per distinct value it takes in the training data, named as in
+'x1 == 2', and the coded columns are not standardized. X
+keeps the predictors as given. A row holding a value the training data
+did not is predicted as a row missing a predictor, the weighted lower
+median of the training response. A predictor may be named rather than
+indexed, as a character matrix of one padded name per row, a string array
+or a cellstr; a name must match an entry of 'PredictorNames'
+exactly, its case included.
+'Weights' An Nx1 numeric vector of non-negative
+observation weights. The default is a vector of ones.
+'PredictorNames' A cell array of character vectors
+naming the predictors, in the order they appear in X.
+'ResponseName' A character vector naming the response.
+The default is 'Y'.
+'ResponseTransform' A character vector or a function
+handle applied to the response the model predicts. The default is
+'none'.
+
+The supported values for 'KernelFunction' are:
+
+Value Parameters
+'exponential' [SigmaL; SigmaF]
+'squaredexponential' [SigmaL; SigmaF]
+'matern32' [SigmaL; SigmaF]
+'matern52' [SigmaL; SigmaF]
+'rationalquadratic' [SigmaL; AlphaRQ; SigmaF]
+'ardexponential' [LengthScale1; ...; SigmaF]
+'ardsquaredexponential' [LengthScale1; ...; SigmaF]
+'ardmatern32' [LengthScale1; ...; SigmaF]
+'ardmatern52' [LengthScale1; ...; SigmaF]
+'ardrationalquadratic' [LengthScale1; ...; AlphaRQ; SigmaF]
+
+The automatic relevance determination kernels carry one length scale per
+predictor, so a predictor the response does not depend on is given a
+large length scale and stops contributing.
+
+The supported values for 'ResponseTransform' are:
+
+Value Description
+'none' x (no transformation)
+'identity' x (no transformation)
+'exp' exp (x)
+'log' log (x)
+
+Two deviations from MATLAB are deliberate and documented. The distance
+between points is accumulated one predictor at a time instead of by the
+expanded form MATLAB uses by default, because the expanded form does not
+return exactly zero for a point against itself and the rough kernels
+amplify that residue through their square root. The approximate fitting
+and prediction methods, 'sd', 'sr', 'fic' and
+'bcd', together with the active set options that serve them, are
+not implemented and are refused rather than silently ignored.
+
+See also:
+fitrgp,
+CompactRegressionGP,
+RegressionSVM,
+RegressionGAM
 
 
 # name: <cell-element>
@@ -38591,124 +38602,35 @@ RegressionNeuralNetwork
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5071
-statistics: obj = RegressionNeuralNetwork (X, Y)
-statistics: obj = RegressionNeuralNetwork (..., name, value)
-Create a RegressionNeuralNetwork object containing a neural network
-regression model.
+# length: 795
+statistics: RegressionNeuralNetwork
+Neural network regression model.
 
-obj = RegressionNeuralNetwork (X, Y) returns a
-neural network regression model, obj, with X being the predictor
-data and Y the continuous response of the observations in X.
+A RegressionNeuralNetwork object holds a fully connected
+feedforward neural network fitted to a continuous response, and predicts
+the response for new data with the predict method. The network is
+trained against the mean squared error and its output layer applies the
+identity, so a prediction is an unrestricted real number; otherwise the
+engine is the one ClassificationNeuralNetwork uses.
 
-X must be an NxP numeric matrix of predictor data, where rows
-correspond to observations and columns to features.
+The object keeps its training data, which resubPredict,
+resubLoss and crossval work on; compact drops it and
+returns a CompactRegressionNeuralNetwork, which still predicts.
 
-Y must be an Nx1 numeric vector holding the response of the
-corresponding predictor data in X. Y must have the same number
-of rows as X.
-
-The network is trained against the mean squared error, and its output layer
-applies the identity, so a prediction is an unrestricted real number rather
-than a score over classes. This is the only difference in the engine
-between this class and ClassificationNeuralNetwork; everything else,
-the layer sizes, the activations, the learning rate and the initialisation,
-behaves identically.
-
-obj = RegressionNeuralNetwork (..., name,
-value) returns a model with additional options specified by
-Name-Value pair arguments listed below.
-
-Name Value
-'Standardize' A logical scalar specifying whether the
-predictor data should be centred and scaled before training. The same
-transformation is applied by predict. The default is false.
-'CategoricalPredictors' The predictors whose values are
-levels, as indices, as a logical vector with one element per predictor, or as
-'all'. Each is dummy coded in its place, one column of zeros and
-ones per level seen in training, named as in 'x1 == 2' in
-ExpandedPredictorNames, and the coded columns are not standardized.
-An observation holding a level the training data did not is predicted as a
-row missing a predictor, the lower median of the training response.
-A predictor may be named rather than indexed, as a character matrix of one
-padded name per row, a string array or a cellstr; a name must match an entry
-of 'PredictorNames' exactly, its case included.
-'PredictorNames' A cell array of character vectors
-naming the predictors, in the order they appear in X.
-'ResponseName' A character vector naming the response.
-The default is 'Y'.
-'ResponseTransform' A character vector naming one of the
-supported transformations, or a function handle, applied to the predicted
-response by predict and resubPredict. The default is
-'none'.
-'LayerSizes' A positive integer vector specifying the
-number of units in each fully connected hidden layer. The default is 10,
-one hidden layer of ten units.
-'Activations' A character vector or cell array of
-character vectors specifying the activation of the hidden layers. The
-supported functions are 'linear', 'sigmoid',
-'relu', 'tanh', 'lrelu', 'prelu',
-'elu', 'gelu' and 'none'. The default is
-'relu'.
-'OutputLayerActivation' A character vector specifying
-the activation of the output layer. The default is 'none', the
-identity, which is what a regression output calls for. The supported
-values are the same as for 'Activations'.
-'LearningRate' A positive scalar specifying the learning
-rate for gradient descent. The default is 0.003. A larger rate can drive
-every unit of a hidden layer negative, after which a rectifier passes no
-gradient and the network stops training.
-Applies only when 'Solver' is 'sgd'.
-'Solver' A character vector naming the solver that
-trains the network, either 'lbfgs' or 'sgd'. The
-default is 'lbfgs', which minimizes the loss over the whole
-training set at once by limited-memory BFGS, as MATLAB does. It takes
-no learning rate, stops on the three tolerances below, and reaches a
-lower training loss in fewer passes over the data, though each of its
-iterations costs several passes where an epoch costs one.
-'sgd' visits the samples one at a time and steps down the
-gradient of each, running for 'IterationLimit' epochs; it was
-the default before version 1.9.0.
-'GradientTolerance' A nonnegative scalar. Training
-stops once the gradient's infinity norm falls to or below it, which is
-the quantity MATLAB tests too. The default is 1e-6. Applies
-only when 'Solver' is 'lbfgs'.
-'StepTolerance' A nonnegative scalar. Training
-stops once the step's infinity norm falls to or below it, which is the
-quantity MATLAB tests too. The default is 1e-6. Applies only
-when 'Solver' is 'lbfgs'.
-'LossTolerance' A real scalar. Training stops once
-the training loss falls to or below it. The test is on the loss
-itself and not on its change, matching MATLAB; pass -Inf to
-switch it off. The default is 1e-6. Applies only when
-'Solver' is 'lbfgs'.
-'IterationLimit' A positive integer specifying the
-maximum number of training iterations. The default is 1000.
-Under 'sgd' this counts epochs, under
-'lbfgs' solver iterations.
-'DisplayInfo' A logical scalar specifying whether to
-print information during training. The default is false.
-
-The supported values for 'ResponseTransform' are:
-
-Value Description
-'none' x (no transformation)
-'identity' x (no transformation)
-'exp' exp (x)
-'log' log (x)
+Create a RegressionNeuralNetwork object with fitrnet or the
+class constructor.
 
 See also:
 fitrnet,
-ClassificationNeuralNetwork,
-fcnntrain,
-fcnnpredict
+CompactRegressionNeuralNetwork,
+ClassificationNeuralNetwork
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 85
-Create a RegressionNeuralNetwork object containing a neural network regression model.
+# length: 32
+Neural network regression model.
 
 
 
@@ -39232,27 +39154,129 @@ RegressionNeuralNetwork.RegressionNeuralNetwork
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 541
+# length: 5262
 RegressionNeuralNetwork: obj = RegressionNeuralNetwork (X, Y)
 RegressionNeuralNetwork: obj = RegressionNeuralNetwork (Tbl, ResponseVarName)
 RegressionNeuralNetwork: obj = RegressionNeuralNetwork (Tbl, formula)
 RegressionNeuralNetwork: obj = RegressionNeuralNetwork (Tbl, Y)
 RegressionNeuralNetwork: obj = RegressionNeuralNetwork (..., name, value)
-Create a RegressionNeuralNetwork object containing a neural
-network regression model.
+Fit a neural network regression model.
 
-See the class documentation for the accepted Name-Value pairs.
+obj = RegressionNeuralNetwork (X, Y) returns a
+neural network regression model, obj, with X being the
+predictor data and Y the continuous response of the observations in
+X.
+
+X must be an NxP numeric matrix of predictor data, where
+rows correspond to observations and columns to features.
+
+Y must be an Nx1 numeric vector holding the response of the
+corresponding predictor data in X. Y must have the same
+number of rows as X.
+
+The network is trained against the mean squared error, and its output
+layer applies the identity, so a prediction is an unrestricted real
+number rather than a score over classes. This is the only difference in
+the engine between this class and ClassificationNeuralNetwork;
+everything else, the layer sizes, the activations, the learning rate and
+the initialisation, behaves identically.
+
+obj = RegressionNeuralNetwork (..., name,
+value) returns a model with additional options specified by
+Name-Value pair arguments listed below.
+
+Name Value
+'Standardize' A logical scalar specifying whether the
+predictor data should be centred and scaled before training. The same
+transformation is applied by predict. The default is
+false.
+'CategoricalPredictors' The predictors whose values
+are levels, as indices, as a logical vector with one element per
+predictor, or as 'all'. Each is dummy coded in its place, one
+column of zeros and ones per level seen in training, named as in
+'x1 == 2' in ExpandedPredictorNames, and the coded columns
+are not standardized. An observation holding a level the training data
+did not is predicted as a row missing a predictor, the lower median of
+the training response. A predictor may be named rather than indexed, as
+a character matrix of one padded name per row, a string array or a
+cellstr; a name must match an entry of 'PredictorNames' exactly,
+its case included.
+'PredictorNames' A cell array of character vectors
+naming the predictors, in the order they appear in X.
+'ResponseName' A character vector naming the response.
+The default is 'Y'.
+'ResponseTransform' A character vector naming one of
+the supported transformations, or a function handle, applied to the
+predicted response by predict and resubPredict. The
+default is 'none'.
+'LayerSizes' A positive integer vector specifying the
+number of units in each fully connected hidden layer. The default is 10,
+one hidden layer of ten units.
+'Activations' A character vector or cell array of
+character vectors specifying the activation of the hidden layers. The
+supported functions are 'linear', 'sigmoid',
+'relu', 'tanh', 'lrelu', 'prelu',
+'elu', 'gelu' and 'none'. The default is
+'relu'.
+'OutputLayerActivation' A character vector specifying
+the activation of the output layer. The default is 'none', the
+identity, which is what a regression output calls for. The supported
+values are the same as for 'Activations'.
+'LearningRate' A positive scalar specifying the
+learning rate for gradient descent. The default is 0.003. A larger rate
+can drive every unit of a hidden layer negative, after which a rectifier
+passes no gradient and the network stops training. Applies only when
+'Solver' is 'sgd'.
+'Solver' A character vector naming the solver that
+trains the network, either 'lbfgs' or 'sgd'. The
+default is 'lbfgs', which minimizes the loss over the whole
+training set at once by limited-memory BFGS, as MATLAB does. It takes
+no learning rate, stops on the three tolerances below, and reaches a
+lower training loss in fewer passes over the data, though each of its
+iterations costs several passes where an epoch costs one.
+'sgd' visits the samples one at a time and steps down the
+gradient of each, running for 'IterationLimit' epochs; it was
+the default before version 1.9.0.
+'GradientTolerance' A nonnegative scalar. Training
+stops once the gradient's infinity norm falls to or below it, which is
+the quantity MATLAB tests too. The default is 1e-6. Applies
+only when 'Solver' is 'lbfgs'.
+'StepTolerance' A nonnegative scalar. Training
+stops once the step's infinity norm falls to or below it, which is the
+quantity MATLAB tests too. The default is 1e-6. Applies only
+when 'Solver' is 'lbfgs'.
+'LossTolerance' A real scalar. Training stops once
+the training loss falls to or below it. The test is on the loss
+itself and not on its change, matching MATLAB; pass -Inf to
+switch it off. The default is 1e-6. Applies only when
+'Solver' is 'lbfgs'.
+'IterationLimit' A positive integer specifying the
+maximum number of training iterations. The default is 1000.
+Under 'sgd' this counts epochs, under
+'lbfgs' solver iterations.
+'DisplayInfo' A logical scalar specifying whether to
+print information during training. The default is false.
+
+The supported values for 'ResponseTransform' are:
+
+Value Description
+'none' x (no transformation)
+'identity' x (no transformation)
+'exp' exp (x)
+'log' log (x)
 
 See also:
 fitrnet,
-RegressionNeuralNetwork
+ClassificationNeuralNetwork,
+fcnntrain,
+fcnnpredict
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 85
-Create a RegressionNeuralNetwork object containing a neural network regression model.
+# length: 38
+Fit a neural network regression model.
 
 
 
@@ -41396,41 +41420,30 @@ RegressionPartitionedModel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 975
-statistics: obj = RegressionPartitionedModel (Mdl, Partition)
-Create a RegressionPartitionedModel object, a regression model
-cross validated over a partition of its training data.
+# length: 571
+statistics: RegressionPartitionedModel
+Cross-validated regression model.
 
-obj = RegressionPartitionedModel (Mdl, Partition)
-refits Mdl once per fold of Partition, each time on the
-observations that fold holds out of its test set, and stores the compact
-form of every fit in Trained. It is normally reached through
-crossval (Mdl) rather than called directly.
+A RegressionPartitionedModel object holds a regression model cross
+validated over a partition of its training data: one compact model per
+fold, in Trained, each fitted without the observations that fold
+tests on. kfoldPredict, kfoldLoss and kfoldfun answer
+for every observation with a model that never saw it.
 
-Mdl must be a RegressionGAM, a
-RegressionNeuralNetwork, or a RegressionSVM object.
-
-Partition must be a cvpartition object over as many
-observations as Mdl was trained on.
-
-Every observation is held out by exactly one fold under k-fold or
-leave-one-out partitioning, so kfoldPredict can answer for it with a
-model that never saw it. Under a holdout partition only the test set is
-answered for, and the rest come back NaN.
+Create a RegressionPartitionedModel object with the crossval
+method of a regression model or with the class constructor.
 
 See also:
 crossval,
 cvpartition,
-RegressionGAM,
-RegressionNeuralNetwork,
-RegressionSVM
+ClassificationPartitionedModel
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 117
-Create a RegressionPartitionedModel object, a regression model cross validated over a partition of its training data.
+# length: 33
+Cross-validated regression model.
 
 
 
@@ -41751,22 +41764,43 @@ RegressionPartitionedModel.RegressionPartitionedModel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 239
+# length: 1009
 RegressionPartitionedModel: obj = RegressionPartitionedModel (Mdl, Partition)
-Create a RegressionPartitionedModel object.
+Cross-validate a regression model over a partition of its training data.
 
-See the class documentation for what it holds and how it is reached.
+obj = RegressionPartitionedModel (Mdl,
+Partition) refits Mdl once per fold of Partition,
+each time on the observations that fold holds out of its test set, and
+stores the compact form of every fit in Trained. It is normally
+reached through crossval (Mdl) rather than called directly.
+
+Mdl must be a RegressionGAM, a RegressionGP, a
+RegressionNeuralNetwork, a RegressionSVM or a
+RegressionTree object.
+
+Partition must be a cvpartition object over as many
+observations as Mdl was trained on.
+
+Every observation is held out by exactly one fold under k-fold or
+leave-one-out partitioning, so kfoldPredict can answer for it with
+a model that never saw it. Under a holdout partition only the test set
+is answered for, and the rest come back NaN.
 
 See also:
 crossval,
-RegressionPartitionedModel
+cvpartition,
+RegressionGAM,
+RegressionGP,
+RegressionNeuralNetwork,
+RegressionSVM,
+RegressionTree
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 43
-Create a RegressionPartitionedModel object.
+# length: 72
+Cross-validate a regression model over a partition of its training data.
 
 
 
@@ -42055,8 +42089,8 @@ what fun returned for fold k.
 fun is a function handle taking seven inputs and returning a
 numeric vector of the same length every time it is called:
 
-testvals = fun (M, Xtrain, Ytrain, Wtrain, ...
-Xtest, Ytest, Wtest)
+testvals = fun (M, Xtrain, Ytrain, ...
+Wtrain, Xtest, Ytest, Wtest)
 
 M is the model the fold was fitted with, taken from
 obj.Trained{k}; Xtrain, Ytrain and
@@ -42088,105 +42122,35 @@ RegressionSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3927
-statistics: obj = RegressionSVM (X, Y)
-statistics: obj = RegressionSVM (Tbl, ResponseVarName)
-statistics: obj = RegressionSVM (Tbl, formula)
-statistics: obj = RegressionSVM (Tbl, Y)
-statistics: obj = RegressionSVM (..., name, value)
-Create a RegressionSVM object containing a support vector machine
-regression model.
+# length: 760
+statistics: RegressionSVM
+Support vector machine regression model.
 
-obj = RegressionSVM (X, Y) returns a support vector
-regression model, obj, with X being the predictor data and
-Y the continuous response of the observations in X.
-
-X must be an NxP numeric matrix of predictor data, where rows
-correspond to observations and columns to features.
-
-Y must be an Nx1 numeric vector holding the response of the
-corresponding predictor data in X. Y must have the same number
-of rows as X.
-
-The model is fitted by epsilon-insensitive regression: errors smaller
+A RegressionSVM object holds a support vector machine fitted to a
+continuous response by epsilon-insensitive regression, and predicts
+the response for new data with the predict method. Errors smaller
 than Epsilon cost nothing, so only the observations outside that
-tube become support vectors. Epsilon defaults to
-iqr (Y) / 13.49, a robust estimate of a tenth of the response's
-standard deviation, which is what MATLAB uses.
+tube become support vectors, and a prediction is a weighted sum of kernel
+evaluations against them. The fit is carried out by LIBSVM.
 
-obj = RegressionSVM (..., name, value) returns
-a model with additional options specified by Name-Value pair
-arguments listed below.
+The object keeps its training data, which resubPredict,
+resubLoss and crossval work on; compact drops it and
+returns a CompactRegressionSVM, which still predicts.
 
-Name Value
-'Standardize' A logical scalar specifying whether the
-predictor data should be centred and scaled before training. The same
-transformation is applied by predict. The default is false.
-'CategoricalPredictors' The predictors whose values are
-levels, as indices, as a logical vector with one element per predictor, or as
-'all'. Each is dummy coded in its place, one column of zeros and
-ones per level seen in training, named as in 'x1 == 2' in
-ExpandedPredictorNames, and the coded columns are not standardized.
-An observation holding a level the training data did not is predicted as a
-row missing a predictor, the lower median of the training response.
-A predictor may be named rather than indexed, as a character matrix of one
-padded name per row, a string array or a cellstr; a name must match an entry
-of 'PredictorNames' exactly, its case included.
-'PredictorNames' A cell array of character vectors
-naming the predictors, in the order they appear in X.
-'ResponseName' A character vector naming the response.
-The default is 'Y'.
-'ResponseTransform' A character vector naming one of the
-supported transformations, or a function handle, applied to the predicted
-response by predict and resubPredict. The default is
-'none'.
-'Epsilon' A non-negative scalar, the half-width of the
-insensitive tube. The default is iqr (Y) / 13.49, or
-0.1 where that is zero.
-'BoxConstraint' A positive scalar bounding the dual
-coefficients, the cost of an error outside the tube. The default is 1.
-'KernelFunction' A character vector naming the kernel,
-one of 'linear', the default, 'rbf', 'gaussian',
-'polynomial' or 'sigmoid'.
-'PolynomialOrder' A positive integer, the order of the
-polynomial kernel. The default is 3. It is ignored by every other kernel.
-'KernelScale' A positive scalar dividing the predictors
-before the kernel is applied. The default is 1.
-'KernelOffset' A non-negative scalar added to the kernel
-value. The default is 0.
-'SVMtype' A character vector selecting the formulation,
-either 'eps_svr', the default, or 'nu_svr'. MATLAB fits
-only the epsilon form; 'nu_svr' is an Octave extension, in
-which Nu bounds the fraction of support vectors and Epsilon
-is determined by the fit rather than given.
-'Nu' A scalar in (0, 1] used by
-'nu_svr'. The default is 0.5.
-'CacheSize' A positive scalar, the kernel cache in
-megabytes. The default is 1000.
-'Tolerance' A non-negative scalar, the tolerance of the
-termination criterion. The default is 1e-6.
-'Shrinking' Either 0 or 1, whether to use the shrinking
-heuristic. The default is 1.
-
-The supported values for 'ResponseTransform' are:
-
-Value Description
-'none' x (no transformation)
-'identity' x (no transformation)
-'exp' exp (x)
-'log' log (x)
+Create a RegressionSVM object with fitrsvm or the class
+constructor.
 
 See also:
 fitrsvm,
-ClassificationSVM,
-RegressionNeuralNetwork
+CompactRegressionSVM,
+ClassificationSVM
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 83
-Create a RegressionSVM object containing a support vector machine regression model.
+# length: 40
+Support vector machine regression model.
 
 
 
@@ -42642,24 +42606,107 @@ RegressionSVM.RegressionSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 277
+# length: 3905
 RegressionSVM: obj = RegressionSVM (X, Y)
+RegressionSVM: obj = RegressionSVM (Tbl, ResponseVarName)
+RegressionSVM: obj = RegressionSVM (Tbl, formula)
+RegressionSVM: obj = RegressionSVM (Tbl, Y)
 RegressionSVM: obj = RegressionSVM (..., name, value)
-Create a RegressionSVM object containing a support vector
-machine regression model.
+Fit a support vector machine regression model.
 
-See the class documentation for the accepted Name-Value pairs.
+obj = RegressionSVM (X, Y) returns a support
+vector regression model, obj, with X being the predictor data
+and Y the continuous response of the observations in X.
+
+X must be an NxP numeric matrix of predictor data, where
+rows correspond to observations and columns to features.
+
+Y must be an Nx1 numeric vector holding the response of the
+corresponding predictor data in X. Y must have the same
+number of rows as X.
+
+The model is fitted by epsilon-insensitive regression: errors
+smaller than Epsilon cost nothing, so only the observations
+outside that tube become support vectors. Epsilon defaults to
+iqr (Y) / 13.49, a robust estimate of a tenth of the
+response's standard deviation, which is what MATLAB uses.
+
+obj = RegressionSVM (..., name, value)
+returns a model with additional options specified by Name-Value
+pair arguments listed below.
+
+Name Value
+'Standardize' A logical scalar specifying whether the
+predictor data should be centred and scaled before training. The same
+transformation is applied by predict. The default is
+false.
+'CategoricalPredictors' The predictors whose values
+are levels, as indices, as a logical vector with one element per
+predictor, or as 'all'. Each is dummy coded in its place, one
+column of zeros and ones per level seen in training, named as in
+'x1 == 2' in ExpandedPredictorNames, and the coded columns
+are not standardized. An observation holding a level the training data
+did not is predicted as a row missing a predictor, the lower median of
+the training response. A predictor may be named rather than indexed, as
+a character matrix of one padded name per row, a string array or a
+cellstr; a name must match an entry of 'PredictorNames' exactly,
+its case included.
+'PredictorNames' A cell array of character vectors
+naming the predictors, in the order they appear in X.
+'ResponseName' A character vector naming the response.
+The default is 'Y'.
+'ResponseTransform' A character vector naming one of
+the supported transformations, or a function handle, applied to the
+predicted response by predict and resubPredict. The
+default is 'none'.
+'Epsilon' A non-negative scalar, the half-width of the
+insensitive tube. The default is iqr (Y) / 13.49, or
+0.1 where that is zero.
+'BoxConstraint' A positive scalar bounding the dual
+coefficients, the cost of an error outside the tube. The default is 1.
+'KernelFunction' A character vector naming the kernel,
+one of 'linear', the default, 'rbf', 'gaussian',
+'polynomial' or 'sigmoid'.
+'PolynomialOrder' A positive integer, the order of the
+polynomial kernel. The default is 3. It is ignored by every other
+kernel.
+'KernelScale' A positive scalar dividing the
+predictors before the kernel is applied. The default is 1.
+'KernelOffset' A non-negative scalar added to the
+kernel value. The default is 0.
+'SVMtype' A character vector selecting the
+formulation, either 'eps_svr', the default, or 'nu_svr'.
+MATLAB fits only the epsilon form; 'nu_svr' is an Octave
+extension, in which Nu bounds the fraction of support vectors and
+Epsilon is determined by the fit rather than given.
+'Nu' A scalar in (0, 1] used by
+'nu_svr'. The default is 0.5.
+'CacheSize' A positive scalar, the kernel cache in
+megabytes. The default is 1000.
+'Tolerance' A non-negative scalar, the tolerance of
+the termination criterion. The default is 1e-6.
+'Shrinking' Either 0 or 1, whether to use the
+shrinking heuristic. The default is 1.
+
+The supported values for 'ResponseTransform' are:
+
+Value Description
+'none' x (no transformation)
+'identity' x (no transformation)
+'exp' exp (x)
+'log' log (x)
 
 See also:
 fitrsvm,
-RegressionSVM
+ClassificationSVM,
+RegressionNeuralNetwork
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 83
-Create a RegressionSVM object containing a support vector machine regression model.
+# length: 46
+Fit a support vector machine regression model.
 
 
 

@@ -47,7 +47,7 @@ integer and T is empty.
 [...] = cholcov (sigma).
 
 See also:
-chov
+chol
 
 
 # name: <cell-element>
@@ -68,7 +68,7 @@ loadmodel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 406
+# length: 395
 statistics: obj = loadmodel (filename)
 Load a Classification or Regression model from a file.
 
@@ -76,7 +76,6 @@ obj = loadmodel (filename) loads a Classification or
 Regression object, obj, from a file defined in filename.
 
 See also:
-savemodel,
 ClassificationDiscriminant,
 ClassificationGAM,
 ClassificationKNN,

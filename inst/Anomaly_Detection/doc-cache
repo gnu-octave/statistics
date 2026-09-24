@@ -13,19 +13,18 @@ IsolationForest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 613
-statistics: Mdl = IsolationForest (X)
-statistics: Mdl = IsolationForest (X, name, value)
+# length: 533
+statistics: IsolationForest
 Isolation Forest model for anomaly detection.
 
-An IsolationForest object stores an ensemble of isolation trees fitted
-to a set of observations and detects anomalies through the isanomaly
-method. Create a model with the iforest function rather than by
-calling this constructor directly.
+An IsolationForest object stores an ensemble of isolation trees
+fitted to a set of observations and detects anomalies through the
+isanomaly method. Create an IsolationForest object with
+iforest or the class constructor.
 
 Anomalies are easier to isolate, so they sit closer to the root of a random
-isolation tree; the shorter its average path length across the ensemble, the
-higher an observation's anomaly score.
+isolation tree; the shorter its average path length across the ensemble,
+the higher an observation's anomaly score.
 
 See also:
 iforest,
@@ -73,18 +72,49 @@ IsolationForest.IsolationForest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 195
+# length: 1231
 IsolationForest: Mdl = IsolationForest (X)
-IsolationForest: Mdl = IsolationForest (X, name, value)
-Fit an isolation forest to the N-by-P matrix X.
-Prefer the iforest function to this constructor.
+IsolationForest: Mdl = IsolationForest (..., name, value)
+Fit an isolation forest.
+
+Mdl = IsolationForest (X) fits an isolation forest to
+the N-by-P matrix X, whose rows are observations and
+columns are variables, and returns a IsolationForest object
+Mdl.
+
+Mdl = IsolationForest (..., name, value)
+takes the following Name-Value pairs.
+
+Name Value
+'NumLearners' the number of isolation trees, a
+positive integer (default 100).
+'NumObservationsPerLearner' the subsample size used to
+grow each tree, an integer in [3, N] (default min (N,
+256)).
+'ContaminationFraction' the assumed fraction of
+anomalies in X, a scalar in [0, 1] (default 0). It sets
+Mdl.ScoreThreshold to the 1 -
+ContaminationFraction quantile of the anomaly scores of X;
+when it is 0 the threshold is the maximum score and no training
+observation is flagged.
+
+Because the trees are grown from random subsamples and random splits, the
+model depends on the state of the random number generator and is not
+reproducible across runs unless the generator is seeded.
+
+iforest fits the same model and also returns the anomaly
+indicators and the anomaly scores of the observations in X.
+
+See also:
+iforest,
+IsolationForest.isanomaly
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 47
-Fit an isolation forest to the N-by-P matrix X.
+# length: 24
+Fit an isolation forest.
 
 
 
@@ -197,15 +227,14 @@ LocalOutlierFactor
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 695
-statistics: Mdl = LocalOutlierFactor (X)
-statistics: Mdl = LocalOutlierFactor (X, name, value)
+# length: 614
+statistics: LocalOutlierFactor
 Local Outlier Factor model for anomaly detection.
 
-A LocalOutlierFactor object stores a Local Outlier Factor (LOF) model
-fitted to a set of observations, and detects anomalies among those or new
-observations through the isanomaly method. Create a model with the
-lof function rather than by calling this constructor directly.
+A LocalOutlierFactor object stores a Local Outlier Factor (LOF)
+model fitted to a set of observations, and detects anomalies among those or
+new observations through the isanomaly method. Create a
+LocalOutlierFactor object with lof or the class constructor.
 
 The LOF of an observation compares its local density with the local density
 of its neighbors; a value near 1 indicates an inlier, whereas a value well
@@ -281,18 +310,51 @@ LocalOutlierFactor.LocalOutlierFactor
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 212
+# length: 1314
 LocalOutlierFactor: Mdl = LocalOutlierFactor (X)
-LocalOutlierFactor: Mdl = LocalOutlierFactor (X, name, value)
-Fit a Local Outlier Factor model to the N-by-P matrix
-X. Prefer the lof function to this constructor.
+LocalOutlierFactor: Mdl = LocalOutlierFactor (..., name, value)
+Fit a Local Outlier Factor model.
+
+Mdl = LocalOutlierFactor (X) fits a Local Outlier
+Factor model to the N-by-P matrix X, whose rows are
+observations and columns are variables, and returns a
+LocalOutlierFactor object Mdl.
+
+Mdl = LocalOutlierFactor (..., name, value)
+takes the following Name-Value pairs.
+
+Name Value
+'NumNeighbors' the number of nearest neighbors, a
+positive integer less than N. The default is
+min (20, u - 1), where u is the number of unique
+observations.
+'Distance' the distance metric used to find neighbors,
+one of the metrics accepted by pdist2 ('euclidean' by
+default).
+'ContaminationFraction' the assumed fraction of
+anomalies in X, a scalar in [0, 1] (default 0). It sets
+Mdl.ScoreThreshold to the 1 -
+ContaminationFraction quantile of the anomaly scores of X;
+when it is 0 the threshold is the maximum score and no training
+observation is flagged.
+'Exponent' the Minkowski distance exponent (default
+2), used only with the 'minkowski' distance.
+'Cov' the covariance matrix used only with the
+'mahalanobis' distance.
+
+lof fits the same model and also returns the anomaly indicators
+and the anomaly scores of the observations in X.
+
+See also:
+lof,
+LocalOutlierFactor.isanomaly
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 56
-Fit a Local Outlier Factor model to the N-by-P matrix X.
+# length: 33
+Fit a Local Outlier Factor model.
 
 
 
@@ -382,15 +444,14 @@ OneClassSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 670
-statistics: Mdl = OneClassSVM (X)
-statistics: Mdl = OneClassSVM (X, name, value)
+# length: 589
+statistics: OneClassSVM
 One-class support vector machine model for anomaly detection.
 
-A OneClassSVM object stores a one-class support vector machine fitted
-to a set of observations in an expanded feature space, and detects anomalies
-through the isanomaly method. Create a model with the ocsvm
-function rather than by calling this constructor directly.
+A OneClassSVM object stores a one-class support vector machine
+fitted to a set of observations in an expanded feature space, and detects
+anomalies through the isanomaly method. Create a OneClassSVM
+object with ocsvm or the class constructor.
 
 The model maps the data to a randomized feature space that approximates a
 Gaussian kernel and fits a linear boundary that encloses the bulk of the
@@ -534,18 +595,54 @@ OneClassSVM.OneClassSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 192
+# length: 1478
 OneClassSVM: Mdl = OneClassSVM (X)
-OneClassSVM: Mdl = OneClassSVM (X, name, value)
-Fit a one-class support vector machine to the N-by-P matrix
-X. Prefer the ocsvm function to this constructor.
+OneClassSVM: Mdl = OneClassSVM (..., name, value)
+Fit a one-class support vector machine.
+
+Mdl = OneClassSVM (X) fits a one-class support vector
+machine to the N-by-P matrix X, whose rows are
+observations and columns are variables, and returns a OneClassSVM
+object Mdl.
+
+Mdl = OneClassSVM (..., name, value) takes
+the following Name-Value pairs.
+
+Name Value
+'KernelScale' the scale of the approximated Gaussian
+kernel, a positive scalar or 'auto' (default).
+'Lambda' the ridge regularization strength, a
+nonnegative scalar or 'auto' (default).
+'NumExpansionDimensions' the number of expanded
+feature dimensions, a positive integer or 'auto' (default).
+'StandardizeData' a logical scalar (default
+false); when true each predictor is centered and scaled and
+the means and standard deviations are stored in Mdl.Mu and
+Mdl.Sigma.
+'ContaminationFraction' the assumed fraction of
+anomalies in X, a scalar in [0, 1] (default 0). It sets
+Mdl.ScoreThreshold to the 1 -
+ContaminationFraction quantile of the anomaly scores of X;
+when it is 0 the threshold is the maximum score and no training
+observation is flagged.
+
+The feature expansion uses random projections, so the model depends on
+the state of the random number generator and is not reproducible across
+runs unless the generator is seeded.
+
+ocsvm fits the same model and also returns the anomaly indicators
+and the anomaly scores of the observations in X.
+
+See also:
+ocsvm,
+OneClassSVM.isanomaly
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 62
-Fit a one-class support vector machine to the N-by-P matrix X.
+# length: 39
+Fit a one-class support vector machine.
 
 
 

@@ -13,7 +13,7 @@ paretotails
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1254
+# length: 1259
 statistics: paretotails
 Piecewise distribution with generalized Pareto tails.
 
@@ -47,7 +47,7 @@ gppdf,
 gpinv,
 ecdf,
 fitdist,
-GeneralizedParetoDistribution
+prob.GeneralizedParetoDistribution
 
 
 # name: <cell-element>
@@ -494,8 +494,8 @@ A scalar structure containing the following fields:
 
 data : a numeric vector containing the data used for
 distribution fitting.
-cens : an empty array, since prob.BetaDistribution does
-not allow censoring.
+cens : an empty array, since prob.BetaDistribution
+does not allow censoring.
 frequency : a numeric vector of non-negative integer values
 containing the frequency information corresponding to the elements of the
 data used for distribution fitting. If no frequency vector was used for
@@ -1289,9 +1289,9 @@ There are several ways to create a prob.BinomialDistribution object.
 Fit a distribution to data using the fitdist function.
 Create a distribution with fixed parameter values using the
 makedist function.
-Use the constructor prob.BinomialDistribution (N, p)
-to create a binomial distribution with fixed parameter values N and
-p.
+Use the constructor
+prob.BinomialDistribution (N, p) to create a binomial
+distribution with fixed parameter values N and p.
 Use the static method prob.BinomialDistribution.fit (x,
 ntrials, alpha) to fit a distribution to the data in x
 using the same input arguments as the binofit function.
@@ -1397,8 +1397,8 @@ A scalar structure containing the following fields:
 
 data : a numeric vector containing the data used for
 distribution fitting.
-cens : an empty array, since prob.BinomialDistribution
-does not allow censoring.
+cens : an empty array, since
+prob.BinomialDistribution does not allow censoring.
 frequency : a numeric vector of non-negative integer values
 containing the frequency information corresponding to the elements of the
 data used for distribution fitting. If no frequency vector was used for
@@ -2196,9 +2196,10 @@ object.
 Fit a distribution to data using the fitdist function.
 Create a distribution with fixed parameter values using the
 makedist function.
-Use the constructor prob.BirnbaumSaundersDistribution (beta,
-gamma) to create a Birnbaum-Saunders distribution with fixed
-parameter values beta and gamma.
+Use the constructor
+prob.BirnbaumSaundersDistribution (beta, gamma) to
+create a Birnbaum-Saunders distribution with fixed parameter values
+beta and gamma.
 Use the static method prob.BirnbaumSaundersDistribution.fit
 (x, alpha, censor, freq, options) to fit a
 distribution to the data in x using the same input arguments as the
@@ -3104,9 +3105,10 @@ There are several ways to create a prob.BurrDistribution object.
 Fit a distribution to data using the fitdist function.
 Create a distribution with fixed parameter values using the
 makedist function.
-Use the constructor prob.BurrDistribution (alpha, c,
-k) to create a Burr distribution with fixed parameter values
-alpha, c, and k.
+Use the constructor
+prob.BurrDistribution (alpha, c, k) to create a
+Burr distribution with fixed parameter values alpha, c, and
+k.
 Use the static method prob.BurrDistribution.fit (x,
 alpha, censor, freq, options) to fit a
 distribution to the data in x using the same input arguments as the
@@ -3213,8 +3215,8 @@ A scalar structure containing the following fields:
 
 data: a numeric vector containing the data used for
 distribution fitting.
-cens: an empty array, since prob.BurrDistribution does
-not allow censoring.
+cens: an empty array, since prob.BurrDistribution
+does not allow censoring.
 freq: a numeric vector of non-negative integer values
 containing the frequency information corresponding to the elements of the
 data used for distribution fitting. If no frequency vector was used for
@@ -4023,22 +4025,24 @@ prob.ExponentialDistribution
 statistics: prob.ExponentialDistribution
 Exponential probability distribution object.
 
-A prob.ExponentialDistribution object consists of parameters, a model
-description, and sample data for a exponential probability distribution.
+A prob.ExponentialDistribution object consists of parameters, a
+model description, and sample data for a exponential probability
+distribution.
 
 The exponential distribution is a continuous probability distribution with
 mean parameter mu that models the time between events in a Poisson
 process.
 
-There are several ways to create a prob.ExponentialDistribution object.
+There are several ways to create a prob.ExponentialDistribution
+object.
 
 Fit a distribution to data using the fitdist function.
 Create a distribution with fixed parameter values using the
 makedist function.
 Use the constructor prob.ExponentialDistribution (mu)
 to create a exponential distribution with fixed parameter value mu.
-Use the static method prob.ExponentialDistribution.fit (x,
-alpha, censor, freq, options) to fit a
+Use the static method prob.ExponentialDistribution.fit
+(x, alpha, censor, freq, options) to fit a
 distribution to the data in x using the same input arguments as the
 expfit function.
 
@@ -4897,15 +4901,17 @@ prob.ExtremeValueDistribution
 statistics: prob.ExtremeValueDistribution
 Extreme value probability distribution object.
 
-A prob.ExtremeValueDistribution object consists of parameters, a model
-description, and sample data for an extreme value probability distribution.
+A prob.ExtremeValueDistribution object consists of parameters, a
+model description, and sample data for an extreme value probability
+distribution.
 
 The extreme value distribution is also known as the Gumbel distribution for
 maxima, and it is a limiting distribution for the maximum of a large number
 of samples from a continuous distribution. It is defined by location
 parameter mu and scale parameter sigma.
 
-There are several ways to create a prob.ExtremeValueDistribution object.
+There are several ways to create a prob.ExtremeValueDistribution
+object.
 
 Fit a distribution to data using the fitdist function.
 Create a distribution with specified parameter values using the
@@ -4913,8 +4919,8 @@ makedist function.
 Use the constructor prob.ExtremeValueDistribution (mu,
 sigma) to create an extreme value distribution with specified
 parameter values.
-Use the static method prob.ExtremeValueDistribution.fit (x,
-alpha, censor, freq, options) to fit a
+Use the static method prob.ExtremeValueDistribution.fit
+(x, alpha, censor, freq, options) to fit a
 distribution to the data in x using the same input arguments as the
 evfit function.
 
@@ -6709,9 +6715,9 @@ prob.GeneralizedExtremeValueDistribution
 statistics: prob.GeneralizedExtremeValueDistribution
 Generalized extreme value probability distribution object.
 
-A prob.GeneralizedExtremeValueDistribution object consists of parameters,
-a model description, and sample data for a generalized extreme value
-probability distribution.
+A prob.GeneralizedExtremeValueDistribution object consists of
+parameters, a model description, and sample data for a generalized extreme
+value probability distribution.
 
 The generalized extreme value distribution is a continuous probability
 distribution that models extreme values. It is defined by shape parameter
@@ -6727,10 +6733,10 @@ Use the constructor prob.GeneralizedExtremeValueDistribution
 (k, sigma, mu) to create a generalized extreme value
 distribution with fixed parameter values k, sigma, and
 mu.
-Use the static method prob.GeneralizedExtremeValueDistribution.fit
-(x, alpha, freq, options) to fit a distribution to
-the data in x using the same input arguments as the gevfit
-function.
+Use the static method
+prob.GeneralizedExtremeValueDistribution.fit (x, alpha,
+freq, options) to fit a distribution to the data in x
+using the same input arguments as the gevfit function.
 
 It is highly recommended to use fitdist and makedist
 functions to create probability distribution objects, instead of the class
@@ -7647,8 +7653,8 @@ prob.GeneralizedParetoDistribution
 statistics: prob.GeneralizedParetoDistribution
 Generalized Pareto probability distribution object.
 
-A prob.GeneralizedParetoDistribution object consists of parameters, a
-model description, and sample data for a Generalized Pareto probability
+A prob.GeneralizedParetoDistribution object consists of parameters,
+a model description, and sample data for a Generalized Pareto probability
 distribution.
 
 The Generalized Pareto distribution is a continuous probability
@@ -7656,15 +7662,16 @@ distribution that models the tail behavior of other distributions, commonly
 used for extreme value analysis. It is defined by shape parameter k,
 scale parameter sigma, and location parameter theta.
 
-There are several ways to create a prob.GeneralizedParetoDistribution
-object.
+There are several ways to create a
+prob.GeneralizedParetoDistribution object.
 
 Fit a distribution to data using the fitdist function.
 Create a distribution with fixed parameter values using the
 makedist function.
-Use the constructor prob.GeneralizedParetoDistribution (k,
-sigma, theta) to create a Generalized Pareto distribution with
-fixed parameter values k, sigma, and theta.
+Use the constructor prob.GeneralizedParetoDistribution
+(k, sigma, theta) to create a Generalized Pareto
+distribution with fixed parameter values k, sigma, and
+theta.
 Use the static method prob.GeneralizedParetoDistribution.fit
 (x, theta, alpha, freq, options) to fit a
 distribution to the data in x using the same input arguments as the
@@ -8592,7 +8599,8 @@ The half-normal distribution is a continuous probability distribution that
 models the time to failure of materials subjected to cyclic loading. It is
 defined by location parameter mu and scale parameter sigma.
 
-There are several ways to create a prob.HalfNormalDistribution object.
+There are several ways to create a prob.HalfNormalDistribution
+object.
 
 Fit a distribution to data using the fitdist function.
 Create a distribution with fixed parameter values using the
@@ -8600,9 +8608,10 @@ makedist function.
 Use the constructor prob.HalfNormalDistribution (mu,
 sigma) to create a half-normal distribution with fixed parameter
 values mu and sigma.
-Use the static method prob.HalfNormalDistribution.fit (x,
-mu, freq) to fit a distribution to the data in x using
-the same input arguments as the hnfit function.
+Use the static method
+prob.HalfNormalDistribution.fit (x, mu, freq) to
+fit a distribution to the data in x using the same input arguments as
+the hnfit function.
 
 It is highly recommended to use fitdist and makedist
 functions to create probability distribution objects, instead of the class
@@ -9502,9 +9511,10 @@ object.
 Fit a distribution to data using the fitdist function.
 Create a distribution with fixed parameter values using the
 makedist function.
-Use the constructor prob.InverseGaussianDistribution (mu,
-lambda) to create a Inverse Gaussian distribution with fixed
-parameter values mu and lambda.
+Use the constructor
+prob.InverseGaussianDistribution (mu, lambda) to create
+a Inverse Gaussian distribution with fixed parameter values mu and
+lambda.
 Use the static method prob.InverseGaussianDistribution.fit
 (x, alpha, censor, freq, options) to fit a
 distribution to the data in x using the same input arguments as the
@@ -10402,10 +10412,10 @@ description. Unlike the parametric distribution objects, it has no
 estimated parameters; the fitted distribution is defined entirely by the
 data, the smoothing kernel, and the bandwidth.
 
-A prob.KernelDistribution object can only be created by fitting a kernel
-smoothing distribution to data with the fitdist function. Unlike
-the parametric distributions, it cannot be created with the makedist
-function, since it is not parametric and requires data.
+A prob.KernelDistribution object can only be created by fitting a
+kernel smoothing distribution to data with the fitdist function.
+Unlike the parametric distributions, it cannot be created with the
+makedist function, since it is not parametric and requires data.
 
 Further information about the kernel density estimation can be found at
 https://en.wikipedia.org/wiki/Kernel_density_estimation
@@ -10612,10 +10622,10 @@ Support of the probability distribution
 A scalar structure containing the following fields:
 
 range: either the character vector 'unbounded' or
-'positive', or a two-element numeric vector [L, U] with the
-lower and upper bounds of the support.
-closedbound: a two-element logical vector specifying whether
-each bound is closed.
+'positive', or a two-element numeric vector [L, U] with
+the lower and upper bounds of the support.
+closedbound: a two-element logical vector specifying
+whether each bound is closed.
 iscontinuous: a logical scalar, always true for a
 kernel distribution.
 
@@ -11942,15 +11952,17 @@ prob.LoglogisticDistribution
 statistics: prob.LoglogisticDistribution
 Log-logistic probability distribution object.
 
-A prob.LoglogisticDistribution object consists of parameters, a model
-description, and sample data for a log-logistic probability distribution.
+A prob.LoglogisticDistribution object consists of parameters, a
+model description, and sample data for a log-logistic probability
+distribution.
 
 The log-logistic distribution is a continuous probability distribution that
 models non-negative random variables whose logarithm follows the logistic
 distribution. It is defined by location parameter mu and scale
 parameter sigma.
 
-There are several ways to create a prob.LoglogisticDistribution object.
+There are several ways to create a prob.LoglogisticDistribution
+object.
 
 Fit a distribution to data using the fitdist function.
 Create a distribution with fixed parameter values using the
@@ -11958,9 +11970,10 @@ makedist function.
 Use the constructor prob.LoglogisticDistribution (mu,
 sigma) to create a log-logistic distribution with fixed parameter
 values mu and sigma.
-Use the static method prob.LoglogisticDistribution.fit (x,
-censor, freq, options) to fit a distribution to the data
-in x using the same input arguments as the loglfit function.
+Use the static method prob.LoglogisticDistribution.fit
+(x, censor, freq, options) to fit a distribution
+to the data in x using the same input arguments as the loglfit
+function.
 
 It is highly recommended to use fitdist and makedist
 functions to create probability distribution objects, instead of the class
@@ -12854,7 +12867,8 @@ logarithm is normally distributed. It is defined by mean parameter
 mu and standard deviation parameter sigma of the logarithmic
 values.
 
-There are several ways to create a prob.LognormalDistribution object.
+There are several ways to create a prob.LognormalDistribution
+object.
 
 Fit a distribution to data using the fitdist function.
 Create a distribution with fixed parameter values using the
@@ -13751,14 +13765,15 @@ prob.LoguniformDistribution
 statistics: prob.LoguniformDistribution
 Log-uniform probability distribution object.
 
-A prob.LoguniformDistribution object consists of parameters and a model
-description for a log-uniform probability distribution.
+A prob.LoguniformDistribution object consists of parameters and a
+model description for a log-uniform probability distribution.
 
 The log-uniform distribution is a continuous probability distribution that
 is constant between locations Lower and Upper on a logarithmic
 scale.
 
-There are several ways to create a prob.LoguniformDistribution object.
+There are several ways to create a prob.LoguniformDistribution
+object.
 
 Create a distribution with specified parameter values using the
 makedist function.
@@ -14407,15 +14422,17 @@ prob.MultinomialDistribution
 statistics: prob.MultinomialDistribution
 Multinomial probability distribution object.
 
-A prob.MultinomialDistribution object consists of parameters, a model
-description, and sample data for a multinomial probability distribution.
+A prob.MultinomialDistribution object consists of parameters, a
+model description, and sample data for a multinomial probability
+distribution.
 
 The multinomial distribution is a discrete probability distribution that
 models the outcomes of n independent trials of a k-category system, where
 each trial has a probability of falling into each category. It is
 defined by the vector of probabilities for each outcome.
 
-There are several ways to create a prob.MultinomialDistribution object.
+There are several ways to create a prob.MultinomialDistribution
+object.
 
 Create a distribution with specified parameter values using the
 makedist function.
@@ -15971,9 +15988,10 @@ object.
 Fit a distribution to data using the fitdist function.
 Create a distribution with fixed parameter values using the
 makedist function.
-Use the constructor prob.NegativeBinomialDistribution (R,
-P) to create a negative binomial distribution with fixed parameter
-values R and P.
+Use the constructor
+prob.NegativeBinomialDistribution (R, P) to create a
+negative binomial distribution with fixed parameter values R and
+P.
 Use the static method
 prob.NegativeBinomialDistribution.fit
 (x,
@@ -17769,8 +17787,8 @@ prob.PiecewiseLinearDistribution
 statistics: prob.PiecewiseLinearDistribution
 Piecewise linear probability distribution object.
 
-A prob.PiecewiseLinearDistribution object consists of parameters, a model
-description, and sample data for a piecewise linear probability
+A prob.PiecewiseLinearDistribution object consists of parameters, a
+model description, and sample data for a piecewise linear probability
 distribution.
 
 The piecewise linear distribution is a continuous probability distribution
@@ -20231,9 +20249,9 @@ There are several ways to create a prob.RicianDistribution object.
 Fit a distribution to data using the fitdist function.
 Create a distribution with fixed parameter values using the
 makedist function.
-Use the constructor prob.RicianDistribution (s, sigma)
-to create a Rician distribution with fixed parameter values s and
-sigma.
+Use the constructor
+prob.RicianDistribution (s, sigma) to create a Rician
+distribution with fixed parameter values s and sigma.
 Use the static method prob.RicianDistribution.fit (x,
 censor, freq, options) to fit a distribution to data
 x.
@@ -21150,8 +21168,8 @@ functions to create probability distribution objects, instead of the class
 constructor or the aforementioned static method.
 
 Fitting is by maximum likelihood. Because the stable density has no closed
-form, it is evaluated by numerical inversion of the characteristic function,
-which makes fitting considerably slower than for the closed-form
+form, it is evaluated by numerical inversion of the characteristic
+function, which makes fitting considerably slower than for the closed-form
 distributions.
 
 Further information about the stable distribution can be found at
@@ -21216,9 +21234,9 @@ prob.StableDistribution.InputData
 prob.StableDistribution: property InputData
 Data used for fitting the distribution
 
-A structure containing the data used to fit the distribution. It is empty
-unless the distribution was fitted with fitdist or the static
-fit method. This property is read-only.
+A structure containing the data used to fit the distribution. It is
+empty unless the distribution was fitted with fitdist or the
+static fit method. This property is read-only.
 
 
 # name: <cell-element>
@@ -21759,8 +21777,8 @@ ci = paramci (pd) computes the lower and upper
 boundaries of the 95% confidence interval for each parameter of the
 probability distribution object, pd.
 
-ci = paramci (pd, Name, Value) computes the
-confidence intervals with additional options specified by
+ci = paramci (pd, Name, Value) computes
+the confidence intervals with additional options specified by
 Name-Value pair arguments listed below.
 
 Name Value
@@ -21888,9 +21906,9 @@ returns a matrix other holding, in each row, the values of the
 remaining parameters that maximize the likelihood at the corresponding
 value of param. A fixed parameter keeps its own value.
 
-For the stable distribution, pnum = 1 selects the tail index
-alpha, pnum = 2 selects the skewness beta,
-pnum = 3 selects the scale gam, and
+For the stable distribution, pnum = 1 selects the tail
+index alpha, pnum = 2 selects the skewness
+beta, pnum = 3 selects the scale gam, and
 pnum = 4 selects the location delta.
 
 
@@ -22037,13 +22055,15 @@ A Lower limit -Inf < A < Inf
 B Peak location A <= B <= C
 C Upper limit C > A
 
-There are several ways to create a prob.TriangularDistribution object.
+There are several ways to create a prob.TriangularDistribution
+object.
 
 Create a distribution with specified parameter values using the
 makedist function.
-Use the constructor prob.TriangularDistribution (A, B,
-C) to create a triangular distribution with specified parameter
-values A, B, and C.
+Use the constructor
+prob.TriangularDistribution (A, B, C) to create a
+triangular distribution with specified parameter values A, B,
+and C.
 
 It is highly recommended to use makedist function to create
 probability distribution objects, instead of the constructor.
@@ -24287,9 +24307,9 @@ prob.tLocationScaleDistribution
 statistics: prob.tLocationScaleDistribution
 Location-Scale Student's T probability distribution object.
 
-A prob.tLocationScaleDistribution object consists of parameters, a model
-description, and sample data for a location-scale Student's T probability
-distribution.
+A prob.tLocationScaleDistribution object consists of parameters, a
+model description, and sample data for a location-scale Student's T
+probability distribution.
 
 The location-scale Student's T distribution is a continuous probability
 distribution that generalizes the standard Student's T distribution by
@@ -24306,9 +24326,10 @@ makedist function.
 Use the constructor prob.tLocationScaleDistribution (mu,
 sigma, nu) to create a location-scale Student's T distribution
 with fixed parameter values mu, sigma, and nu.
-Use the static method prob.tLocationScaleDistribution.fit (x,
-censor, freq, options) to fit a distribution to the data
-in x using the same input arguments as the tlsfit function.
+Use the static method prob.tLocationScaleDistribution.fit
+(x, censor, freq, options) to fit a distribution
+to the data in x using the same input arguments as the tlsfit
+function.
 
 It is highly recommended to use fitdist and makedist
 functions to create probability distribution objects, instead of the class

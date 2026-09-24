@@ -110,9 +110,9 @@ ConfusionMatrixChart.ConfusionMatrixChart
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2752
-statistics: cmc = ConfusionMatrixChart (hax, cm, cl)
-statistics: cmc = ConfusionMatrixChart (..., name, value)
+# length: 2772
+ConfusionMatrixChart: cmc = ConfusionMatrixChart (hax, cm, cl)
+ConfusionMatrixChart: cmc = ConfusionMatrixChart (..., name, value)
 Create a ConfusionMatrixChart object for visualizing
 classification performance.
 
@@ -678,7 +678,7 @@ confusionchart
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1624
+# length: 1645
 statistics: confusionchart (trueLabels, predictedLabels)
 statistics: confusionchart (m)
 statistics: confusionchart (m, classLabels)
@@ -725,7 +725,7 @@ Run demo confusionchart to see some examples.
 
 See also:
 confusionmat,
-sortClasses
+ConfusionMatrixChart.sortClasses
 
 
 # name: <cell-element>
@@ -1114,7 +1114,7 @@ cvpartition.cvpartition
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 7303
+# length: 7301
 cvpartition: C = cvpartition (n, 'KFold')
 cvpartition: C = cvpartition (n, 'KFold', k)
 cvpartition: C = cvpartition (n, 'KFold', k, 'GroupingVariables', grpvars)
@@ -1221,7 +1221,7 @@ both training and test sets containing all observations n.
 C = cvpartition (X, 'KFold') creates a
 cvpartition object C, which defines a stratified random
 partition for k-fold cross-validation according to the class proportions
-in Χ. X can be a numeric, logical, categorical, or string
+in X. X can be a numeric, logical, categorical, or string
 vector, or a character array or a cell array of character vectors.
 Missing values in X are discarded. The default number of folds is
 10 for numel (X) >= 10 or equal to numel (X)
@@ -1240,7 +1240,7 @@ nonstratified if opt is false.
 C = cvpartition (X, 'Holdout') creates a
 cvpartition object C, which defines a stratified random
 partition for holdout validation while maintaining the class proportions
-in Χ. 90% of the observations are assigned to the training set and
+in X. 90% of the observations are assigned to the training set and
 the remaining 10% to the test set.
 
 C = cvpartition (X, 'Holdout', p) also

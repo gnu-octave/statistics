@@ -1678,8 +1678,8 @@ p = dwtest (r, x) performs the Durbin-Watson test on
 the residuals r of a linear regression with design matrix x
 (which should include a column of ones if the model has a constant term).
 The null hypothesis is that the residuals are uncorrelated, against the
-alternative that they are autocorrelated. r is an Nx1 vector and
-x is an NxP matrix. p is the p-value of the test.
+alternative that they are autocorrelated. r is an Nx1 vector
+and x is an NxP matrix. p is the p-value of the test.
 
 The Durbin-Watson statistic is
 $$ d = \sum_{i=1}^{n-1} (r_{i+1} - r_i)^2 / \sum_{i=1}^{n} r_i^2. $$
@@ -1690,10 +1690,10 @@ p = dwtest (r, x, name, value) specifies
 additional options using Name-Value pair arguments:
 
 Name Value
-'Method' 'exact' to compute the exact p-value
-from the null distribution of the statistic (a ratio of quadratic forms,
-evaluated with Imhof's method), or 'approximate' to use a normal
-approximation based on the mean and variance of the statistic. The default is
+'Method' 'exact' to compute the exact p-value from
+the null distribution of the statistic (a ratio of quadratic forms, evaluated
+with Imhof's method), or 'approximate' to use a normal approximation
+based on the mean and variance of the statistic. The default is
 'exact' for n < 400 and 'approximate' otherwise.
 'Tail' The alternative hypothesis: 'both'
 (default) for a nonzero autocorrelation, 'right' for a positive
@@ -2040,10 +2040,10 @@ value lies outside that range. The warning is an addition here: MATLAB
 clamps silently, so a p-value reported as 0.001 or 0.5 there
 may be a bound rather than an estimate, with nothing to say so.
 
-[h, p, jbstat, critval] = jbtest (...) also
-returns the test statistic jbstat and the critical value critval
-at significance level alpha. The null hypothesis is rejected when
-jbstat > critval.
+[h, p, jbstat, critval] = jbtest (...)
+also returns the test statistic jbstat and the critical value
+critval at significance level alpha. The null hypothesis is
+rejected when jbstat > critval.
 
 Note: for n \le 2000 the p-value and critical value are obtained by
 interpolating an embedded critical-value table (the same approach MATLAB
@@ -2054,9 +2054,9 @@ quantiles. MATLAB's table is likewise a Monte-Carlo estimate but from a
 different simulation, so the two tables agree only to about two decimal
 places. As a result the reported p-value and critical value, and (in a
 narrow band of statistic values around the critical value) the test decision
-h, can differ slightly from MATLAB in edge cases. These differences are
-an unavoidable consequence of the Monte-Carlo origin of both tables, not a
-difference in method. Supply mctol for a direct Monte-Carlo p-value.
+h, can differ slightly from MATLAB in edge cases. These differences
+are an unavoidable consequence of the Monte-Carlo origin of both tables, not
+a difference in method. Supply mctol for a direct Monte-Carlo p-value.
 
 If x has zero variance (or is otherwise degenerate so that skewness
 and kurtosis are undefined), jbstat is NaN; in this case
@@ -2424,9 +2424,9 @@ significance level and 0 otherwise.
 The Lilliefors statistic is the Kolmogorov-Smirnov statistic --- the maximum
 absolute difference between the empirical cumulative distribution function of
 x and the cumulative distribution function of the hypothesized family
-with parameters estimated from x. Because the parameters are estimated,
-the null distribution of the statistic differs from that of the ordinary
-Kolmogorov-Smirnov test.
+with parameters estimated from x. Because the parameters are
+estimated, the null distribution of the statistic differs from that of the
+ordinary Kolmogorov-Smirnov test.
 
 The following Name-Value pairs are supported:
 
@@ -2437,8 +2437,8 @@ Name Value
 standard deviation for the normal, mean for the exponential, and location and
 scale for the extreme value distribution.
 'Alpha' The significance level, a scalar. Without
-'MCTol' it must lie in [0.001, 0.5] (the tabulated range); with
-'MCTol' it may be any value in (0, 1). The default is
+'MCTol' it must lie in [0.001, 0.5] (the tabulated range);
+with 'MCTol' it may be any value in (0, 1). The default is
 0.05.
 'MCTol' Maximum Monte-Carlo standard error for the
 p-value. When supplied, the p-value and critical value are computed by

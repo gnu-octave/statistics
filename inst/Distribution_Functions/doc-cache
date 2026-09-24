@@ -2819,7 +2819,7 @@ gpcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1570
+# length: 1572
 statistics: p = gpcdf (x, k, sigma, theta)
 statistics: p = gpcdf (x, k, sigma, theta, 'upper')
 Generalized Pareto cumulative distribution function (CDF).
@@ -2838,9 +2838,9 @@ x.
 
 When k = 0 and theta = 0, the Generalized Pareto
 is equivalent to the exponential distribution. When k > 0 and
-theta = k / k the Generalized Pareto is equivalent
-τπ the Pareto distribution. The mean of the Generalized Pareto is not finite
-when k >= 1 and the variance is not finite when
+theta = sigma / k the Generalized Pareto is
+equivalent to the Pareto distribution. The mean of the Generalized Pareto is
+not finite when k >= 1 and the variance is not finite when
 k >= 1/2. When k >= 0, the Generalized Pareto
 has positive density for x > theta, or, when
 theta < 0, for
@@ -2881,7 +2881,7 @@ gpinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1351
+# length: 1355
 statistics: x = gpinv (p, k, sigma, theta)
 Inverse of the generalized Pareto cumulative distribution function (iCDF).
 
@@ -2894,9 +2894,9 @@ inputs.
 
 When k = 0 and theta = 0, the Generalized Pareto
 is equivalent to the exponential distribution. When k > 0 and
-theta = k / k the Generalized Pareto is equivalent
-to the Pareto distribution. The mean of the Generalized Pareto is not finite
-when k >= 1 and the variance is not finite when
+theta = sigma / k the Generalized Pareto is
+equivalent to the Pareto distribution. The mean of the Generalized Pareto is
+not finite when k >= 1 and the variance is not finite when
 k >= 1/2. When k >= 0, the Generalized Pareto
 has positive density for x > theta, or, when
 theta < 0, for
@@ -2937,7 +2937,7 @@ gppdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1875
+# length: 1879
 statistics: y = gppdf (x, k, sigma, theta)
 Generalized Pareto probability density function (PDF).
 
@@ -2950,9 +2950,9 @@ inputs.
 
 When k = 0 and theta = 0, the Generalized Pareto
 is equivalent to the exponential distribution. When k > 0 and
-theta = k / k the Generalized Pareto is equivalent
-to the Pareto distribution. The mean of the Generalized Pareto is not finite
-when k >= 1 and the variance is not finite when
+theta = sigma / k the Generalized Pareto is
+equivalent to the Pareto distribution. The mean of the Generalized Pareto is
+not finite when k >= 1 and the variance is not finite when
 k >= 1/2. When k >= 0, the Generalized Pareto
 has positive density for x > theta, or, when
 theta < 0, for
@@ -3004,7 +3004,7 @@ gprnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1549
+# length: 1553
 statistics: r = gprnd (k, sigma, theta)
 statistics: r = gprnd (k, sigma, theta, rows)
 statistics: r = gprnd (k, sigma, theta, rows, cols, ...)
@@ -3026,9 +3026,9 @@ also be specified with a row vector of dimensions, sz.
 
 When k = 0 and theta = 0, the Generalized Pareto
 is equivalent to the exponential distribution. When k > 0 and
-theta = k / k the Generalized Pareto is equivalent
-to the Pareto distribution. The mean of the Generalized Pareto is not finite
-when k >= 1 and the variance is not finite when
+theta = sigma / k the Generalized Pareto is
+equivalent to the Pareto distribution. The mean of the Generalized Pareto is
+not finite when k >= 1 and the variance is not finite when
 k >= 1/2. When k >= 0, the Generalized Pareto
 has positive density for x > theta, or, when
 theta < 0, for
@@ -4443,7 +4443,7 @@ logirnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1121
+# length: 1122
 statistics: r = logirnd (mu, sigma)
 statistics: r = logirnd (mu, sigma, rows)
 statistics: r = logirnd (mu, sigma, rows, cols, ...)
@@ -4470,7 +4470,7 @@ Further information about the logistic distribution can be found at
 https://en.wikipedia.org/wiki/Logistic_distribution
 
 See also:
-logcdf,
+logicdf,
 logiinv,
 logipdf,
 logifit,
@@ -5122,7 +5122,7 @@ mvncdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2765
+# length: 2829
 statistics: p = mvncdf (x)
 statistics: p = mvncdf (x, mu, sigma)
 statistics: p = mvncdf (x_lo, x_up, mu, sigma)
@@ -5164,7 +5164,8 @@ err in p.
 
 p = mvncdf (..., options) specifies the structure,
 which controls specific parameters for the numerical integration used to
-compute p. The required fields are:
+compute p, as statset makes it. A field that is missing or
+empty takes its default. The fields are:
 
 'TolFun' Maximum absolute error tolerance. Default
 is 1e-8 for D < 4, or 1e-4 for D >= 4. Note that for bivariate normal cdf,
@@ -5324,11 +5325,11 @@ mvtcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2518
+# length: 2582
 statistics: p = mvtcdf (x, rho, df)
-statistics: p = mvncdf (x_lo, x_up, rho, df)
-statistics: p = mvncdf (..., options)
-statistics: [p, err] = mvncdf (...)
+statistics: p = mvtcdf (x_lo, x_up, rho, df)
+statistics: p = mvtcdf (..., options)
+statistics: [p, err] = mvtcdf (...)
 Multivariate Student's t cumulative distribution function (CDF).
 
 p = mvtcdf (x, rho, df) returns the cumulative
@@ -5365,7 +5366,8 @@ err in p.
 
 p = mvtcdf (..., options) specifies the structure,
 which controls specific parameters for the numerical integration used to
-compute p. The required fields are:
+compute p, as statset makes it. A field that is missing or
+empty takes its default. The fields are:
 
 'TolFun' Maximum absolute error tolerance. Default
 is 1e-8 for D < 4, or 1e-4 for D >= 4.
@@ -5595,12 +5597,12 @@ nakainv
 # type: sq_string
 # elements: 1
 # length: 958
-statistics: x = nakacdf (x, mu, omega)
+statistics: x = nakainv (p, mu, omega)
 Inverse of the Nakagami cumulative distribution function (iCDF).
 
 For each element of p, compute the quantile (the inverse of the CDF) of
 the Nakagami distribution with shape parameter mu and spread parameter
-omega. The size of x is the common size of x, mu,
+omega. The size of x is the common size of p, mu,
 and omega. A scalar input functions as a constant matrix of the same
 size as the other inputs.
 
@@ -6263,8 +6265,8 @@ nctinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 917
-statistics: x = ncx2inv (p, df, mu)
+# length: 916
+statistics: x = nctinv (p, df, mu)
 Inverse of the non-central t-cumulative distribution function (iCDF).
 
 For each element of p, compute the quantile (the inverse of the CDF) of
@@ -7121,8 +7123,8 @@ result in the integer class of the input, truncating a probability to
 
 The density at an infinite abscissa is 0, no proper distribution
 placing mass there. MATLAB returns NaN here, as it does for
-raylpdf and for no other density, which is an inconsistency there rather
-than a convention: it returns 0 at Inf for every other
+raylpdf and for no other density, which is an inconsistency there
+rather than a convention: it returns 0 at Inf for every other
 distribution of the same support.
 
 See also:
@@ -7320,8 +7322,8 @@ since a character array is an integer type and integers are refused too.
 
 The density at an infinite abscissa is 0, no proper distribution
 placing mass there. MATLAB returns NaN here, as it does for
-poisspdf and for no other density, which is an inconsistency there rather
-than a convention: it returns 0 at Inf for every other
+poisspdf and for no other density, which is an inconsistency there
+rather than a convention: it returns 0 at Inf for every other
 distribution of the same support.
 
 The prob.RayleighDistribution class names this same parameter

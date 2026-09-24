@@ -8013,39 +8013,40 @@ NonLinearModel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1782
-statistics: mdl = NonLinearModel (...)
+# length: 1752
+statistics: NonLinearModel
 Nonlinear regression model class.
 
 A NonLinearModel object holds a nonlinear regression fitted by
 fitnlm, together with its coefficients, fit statistics, and methods
-for inference, prediction, and diagnostics. Construct one with
-fitnlm, which documents the accepted inputs and
-Name/Value pairs.
+for inference, prediction, and diagnostics. Create a
+NonLinearModel object with fitnlm or the class constructor.
 
 The estimated coefficients and their statistics are in the
 Coefficients table; Rsquared, ModelCriterion,
 LogLikelihood, RMSE, SSE, SST, and SSR
-summarize the fit. The methods predict, feval, random,
-coefCI, coefTest, plotResiduals, plotDiagnostics,
-and plotSlice operate on the fitted model.
+summarize the fit. The methods predict, feval,
+random, coefCI, coefTest, plotResiduals,
+plotDiagnostics, and plotSlice operate on the fitted model.
 
 Fit statistics
 
 The fit statistics follow MATLAB's conventions. SSE is the residual
-sum of squares, SST the total sum of squares of the response about its
-(weighted) mean, and SSR the regression sum of squares of the fitted
-values about that mean; because the model is nonlinear, SST does
-not in general equal SSR + SSE. Rsquared.Ordinary is
-1 - SSE / SST and Rsquared.Adjusted corrects for
-the error degrees of freedom. RMSE is sqrt (MSE), and
-the Gaussian LogLikelihood uses the maximum-likelihood error variance
+sum of squares, SST the total sum of squares of the response about
+its (weighted) mean, and SSR the regression sum of squares of the
+fitted values about that mean; because the model is nonlinear, SST
+does not in general equal SSR + SSE.
+Rsquared.Ordinary is 1 - SSE / SST and
+Rsquared.Adjusted corrects for the error degrees of freedom.
+RMSE is sqrt (MSE), and the Gaussian
+LogLikelihood uses the maximum-likelihood error variance
 SSE / n. The information criteria in ModelCriterion
 (AIC, AICc, BIC, CAIC) count the p
-coefficients as the only parameters -- the error variance is not
+coefficients as the only parameters; the error variance is not
 counted. coefTest is a Wald test: for a contrast matrix H it
-forms (H*b)' * inv (H*V*H') * (H*b) / r
-with V the coefficient covariance and r the number of rows of
+forms
+(H*b)' * inv (H*V*H') * (H*b) / r with
+V the coefficient covariance and r the number of rows of
 H, referred to an F distribution on r and DFE
 degrees of freedom. The summary printed by disp instead reports an
 F statistic versus the zero model, formed from the uncorrected
@@ -8324,11 +8325,51 @@ NonLinearModel.NonLinearModel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 242
-NonLinearModel: mdl = NonLinearModel (data, resp, modelfun, beta0)
+# length: 1514
+NonLinearModel: mdl = NonLinearModel (X, y, modelfun, beta0)
+NonLinearModel: mdl = NonLinearModel (tbl, [], modelfun, beta0)
 NonLinearModel: mdl = NonLinearModel (..., Name, Value)
-Fit a nonlinear regression model. Prefer the fitnlm function,
-which documents the accepted inputs and Name/Value pairs.
+Fit a nonlinear regression model.
+
+mdl = NonLinearModel (X, y, modelfun,
+beta0) fits the nonlinear regression model
+y = modelfun (beta, X) to the response
+vector y and the n-by-p predictor matrix X,
+starting the iterative fit from the coefficient vector beta0.
+modelfun is a function handle @(b, X) returning
+the fitted responses.
+
+mdl = NonLinearModel (tbl, [], modelfun,
+beta0) takes the predictors and response from the table
+tbl; the last column is the response unless overridden by
+'ResponseVar'.
+
+The following Name/Value pairs are accepted:
+
+Name Value
+'CoefficientNames' a cell array of names for the
+coefficients (default 'b1', 'b2', ...).
+'Weights' a vector of nonnegative observation weights.
+'ErrorModel' the error-variance model:
+'constant' (default), 'proportional', or
+'combined'.
+'RobustWgtFun' the name of a robust weight function,
+enabling robust fitting (see nlinfit).
+'Options' a statset-style options structure
+controlling the iterative fit (MaxIter, TolFun,
+TolX).
+'PredictorVars', 'ResponseVar' for table
+input, the predictor and response variable names.
+'VarNames' a cell array of p + 1 variable names
+(predictors followed by the response) for numeric X.
+'Exclude' observations to exclude from the fit.
+
+fitnlm makes the same fit and takes a table without the empty
+second argument.
+
+See also:
+fitnlm,
+nlinfit
 
 
 # name: <cell-element>
@@ -9649,9 +9690,9 @@ A cell array of names for the grouping terms (default g1, g2, etc.).
 The returned lme is a LinearMixedModel object describing the
 fitted model: the estimated fixed effects and their statistics
 (lme.Coefficients), the covariance parameters
-(covarianceParameters), the random-effects BLUPs (randomEffects),
-the log-likelihood, and methods for prediction, residuals, and hypothesis
-tests.
+(covarianceParameters), the random-effects BLUPs
+(randomEffects), the log-likelihood, and methods for prediction,
+residuals, and hypothesis tests.
 
 Only the full (unstructured) random-effects covariance is currently
 supported.
@@ -10331,13 +10372,14 @@ statistics: [yhat, dlo, dhi] = mnrval (B, X, ssize, stats)
 statistics: [...] = mnrval (..., name, value)
 Predict values for a multinomial logistic regression model.
 
-pihat = mnrval (B, X) returns the predicted
-category probabilities pihat of a multinomial logistic regression with
+pihat = mnrval (B, X) returns the predicted category
+probabilities pihat of a multinomial logistic regression with
 coefficients B, evaluated at the predictor values in X. X
 is an NxP numeric matrix of N observations on P
-predictors. pihat is an NxK matrix, where K is the number
-of response categories and each row sums to one. B is the coefficient
-matrix returned by mnrfit (see below for its shape under each model).
+predictors. pihat is an NxK matrix, where K is the
+number of response categories and each row sums to one. B is the
+coefficient matrix returned by mnrfit (see below for its shape under
+each model).
 
 mnrval is the prediction companion of mnrfit. Unlike the
 current mnrfit, which only fits ordinal and two-category nominal
@@ -10366,8 +10408,8 @@ coefficients, or 'off' for a common set of coefficients with
 category-specific intercepts only. Default is 'on' for nominal and
 hierarchical models and 'off' for ordinal models. With
 'interactions','on', B is a (P+1)x(K-1) matrix. With
-'interactions','off', B is a (K-1+P)x1 vector holding the
-K-1 intercepts followed by the P common slopes.
+'interactions','off', B is a (K-1+P)x1 vector holding
+the K-1 intercepts followed by the P common slopes.
 'link' The link function for ordinal and hierarchical
 models: 'logit' (default), 'probit', 'comploglog', or
 'loglog'. Nominal models always use the multinomial logit link.
