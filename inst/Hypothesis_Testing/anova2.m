@@ -34,7 +34,8 @@
 ## @item
 ## @var{x} contains the data and it must be a matrix of at least two columns and
 ## two rows.  @code{NaN} values are not accepted, since @code{anova2} requires a
-## balanced design; use @code{anovan} for data with missing observations.
+## balanced design; use @code{anovan} for data with missing observations.  An
+## empty @var{x} is an error, whereas MATLAB returns @code{NaN} p-values.
 ##
 ## @item
 ## @var{reps} is the number of replicates for each combination of factor groups.
@@ -104,6 +105,10 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   ## Check for valid number of input arguments
   if (nargin < 1 || nargin >4)
     error ("anova2: invalid number of input arguments.");
+  endif
+  ## Check for empty X
+  if (isempty (x))
+    error ("anova2: X must not be empty.");
   endif
   ## Check for NaN values in X
   if (any (isnan ( x(:))))
@@ -427,4 +432,7 @@ endfunction
 %! assert_equal (atab{2,6}, 0.141597630656771, 1e-10);
 %! assert_equal (atab{3,6}, 0.000636643812875719, 1e-10);
 
-
+## Test input validation
+%!error <anova2: X must not be empty.> anova2 ([], 1, 'off')
+%!error <anova2: X must not be empty.> anova2 (zeros (0, 3), 2, 'off')
+%!error <anova2: X must not be empty.> anova2 (zeros (3, 0), 1, 'off')
