@@ -462,9 +462,20 @@ classdef RegressionPartitionedModel
           else
             args = [args, {'Solver', 'sgd', 'LearningRate', Mdl.LearningRate}];
           endif
+          ## A model fitted with weights passes each fold the weights of its
+          ## rows; without them W is uniform and the folds need none.
+          wAll = [];
+          Wd = double (this.W);
+          if (max (Wd) - min (Wd) > 1e-12 * max (Wd))
+            wAll = this.W;
+          endif
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            tmp = fitrnet (X(idx, :), Y(idx), args{:});
+            fargs = args;
+            if (! isempty (wAll))
+              fargs = [fargs, {'Weights', wAll(idx)}];
+            endif
+            tmp = fitrnet (X(idx, :), Y(idx), fargs{:});
             this.Trained{k} = compact (tmp);
           endfor
 
@@ -1461,4 +1472,17 @@ endclassdef
 %! Mdl = fitrsvm (X(idx,:), y(idx), 'Weights', w(idx), ...
 %!                'Epsilon', CVMdl.ModelParameters.Epsilon);
 %! assert_equal (predict (CVMdl.Trained{1}, X), predict (Mdl, X), 1e-10);
-
+%!test
+%! ## A neural network fold is fitted with its rows' weights
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = fitrnet (meas(:,2:4), meas(:,1), 'LayerSizes', 3, 'Weights', w);
+%! rand ('seed', 7);
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! idx = training (CVMdl.Partition, 1);
+%! rand ('seed', 7);
+%! cvpartition (150, 'KFold', 3);
+%! F = fitrnet (meas(idx,2:4), meas(idx,1), 'LayerSizes', 3, ...
+%!              'Weights', Mdl.W(idx));
+%! assert_equal (predict (CVMdl.Trained{1}, meas(:,2:4)), ...
+%!               predict (F, meas(:,2:4)), 1e-10);

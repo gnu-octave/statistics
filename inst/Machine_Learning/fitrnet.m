@@ -134,6 +134,14 @@
 ##
 ## @item @qcode{'DisplayInfo'} @tab A logical scalar indicating whether to
 ## print information during training.  Default is @qcode{false}.
+##
+## @item @qcode{'Weights'} @tab A nonnegative single or double vector of
+## observation weights, one per row of @var{X}.  The network is trained on the
+## loss weighted by them, standardization and the prediction for a row missing
+## a predictor weigh the observations the same way, and a row of zero or
+## missing weight is left out.  The model's @code{W} keeps the class of the
+## weights, while every computation runs in double, so the predictions are
+## double where MATLAB returns single.  The default is uniform.
 ## @end multitable
 ##
 ##

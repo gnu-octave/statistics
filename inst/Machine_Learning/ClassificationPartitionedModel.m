@@ -777,10 +777,27 @@ classdef ClassificationPartitionedModel
           stdz = ! isempty (Mdl.Mu);
           args = [args, {'Standardize', stdz}];
 
+          ## A model fitted with weights passes each fold the weights of its
+          ## rows.  Weights given vary within a class, which a prior alone
+          ## never makes them do; a model without them leaves each fold to its
+          ## own empirical prior, as before.
+          wAll = [];
+          gW = labelIndices (Mdl.ClassNames, this.Y);
+          for c = 1:max (gW)
+            wc = double (this.W(gW == c));
+            if (numel (wc) > 1 && max (wc) - min (wc) > 1e-12 * max (wc))
+              wAll = this.W;
+            endif
+          endfor
+
           ## Train model according to partition object
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            tmp = fitcnet (this.X(idx, :), this.Y(idx,:), args{:});
+            fargs = args;
+            if (! isempty (wAll))
+              fargs = [fargs, {'Weights', wAll(idx)}];
+            endif
+            tmp = fitcnet (this.X(idx, :), this.Y(idx,:), fargs{:});
             this.Trained{k} = compact (tmp);
           endfor
 
@@ -2551,4 +2568,17 @@ endfunction
 %! Mdl = fitcnb (meas(idx,:), species(idx), 'Weights', w(idx));
 %! assert_equal (CVMdl.Trained{1}.DistributionParameters, ...
 %!               Mdl.DistributionParameters, 1e-12);
-
+%!test
+%! ## A neural network fold is fitted with its rows' weights
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = fitcnet (meas, species, 'LayerSizes', 3, 'Weights', w);
+%! rand ('seed', 7);
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! idx = training (CVMdl.Partition, 1);
+%! rand ('seed', 7);
+%! cvpartition (150, 'KFold', 3);
+%! F = fitcnet (meas(idx,:), species(idx), 'LayerSizes', 3, ...
+%!              'Weights', Mdl.W(idx), 'Prior', Mdl.Prior);
+%! assert_equal (nthargout (2, @predict, CVMdl.Trained{1}, meas), ...
+%!               nthargout (2, @predict, F, meas), 1e-10);

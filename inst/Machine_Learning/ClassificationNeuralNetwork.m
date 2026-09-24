@@ -403,12 +403,14 @@ classdef ClassificationNeuralNetwork < PredictiveModel
     ##
     ## Observation weights
     ##
-    ## A numeric column vector with one entry per training observation.  It
-    ## defaults to a uniform weight for every observation.  This property is
-    ## read-only.
+    ## A numeric column vector with one entry per training observation,
+    ## summing to one, by which the training loss weighs each observation.  It
+    ## has the class of the @qcode{'Weights'} given, single or double.  This
+    ## property is read-only.
     ##
-    ## Each class carries its prior spread evenly over its own observations,
-    ## so an observation of a class weighs @qcode{Prior} for that class
+    ## Each class carries its prior spread over its own observations in
+    ## proportion to the @qcode{'Weights'} given, or evenly when none were, so
+    ## that an observation of a class weighs @qcode{Prior} for that class
     ## divided by the number of observations it holds.
     ##
     ## @end deftp
@@ -778,7 +780,7 @@ classdef ClassificationNeuralNetwork < PredictiveModel
                   'LayerSizes', 'LearningRate', 'Activations', ...
                   'OutputLayerActivation', 'IterationLimit', 'Solver', ...
                   'GradientTolerance', 'LossTolerance', 'StepTolerance', ...
-                  'DisplayInfo', 'CategoricalPredictors'};
+                  'DisplayInfo', 'CategoricalPredictors', 'Weights'};
       ## An empty default stands for one resolved once the data are known:
       ## 'PredictorNames' are x1, x2, ... and 'ResponseName' is 'Y'; the
       ## classes, 'Prior' and 'Cost' come from the response; no
@@ -786,11 +788,11 @@ classdef ClassificationNeuralNetwork < PredictiveModel
       ## 0.003 and each tolerance 1e-6, empty so that giving one can be
       ## refused by name when the solver cannot use it.
       dfValues = {false, [], [], [], [], [], [], 10, [], 'relu', 'softmax', ...
-                  1000, 'lbfgs', [], [], [], false, []};
+                  1000, 'lbfgs', [], [], [], false, [], []};
       [Standardize, PredictorNames, ResponseName, ClassNames, STin, Prior, ...
        Cost, LayerSizes, LearningRate, Activations, OutputLayerActivation, ...
        IterationLimit, Solver, GradientTolerance, LossTolerance, ...
-       StepTolerance, DisplayInfo, CatPreds, args] = ...
+       StepTolerance, DisplayInfo, CatPreds, Weights, args] = ...
                  parsePairedArguments (optNames, dfValues, varargin(:));
 
       ## Validate optional paired arguments
@@ -904,6 +906,21 @@ classdef ClassificationNeuralNetwork < PredictiveModel
               parseScoreTransform (STin, 'ClassificationNeuralNetwork');
       endif
 
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationNeuralNetwork: %s", errmsg);
+      endif
+      if (! isempty (Weights)
+          && ! (isvector (Weights) && numel (Weights) == rows (X)))
+        error (strcat ("ClassificationNeuralNetwork: 'Weights' must be a", ...
+                       " vector with one element per row of X."));
+      endif
+      if (! isempty (Weights) && (any (Weights < 0)
+                                  || ! (sum (Weights(! isnan (Weights))) > 0)))
+        error (strcat ("ClassificationNeuralNetwork: 'Weights' must be", ...
+                       " nonnegative and must not be all zero."));
+      endif
+
       if (! isempty (args))
         error (strcat ("ClassificationNeuralNetwork: invalid optional", ...
                        " paired argument."));
@@ -952,10 +969,19 @@ classdef ClassificationNeuralNetwork < PredictiveModel
         gY(! ismember (gY, namedClasses (glY, ClassNames))) = NaN;
       endif
 
-      ## An observation is dropped only when its response is missing.  A row
+      ## An observation is dropped when its response is missing, or when its
+      ## weight is zero or missing, as R2024a drops it; the weights keep their
+      ## class in the model and every computation runs on them as double.  A row
       ## whose predictors hold missing values is kept and reported as used,
       ## while the fit below draws on the complete observations alone.
-      RowsUsed  = ! isnan (gY);
+      Wclass    = "double";
+      Wall      = ones (rows (X), 1);
+      if (! isempty (Weights))
+        Wclass  = class (Weights);
+        Wall    = double (Weights(:));
+      endif
+      RowsUsed  = ! isnan (gY) & ! isnan (Wall) & Wall > 0;
+      wret      = Wall(RowsUsed);
       ## Index the rows and not the elements: a response naming its
       ## classes in the rows of a character matrix has one column per
       ## character, and a linear index flattens the names into single
@@ -968,6 +994,7 @@ classdef ClassificationNeuralNetwork < PredictiveModel
       cobs      = ! any (isnan (Xret), 2);
       Y         = Yret(cobs, :);
       X         = Xret(cobs, :);
+      wfit      = wret(cobs);
 
       ## Renew groups in Y over the retained observations, so a class held
       ## only by a row with missing predictors is still a class of the model;
@@ -1034,8 +1061,10 @@ classdef ClassificationNeuralNetwork < PredictiveModel
         Prior = priorFromStruct (Prior, this.ClassNames, ...
                                  'ClassificationNeuralNetwork');
       endif
-      if (isempty (Prior) || (ischar (Prior) && strcmpi (Prior, 'empirical')))
-        this.Prior = accumarray (gY(:), 1, [nclasses, 1])' / numel (gY);
+      empirical = isempty (Prior) || (ischar (Prior)
+                                      && strcmpi (Prior, 'empirical'));
+      if (empirical)
+        this.Prior = accumarray (gY(:), wfit, [nclasses, 1])' / sum (wfit);
       elseif (ischar (Prior) && strcmpi (Prior, 'uniform'))
         this.Prior = ones (1, nclasses) / nclasses;
       elseif (isnumeric (Prior) && isreal (Prior) && isvector (Prior)
@@ -1047,18 +1076,30 @@ classdef ClassificationNeuralNetwork < PredictiveModel
                        " 'empirical', 'uniform', or a non-negative numeric", ...
                        " vector with one entry per class."));
       endif
-      this.W = priorWeights (this.Prior, gY, this.NumObservations);
+      ## W has one entry per stored observation, those missing a predictor
+      ## included, so it lines up with X; the fit sees the complete ones.
+      if (isempty (Weights))
+        this.W = priorWeights (this.Prior, gret, this.NumObservations);
+      else
+        this.W = cast (priorNormalize (wret, gret, this.Prior), Wclass);
+      endif
 
       ## Handle the Standardize option
       if (Standardize)
         ## Mu and Sigma weight the complete observations so that each class
         ## keeps the share of the observation weight it carried before any row
-        ## was set aside, which is what MATLAB reports.
+        ## was set aside, or its prior where one was given, which is what
+        ## MATLAB reports.
         sw = zeros (rows (X), 1);
         for k = 1:classCount (this.ClassNames)
           ck = (gY == k);
           if (any (ck))
-            sw(ck) = (sum (gret == k) / numel (gret)) / sum (ck);
+            if (empirical)
+              share = sum (wret(gret == k)) / sum (wret);
+            else
+              share = this.Prior(k);
+            endif
+            sw(ck) = share * wfit(ck) / sum (wfit(ck));
           endif
         endfor
         sw = sw / sum (sw);
@@ -1118,6 +1159,13 @@ classdef ClassificationNeuralNetwork < PredictiveModel
                               'GradientTolerance', GradientTolerance, ...
                               'LossTolerance', LossTolerance, ...
                               'StepTolerance', StepTolerance);
+      ## The loss weighs each observation by W, which carries the prior as
+      ## well as the weights given, as R2024a weighs it.  Weights that are all
+      ## equal are left out, so that such a fit keeps the plain mean.
+      Wfit = double (this.W(cobs));
+      if (max (Wfit) - min (Wfit) > 1e-12 * max (Wfit))
+        SolverOptions.Weights = Wfit;
+      endif
       ## The engine names the layers itself; this check stays here so the
       ## count is reported under the class rather than under fcnntrain.
       if (! ischar (Activations) && numel (LayerSizes) != numel (Activations))
@@ -2997,3 +3045,73 @@ endfunction
 %!error <ClassificationNeuralNetwork.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (fitcnet ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2]), ...
 %!       [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))
+
+## Observation weights
+%!error <ClassificationNeuralNetwork: 'Weights' must be a real vector of class single or double.> ...
+%! ClassificationNeuralNetwork ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!                              'Weights', int8 ([1; 1; 1; 1]))
+%!error <ClassificationNeuralNetwork: 'Weights' must be a real vector of class single or double.> ...
+%! ClassificationNeuralNetwork ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!                              'Weights', true (4, 1))
+%!error <ClassificationNeuralNetwork: 'Weights' must be a vector with one element per row of X.> ...
+%! ClassificationNeuralNetwork ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!                              'Weights', [1; 1])
+%!error <ClassificationNeuralNetwork: 'Weights' must be nonnegative and must not be all zero.> ...
+%! ClassificationNeuralNetwork ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!                              'Weights', [1; -1; 1; 1])
+%!test
+%! ## A weight of two fits as the observation given twice
+%! load fisheriris
+%! X = meas(51:130,:);
+%! Y = species(51:130);
+%! w = ones (80, 1);
+%! w(1:10) = 2;
+%! rand ('seed', 1);
+%! A = ClassificationNeuralNetwork (X, Y, 'LayerSizes', 1, 'Weights', w);
+%! rand ('seed', 1);
+%! B = ClassificationNeuralNetwork ([X; X(1:10,:)], [Y; Y(1:10)], ...
+%!                                  'LayerSizes', 1);
+%! assert_equal (nthargout (2, @predict, A, X), ...
+%!               nthargout (2, @predict, B, X), 1e-10);
+%!test
+%! ## A prior weighs the fit as weights would, as R2024a weighs it
+%! load fisheriris
+%! X = meas(51:130,:);
+%! Y = species(51:130);
+%! w = [ones(50, 1) / 50; ones(30, 1) / 30];
+%! rand ('seed', 1);
+%! A = ClassificationNeuralNetwork (X, Y, 'LayerSizes', 1, 'Prior', 'uniform');
+%! rand ('seed', 1);
+%! B = ClassificationNeuralNetwork (X, Y, 'LayerSizes', 1, 'Weights', w);
+%! assert_equal (nthargout (2, @predict, A, X), ...
+%!               nthargout (2, @predict, B, X), 1e-8);
+%!test
+%! ## W sums to one and keeps the class of single weights
+%! load fisheriris
+%! w = ones (150, 1);
+%! w([3, 60, 120]) = 2;
+%! Mdl = ClassificationNeuralNetwork (meas, species, 'LayerSizes', 3, ...
+%!                                    'Weights', single (w));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (double (Mdl.W(1)), 1 / 153, 1e-8);
+%!test
+%! ## Rows of zero weight are left out, as R2024a leaves them
+%! load fisheriris
+%! w = ones (150, 1);
+%! w(5) = 0;
+%! Mdl = ClassificationNeuralNetwork (meas, species, 'LayerSizes', 3, ...
+%!                                    'Weights', w);
+%! assert_equal (Mdl.NumObservations, 149);
+%!test
+%! ## Standardization weighs the observations by W, as R2024a does
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = ClassificationNeuralNetwork (meas, species, 'LayerSizes', 3, ...
+%!                                    'Weights', w, 'Standardize', true);
+%! assert_equal (Mdl.Mu, [6.153769696969698, 2.965608080808081, ...
+%!                        4.573050505050506, 1.55819797979798], 1e-14);
+%! Mdl = ClassificationNeuralNetwork (meas, species, 'LayerSizes', 3, ...
+%!                                    'Weights', w, 'Standardize', true, ...
+%!                                    'Prior', 'uniform');
+%! assert_equal (Mdl.Mu, [5.833297045931007, 3.054926460541555, ...
+%!                        3.749907727492633, 1.199335039802964], 1e-14);

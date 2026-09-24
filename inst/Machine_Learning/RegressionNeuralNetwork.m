@@ -327,8 +327,10 @@ classdef RegressionNeuralNetwork < PredictiveModel
     ##
     ## Observation weights
     ##
-    ## A numeric column vector with one entry per training observation.  It
-    ## defaults to a uniform weight for every observation.  This property is
+    ## A numeric column vector with one entry per training observation,
+    ## summing to one, by which the training loss weighs each observation.  It
+    ## defaults to a uniform weight for every observation, and has the class of
+    ## the @qcode{'Weights'} given, single or double.  This property is
     ## read-only.
     ##
     ## @end deftp
@@ -630,18 +632,19 @@ classdef RegressionNeuralNetwork < PredictiveModel
                   'ResponseTransform', 'LayerSizes', 'LearningRate', ...
                   'Activations', 'OutputLayerActivation', 'IterationLimit', ...
                   'Solver', 'GradientTolerance', 'LossTolerance', ...
-                  'StepTolerance', 'DisplayInfo', 'CategoricalPredictors'};
+                  'StepTolerance', 'DisplayInfo', 'CategoricalPredictors', ...
+                  'Weights'};
       ## An empty default stands for one resolved once the data are known:
       ## 'PredictorNames' are x1, x2, ... and 'ResponseName' is 'Y'; no
       ## 'ResponseTransform' leaves the response as it is; 'LearningRate' is
       ## 0.003 and each tolerance 1e-6, empty so that giving one can be
       ## refused by name when the solver cannot use it.
       dfValues = {false, [], [], [], 10, [], 'relu', 'none', 1000, 'lbfgs', ...
-                  [], [], [], false, []};
+                  [], [], [], false, [], []};
       [Standardize, PredictorNames, ResponseName, RTin, LayerSizes, ...
        LearningRate, Activations, OutputLayerActivation, IterationLimit, ...
        Solver, GradientTolerance, LossTolerance, StepTolerance, DisplayInfo, ...
-       CatPreds, args] = ...
+       CatPreds, Weights, args] = ...
                  parsePairedArguments (optNames, dfValues, varargin(:));
 
       ## Validate optional paired arguments
@@ -737,6 +740,21 @@ classdef RegressionNeuralNetwork < PredictiveModel
               parseResponseTransform (RTin, 'RegressionNeuralNetwork');
       endif
 
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionNeuralNetwork: %s", errmsg);
+      endif
+      if (! isempty (Weights)
+          && ! (isvector (Weights) && numel (Weights) == rows (X)))
+        error (strcat ("RegressionNeuralNetwork: 'Weights' must be a", ...
+                       " vector with one element per row of X."));
+      endif
+      if (! isempty (Weights) && (any (Weights < 0)
+                                  || ! (sum (Weights(! isnan (Weights))) > 0)))
+        error (strcat ("RegressionNeuralNetwork: 'Weights' must be", ...
+                       " nonnegative and must not be all zero."));
+      endif
+
       if (! isempty (args))
         error ("RegressionNeuralNetwork: invalid optional paired argument.");
       endif
@@ -778,10 +796,19 @@ classdef RegressionNeuralNetwork < PredictiveModel
       this.ExpandedPredictorNames = PredictorNames;
       this.ResponseName   = ResponseName;
 
-      ## An observation is dropped only when its response is missing.  A row
+      ## An observation is dropped when its response is missing, or when its
+      ## weight is zero or missing, as R2024a drops it; the weights keep their
+      ## class in the model and every computation runs on them as double.  A row
       ## whose predictors hold missing values is kept and reported as used,
       ## while the fit below draws on the complete observations alone.
-      RowsUsed  = ! isnan (Y(:));
+      Wclass    = "double";
+      Wall      = ones (rows (Y), 1);
+      if (! isempty (Weights))
+        Wclass  = class (Weights);
+        Wall    = double (Weights(:));
+      endif
+      RowsUsed  = ! isnan (Y(:)) & ! isnan (Wall) & Wall > 0;
+      wret      = Wall(RowsUsed) / sum (Wall(RowsUsed));
       Yret      = Y(RowsUsed);
       Xret      = X(RowsUsed, :);
       this.X    = Xret;
@@ -789,6 +816,7 @@ classdef RegressionNeuralNetwork < PredictiveModel
       cobs      = ! any (isnan (Xret), 2);
       Y         = Yret(cobs);
       X         = Xret(cobs, :);
+      wfit      = wret(cobs);
 
       ## Dummy code the categorical predictors on the rows the fit draws on.
       ## X keeps the predictors as given; the fit and every prediction see
@@ -805,7 +833,7 @@ classdef RegressionNeuralNetwork < PredictiveModel
       ## What a row missing a predictor is predicted to be, as MATLAB R2024a
       ## predicts it: the lower median of the training response, every
       ## observation weighing the same here.
-      this.MissingResponse_ = missingResponse (Y, ones (rows (Y), 1));
+      this.MissingResponse_ = missingResponse (Y, wfit);
       X = dummyCoding (X, Coding);
       if (! isempty (Coding.Index))
         this.CategoricalPredictors = Coding.Index;
@@ -835,12 +863,24 @@ classdef RegressionNeuralNetwork < PredictiveModel
       endif
 
       ## Every observation carries the same weight
-      this.W = ones (this.NumObservations, 1) / this.NumObservations;
+      this.W = cast (wret, Wclass);
 
       ## Handle the Standardize option.  The network must be trained on the
       ## scale it predicts on, so X is transformed here as well as in
       ## predict.
-      if (Standardize)
+      if (Standardize && ! isempty (Weights))
+        ## Weighted means and deviations, the deviation unbiased for the
+        ## weights; a constant predictor is left unscaled.
+        sw = wfit / sum (wfit);
+        this.Mu = sum (sw .* X, 1);
+        this.Sigma = sqrt (sum (sw .* (X - this.Mu) .^ 2, 1) ...
+                           / (1 - sum (sw .^ 2)));
+        this.Sigma(this.Sigma == 0 | all (X == X(1,:), 1)) = 1;
+        ## A level's column is left as it is, as in MATLAB R2024a.
+        this.Mu(Coding.Dummy) = 0;
+        this.Sigma(Coding.Dummy) = 1;
+        X = (X - this.Mu) ./ this.Sigma;
+      elseif (Standardize)
         this.Sigma = std (X, [], 1);
         this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
         this.Mu = mean (X, 1);
@@ -889,6 +929,11 @@ classdef RegressionNeuralNetwork < PredictiveModel
                               'GradientTolerance', GradientTolerance, ...
                               'LossTolerance', LossTolerance, ...
                               'StepTolerance', StepTolerance);
+      ## The loss weighs each observation by its weight, as R2024a weighs
+      ## it; without weights it stays the plain mean.
+      if (! isempty (Weights) && max (wfit) - min (wfit) > 1e-12 * max (wfit))
+        SolverOptions.Weights = wfit;
+      endif
       ## The engine names the layers itself; this check stays here so the
       ## count is reported under the class rather than under fcnntrain.
       if (! ischar (Activations) && numel (LayerSizes) != numel (Activations))
@@ -1223,10 +1268,11 @@ classdef RegressionNeuralNetwork < PredictiveModel
     ## @seealso{RegressionNeuralNetwork, fitrnet}
     ## @end deftypefn
     function L = resubLoss (this, varargin)
-      used = true (rows (this.X), 1);
-      X = this.X(used, :);
-      Y = this.Y(used);
-      L = loss (this, X, Y, varargin{:});
+      ## The model's own weights stand unless others are given, as in R2024a
+      if (! any (strcmpi (varargin(1:2:end), 'Weights')))
+        varargin = [varargin, {'Weights', this.W}];
+      endif
+      L = loss (this, this.X, this.Y, varargin{:});
     endfunction
 
     ## -*- texinfo -*-
@@ -2282,3 +2328,55 @@ endfunction
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'SL'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## Observation weights
+%!error <RegressionNeuralNetwork: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionNeuralNetwork ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', ...
+%!                          'Weights', int8 ([1; 1; 1; 1]))
+%!error <RegressionNeuralNetwork: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionNeuralNetwork ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', ...
+%!                          'Weights', true (4, 1))
+%!error <RegressionNeuralNetwork: 'Weights' must be a vector with one element per row of X.> ...
+%! RegressionNeuralNetwork ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', ...
+%!                          'Weights', [1; 1])
+%!error <RegressionNeuralNetwork: 'Weights' must be nonnegative and must not be all zero.> ...
+%! RegressionNeuralNetwork ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', ...
+%!                          'Weights', [1; -1; 1; 1])
+%!test
+%! ## A weight of two fits as the observation given twice
+%! load fisheriris
+%! X = meas(51:130,2:4);
+%! y = meas(51:130,1);
+%! w = ones (80, 1);
+%! w(1:10) = 2;
+%! rand ('seed', 1);
+%! A = RegressionNeuralNetwork (X, y, 'LayerSizes', 1, 'Weights', w);
+%! rand ('seed', 1);
+%! B = RegressionNeuralNetwork ([X; X(1:10,:)], [y; y(1:10)], ...
+%!                              'LayerSizes', 1);
+%! assert_equal (predict (A, X), predict (B, X), 1e-10);
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! Mdl = RegressionNeuralNetwork (meas(:,2:4), meas(:,1), 'LayerSizes', 3, ...
+%!                                'Weights', single (1 + (1:150)' / 7));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Standardization weighs the observations, as R2024a does
+%! load fisheriris
+%! Mdl = RegressionNeuralNetwork (meas(:,2:4), meas(:,1), 'LayerSizes', 3, ...
+%!                                'Weights', 1 + (1:150)' / 7, ...
+%!                                'Standardize', true);
+%! assert_equal (Mdl.Mu, [2.965608080808081, 4.573050505050505, ...
+%!                        1.55819797979798], 1e-14);
+%! assert_equal (Mdl.Sigma, [0.3809861139391035, 1.433169957562235, ...
+%!                           0.6470320013330532], 1e-14);
+%!test
+%! ## resubLoss weighs the observations by W unless given weights
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = RegressionNeuralNetwork (meas(:,2:4), meas(:,1), 'LayerSizes', 3, ...
+%!                                'Weights', w);
+%! assert_equal (resubLoss (Mdl), ...
+%!               loss (Mdl, meas(:,2:4), meas(:,1), 'Weights', w), 1e-15);

@@ -70,10 +70,10 @@ public:
                   const vector<vector<double>>& data,
                   const vector<vector<double>>& targets,
                   const vector<int>& labels, int output_size, int lossfcn,
-                  bool regression)
+                  bool regression, const vector<double>& obs_weights)
     : m_wb (wb), m_act (act), m_data (data), m_targets (targets),
       m_labels (labels), m_output_size (output_size), m_lossfcn (lossfcn),
-      m_regression (regression)
+      m_regression (regression), m_w (obs_weights)
   { }
 
   double operator () (const vector<double>& w, vector<double>& g)
@@ -116,20 +116,40 @@ public:
         label_vector[m_labels[s]-1] = 1.0;   // labels in Y start from 1
       }
 
+      // The objective is the mean, so each sample's gradient carries 1/n,
+      // or the weighted mean, each sample's gradient carrying its weight.
+      // The two are kept apart so that an unweighted fit keeps its arithmetic.
       vector<double> loss_grad;
       if (m_lossfcn == 1)
       {
         CrossEntropyLoss loss = CrossEntropyLoss ();
-        total += loss.forward (sample, label_vector);
-        // The objective is the mean, so each sample's gradient carries 1/n.
-        loss.backward (1.0 / n);
+        double lval = loss.forward (sample, label_vector);
+        if (m_w.empty ())
+        {
+          total += lval;
+          loss.backward (1.0 / n);
+        }
+        else
+        {
+          total += m_w[s] * lval;
+          loss.backward (m_w[s]);
+        }
         loss_grad = loss.grad;
       }
       else
       {
         MeanSquaredErrorLoss loss = MeanSquaredErrorLoss ();
-        total += loss.forward (sample, label_vector);
-        loss.backward (1.0 / n);
+        double lval = loss.forward (sample, label_vector);
+        if (m_w.empty ())
+        {
+          total += lval;
+          loss.backward (1.0 / n);
+        }
+        else
+        {
+          total += m_w[s] * lval;
+          loss.backward (m_w[s]);
+        }
         loss_grad = loss.grad;
       }
 
@@ -151,7 +171,7 @@ public:
       q += m_wb[l].nparams ();
     }
 
-    return total / n;
+    return m_w.empty () ? total / n : total;
   }
 
 private:
@@ -164,6 +184,8 @@ private:
   int m_output_size;
   int m_lossfcn;
   bool m_regression;
+  // One weight per sample summing to one, or empty for the plain mean
+  const vector<double>& m_w;
 };
 
 DEFUN_DLD(fcnntrain, args, nargout,
@@ -173,6 +195,8 @@ DEFUN_DLD(fcnntrain, args, nargout,
  @var{NumThreads}, @var{LearningRate}, @var{Epochs}, @var{DisplayInfo})\n\
  @deftypefnx  {statistics} {@var{Mdl} =} fcnntrain (@dots{}, @\
  @var{LossFunction})\n\
+ @deftypefnx  {statistics} {@var{Mdl} =} fcnntrain (@dots{}, @\
+ @var{LossFunction}, @var{SolverOptions})\n\
 \n\
 \n\
 Train a fully connected Neural Network. \n\
@@ -249,6 +273,17 @@ derivative are floored.  Code 2 is regression: @var{Y} holds response values \
 rather than labels, the output layer belongs with the identity activation, \
 and the returned model carries no @code{Accuracy} field, there being no \
 labels to count. \n\
+\n\
+\n\
+@code{@var{Mdl} = fcnntrain (@dots{}, @var{LossFunction}, \
+@var{SolverOptions})} \
+also takes a scalar structure setting the solver.  Its @qcode{Solver} field is \
+@qcode{'sgd'}, the epoch loop and the default, or @qcode{'lbfgs'}, whose \
+@qcode{GradientTolerance}, @qcode{LossTolerance}, @qcode{StepTolerance} and \
+@qcode{HistorySize} fields tune it.  Its @qcode{Weights} field holds one \
+nonnegative weight per row of @var{X}; they are scaled to sum to one and the \
+loss becomes the weighted mean over the observations, while without it every \
+observation weighs the same. \n\
 \n\
 \n\
 @code{fcnntrain} returns the trained model, @var{Mdl}, as a structure \
@@ -473,6 +508,8 @@ package:\n\n\
   // struct.  Absent, the epoch loop below runs exactly as it always has, and
   // every default in this file is unchanged.
   bool use_lbfgs = false;
+  // Observation weights, summing to one; empty leaves every sample the same
+  vector<double> obs_weights;
   lbfgs::options lbopt;
   lbopt.iteration_limit = max_epochs;
   lbfgs::result lbres = {};
@@ -511,6 +548,33 @@ package:\n\n\
     if (so.isfield ("HistorySize"))
     {
       lbopt.history_size = so.contents ("HistorySize").int_value ();
+    }
+    if (so.isfield ("Weights"))
+    {
+      octave_value wval = so.contents ("Weights");
+      if (! wval.isnumeric () || wval.iscomplex () || wval.numel () != n)
+      {
+        error ("fcnntrain: 'Weights' must hold one number per row of X.");
+      }
+      ColumnVector wv = wval.column_vector_value ();
+      double wsum = 0.0;
+      for (int i = 0; i < n; i++)
+      {
+        if (! (wv(i) >= 0.0) || ! std::isfinite (wv(i)))
+        {
+          error ("fcnntrain: 'Weights' must be nonnegative and finite.");
+        }
+        wsum += wv(i);
+      }
+      if (! (wsum > 0.0))
+      {
+        error ("fcnntrain: 'Weights' must not be all zero.");
+      }
+      obs_weights.resize (n);
+      for (int i = 0; i < n; i++)
+      {
+        obs_weights[i] = wv(i) / wsum;
+      }
     }
   }
   vector<double> Accuracy;
@@ -551,7 +615,7 @@ package:\n\n\
     }
 
     fcnn_objective fobj (WeightBias, Activation, data, targets, labels,
-                         output_size, lossfcn, regression);
+                         output_size, lossfcn, regression, obs_weights);
     lbres = lbfgs::minimize (fobj, w, lbopt);
 
     // minimize leaves the network holding whatever the last trial step set,
@@ -619,21 +683,24 @@ package:\n\n\
           label_vector[labels[sample_idx]-1] = 1.0;  // Labels in Y start from 1
         }
 
-        // Compute loss and the gradient it hands back
+        // Compute loss and the gradient it hands back.  A weighted sample's
+        // step is scaled by n times its weight, which is exactly one when
+        // no weights were given.
+        double step = obs_weights.empty () ? 1.0 : n * obs_weights[sample_idx];
         double loss_output;
         vector<double> loss_grad;
         if (lossfcn == 1)
         {
           CrossEntropyLoss loss = CrossEntropyLoss ();
           loss_output = loss.forward (sample, label_vector);
-          loss.backward (1.0);
+          loss.backward (step);
           loss_grad = loss.grad;
         }
         else
         {
           MeanSquaredErrorLoss loss = MeanSquaredErrorLoss ();
           loss_output = loss.forward (sample, label_vector);
-          loss.backward (1.0);
+          loss.backward (step);
           loss_grad = loss.grad;
         }
         running_loss += loss_output;
@@ -712,15 +779,17 @@ package:\n\n\
           label_vector[labels[sample_idx]-1] = 1.0;
         }
 
+        // The recorded loss is the weighted mean when weights were given
+        double share = obs_weights.empty () ? 1.0 : n * obs_weights[sample_idx];
         if (lossfcn == 1)
         {
           CrossEntropyLoss loss = CrossEntropyLoss ();
-          sum_loss += loss.forward (sample, label_vector);
+          sum_loss += share * loss.forward (sample, label_vector);
         }
         else
         {
           MeanSquaredErrorLoss loss = MeanSquaredErrorLoss ();
-          sum_loss += loss.forward (sample, label_vector);
+          sum_loss += share * loss.forward (sample, label_vector);
         }
       }
 
@@ -1010,3 +1079,25 @@ package:\n\n\
 %! assert_equal (Ma.Criterion, "Relative gradient tolerance reached.");
 %! assert_equal (numel (Ma.Loss) < numel (Mb.Loss), true);
 */
+%!error <fcnntrain: 'Weights' must hold one number per row of X.> ...
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, false, 0, ...
+%!            struct ("Weights", ones (5, 1)));
+%!error <fcnntrain: 'Weights' must be nonnegative and finite.> ...
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, false, 0, ...
+%!            struct ("Weights", -ones (150, 1)));
+%!error <fcnntrain: 'Weights' must not be all zero.> ...
+%! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, false, 0, ...
+%!            struct ("Weights", zeros (150, 1)));
+%!test
+%! ## A weight of two trains as the sample given twice
+%! w = ones (150, 1);
+%! w(1:10) = 2;
+%! so = struct ("Solver", "lbfgs");
+%! rand ("seed", 3);
+%! A = fcnntrain (X, Y, 3, "sigmoid", "softmax", 1, 0.01, 50, false, 1, ...
+%!                setfield (so, "Weights", w));
+%! rand ("seed", 3);
+%! B = fcnntrain ([X; X(1:10,:)], [Y; Y(1:10)], 3, "sigmoid", "softmax", 1, ...
+%!                0.01, 50, false, 1, so);
+%! assert_equal (A.Loss, B.Loss, 1e-12);
+
