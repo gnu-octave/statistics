@@ -41,8 +41,12 @@
 ## to @code{true}, @code{datasample} returns data sampled with replacement.
 ##
 ## @item @qcode{Weights}
-## a vector of positive numbers that sets the probability of each element.  It
-## must have the same size as @var{data} along dimension @var{dim}.
+## a vector of non-negative numbers, at least one of them positive, that sets
+## the probability of each element.  It must have the same size as @var{data}
+## along dimension @var{dim}.  Elements with an @code{Inf} weight are sampled
+## before any other: always when sampling with replacement, first when sampling
+## without.  Elements sharing an @code{Inf} weight are equally likely, whereas
+## MATLAB draws only the first of them when sampling with replacement.
 ##
 ## @end table
 ##
@@ -98,14 +102,13 @@ function [y, idcs] = datasample (data, k, varargin)
           endif
           replace = varargin{pair_index + 1};
         case 'weights'
-          if ((! isnumeric (varargin{pair_index + 1})) ||
-              (! isvector (varargin{pair_index + 1})) ||
-              (any (varargin{pair_index + 1} < 0))||
-              (any (isnan (varargin{pair_index + 1}))) ||
-              (! any (varargin{pair_index + 1} > 0)))
-            error (strcat ("datasample: the sampling weights must be defined as a", " vector of positive values"));
-          endif
           weights = varargin{pair_index + 1};
+          if (! (isnumeric (weights) && isvector (weights))
+              || any (weights < 0 | isnan (weights)) || ! any (weights > 0))
+            error (strcat ("datasample: the sampling weights must be a", ...
+                           " vector of non-negative values with at least", ...
+                           " one positive value."));
+          endif
         otherwise
           error ("datasample: unknown property %s", varargin{pair_index});
       endswitch
@@ -172,7 +175,7 @@ function [y, idcs] = datasample (data, k, varargin)
       ## choose k numbers uniformly between 0 and 1
       samples = rand (k, 1);
 
-    for iter = 1 : k
+      for iter = 1 : k
         if (any (isinf (weights)))
           inf_idx = find (isinf (weights));
           idcs(iter) = inf_idx(randi (length (inf_idx)));
@@ -235,9 +238,18 @@ endfunction
 %!error <DIM must be a positive integer scalar> datasample ([1 2], 1, 1.5);
 %!error <DIM must be a positive integer scalar> datasample ([1 2], 1, [1 1]);
 %!error <Replace> datasample ([1 2], 1, 1, 'Replace', -2);
-%!error <weights must be defined> datasample ([1 2], 1, 1, 'Weights', 'abc');
-%!error <weights must be defined> datasample ([1 2], 1, 1, 'Weights', [1 -2 3]);
-%!error <weights must be defined> datasample ([1 2], 1, 1, 'Weights', ones (2));
+%!error <datasample: the sampling weights must be a vector of non-negative values with at least one positive value.> ...
+%! datasample ([1 2], 1, 1, 'Weights', 'abc');
+%!error <datasample: the sampling weights must be a vector of non-negative values with at least one positive value.> ...
+%! datasample ([1 2], 1, 1, 'Weights', [1 -2 3]);
+%!error <datasample: the sampling weights must be a vector of non-negative values with at least one positive value.> ...
+%! datasample ([1 2], 1, 1, 'Weights', ones (2));
+%!error <datasample: the sampling weights must be a vector of non-negative values with at least one positive value.> ...
+%! datasample ([1 2 3 4 5], 2, 'Weights', [NaN 1 1 1 1]);
+%!error <datasample: the sampling weights must be a vector of non-negative values with at least one positive value.> ...
+%! datasample ([1 2 3 4 5], 2, 'Weights', [0 0 0 0 0]);
+%!error <datasample: the sampling weights must be a vector of non-negative values with at least one positive value.> ...
+%! datasample ([1 2 3 4 5], 1, 'Weights', [0 0 0 0 0], 'Replace', false);
 %!error <weights must be equal> datasample ([1 2], 1, 1, 'Weights', [1 2 3]);
 %!error <datasample: K must not exceed the number of available elements when sampling without replacement.> ...
 %! data = 1:5; weights = [0.077846, 0.103765, 0.703748, 0.840937, 0.422901];
@@ -245,10 +257,6 @@ endfunction
 %!error <datasample: sampling without replacement requires at least K elements with positive weights.> ...
 %! data = 1:5; weights = [1, 0, 1, 0, 0];
 %! sampled = datasample (data, 3, 'Weights', weights, 'Replace', false);
-%!error <weights must be defined>
-%! datasample ([1 2 3 4 5], 2, 'Weights', [NaN 1 1 1 1]);
-%!error <weights must be defined>
-%! datasample ([1 2 3 4 5], 1, 'Weights', [0 0 0 0 0], 'Replace', false);
 
 %!test
 %! dat = randn (10, 4);
@@ -277,11 +285,18 @@ endfunction
 %! assert_equal (datasample ([1 2 3 4 5], 2, ...
 %!                           'Weights', [Inf 1 1 1 1], ...
 %!                           'Replace', true), [1 1]);
-
+%!test
+%! ## Several Inf weights with replacement draw among them alone
+%! sampled = datasample (1:5, 20, 'Weights', [Inf 1 Inf 1 1]);
+%! assert_equal (all (sampled == 1 | sampled == 3), true);
 %!test
 %! ## Inf weight without replacement selects the Inf-weighted element first
 %! sampled = datasample ([1 2 3 4 5], 2, ...
 %!                       'Weights', [Inf 1 1 1 1], ...
 %!                       'Replace', false);
 %! assert_equal (sampled(1), 1);
+%!test
+%! ## Several Inf weights without replacement are all drawn first
+%! sampled = datasample (1:5, 3, 'Weights', [Inf 1 Inf 1 1], 'Replace', false);
+%! assert_equal (sort (sampled(1:2)), [1 3]);
 
