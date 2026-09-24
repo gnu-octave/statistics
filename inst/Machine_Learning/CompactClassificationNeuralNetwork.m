@@ -533,7 +533,7 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
     ## fitted on.  The response may also be given beside the table as
     ## @var{Y}.
     ##
-    ## @seealso{CompactClassificationNeuralNetwork, ##
+    ## @seealso{CompactClassificationNeuralNetwork,
     ## ClassificationNeuralNetwork, CompactClassificationNeuralNetwork.edge,
     ## CompactClassificationNeuralNetwork.loss,
     ## CompactClassificationNeuralNetwork.predict}
@@ -597,7 +597,7 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
     ## fitted on.  The response may also be given beside the table as
     ## @var{Y}.
     ##
-    ## @seealso{CompactClassificationNeuralNetwork, ##
+    ## @seealso{CompactClassificationNeuralNetwork,
     ## ClassificationNeuralNetwork, CompactClassificationNeuralNetwork.margin,
     ## CompactClassificationNeuralNetwork.loss,
     ## CompactClassificationNeuralNetwork.predict}
@@ -673,7 +673,7 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
     ## sum to one before it is applied.
     ## @end itemize
     ##
-    ## @seealso{CompactClassificationNeuralNetwork, ##
+    ## @seealso{CompactClassificationNeuralNetwork,
     ## ClassificationNeuralNetwork, CompactClassificationNeuralNetwork.margin,
     ## CompactClassificationNeuralNetwork.edge,
     ## CompactClassificationNeuralNetwork.predict}

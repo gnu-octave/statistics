@@ -44,7 +44,7 @@
 ## Further information about the logistic distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Logistic_distribution}
 ##
-## @seealso{logcdf, logiinv, logipdf, logifit, logilike, logistat}
+## @seealso{logicdf, logiinv, logipdf, logifit, logilike, logistat}
 ## @end deftypefn
 
 function r = logirnd (mu, sigma, varargin)

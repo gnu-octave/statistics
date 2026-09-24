@@ -714,7 +714,8 @@ classdef CompactClassificationGAM < PredictiveModel
     ## @var{Y}.
     ##
     ## @seealso{CompactClassificationGAM, ClassificationGAM,
-    ## CompactClassificationGAM.edge, CompactClassificationGAM.loss, ## predict}
+    ## CompactClassificationGAM.edge, CompactClassificationGAM.loss,
+    ## CompactClassificationGAM.predict}
     ## @end deftypefn
     function m = margin (this, X, Y)
 
@@ -775,8 +776,8 @@ classdef CompactClassificationGAM < PredictiveModel
     ## @var{Y}.
     ##
     ## @seealso{CompactClassificationGAM, ClassificationGAM,
-    ## CompactClassificationGAM.margin, CompactClassificationGAM.loss, ##
-    ## predict}
+    ## CompactClassificationGAM.margin, CompactClassificationGAM.loss,
+    ## CompactClassificationGAM.predict}
     ## @end deftypefn
     function e = edge (this, X, Y, varargin)
 
@@ -846,8 +847,8 @@ classdef CompactClassificationGAM < PredictiveModel
     ## @end itemize
     ##
     ## @seealso{CompactClassificationGAM, ClassificationGAM,
-    ## CompactClassificationGAM.margin, CompactClassificationGAM.edge, ##
-    ## predict}
+    ## CompactClassificationGAM.margin, CompactClassificationGAM.edge,
+    ## CompactClassificationGAM.predict}
     ## @end deftypefn
     function L = loss (this, X, Y, varargin)
 

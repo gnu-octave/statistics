@@ -167,7 +167,7 @@
 ## percentiles.
 ## @end itemize
 ##
-## @seealso{filloutliers, rmoutliers, ismissing}
+## @seealso{ismissing}
 ## @end deftypefn
 
 function [TF, L, U, C] = isoutlier (x, varargin)
