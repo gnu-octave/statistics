@@ -98,8 +98,10 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ## Observation weights
     ##
     ## A numeric column vector with one entry per observation used for fitting,
-    ## summing to one.  Each class contributes its prior, spread evenly over
-    ## the observations belonging to it.  This property is read-only.
+    ## summing to one.  Each class contributes its prior, spread over the
+    ## observations belonging to it in proportion to the @qcode{'Weights'}
+    ## given, or evenly when none were.  It has the class of the
+    ## @qcode{'Weights'} given, single or double.  This property is read-only.
     ##
     ## @end deftp
     W = [];
@@ -388,6 +390,10 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ## The parsed ScoreTransform, applied to the posterior by predict.
     STfun = [];
 
+    ## The observation weights given, one per observation used and in their
+    ## own class, from which W follows the prior; empty when none were given.
+    RawWeights = [];
+
   endproperties
 
   ## Set methods for the properties a user may assign after fitting.
@@ -431,7 +437,16 @@ classdef ClassificationNaiveBayes < PredictiveModel
       endif
       this.Prior = P(:)' / sum (P);
       ## The weights follow the prior, so reassigning one re-derives the other.
-      if (! isempty (this.Y))
+      ## Weights that were given keep their class in W, computed as double.
+      if (! isempty (this.RawWeights))
+        used = this.RowsUsed;
+        if (isempty (used))
+          used = true (rows (this.Y), 1);
+        endif
+        gY = labelIndices (this.ClassNames, this.Y(used,:));
+        this.W = cast (priorNormalize (double (this.RawWeights), gY, ...
+                                       this.Prior), class (this.RawWeights));
+      elseif (! isempty (this.Y))
         gY = labelIndices (this.ClassNames, this.Y);
         keep = gY > 0;
         this.W = priorWeights (this.Prior, gY(keep), sum (keep));
@@ -512,14 +527,17 @@ classdef ClassificationNaiveBayes < PredictiveModel
       ## Parse optional paired arguments
       optNames = {'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', ...
                   'Cost', 'ScoreTransform', 'CategoricalPredictors', ...
-                  'DistributionNames', 'Kernel', 'Support', 'Width'};
+                  'DistributionNames', 'Kernel', 'Support', 'Width', ...
+                  'Weights'};
       ## An empty default stands for one resolved once the data are known:
       ## the distributions, kernels, supports and widths follow from the
       ## predictors, the classes and 'Cost' from the response, and
       ## 'PredictorNames' are x1, x2, ...
-      dfValues = {{}, 'Y', [], 'empirical', [], 'none', [], [], [], [], []};
+      dfValues = {{}, 'Y', [], 'empirical', [], 'none', [], [], [], [], [], ...
+                  []};
       [PredictorNames, ResponseName, ClassNames, Prior, Cost, ...
-       ScoreTransform, CatPreds, DistNames, Kernel, Support, Width, args] = ...
+       ScoreTransform, CatPreds, DistNames, Kernel, Support, Width, ...
+       Weights, args] = ...
                  parsePairedArguments (optNames, dfValues, varargin(:));
 
       ## Validate optional paired arguments
@@ -543,6 +561,21 @@ classdef ClassificationNaiveBayes < PredictiveModel
                        " categorical array, a character array, a string", ...
                        " array, a logical vector, a numeric vector, or a", ...
                        " cell array of character vectors."));
+      endif
+
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationNaiveBayes: %s", errmsg);
+      endif
+      if (! isempty (Weights)
+          && ! (isvector (Weights) && numel (Weights) == rows (X)))
+        error (strcat ("ClassificationNaiveBayes: 'Weights' must be a", ...
+                       " vector with one element per row of X."));
+      endif
+      if (! isempty (Weights) && (any (Weights < 0)
+                                  || ! (sum (Weights(! isnan (Weights))) > 0)))
+        error (strcat ("ClassificationNaiveBayes: 'Weights' must be", ...
+                       " nonnegative and must not be all zero."));
       endif
 
       if (! isempty (args))
@@ -573,10 +606,14 @@ classdef ClassificationNaiveBayes < PredictiveModel
       this.DistributionNames = D;
       this.CategoricalPredictors = catidx;
 
-      ## Store the data as supplied, then drop the rows that are not complete
+      ## Store the data as supplied, then drop the rows that are not complete,
+      ## and those of zero or missing weight, as R2024a drops them
       this.X = X;
       this.Y = Y;
       ok = ! any (isnan (X), 2);
+      if (! isempty (Weights))
+        ok = ok & ! isnan (Weights(:)) & Weights(:) > 0;
+      endif
       if (! all (ok))
         this.RowsUsed = ok;
       endif
@@ -646,9 +683,16 @@ classdef ClassificationNaiveBayes < PredictiveModel
         this.Cost = Cost;
       endif
 
-      ## Prior, and the observation weights that follow from it
+      ## Prior, and the observation weights that follow from it.  The weights
+      ## given keep their class in the model; every computation runs on them
+      ## as double.
+      wf = ones (nObs, 1);
+      if (! isempty (Weights))
+        this.RawWeights = Weights(:)(ok);
+        wf = double (this.RawWeights);
+      endif
       if (ischar (Prior) && strcmpi (Prior, 'empirical'))
-        this.Prior = accumarray (gY, 1, [nCls, 1])' / nObs;
+        this.Prior = accumarray (gY, wf, [nCls, 1])' / sum (wf);
       elseif (ischar (Prior) && strcmpi (Prior, 'uniform'))
         this.Prior = ones (1, nCls) / nCls;
       else
@@ -660,7 +704,7 @@ classdef ClassificationNaiveBayes < PredictiveModel
       ## Fit one density per class and per predictor
       [this.DistributionParameters, this.Kernel, this.Support, ...
        this.Width, this.CategoricalLevels] = ...
-              nbFit (Xf, gY, nCls, this.DistributionNames, this.W, ...
+              nbFit (Xf, gY, nCls, this.DistributionNames, double (this.W), ...
                      Kernel, Support, Width, 'ClassificationNaiveBayes', ...
                      this.ClassNames, this.PredictorNames);
 
@@ -1200,8 +1244,9 @@ classdef ClassificationNaiveBayes < PredictiveModel
         error (strcat ("ClassificationNaiveBayes.resubEdge:", ...
                        " too few input arguments."));
       endif
+      ## The training data weighs by the model's own weights, as in R2024a
       [X, Y] = nbTrainX (this);
-      e = edge (this, X, Y);
+      e = edge (this, X, Y, 'Weights', this.W);
 
     endfunction
 
@@ -1220,7 +1265,11 @@ classdef ClassificationNaiveBayes < PredictiveModel
         error (strcat ("ClassificationNaiveBayes.resubLoss:", ...
                        " too few input arguments."));
       endif
+      ## The model's own weights stand unless others are given, as in R2024a
       [X, Y] = nbTrainX (this);
+      if (! any (strcmpi (varargin(1:2:end), 'Weights')))
+        varargin = [varargin, {'Weights', this.W}];
+      endif
       l = loss (this, X, Y, varargin{:});
 
     endfunction
@@ -1283,6 +1332,7 @@ classdef ClassificationNaiveBayes < PredictiveModel
       Support                = this.Support;
       Width                  = this.Width;
       STfun                  = this.STfun;
+      RawWeights             = this.RawWeights;
 
       ## Save classdef name and all model properties as individual variables
       HyperparameterOptimizationResults = this.HyperparameterOptimizationResults;
@@ -1292,7 +1342,7 @@ classdef ClassificationNaiveBayes < PredictiveModel
             'ExpandedPredictorNames', 'ClassNames', 'Prior', 'Cost', ...
             'ScoreTransform', 'DistributionNames', 'Mu', 'Sigma', ...
             'DistributionParameters', 'CategoricalLevels', 'Kernel', ...
-            'Support', 'Width', 'STfun', ...
+            'Support', 'Width', 'STfun', 'RawWeights', ...
             'HyperparameterOptimizationResults');
 
     endfunction
@@ -2126,3 +2176,95 @@ endclassdef
 %!error <ClassificationNaiveBayes.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (fitcnb ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2]), ...
 %!       [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))
+
+## Observation weights
+%!error <ClassificationNaiveBayes: 'Weights' must be a real vector of class single or double.> ...
+%! ClassificationNaiveBayes ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!                           'Weights', int8 ([1; 1; 1; 1]))
+%!error <ClassificationNaiveBayes: 'Weights' must be a real vector of class single or double.> ...
+%! ClassificationNaiveBayes ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!                           'Weights', true (4, 1))
+%!error <ClassificationNaiveBayes: 'Weights' must be a vector with one element per row of X.> ...
+%! ClassificationNaiveBayes ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!                           'Weights', [1; 1])
+%!error <ClassificationNaiveBayes: 'Weights' must be nonnegative and must not be all zero.> ...
+%! ClassificationNaiveBayes ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!                           'Weights', [1; -1; 1; 1])
+%!test
+%! ## An empirical prior and a normal density weigh the observations
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (meas, species, 'Weights', 1 + (1:150)' / 7);
+%! assert_equal (Mdl.Prior, [0.1313131313131313, 0.3333333333333333, ...
+%!                           0.5353535353535354], 1e-15);
+%! assert_equal (Mdl.DistributionParameters{1,1}, ...
+%!               [5.0008; 0.3400154735180538], 1e-13);
+%!test
+%! ## A kernel density weighs the observations, its bandwidth does not
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (meas, species, ...
+%!                                 'Weights', 1 + (1:150)' / 7, ...
+%!                                 'DistributionNames', 'kernel');
+%! Mdl0 = ClassificationNaiveBayes (meas, species, ...
+%!                                  'DistributionNames', 'kernel');
+%! assert_equal (Mdl.Width, Mdl0.Width);
+%! [~, Posterior] = predict (Mdl, meas(51,:));
+%! assert_equal (Posterior, [0, 0.7141545707763224, 0.2858454292236776], 1e-12);
+%!test
+%! ## A multivariate multinomial counts the observations by their weights
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (round (meas), species, ...
+%!                                 'Weights', 1 + (1:150)' / 7, ...
+%!                                 'DistributionNames', 'mvmn');
+%! assert_equal (Mdl.DistributionParameters{1,1}, ...
+%!               [0.09258741258741258; 0.7655944055944056; ...
+%!                0.1054545454545455; 0.01818181818181818; ...
+%!                0.01818181818181818], 1e-15);
+%!test
+%! ## A multinomial counts the tokens by their weights
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (round (meas * 2), species, ...
+%!                                 'Weights', 1 + (1:150)' / 7, ...
+%!                                 'DistributionNames', 'mn');
+%! assert_equal ([Mdl.DistributionParameters{1,:}], ...
+%!               [0.4954405908994194, 0.3390224626888355, ...
+%!                0.1481959937992036, 0.01734095261254141], 1e-15);
+%!test
+%! ## Rows of zero weight are left out, as R2024a leaves them
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! w(5) = 0;
+%! Mdl = ClassificationNaiveBayes (meas, species, 'Weights', w);
+%! assert_equal (Mdl.NumObservations, 149);
+%! assert_equal (Mdl.RowsUsed(5), false);
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (meas, species, ...
+%!                                 'Weights', single (1 + (1:150)' / 7));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## resubLoss weighs the observations by W, as R2024a does
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (meas, species, 'Weights', 1 + (1:150)' / 7);
+%! assert_equal (resubLoss (Mdl), 0.06141414141414142, 1e-15);
+%!test
+%! ## Reassigning the prior keeps W in proportion to the weights
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = ClassificationNaiveBayes (meas, species, 'Weights', w);
+%! Mdl.Prior = [1, 1, 1] / 3;
+%! assert_equal (Mdl.W(1:50), w(1:50) / sum (w(1:50)) / 3, 1e-15);
+%!test
+%! ## A weighted kernel model saves and loads with its weights
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (meas, species, ...
+%!                                 'Weights', 1 + (1:150)' / 7, ...
+%!                                 'DistributionNames', 'kernel');
+%! fname = [tempname(), '.mat'];
+%! savemodel (Mdl, fname);
+%! Mdl2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (nthargout (2, @predict, Mdl2, meas(51,:)), ...
+%!               nthargout (2, @predict, Mdl, meas(51,:)), 1e-15);
+

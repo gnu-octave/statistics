@@ -102,6 +102,15 @@
 ## scalar, as one value per predictor, as one per class, or as a matrix of one
 ## per class and predictor.  By default each density chooses its own.
 ##
+## @item @qcode{'Weights'} @tab A nonnegative single or double vector of
+## observation weights, one per row of @var{X}.  An empirical prior sums them
+## per class; a normal density takes weighted means and standard deviations, a
+## kernel density weighs its observations but chooses its bandwidth from them
+## alone, and the multinomials count each observation by its weight.  A row of
+## zero or missing weight is left out.  The model's @code{W} keeps the class of
+## the weights, while every computation runs in double.  The default is
+## uniform.
+##
 ## @end multitable
 ##
 ## A predictor that takes one value throughout a class has no normal density

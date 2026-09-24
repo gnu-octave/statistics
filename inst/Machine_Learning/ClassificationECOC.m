@@ -414,17 +414,6 @@ classdef ClassificationECOC < PredictiveModel
 
       ## One learner per column: the classes that column marks +1 against
       ## those it marks -1, the rest of the rows left out of the fit.
-      ## Whether the weights given vary within a class.  Weights that only
-      ## carry the prior are constant within each class, and a learner taking
-      ## no observation weights can be given that prior instead.
-      evenWithin = true;
-      for k = 1:classCount (F.ClassNames)
-        wk = F.Weights(F.gY == k);
-        if (! isempty (wk) && max (wk) - min (wk) > 1e-12 * max (wk))
-          evenWithin = false;
-        endif
-      endfor
-
       L = columns (M);
       this.BinaryLearners = cell (L, 1);
       this.LearnerWeights = zeros (1, L);
@@ -434,7 +423,7 @@ classdef ClassificationECOC < PredictiveModel
         this.BinaryLearners{j} = ...
           ClassificationECOC.ecocFitBinary (tmpl, F.X(take,:), by, ...
                                             F.W(take), PredictorNames, ...
-                                            CatPreds, evenWithin);
+                                            CatPreds);
         this.LearnerWeights(j) = sum (F.W(take));
       endfor
 
@@ -889,8 +878,7 @@ classdef ClassificationECOC < PredictiveModel
     ## Fit one binary learner.  Its two classes are given outright as -1 and
     ## +1 so that the second is always the one the column calls +1, which is
     ## the score the decoding reads.
-    function Mdl = ecocFitBinary (tmpl, X, y, w, pnames, cats = [], ...
-                                  evenWithin = true)
+    function Mdl = ecocFitBinary (tmpl, X, y, w, pnames, cats = [])
 
       ## An ensemble template carries the method, cycles and learners under
       ## names of its own, which the ensemble takes under fitcensemble's.
@@ -909,32 +897,16 @@ classdef ClassificationECOC < PredictiveModel
         endif
         args(end+1:end+2) = {name, val};
       endfor
-      ## Weights are passed only when they carry information.  Uniform ones
-      ## say nothing a learner does not assume, and the naive Bayes learner
-      ## takes no 'Weights' at all, so passing them regardless would refuse
-      ## the commonest fit there is.
+      ## Weights are passed only when they carry information: uniform ones
+      ## say nothing a learner does not assume.
       args(end+1:end+4) = {'PredictorNames', pnames, 'ClassNames', [-1; 1]};
       if (! isempty (cats))
         args(end+1:end+2) = {'CategoricalPredictors', cats};
       endif
       ## Weights spread a prior over its classes one class at a time, so even
-      ## equal ones differ in the last bits; only a real spread counts.  The
-      ## naive Bayes learner takes no observation weights.  It is given the
-      ## share of the weight each side holds as its prior, which is the prior
-      ## MATLAB's learners report, and weights that vary within a class have
-      ## no such form and are refused.
+      ## equal ones differ in the last bits; only a real spread counts.
       if (max (w) - min (w) > 1e-12 * max (w))
-        if (strcmpi (tmpl.Method, 'naivebayes'))
-          if (! evenWithin)
-            error (strcat ("ClassificationECOC: the '%s' learners take no", ...
-                           " observation weights, so 'Weights' that vary", ...
-                           " within a class cannot be used with them."), ...
-                   tolower (tmpl.Method));
-          endif
-          args(end+1:end+2) = {'Prior', [sum(w(y == -1)), sum(w(y == 1))]};
-        else
-          args(end+1:end+2) = {'Weights', w};
-        endif
+        args(end+1:end+2) = {'Weights', w};
       endif
 
       if (ensemble && strcmp (tmpl.Method, 'Bag'))
@@ -1191,10 +1163,6 @@ endclassdef
 %! Mdl = ClassificationECOC (meas(11:150,:), y(11:150));
 %! assert_equal (Mdl.BinaryLearners{1}.Prior, [50, 50] / 100, 1e-12);
 
-%!error<ClassificationECOC: the 'naivebayes' learners take no observation weights, so 'Weights' that vary within a class cannot be used with them.> ...
-%! load fisheriris
-%! ClassificationECOC (meas, species, 'Learners', 'naivebayes', ...
-%!                     'Weights', (1:150)')
 
 ## A table at loss
 %!test  # the response is named, left out, or given beside the table
@@ -1277,3 +1245,12 @@ endclassdef
 %!                           'Weights', 1 + (1:150)' / 7);
 %! [~, NegLoss] = predict (Mdl, meas(23,:));
 %! assert_equal (NegLoss, [0, -0.749030561477596, -3.406162840589479], 2e-3);
+%!test
+%! ## Weights varying within a class reach naive Bayes learners, as R2024a
+%! load fisheriris
+%! Mdl = ClassificationECOC (meas, species, 'Learners', 'naivebayes', ...
+%!                           'Weights', 1 + (1:150)' / 7);
+%! [~, NegLoss] = predict (Mdl, meas(51,:));
+%! assert_equal (NegLoss, [-2, -0.1264612831076871, -0.4152333784029093], ...
+%!               1e-12);
+

@@ -121,12 +121,7 @@
 ## MATLAB keeps no tree and never predicts those classes from it.
 ##
 ## Each binary learner is fitted with the weight its observations carry, which
-## the prior and any @qcode{'Weights'} decide.  The naive Bayes learner of this
-## package takes no observation weights, so when those weights are unequal it
-## is given instead the prior its two sides hold, the prior MATLAB's learners
-## report, and weights that vary within a class, which no prior can express,
-## are refused for it.  MATLAB weighs each observation of that learner as
-## well.
+## the prior and any @qcode{'Weights'} decide.
 ##
 ## @seealso{ClassificationECOC, CompactClassificationECOC, designecoc,
 ## templateSVM, templateTree}

@@ -722,9 +722,26 @@ classdef ClassificationPartitionedModel
           ## fitted densities and needs none of the observations it was fitted
           ## on.  Measured on R2024a, where Trained{k} is a
           ## CompactClassificationNaiveBayes.
+          ## A model fitted with weights passes each fold the weights of its
+          ## rows: W on the rows the model used and zero on those it left out,
+          ## which fitcnb leaves out in turn.  Within a class W is in
+          ## proportion to the weights given, which is all a fold reads.
+          wAll = [];
+          if (! isempty (Mdl.RawWeights))
+            wAll = zeros (rows (this.X), 1);
+            used = Mdl.RowsUsed;
+            if (isempty (used))
+              used = true (rows (this.X), 1);
+            endif
+            wAll(used) = Mdl.W;
+          endif
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            tmp = fitcnb (this.X(idx, :), this.Y(idx,:), args{:});
+            fargs = args;
+            if (! isempty (wAll))
+              fargs = [fargs, {'Weights', wAll(idx)}];
+            endif
+            tmp = fitcnb (this.X(idx, :), this.Y(idx,:), fargs{:});
             this.Trained{k} = compact (tmp);
           endfor
 
@@ -2525,3 +2542,13 @@ endfunction
 %! load fisheriris
 %! CVMdl = crossval (fitctree (meas, species), 'KFold', 3);
 %! CVMdl.Cost = [0, 2, 8; 3, 0, 1; 5, 4, 0];
+%!test
+%! ## A naive Bayes fold is fitted with its rows' weights
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! CVMdl = crossval (fitcnb (meas, species, 'Weights', w), 'KFold', 3);
+%! idx = training (CVMdl.Partition, 1);
+%! Mdl = fitcnb (meas(idx,:), species(idx), 'Weights', w(idx));
+%! assert_equal (CVMdl.Trained{1}.DistributionParameters, ...
+%!               Mdl.DistributionParameters, 1e-12);
+
