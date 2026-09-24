@@ -162,7 +162,7 @@ function [p, h, stats] = ranksum(x, y, varargin)
     endif
   endif
 
-  % Determine computational technique
+  ## Determine computational technique
   switch method
     case 'approximate'
       technique = 'approximation';

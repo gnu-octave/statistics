@@ -670,7 +670,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     Nt = rows (TERMS);
 
     ## Calculate total sum-of-squares
-    ct  = sum (Y)^2 / n;   % correction term
+    ct  = sum (Y)^2 / n;   # correction term
     sst = sum (Y.^2) - ct;
     dft = n - 1;
 
@@ -871,9 +871,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     endfor
 
     ## Compute leverage values and Cook's distance
-    h = diag (hat);          % Leverage values
+    h = diag (hat);          # Leverage values
     D = resid.^2 / ((1 + sum (df_coef)) * mse) ...
-        .* h ./ (1 - h).^2;  % Cook's distance
+        .* h ./ (1 - h).^2;  # Cook's distance
 
     ## Create STATS structure for MULTCOMPARE
     STATS = struct ('source','anovan', ...
@@ -1010,10 +1010,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
         ## Make figure of diagnostic plots
         figure ('Name', 'Diagnostic Plots: Model Residuals');
-        t = STATS.resid ./ (sqrt (mse * (1 - h))); % Studentized residuals
-        fit = STATS.X * STATS.coeffs(:,1);         % Fitted values
-        [jnk, DI] = sort (D, 'descend');           % Indices of sorted D
-        nk = 4;                               % Top nk residuals with largest D
+        t = STATS.resid ./ (sqrt (mse * (1 - h))); # Studentized residuals
+        fit = STATS.X * STATS.coeffs(:,1);         # Fitted values
+        [jnk, DI] = sort (D, 'descend');           # Indices of sorted D
+        nk = 4;                               # Top nk residuals with largest D
 
         ## Normal quantile-quantile plot
         subplot (2, 2, 1);

@@ -108,7 +108,7 @@ function y = ncfpdf (x, df1, df2, lambda)
   z1 = df2 ./ (df1 .* x + df2);
   xs = lambda .* z;
 
-  % Find max K at which we start the recursion series
+  ## Find max K at which we start the recursion series
   K = zeros (size (x));
   termK = zeros (size (x));
   rsum = zeros (size (x));

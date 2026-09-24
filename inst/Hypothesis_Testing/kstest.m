@@ -316,7 +316,7 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
       ## Otherwise interpolate into his 'exact' table.
 
       if (n <= 20)                  # Small sample exact values.
-        % Exact K-S test critical values based on Miller's approximation.
+        ## Exact K-S test critical values based on Miller's approximation.
         a1    = [0.00500, 0.01000, 0.02500, 0.05000, 0.10000]';
 
         exact = [0.99500, 0.99000, 0.97500, 0.95000, 0.90000; ...

@@ -165,7 +165,7 @@ function y = ncx2pdf (x, df, lambda)
   ## in the approximation are very small, smaller than epsilon. This would
   ## cause premature convergence. To avoid that, we start from the peak of the
   ## Poisson numbers, and go in both directions.
-  lnsr2pi = 0.9189385332046727; % log(sqrt(2*pi))
+  lnsr2pi = 0.9189385332046727; # log(sqrt(2*pi))
   dx = lambda .* x / 4;
   K = max (0, floor (0.5 * (sqrt (df .^ 2 + 4 * dx) - df)));
   lntK = zeros (size (K));

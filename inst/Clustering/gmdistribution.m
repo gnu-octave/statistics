@@ -538,7 +538,7 @@ classdef gmdistribution
       ## Second argument is an array of the Mahalanobis distances
       function [p_x_l, M] = componentProb (obj, X)
         M     = zeros (rows (X), obj.NumComponents);
-        dets  = zeros (1, obj.NumComponents);   % sqrt(determinant)
+        dets  = zeros (1, obj.NumComponents);   # sqrt(determinant)
         if (obj.SharedCovariance)
           if (obj.DiagonalCovariance)
             r = diag (sqrt (obj.Sigma));

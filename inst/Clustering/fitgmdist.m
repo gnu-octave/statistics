@@ -482,7 +482,7 @@ function obj = fitgmdist (data, k, varargin)
     endfor
   catch ME
     try
-      if (1 < MaxIter), end
+      if (1 < MaxIter), endif
     catch
       error ("fitgmdist: invalid MaxIter.");
     end_try_catch

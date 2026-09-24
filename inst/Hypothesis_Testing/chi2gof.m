@@ -285,7 +285,7 @@ function [h, p, stats] = chi2gof (x, varargin)
         endif
       endif
     elseif (iscell (cdf_spec))
-      % Get function and args from cell array
+      ## Get function and args from cell array
       cdffunc = cdf_spec{1};
       cdfargs = cdf_spec(2:end);
       if (isempty (nparams))
@@ -306,7 +306,7 @@ function [h, p, stats] = chi2gof (x, varargin)
       msg = sprintf ("chi2gof: Wrong number of outputs from: %s\n", cdfname);
       error (msg);
     endif
-    % Compute the expected values
+    ## Compute the expected values
     Expected = sum (Observed) * diff ([0;Fcdf(:);1]);
   endif
   ## Avoid too small expected values

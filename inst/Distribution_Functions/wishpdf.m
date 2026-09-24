@@ -82,7 +82,7 @@ endfunction
 %!assert_equal (wishpdf ([2 -0.3;-0.3 4], [1 0.3;0.3 1], 4), 0.004529741, 1E-7);
 %!assert_equal (wishpdf ([6 2 5; 2 10 -5; 5 -5 25], [9 5 5; 5 10 -8; 5 -8 22], 5.1), 4.474865e-10, 1E-15);
 
-%% Test input validation
+## Test input validation
 %!error<wishpdf: W, SIGMA, and DF must be double or single.> wishpdf (int32 (eye (2)), eye (2), 3)
 %!error<wishpdf: W, SIGMA, and DF must be double or single.> wishpdf (true (2), eye (2), 3)
 %!error<wishpdf: W, SIGMA, and DF must be double or single.> wishpdf (['ab'; 'cd'], eye (2), 3)

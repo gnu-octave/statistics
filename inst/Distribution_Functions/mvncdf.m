@@ -363,14 +363,14 @@ function p = tvncdf (x, rho, tol)
   endif
 
   ## Find a permutation that makes rho_32 == max(rho)
-  [dum,imax] = max (abs (rho)); %#ok<ASGLU>
-  if imax == 1 % swap 1 and 3
+  [dum,imax] = max (abs (rho));
+  if imax == 1 # swap 1 and 3
     rho_21 = rho(3); rho_31 = rho(2); rho_32 = rho(1);
     x = x(:,[3 2 1]);
-  elseif imax == 2 % swap 1 and 2
+  elseif imax == 2 # swap 1 and 2
     rho_21 = rho(1); rho_31 = rho(3); rho_32 = rho(2);
     x = x(:,[2 1 3]);
-  else % imax == 3
+  else # imax == 3
     rho_21 = rho(1); rho_31 = rho(2); rho_32 = rho(3);
   endif
 

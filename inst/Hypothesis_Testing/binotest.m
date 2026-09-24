@@ -121,8 +121,8 @@ function [h, p, ci] = binotest (pos, n, p0, varargin)
       error ("binotest: invalid fifth (tail) argument to binotest.");
   endswitch
 
-  % Determine the test outcome
-  % MATLAB returns this a double instead of a logical array
+  ## Determine the test outcome
+  ## MATLAB returns this a double instead of a logical array
   h = double (p < alpha);
 endfunction
 
