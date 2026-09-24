@@ -1401,6 +1401,12 @@ classdef ClassificationKNN < PredictiveModel
           this.Mu(j)    = sum (wj .* xj);
           this.Sigma(j) = sqrt (sum (wj .* (xj - this.Mu(j)) .^ 2) ...
                                 / (1 - sum (wj .^ 2)));
+          ## A constant predictor is left unscaled; its weighted mean can
+          ## miss the constant by one rounding, so its deviation need not be
+          ## zero.
+          if (! isempty (xj) && all (xj == xj(1)))
+            this.Sigma(j) = 1;
+          endif
         endfor
         this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
       else
@@ -4623,3 +4629,9 @@ endfunction
 %! B = fitcknn (meas, species, 'Weights', double (single (w)));
 %! assert_equal (nthargout (2, @predict, A, meas), nthargout (2, @predict, ...
 %!               B, meas));
+%!test
+%! ## A constant predictor is left unscaled by standardization
+%! X = [linspace(0, 1, 20)', ones(20, 1)];
+%! Mdl = ClassificationKNN (X, [ones(10, 1); 2 * ones(10, 1)], 'Standardize', true);
+%! assert_equal (Mdl.Sigma(2), 1);
+

@@ -1106,7 +1106,9 @@ classdef ClassificationNeuralNetwork < PredictiveModel
         this.Mu = sum (sw .* X, 1);
         Zs = X - this.Mu;
         this.Sigma = sqrt (sum (sw .* Zs .^ 2, 1) / (1 - sum (sw .^ 2)));
-        this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
+        ## A constant predictor is left unscaled; its weighted mean can miss
+        ## the constant by one rounding, so its deviation need not be zero.
+        this.Sigma(this.Sigma == 0 | all (X == X(1,:), 1)) = 1;
         ## A level's column is left as it is, as in MATLAB R2024a.
         this.Mu(Coding.Dummy) = 0;
         this.Sigma(Coding.Dummy) = 1;
@@ -3115,3 +3117,9 @@ endfunction
 %!                                    'Prior', 'uniform');
 %! assert_equal (Mdl.Mu, [5.833297045931007, 3.054926460541555, ...
 %!                        3.749907727492633, 1.199335039802964], 1e-14);
+%!test
+%! ## A constant predictor is left unscaled by standardization
+%! X = [linspace(0, 1, 20)', ones(20, 1)];
+%! Mdl = ClassificationNeuralNetwork (X, [ones(10, 1); 2 * ones(10, 1)], 'Standardize', true);
+%! assert_equal (Mdl.Sigma(2), 1);
+

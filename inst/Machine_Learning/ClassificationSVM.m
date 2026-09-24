@@ -1076,7 +1076,9 @@ classdef ClassificationSVM < PredictiveModel
         this.Mu = sum (sw .* X, 1);
         Zs = X - this.Mu;
         this.Sigma = sqrt (sum (sw .* Zs .^ 2, 1) / (1 - sum (sw .^ 2)));
-        this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
+        ## A constant predictor is left unscaled; its weighted mean can miss
+        ## the constant by one rounding, so its deviation need not be zero.
+        this.Sigma(this.Sigma == 0 | all (X == X(1,:), 1)) = 1;
         ## A level's column is left as it is, as in MATLAB R2024a.
         this.Mu(Coding.Dummy) = 0;
         this.Sigma(Coding.Dummy) = 1;
@@ -3758,3 +3760,9 @@ endclassdef
 %! A = fitcsvm (X, Y, 'Weights', single (w));
 %! B = fitcsvm (X, Y, 'Weights', double (single (w)));
 %! assert_equal (nthargout (2, @predict, A, X), nthargout (2, @predict, B, X));
+%!test
+%! ## A constant predictor is left unscaled by standardization
+%! X = [linspace(0, 1, 20)', ones(20, 1)];
+%! Mdl = ClassificationSVM (X, [ones(10, 1); 2 * ones(10, 1)], 'Standardize', true);
+%! assert_equal (Mdl.Sigma(2), 1);
+
