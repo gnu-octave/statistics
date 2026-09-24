@@ -1504,7 +1504,10 @@ endfunction
 %! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2);
 %! L = lime (f, X, 'Type', 'regression', 'CustomSyntheticData', X);
 %! a = fit (L, [3, 28], 2);
-%! hf = figure ('visible', 'off');
+%! ## plot opens a figure of its own, kept off screen through the default
+%! vis = get (0, 'DefaultFigureVisible');
+%! set (0, 'DefaultFigureVisible', 'off');
+%! h = [];
 %! unwind_protect
 %!   h = plot (a);
 %!   assert_equal (strcmp (get (h, 'type'), 'figure'), true);
@@ -1513,9 +1516,9 @@ endfunction
 %!                 'LIME with Linear Model');
 %!   assert_equal (get (get (ax, 'xlabel'), 'string'), 'Coefficient');
 %!   assert_equal (get (get (ax, 'ylabel'), 'string'), 'Predictor');
-%!   close (h);
 %! unwind_protect_cleanup
-%!   close (hf);
+%!   close (h);
+%!   set (0, 'DefaultFigureVisible', vis);
 %! end_unwind_protect
 
 %!test  # a tree is titled after what it is, over its predictor importance
@@ -1523,16 +1526,19 @@ endfunction
 %! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2);
 %! L = lime (f, X, 'Type', 'regression', 'CustomSyntheticData', X);
 %! a = fit (L, [3, 28], 2, 'SimpleModelType', 'tree');
-%! hf = figure ('visible', 'off');
+%! ## plot opens a figure of its own, kept off screen through the default
+%! vis = get (0, 'DefaultFigureVisible');
+%! set (0, 'DefaultFigureVisible', 'off');
+%! h = [];
 %! unwind_protect
 %!   h = plot (a);
 %!   ax = findobj (h, 'type', 'axes');
 %!   assert_equal (get (get (ax, 'title'), 'string'), ...
 %!                 'LIME with Decision Tree Model');
 %!   assert_equal (get (get (ax, 'xlabel'), 'string'), 'Predictor Importance');
-%!   close (h);
 %! unwind_protect_cleanup
-%!   close (hf);
+%!   close (h);
+%!   set (0, 'DefaultFigureVisible', vis);
 %! end_unwind_protect
 
 %!test  # 'P' reaches the distance that takes it
@@ -1596,7 +1602,10 @@ endfunction
 %! Mdl = fitcknn (meas, species);
 %! S = [meas(1:8,:); meas(51:58,:); meas(101:108,:)];
 %! a = fit (lime (Mdl, 'CustomSyntheticData', S), meas(1,:), 2);
-%! hf = figure ('visible', 'off');
+%! ## plot opens a figure of its own, kept off screen through the default
+%! vis = get (0, 'DefaultFigureVisible');
+%! set (0, 'DefaultFigureVisible', 'off');
+%! h = [];
 %! unwind_protect
 %!   h = plot (a);
 %!   ax = findobj (h, 'type', 'axes');
@@ -1604,9 +1613,9 @@ endfunction
 %!                 'LIME with Linear Model');
 %!   assert_equal (numel (get (ax, 'yticklabel')), ...
 %!                 numel (a.SimpleModel.Beta));
-%!   close (h);
 %! unwind_protect_cleanup
-%!   close (hf);
+%!   close (h);
+%!   set (0, 'DefaultFigureVisible', vis);
 %! end_unwind_protect
 
 ## Input validation
