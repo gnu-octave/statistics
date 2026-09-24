@@ -59,6 +59,9 @@
 ## Note that standard missing values in @var{s} appear as NaN in @var{g} and are
 ## not present on either @var{gn} and @var{gl}.
 ##
+## An empty @var{s} returns @var{g}, @var{gn} and @var{gl} as 0-by-1 arrays,
+## whereas MATLAB returns a 0-by-0 @var{gn} for an empty categorical @var{s}.
+##
 ## @seealso{grpstats}
 ## @end deftypefn
 
@@ -121,7 +124,7 @@ function [g, gn, gl] = grp2idx (s)
     cats = categories (s);
     if (isempty (cats))
       gn = cell (0,1);
-      gl = categorical (cell (0,1));
+      gl = categorical (zeros (0,1));
     else
       gn = cellstr (cats);
       gl = categorical (cats, cats, 'Ordinal', isordinal (s), ...
@@ -137,7 +140,7 @@ function [g, gn, gl] = grp2idx (s)
   endif
 
   ## Fix order in here, since unique does not support this yet
-  if (iscellstr (s))
+  if (iscellstr (s) && ! isempty (s))
     I = sort (I);
     for i = 1:length (gl)
       gl_s(i) = gl(g(I(i)));
@@ -325,7 +328,8 @@ endfunction
 %! [g, gn, gl] = grp2idx (s);
 %! assert_equal (g, [NaN; NaN; NaN; NaN]);
 %! assert_equal (gn, cell (0,1));
-%! assert_equal (isequaln (gl, categorical (cell (0,1))), true);
+%! assert_equal (isequaln (gl, categorical (zeros (0,1))), true);
+%! assert_equal (size (gl), [0, 1]);
 
 %!test
 %! s = string ({missing, missing, missing});
@@ -480,7 +484,23 @@ endfunction
 %! assert_equal (size (g), [0, 1]);
 %! assert_equal (size (gn), [0, 1]);
 %! assert_equal (size (gl), [0, 1]);
-
+%!test
+%! [g, gn, gl] = grp2idx (cell (0, 1));
+%! assert_equal (g, zeros (0, 1));
+%! assert_equal (gn, cell (0, 1));
+%! assert_equal (gl, cell (0, 1));
+%!test
+%! [g, gn, gl] = grp2idx (string (cell (0, 1)));
+%! assert_equal (g, zeros (0, 1));
+%! assert_equal (gn, cell (0, 1));
+%! assert_equal (isstring (gl), true);
+%! assert_equal (size (gl), [0, 1]);
+%!test
+%! [g, gn, gl] = grp2idx (categorical (zeros (0, 1)));
+%! assert_equal (g, zeros (0, 1));
+%! assert_equal (gn, cell (0, 1));
+%! assert_equal (iscategorical (gl), true);
+%! assert_equal (size (gl), [0, 1]);
 
 ## Test input validation
 %!error <grp2idx: S must be either a vector or a matrix.> grp2idx (ones (3, 3, 3))
