@@ -1078,7 +1078,6 @@ package:\n\n\
 %! Mb = fcnntrain (X, Y, 10, "relu", "softmax", 1, 0.005, 100, false, 1, so);
 %! assert_equal (Ma.Criterion, "Relative gradient tolerance reached.");
 %! assert_equal (numel (Ma.Loss) < numel (Mb.Loss), true);
-*/
 %!error <fcnntrain: 'Weights' must hold one number per row of X.> ...
 %! fcnntrain (X, Y, 10, "sigmoid", "sigmoid", 1, 0.025, 50, false, 0, ...
 %!            struct ("Weights", ones (5, 1)));
@@ -1100,4 +1099,4 @@ package:\n\n\
 %! B = fcnntrain ([X; X(1:10,:)], [Y; Y(1:10)], 3, "sigmoid", "softmax", 1, ...
 %!                0.01, 50, false, 1, so);
 %! assert_equal (A.Loss, B.Loss, 1e-12);
-
+*/
