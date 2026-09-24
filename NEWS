@@ -1918,3 +1918,204 @@
     n-by-n matrices; it took 35 s and 7.7 GB at 12000 observations and could
     not run on large data sets, and now takes milliseconds.  `anova` with
     `'DFMethod', 'Satterthwaite'` runs 10 to 250 times faster with many groups.
+
+ Summary of important user-visible changes for statistics 1.9.4:
+-------------------------------------------------------------------
+
+ Important Notice: Observation weights given to the machine learning models
+                   must be single or double; logical and integer weights are
+                   refused.
+
+ Backwards incompatible improvements:
+ ====================================
+
+ ** Observation weights:
+    `'Weights'` must be single or double at fitting and in `loss`, `edge`,
+    `resubLoss`, `resume` and the `TreeBagger` error methods, as in MATLAB.
+    Integer weights fitted a different model or failed; logical weights
+    worked only in `fitcecoc`, `fitcensemble` and `fitrensemble`.
+
+ New functions and methods:
+ ==========================
+
+ ** boxchart, stats.chart.BoxChart:
+    box charts from vectors or a table, with notches, either orientation,
+    jittered outliers and colour groups.  The returned object redraws when
+    its properties are set.
+
+ ** gumbelstat:
+    the mean and variance of the Gumbel distribution.
+
+ ** lime:
+    local interpretable model-agnostic explanations for any model that
+    predicts and for a function handle, with a linear or a tree simple model,
+    and a `plot` method.  `'Distance'` also takes a function handle, which
+    MATLAB does not.
+
+ ** partialDependence, plotPartialDependence:
+    partial dependence of a fitted model on one or two predictors, drawn as a
+    line, a surface or individual conditional curves.
+
+ ** PredictiveModel:
+    an abstract superclass of every model with a `predict` method, so that
+    `isa (Mdl, 'PredictiveModel')` tells whether a model predicts.
+
+ ** shapley:
+    Shapley values for any model that predicts and for a function handle,
+    exact or estimated, interventional or conditional, and exact at any size
+    for linear models and trees.  `plot`, `boxchart`, `swarmchart` and
+    `plotDependence` draw them.
+
+ ** swarmchart:
+    swarm charts.  `XData` holds where each point was drawn, where MATLAB
+    leaves it unspread.
+
+ ** Table input:
+    every learner takes a table at fitting, and so do `predict`, `loss`,
+    `margin`, `edge` and the other methods that take observations, matched
+    to the predictors by name.  A variable holding levels is a categorical
+    predictor.  `shapley` and `lime` take tables too.
+
+ Bug fixes:
+ ==========
+
+ ** anova1:
+    the table for `'unequal'` variances carried a sum of squares column
+    headed `F`; it now has the five columns the function prints.
+
+ ** anova2:
+    an empty `X` failed on an internal variable; it is refused with a clear
+    error, where MATLAB returns NaN p-values.
+
+ ** burrinv:
+    every quantile of a Burr distribution with a scale other than 1 was
+    wrong, which reached `icdf` and `median` of `BurrDistribution`.
+
+ ** ClassificationDiscriminant:
+    `mahal` with `'ClassLabels'` failed for a categorical response and
+    refused categorical and string labels.
+
+ ** ClassificationDiscriminant, ClassificationKNN:
+    `resubLoss` failed when given both `'LossFun'` and `'Weights'`.
+
+ ** ClassificationGAM, RegressionGAM:
+    with `'FitMethod', 'splines'`, `'Knots'` and `'DoF'` given together kept
+    only the second.
+
+ ** ClassificationKNN:
+    `partialDependence` failed for class labels given as text.
+
+ ** ClassificationSVM:
+    `'Nu'` on two classes trained a one-class model, `'OutlierFraction'`
+    overwrote a given `'Nu'`, and `loss` and `margin` failed for a
+    categorical or string response.
+
+ ** ClassificationTree, ClassificationNaiveBayes, ClassificationLinear,
+    ClassificationKernel:
+    `edge` on data missing a class was scaled by the prior of the classes
+    present.
+
+ ** combnk:
+    `combnk (DATA, 0)` returned 0-by-0 instead of the 1-by-0 empty
+    combination.
+
+ ** datasample:
+    NaN and all-zero weights were sampled from, and an `Inf` weight drew the
+    last element, repeatedly even without replacement.
+
+ ** dummyvar:
+    a grouping variable holding `Inf` ran out of memory, and an empty one
+    with several columns failed.
+
+ ** ff2n:
+    `ff2n (0)` was refused; it returns 1-by-0.  The error message printed
+    texinfo markup.
+
+ ** fitcecoc:
+    weights varying within a class were refused for SVM, KNN, naive Bayes and
+    discriminant learners.
+
+ ** fitcknn, fitcsvm:
+    `'Leaveout', 'on'` was refused.
+
+ ** fitcnet:
+    a prior other than the empirical one did not affect training, and `W`
+    was misaligned when a row missed a predictor.
+
+ ** fitcsvm, fitcknn, fitcnet:
+    standardization scaled a constant predictor by about 1e16.
+
+ ** fitrgp:
+    `W` held the weights as given instead of summing to one.
+
+ ** gpcdf, gppdf, gpinv, gprnd, gpfit:
+    the help text gave the wrong condition for the Pareto special case.
+
+ ** grp2idx:
+    empty grouping variables returned wrongly shaped outputs or failed, and a
+    character array without rows counted as one observation.
+
+ ** iforest:
+    fewer than 3 observations were refused with an error about an option the
+    caller had not given.
+
+ ** libsvmwrite:
+    column indices were written in the wrong format on Windows.
+
+ ** LinearModel:
+    `anova` reported a rounding residue, or an infinite F, for a term that
+    adds no rank, and failed on a model holding only an intercept.
+
+ ** mvncdf, mvtcdf:
+    an options structure missing fields, as `statset` makes, was refused.
+
+ ** randsample:
+    `randsample (Inf, 1)` returned a huge number and an infinite `k` ran out
+    of memory.
+
+ ** ranksum, vartestn:
+    the help text described a rule and fields the functions do not have.
+
+ ** RegressionSVM:
+    `IsSupportVector` marked the wrong observations when a row missed a
+    predictor.
+
+ ** rmmissing:
+    empty input accepted invalid options and returned a wrongly shaped `TF`;
+    `'MinNumMissing'` may be 0, and on a vector it counts per element.
+
+ ** Single observation weights:
+    `fitclinear` and `fitrlinear` fitted a different model from single
+    weights.  `W` keeps the class of the weights; `Prior` and the predictions
+    stay double where MATLAB returns single.
+
+ ** standardizeMissing:
+    an empty or matrix indicator was refused.
+
+ ** svmtrain, svmpredict:
+    an options string of 2048 characters or more was read past its end.
+
+ Improvements:
+ =============
+
+ ** Observation weights:
+    `fitcnb`, `fitrsvm`, `fitcnet` and `fitrnet` take `'Weights'`, and their
+    `resubLoss` and cross-validation weigh by them.
+
+ ** CategoricalPredictors:
+    every learner that codes categorical predictors takes them by name as
+    well as by index.
+
+ ** TreeBagger, CompactTreeBagger:
+    a read-only `CategoricalPredictors` property.
+
+ ** pdist:
+    inputs of 1000 observations or more are computed much faster, 0.02 s
+    instead of 46 s for `'correlation'` on 1200 rows.
+
+ ** Machine_Learning:
+    `inst/Supervised_Learning` is renamed `inst/Machine_Learning`, and its
+    `INDEX` group "Machine Learning".
+
+ ** Compiler warnings:
+    the compiled sources build without warnings under `-Wall -Wextra`.
