@@ -46,7 +46,7 @@ classdef NonLinearModel < PredictiveModel
   ## @code{LogLikelihood} uses the maximum-likelihood error variance
   ## @code{@var{SSE} / n}.  The information criteria in @code{ModelCriterion}
   ## (@code{AIC}, @code{AICc}, @code{BIC}, @code{CAIC}) count the @math{p}
-  ## coefficients as the only parameters -- the error variance is @emph{not}
+  ## coefficients as the only parameters; the error variance is @emph{not}
   ## counted.  @code{coefTest} is a Wald test: for a contrast matrix @var{H} it
   ## forms
   ## @code{(@var{H}*b)' * inv (@var{H}*@var{V}*@var{H}') * (@var{H}*b) / r} with

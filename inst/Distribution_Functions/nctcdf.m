@@ -285,7 +285,7 @@ function p = nctcdf (x, df, mu, uflag)
 endfunction
 
 %!demo
-%! ## Plot various CDFs from the noncentral Τ distribution
+%! ## Plot various CDFs from the noncentral T distribution
 %! x = -5:0.01:5;
 %! p1 = nctcdf (x, 1, 0);
 %! p2 = nctcdf (x, 4, 0);
@@ -296,7 +296,7 @@ endfunction
 %! xlim ([-5, 5])
 %! legend ({'df = 1, μ = 0', 'df = 4, μ = 0', ...
 %!          'df = 1, μ = 2', 'df = 4, μ = 2'}, 'location', 'southeast')
-%! title ('Noncentral Τ CDF')
+%! title ('Noncentral T CDF')
 %! xlabel ('values in x')
 %! ylabel ('probability')
 

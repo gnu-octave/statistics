@@ -50,7 +50,7 @@ function r = vmrnd (mu, k, varargin)
     error ("vmrnd: function called with too few input arguments.");
   endif
 
-  ## Check for common size of MU and Κ
+  ## Check for common size of MU and K
   if (! isscalar (mu) || ! isscalar (k))
     [retval, mu, k] = common_size (mu, k);
     if (retval > 0)
@@ -58,7 +58,7 @@ function r = vmrnd (mu, k, varargin)
     endif
   endif
 
-  ## Check for MU and Κ being reals
+  ## Check for MU and K being reals
   if (iscomplex (mu) || iscomplex (k))
     error ("vmrnd: MU and K must not be complex.");
   endif
