@@ -13,9 +13,13 @@ combnk
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 79
+# length: 203
 statistics: c = combnk (data, k)
 Return all combinations of k elements in data.
+
+k must be a non-negative integer. combnk (data, 0)
+returns a 1-by-0 array of the class of data, the one empty
+combination.
 
 
 # name: <cell-element>
@@ -79,7 +83,7 @@ datasample
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1007
+# length: 1296
 statistics: y = datasample (data, k)
 statistics: y = datasample (data, k, dim)
 statistics: y = datasample (..., Name, Value)
@@ -102,8 +106,12 @@ Replace
 a logical value that can be true (default) or false: when set
 to true, datasample returns data sampled with replacement.
 Weights
-a vector of positive numbers that sets the probability of each element. It
-must have the same size as data along dimension dim.
+a vector of non-negative numbers, at least one of them positive, that sets
+the probability of each element. It must have the same size as data
+along dimension dim. Elements with an Inf weight are sampled
+before any other: always when sampling with replacement, first when sampling
+without. Elements sharing an Inf weight are equally likely, whereas
+MATLAB draws only the first of them when sampling with replacement.
 
 See also:
 rand,
@@ -381,7 +389,7 @@ grp2idx
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1562
+# length: 1932
 statistics: g = grp2idx (s)
 statistics: [g, gn] = grp2idx (s)
 statistics: [g, gn, gl] = grp2idx (s)
@@ -420,6 +428,13 @@ same data type as s.
 
 Note that standard missing values in s appear as NaN in g and are
 not present on either gn and gl.
+
+An empty s returns g, gn and gl as 0-by-1 arrays,
+whereas MATLAB returns a 0-by-0 gn for an empty categorical s.
+A character array without rows returns a 0-by-1 g and gn, and a
+gl with no rows. Each row of a character array is an observation, so a
+row without characters, being unnamed, is indexed as NaN, whereas
+MATLAB returns no index for any empty character array.
 
 See also:
 grpstats
@@ -807,7 +822,7 @@ randsample
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 646
+# length: 778
 statistics: y = randsample (v, k)
 statistics: y = randsample (v, k, replacement=false)
 statistics: y = randsample (v, k, replacement=false, [w=[]])
@@ -816,7 +831,9 @@ Sample elements from a vector.
 Returns k random elements from a vector v with n elements,
 sampled without or with replacement, with an optional weight vector.
 
-If v is a scalar, samples from 1:v.
+If v is a non-negative integer scalar, samples from 1:v; it must
+not be Inf. Any other scalar, -Inf and NaN included, is
+a population of one element. k must be finite.
 
 If a weight vector w of the same size as v is specified, the
 probability of each element being sampled is proportional to w.
@@ -848,7 +865,7 @@ rmmissing
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1878
+# length: 2028
 statistics: R = rmmissing (A)
 statistics: R = rmmissing (A, dim)
 statistics: R = rmmissing (..., Name, Value)
@@ -871,8 +888,7 @@ NaT - for datetime arrays.
 {0x0 char} - for cell arrays of character vectors.
 
 For any data types that do not support missing values, rmmissing
-returns R == A and if a second output argument is
-requested it also returns TF = false (size (A)).
+returns R == A and an all-false TF.
 
 Given an input matrix (2-D array) A, R = rmmissing
 (A, dim) further specifies whether rows or columns containing
@@ -887,10 +903,11 @@ R = rmmissing (..., Name, Value) also accepts
 the following paired arguments.
 
 Name Value
-'MinNumMissing' A positive integer scalar value
+'MinNumMissing' A non-negative integer scalar value
 specifying the required minimum number of missing values for removing any
-particular row or column from a matrix input. Note that this argument is
-ignored if input A is a vector.
+particular row or column from a matrix input, or element from a vector
+input (default 1). With 0, everything is removed; above 1, nothing is
+removed from a vector, whose elements are each missing at most once.
 'MissingLocations' A logical array of the same size
 as input A indexing the locations of missing values in input array
 A. Note that specifying 'MissingLocations' overrides any
@@ -898,6 +915,8 @@ standard missing values in A.
 
 Optional return value TF is a logical array where true values
 represent removed entries, rows or columns from the original data A.
+It has one element per element of a vector, and one per row or column of a
+matrix, an empty A included.
 
 See also:
 fillmissing,

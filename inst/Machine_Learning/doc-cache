@@ -765,13 +765,14 @@ ClassificationBaggedEnsemble.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 217
+# length: 276
 ClassificationEnsemble: property W
 Observation weights
 
-The weights given, scaled so that the observations of each class sum
-to its prior probability. A cost matrix is not folded into them.
-This property is read-only.
+The weights given, scaled so that the observations of each class sum to
+its prior probability. A cost matrix is not folded into them. It has
+the class of the 'Weights' given, single or double. This
+property is read-only.
 
 
 # name: <cell-element>
@@ -1592,7 +1593,7 @@ ClassificationDiscriminant.ClassificationDiscriminant
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3644
+# length: 3808
 ClassificationDiscriminant: obj = ClassificationDiscriminant (X, Y)
 ClassificationDiscriminant: obj = ClassificationDiscriminant (Tbl, ResponseVarName)
 ClassificationDiscriminant: obj = ClassificationDiscriminant (Tbl, formula)
@@ -1641,11 +1642,13 @@ corresponds to the order of the classes in ClassNames.
 Alternatively, you can specify 'empirical' to use the empirical
 class probabilities or 'uniform' to assume equal class
 probabilities.
-'Weights' A numeric vector of nonnegative observation
-weights, one per row of X. They weigh the class means and
-covariances, the covariances being unbiased for them, and an empirical
-prior sums them per class. Only their proportions matter, and a row of
-zero weight is left out of the fit.
+'Weights' A single or double vector of nonnegative
+observation weights, one per row of X. They weigh the class means
+and covariances, the covariances being unbiased for them, and an
+empirical prior sums them per class. Only their proportions matter, and
+a row of zero weight is left out of the fit. The model's W keeps
+the class of the weights, while every computation runs in double, so
+Prior and the predictions are double where MATLAB returns single.
 'ScoreTransform' A user-defined function handle
 or a character vector specifying one of the following builtin functions
 specifying the transformation applied to predicted classification scores.
@@ -2363,13 +2366,14 @@ ClassificationDiscriminant.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 252
+# length: 311
 ClassificationDiscriminant: property W
 Observation weights
 
 A numeric column vector with one entry per observation used for fitting:
 the 'Weights' given, or equal weights, scaled to sum to one. The
-prior does not enter them. This property is read-only.
+prior does not enter them. It has the class of the 'Weights'
+given, single or double. This property is read-only.
 
 
 # name: <cell-element>
@@ -3691,10 +3695,11 @@ ClassificationECOC.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 154
+# length: 213
 ClassificationECOC: property W
-The observation weights, scaled so that each class carries its prior
-and the whole sums to one. This property is read-only.
+The observation weights, scaled so that each class carries its prior and
+the whole sums to one. It has the class of the 'Weights' given,
+single or double. This property is read-only.
 
 
 # name: <cell-element>
@@ -4841,13 +4846,14 @@ ClassificationEnsemble.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 217
+# length: 276
 ClassificationEnsemble: property W
 Observation weights
 
-The weights given, scaled so that the observations of each class sum
-to its prior probability. A cost matrix is not folded into them.
-This property is read-only.
+The weights given, scaled so that the observations of each class sum to
+its prior probability. A cost matrix is not folded into them. It has
+the class of the 'Weights' given, single or double. This
+property is read-only.
 
 
 # name: <cell-element>
@@ -6436,12 +6442,13 @@ ClassificationGAM.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 309
+# length: 368
 ClassificationGAM: property W
 Observation weights
 
-A numeric column vector with one entry per observation used for
-training, normalised to sum to one. This property is read-only.
+A numeric column vector with one entry per observation used for training,
+normalised to sum to one. It has the class of the 'Weights'
+given, single or double. This property is read-only.
 
 Each class carries its prior, spread over its own observations in
 proportion to their 'Weights', and evenly when none were given.
@@ -7306,7 +7313,7 @@ ClassificationKNN.ClassificationKNN
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5612
+# length: 5755
 ClassificationKNN: obj = ClassificationKNN (X, Y)
 ClassificationKNN: obj = ClassificationKNN (Tbl, ResponseVarName)
 ClassificationKNN: obj = ClassificationKNN (Tbl, formula)
@@ -7353,12 +7360,14 @@ corresponds to the order of the classes in ClassNames.
 Alternatively, you can specify 'empirical' to use the empirical
 class probabilities or 'uniform' to assume equal class
 probabilities.
-'Weights' A numeric vector of nonnegative observation
-weights, one per row of X. Each class carries its prior, spread
-over its observations in proportion to their weights, and a neighbour
-votes with that weight. An empirical prior sums the weights per class,
-standardization uses weighted means and standard deviations, and a row
-of zero weight is left out.
+'Weights' A single or double vector of nonnegative
+observation weights, one per row of X. Each class carries its
+prior, spread over its observations in proportion to their weights, and a
+neighbour votes with that weight. An empirical prior sums the weights
+per class, standardization uses weighted means and standard deviations,
+and a row of zero weight is left out. The model's W keeps the
+class of the weights, while every computation runs in double, so
+Prior is double where MATLAB returns single.
 'ScoreTransform' A user-defined function handle
 or a character vector specifying one of the following builtin functions
 specifying the transformation applied to predicted classification scores.
@@ -8107,14 +8116,15 @@ ClassificationKNN.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 311
+# length: 370
 ClassificationKNN: property W
 Observation weights
 
 A numeric column vector with one entry per observation used for fitting.
 Each class carries its prior, spread over its own observations in
 proportion to the 'Weights' given, or evenly when none were.
-Reassigning Prior re-derives it. This property is read-only.
+Reassigning Prior re-derives it. It has the class of the
+'Weights' given, single or double. This property is read-only.
 
 
 # name: <cell-element>
@@ -8773,7 +8783,7 @@ ClassificationKernel.ClassificationKernel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2920
+# length: 2984
 ClassificationKernel: obj = ClassificationKernel (X, Y)
 ClassificationKernel: obj = ClassificationKernel (Tbl, ResponseVarName)
 ClassificationKernel: obj = ClassificationKernel (Tbl, formula)
@@ -8823,7 +8833,8 @@ sorted.
 ClassNames and ClassProbs fields.
 'ScoreTransform' A transformation applied to the
 scores, named or given as a function handle.
-'Weights' One nonnegative weight per observation.
+'Weights' One nonnegative weight per observation, as a
+single or double vector. Every computation runs in double.
 'PredictorNames' One name per predictor.
 'ResponseName' A name for the response.
 'CategoricalPredictors' The categorical predictors,
@@ -9660,7 +9671,7 @@ ClassificationLinear.ClassificationLinear
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4409
+# length: 4473
 ClassificationLinear: obj = ClassificationLinear (X, Y)
 ClassificationLinear: obj = ClassificationLinear (Tbl, ResponseVarName)
 ClassificationLinear: obj = ClassificationLinear (Tbl, formula)
@@ -9739,7 +9750,8 @@ keeps the classes in this order; by default they are sorted.
 ClassNames and ClassProbs fields.
 'ScoreTransform' A transformation applied to the
 scores, named or given as a function handle.
-'Weights' One nonnegative weight per observation.
+'Weights' One nonnegative weight per observation, as a
+single or double vector. Every computation runs in double.
 'PredictorNames' One name per predictor.
 'ResponseName' A name for the response.
 'CategoricalPredictors' The categorical predictors,
@@ -10950,13 +10962,15 @@ ClassificationNaiveBayes.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 261
+# length: 376
 ClassificationNaiveBayes: property W
 Observation weights
 
 A numeric column vector with one entry per observation used for fitting,
-summing to one. Each class contributes its prior, spread evenly over
-the observations belonging to it. This property is read-only.
+summing to one. Each class contributes its prior, spread over the
+observations belonging to it in proportion to the 'Weights'
+given, or evenly when none were. It has the class of the
+'Weights' given, single or double. This property is read-only.
 
 
 # name: <cell-element>
@@ -12478,16 +12492,18 @@ ClassificationNeuralNetwork.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 384
+# length: 517
 ClassificationNeuralNetwork: property W
 Observation weights
 
-A numeric column vector with one entry per training observation. It
-defaults to a uniform weight for every observation. This property is
-read-only.
+A numeric column vector with one entry per training observation,
+summing to one, by which the training loss weighs each observation. It
+has the class of the 'Weights' given, single or double. This
+property is read-only.
 
-Each class carries its prior spread evenly over its own observations,
-so an observation of a class weighs Prior for that class
+Each class carries its prior spread over its own observations in
+proportion to the 'Weights' given, or evenly when none were, so
+that an observation of a class weighs Prior for that class
 divided by the number of observations it holds.
 
 
@@ -16868,7 +16884,7 @@ ClassificationSVM.ClassificationSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4349
+# length: 4492
 ClassificationSVM: obj = ClassificationSVM (X, Y)
 ClassificationSVM: obj = ClassificationSVM (Tbl, ResponseVarName)
 ClassificationSVM: obj = ClassificationSVM (Tbl, formula)
@@ -16938,13 +16954,15 @@ the order of the polynomial kernel function. Default is 3.
 kernel scale parameter. Default is 1.
 'KernelOffset' A non-negative scalar specifying
 the kernel offset parameter. Default is 0.
-'Weights' A numeric vector of nonnegative observation
-weights, one per row of X. Each observation's box constraint is
-n times BoxConstraint times its weight, the weights scaled
-so that each class carries its prior times the cost of misclassifying it.
-An empirical prior sums the weights per class, standardization uses
-weighted means and standard deviations, and a row of zero weight is left
-out.
+'Weights' A single or double vector of nonnegative
+observation weights, one per row of X. Each observation's box
+constraint is n times BoxConstraint times its weight, the
+weights scaled so that each class carries its prior times the cost of
+misclassifying it. An empirical prior sums the weights per class,
+standardization uses weighted means and standard deviations, and a row of
+zero weight is left out. The model's W keeps the class of the
+weights, while every computation runs in double, so Prior is
+double where MATLAB returns single.
 'BoxConstraint' A positive scalar specifying the
 box constraint parameter. Default is 1.
 'Nu' A positive scalar in the range (0,1]
@@ -17560,13 +17578,13 @@ ClassificationSVM.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 319
+# length: 378
 ClassificationSVM: property W
 Observation weights
 
 A numeric column vector with one entry per training observation,
-normalized to sum to one, as MATLAB reports it. This property is
-read-only.
+normalized to sum to one, as MATLAB reports it. It has the class of the
+'Weights' given, single or double. This property is read-only.
 
 Each class carries its prior, spread over its own observations in
 proportion to the 'Weights' given, or evenly when none were.
@@ -18474,7 +18492,7 @@ ClassificationTree.ClassificationTree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3858
+# length: 4022
 ClassificationTree: obj = ClassificationTree (X, Y)
 ClassificationTree: obj = ClassificationTree (Tbl, ResponseVarName)
 ClassificationTree: obj = ClassificationTree (Tbl, formula)
@@ -18550,8 +18568,11 @@ transform to apply to the scores, or a function handle. The default
 is 'none'.
 'SplitCriterion' 'gdi' (default), the Gini
 diversity index, or 'deviance', the cross entropy.
-'Weights' A nonnegative numeric vector with one
-element per observation. The default is uniform.
+'Weights' A nonnegative single or double vector with
+one element per observation. The default is uniform. The model's
+W keeps the class of the weights, while every computation runs in
+double, so Prior and the predictions are double where MATLAB
+returns single.
 
 On a node with three or more classes and more than
 'MaxNumCategories' levels, the heuristic splits, the choice
@@ -19446,14 +19467,15 @@ ClassificationTree.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 308
+# length: 367
 ClassificationTree: property W
 Observation weights
 
 A numeric column vector of the weights the fit used, one per retained
-observation. They are the weights given, scaled so that the
-observations of each class sum to that class's prior, and so that all
-of them together sum to one. This property is read-only.
+observation. They are the weights given, scaled so that the observations
+of each class sum to that class's prior, and so that all of them together
+sum to one. It has the class of the 'Weights' given, single or
+double. This property is read-only.
 
 
 # name: <cell-element>
@@ -32889,12 +32911,12 @@ RegressionBaggedEnsemble.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 124
+# length: 183
 RegressionEnsemble: property W
 Observation weights
 
-The weights given, normalized to sum to one. This property is
-read-only.
+The weights given, normalized to sum to one. It has the class of the
+'Weights' given, single or double. This property is read-only.
 
 
 # name: <cell-element>
@@ -34028,12 +34050,12 @@ RegressionEnsemble.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 124
+# length: 183
 RegressionEnsemble: property W
 Observation weights
 
-The weights given, normalized to sum to one. This property is
-read-only.
+The weights given, normalized to sum to one. It has the class of the
+'Weights' given, single or double. This property is read-only.
 
 
 # name: <cell-element>
@@ -35479,13 +35501,14 @@ RegressionGAM.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 220
+# length: 279
 RegressionGAM: property W
 Observation weights
 
-A numeric column vector with one entry per observation used for
-training, the 'Weights' normalised to sum to one, and equal
-when none were given. This property is read-only.
+A numeric column vector with one entry per observation used for training,
+the 'Weights' normalised to sum to one, and equal when none were
+given. It has the class of the 'Weights' given, single or
+double. This property is read-only.
 
 
 # name: <cell-element>
@@ -36641,7 +36664,7 @@ RegressionGP.RegressionGP
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5819
+# length: 5914
 RegressionGP: obj = RegressionGP (X, Y)
 RegressionGP: obj = RegressionGP (Tbl, ResponseVarName)
 RegressionGP: obj = RegressionGP (Tbl, formula)
@@ -36724,8 +36747,10 @@ median of the training response. A predictor may be named rather than
 indexed, as a character matrix of one padded name per row, a string array
 or a cellstr; a name must match an entry of 'PredictorNames'
 exactly, its case included.
-'Weights' An Nx1 numeric vector of non-negative
-observation weights. The default is a vector of ones.
+'Weights' An Nx1 single or double vector of
+non-negative observation weights. The default is a vector of ones. The
+model's W keeps the class of the weights, while every computation
+runs in double.
 'PredictorNames' A cell array of character vectors
 naming the predictors, in the order they appear in X.
 'ResponseName' A character vector naming the response.
@@ -36897,12 +36922,13 @@ RegressionGP.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 148
+# length: 220
 RegressionGP: property W
 Observation weights
 
-An Nx1 numeric vector, one weight per observation used to train
-the model. This property is read-only.
+An Nx1 vector, one weight per observation used to train the
+model, scaled to sum to one and of the class of the 'Weights'
+given, single or double. This property is read-only.
 
 
 # name: <cell-element>
@@ -37621,7 +37647,7 @@ RegressionKernel.RegressionKernel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2746
+# length: 2810
 RegressionKernel: obj = RegressionKernel (X, Y)
 RegressionKernel: obj = RegressionKernel (Tbl, ResponseVarName)
 RegressionKernel: obj = RegressionKernel (Tbl, formula)
@@ -37668,7 +37694,8 @@ solver keeps, 15 by default.
 megabytes, 4e3 by default.
 'ResponseTransform' A transformation applied to the
 predicted response, named or given as a function handle.
-'Weights' One nonnegative weight per observation.
+'Weights' One nonnegative weight per observation, as a
+single or double vector. Every computation runs in double.
 'PredictorNames' One name per predictor.
 'ResponseName' A name for the response.
 'CategoricalPredictors' The categorical predictors,
@@ -38281,7 +38308,7 @@ RegressionLinear.RegressionLinear
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3923
+# length: 3987
 RegressionLinear: obj = RegressionLinear (X, Y)
 RegressionLinear: obj = RegressionLinear (Tbl, ResponseVarName)
 RegressionLinear: obj = RegressionLinear (Tbl, formula)
@@ -38352,7 +38379,8 @@ report 2.
 quasi-Newton solvers keep, 15 by default.
 'ResponseTransform' A transformation applied to the
 predicted response, named or given as a function handle.
-'Weights' One nonnegative weight per observation.
+'Weights' One nonnegative weight per observation, as a
+single or double vector. Every computation runs in double.
 'PredictorNames' One name per predictor.
 'ResponseName' A name for the response.
 'CategoricalPredictors' The categorical predictors,
@@ -39458,12 +39486,14 @@ RegressionNeuralNetwork.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 204
+# length: 332
 RegressionNeuralNetwork: property W
 Observation weights
 
-A numeric column vector with one entry per training observation. It
-defaults to a uniform weight for every observation. This property is
+A numeric column vector with one entry per training observation,
+summing to one, by which the training loss weighs each observation. It
+defaults to a uniform weight for every observation, and has the class of
+the 'Weights' given, single or double. This property is
 read-only.
 
 
@@ -42277,14 +42307,16 @@ RegressionSVM.BoxConstraints
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 263
+# length: 385
 RegressionSVM: property BoxConstraints
 Box constraints
 
 A numeric column vector with one entry per observation, holding the box
-constraint the fit applied to it. A regression has no classes to
-reweight, so every entry is BoxConstraint. This property is
-read-only.
+constraint the fit applied to it: n times BoxConstraint
+times the observation's weight in W, which is
+BoxConstraint for every observation when no weights were given.
+An observation missing a predictor is not fitted and holds NaN.
+This property is read-only.
 
 
 # name: <cell-element>
@@ -42606,7 +42638,7 @@ RegressionSVM.RegressionSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3905
+# length: 4333
 RegressionSVM: obj = RegressionSVM (X, Y)
 RegressionSVM: obj = RegressionSVM (Tbl, ResponseVarName)
 RegressionSVM: obj = RegressionSVM (Tbl, formula)
@@ -42646,11 +42678,11 @@ predictor, or as 'all'. Each is dummy coded in its place, one
 column of zeros and ones per level seen in training, named as in
 'x1 == 2' in ExpandedPredictorNames, and the coded columns
 are not standardized. An observation holding a level the training data
-did not is predicted as a row missing a predictor, the lower median of
-the training response. A predictor may be named rather than indexed, as
-a character matrix of one padded name per row, a string array or a
-cellstr; a name must match an entry of 'PredictorNames' exactly,
-its case included.
+did not is predicted as a row missing a predictor, the weighted lower
+median of the training response. A predictor may be named rather than
+indexed, as a character matrix of one padded name per row, a string
+array or a cellstr; a name must match an entry of
+'PredictorNames' exactly, its case included.
 'PredictorNames' A cell array of character vectors
 naming the predictors, in the order they appear in X.
 'ResponseName' A character vector naming the response.
@@ -42664,6 +42696,13 @@ insensitive tube. The default is iqr (Y) / 13.49, or
 0.1 where that is zero.
 'BoxConstraint' A positive scalar bounding the dual
 coefficients, the cost of an error outside the tube. The default is 1.
+'Weights' A nonnegative single or double vector of
+observation weights, one per row of X. An observation's box
+constraint is n times BoxConstraint times its weight, the
+weights scaled to sum to one; standardization uses weighted means and
+standard deviations, and a row of zero or missing weight is left out.
+The model's W keeps the class of the weights, while every
+computation runs in double. The default is uniform.
 'KernelFunction' A character vector naming the kernel,
 one of 'linear', the default, 'rbf', 'gaussian',
 'polynomial' or 'sigmoid'.
@@ -42856,13 +42895,13 @@ RegressionSVM.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 187
+# length: 246
 RegressionSVM: property W
 Observation weights
 
 A numeric column vector with one entry per training observation,
-normalized to sum to one, as MATLAB reports it. This property is
-read-only.
+normalized to sum to one, as MATLAB reports it. It has the class of the
+'Weights' given, single or double. This property is read-only.
 
 
 # name: <cell-element>
@@ -43996,7 +44035,7 @@ RegressionTree.RegressionTree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2787
+# length: 2941
 RegressionTree: obj = RegressionTree (X, Y)
 RegressionTree: obj = RegressionTree (Tbl, ResponseVarName)
 RegressionTree: obj = RegressionTree (Tbl, formula)
@@ -44055,8 +44094,10 @@ transform to apply to the predicted response, or a function handle.
 The default is 'none'.
 'SplitCriterion' 'mse', the only criterion
 a regression tree has.
-'Weights' A nonnegative numeric vector with one
-element per observation. The default is uniform.
+'Weights' A nonnegative single or double vector with
+one element per observation. The default is uniform. The model's
+W keeps the class of the weights, while every computation runs in
+double, so the predictions are double where MATLAB returns single.
 
 See also:
 fitrtree,
@@ -44321,12 +44362,13 @@ RegressionTree.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 208
+# length: 267
 RegressionTree: property W
 Observation weights
 
 A numeric column vector of the weights the fit used, one per retained
-observation. They are the weights given, scaled to sum to one. This
+observation. They are the weights given, scaled to sum to one. It has
+the class of the 'Weights' given, single or double. This
 property is read-only.
 
 
@@ -45698,7 +45740,7 @@ TreeBagger.TreeBagger
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3523
+# length: 3626
 TreeBagger: B = TreeBagger (NumTrees, X, Y)
 TreeBagger: B = TreeBagger (NumTrees, Tbl, ResponseVarName)
 TreeBagger: B = TreeBagger (NumTrees, Tbl, formula)
@@ -45742,8 +45784,10 @@ out of bag, so the two are refused together.
 or 'on', to estimate the importance of each predictor by
 permuting it among each tree's out-of-bag observations. It turns
 'OOBPrediction' on.
-'Weights' A nonnegative vector with one weight
-per observation. The default is uniform.
+'Weights' A nonnegative single or double vector
+with one weight per observation. The default is uniform. The model's
+W keeps the class of the weights, while every computation runs in
+double.
 'Prior' 'empirical' (default),
 'uniform', a vector with one probability per class, or a
 structure with fields ClassNames and ClassProbs.
@@ -45830,14 +45874,15 @@ TreeBagger.W
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 297
+# length: 356
 TreeBagger: property W
 Observation weights
 
 A column of weights summing to one, one per observation. For
 classification each class's weights sum to its prior. The bootstrap
 draws observations in proportion to these weights, and the out-of-bag
-error is weighted by them. This property is read-only.
+error is weighted by them. It has the class of the 'Weights'
+given, single or double. This property is read-only.
 
 
 # name: <cell-element>
@@ -46694,7 +46739,7 @@ fitcdiscr
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3552
+# length: 3716
 statistics: Mdl = fitcdiscr (X, Y)
 statistics: Mdl = fitcdiscr (Tbl, ResponseVarName)
 statistics: Mdl = fitcdiscr (Tbl, formula)
@@ -46735,11 +46780,13 @@ probabilities for each class. The order of the elements in Prior
 corresponds to the order of the classes in ClassNames.
 Alternatively, you can specify 'empirical' to use the empirical
 class probabilities or 'uniform' to assume equal class probabilities.
-'Weights' A numeric vector of nonnegative observation
-weights, one per row of X. They weigh the class means and
-covariances, the covariances being unbiased for them, and an empirical
-prior sums them per class. Only their proportions matter, and a row of
-zero weight is left out of the fit.
+'Weights' A single or double vector of nonnegative
+observation weights, one per row of X. They weigh the class means and
+covariances, the covariances being unbiased for them, and an empirical prior
+sums them per class. Only their proportions matter, and a row of zero weight
+is left out of the fit. The model's W keeps the class of the weights,
+while every computation runs in double, so Prior and the predictions
+are double where MATLAB returns single.
 'Cost' A NxR numeric matrix containing
 misclassification cost for the corresponding instances in X where
 R is the number of unique categories in Y. If an instance is
@@ -46788,7 +46835,7 @@ fitcecoc
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4690
+# length: 4465
 statistics: Mdl = fitcecoc (X, Y)
 statistics: Mdl = fitcecoc (Tbl, ResponseVarName)
 statistics: Mdl = fitcecoc (Tbl, formula)
@@ -46833,8 +46880,10 @@ By default they are sorted.
 costs. The default is 1 - eye (K).
 'Prior' 'empirical' (default),
 'uniform', or a vector with one element per class.
-'Weights' A nonnegative numeric vector with one
-element per observation. The default is uniform.
+'Weights' A nonnegative single or double vector with
+one element per observation. The default is uniform. The model's W
+keeps the class of the weights, while every computation runs in double, so
+Prior is double where MATLAB returns single.
 'CategoricalPredictors' The predictors whose values
 are levels, as indices, a logical vector or 'all', passed as given
 to every binary learner, which codes them its own way; a nearest neighbour
@@ -46876,12 +46925,7 @@ separates its two classes keeps that tree, as fitcensemble does;
 MATLAB keeps no tree and never predicts those classes from it.
 
 Each binary learner is fitted with the weight its observations carry, which
-the prior and any 'Weights' decide. The SVM, KNN, naive Bayes and
-discriminant learners of this package take no observation weights, so when
-those weights are unequal they are given instead the prior their two sides
-hold, the prior MATLAB's learners report, and weights that vary within a
-class, which no prior can express, are refused for them. MATLAB weighs
-each observation of those learners as well.
+the prior and any 'Weights' decide.
 
 See also:
 ClassificationECOC,
@@ -46909,7 +46953,7 @@ fitcensemble
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 10158
+# length: 10309
 statistics: Mdl = fitcensemble (X, Y)
 statistics: Mdl = fitcensemble (Tbl, ResponseVarName)
 statistics: Mdl = fitcensemble (Tbl, formula)
@@ -47083,8 +47127,10 @@ scores are laid out; by default they are sorted.
 costs. The default is 1 - eye (K).
 'Prior' 'empirical' (default),
 'uniform', or a vector with one element per class.
-'Weights' A nonnegative vector with one weight per
-observation. The default is uniform.
+'Weights' A nonnegative single or double vector with
+one weight per observation. The default is uniform. The model's W
+keeps the class of the weights, while every computation runs in double, so
+Prior is double where MATLAB returns single.
 'PredictorNames' A cell array of character vectors
 naming the columns of X.
 'ResponseName' The name of the response variable.
@@ -47129,7 +47175,7 @@ fitcgam
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 7894
+# length: 8058
 statistics: Mdl = fitcgam (X, Y)
 statistics: Mdl = fitcgam (Tbl, ResponseVarName)
 statistics: Mdl = fitcgam (Tbl, formula)
@@ -47274,9 +47320,12 @@ empty. The default is none.
 A predictor may be named rather than indexed, as a character matrix of one
 padded name per row, a string array or a cellstr; a name must match an entry
 of 'PredictorNames' exactly, its case included.
-'Weights' A numeric vector of non-negative observation
-weights, one per row of X. Each class carries its 'Prior',
-spread over its observations in proportion to their weights.
+'Weights' A single or double vector of non-negative
+observation weights, one per row of X. Each class carries its
+'Prior', spread over its observations in proportion to their weights.
+The model's W keeps the class of the weights, while every computation
+runs in double, so Prior and the predictions are double where MATLAB
+returns single.
 
 You can parse either a 'Formula' or an 'Interactions'
 optional parameter. Parsing both parameters will result an error.
@@ -47362,7 +47411,7 @@ fitcknn
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 11169
+# length: 11312
 statistics: Mdl = fitcknn (X, Y)
 statistics: Mdl = fitcknn (Tbl, ResponseVarName)
 statistics: Mdl = fitcknn (Tbl, formula)
@@ -47407,12 +47456,14 @@ in this order; by default they are sorted.
 'Prior' A numeric vector specifying the prior
 probabilities for each class. The order of the elements in Prior
 corresponds to the order of the classes in ClassNames.
-'Weights' A numeric vector of nonnegative observation
-weights, one per row of X. Each class carries its prior, spread
-over its observations in proportion to their weights, and a neighbour
+'Weights' A single or double vector of nonnegative
+observation weights, one per row of X. Each class carries its prior,
+spread over its observations in proportion to their weights, and a neighbour
 votes with that weight. An empirical prior sums the weights per class,
 standardization uses weighted means and standard deviations, and a row of
-zero weight is left out.
+zero weight is left out. The model's W keeps the class of the
+weights, while every computation runs in double, so Prior is double
+where MATLAB returns single.
 'Cost' A NxR numeric matrix containing
 misclassification cost for the corresponding instances in X where
 R is the number of unique categories in Y. If an instance is
@@ -47672,7 +47723,7 @@ fitcnb
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3651
+# length: 4190
 statistics: Mdl = fitcnb (X, Y)
 statistics: Mdl = fitcnb (Tbl, ResponseVarName)
 statistics: Mdl = fitcnb (Tbl, formula)
@@ -47743,6 +47794,14 @@ vector giving finite bounds.
 'Width' The bandwidth of the kernel densities, given as a
 scalar, as one value per predictor, as one per class, or as a matrix of one
 per class and predictor. By default each density chooses its own.
+'Weights' A nonnegative single or double vector of
+observation weights, one per row of X. An empirical prior sums them
+per class; a normal density takes weighted means and standard deviations, a
+kernel density weighs its observations but chooses its bandwidth from them
+alone, and the multinomials count each observation by its weight. A row of
+zero or missing weight is left out. The model's W keeps the class of
+the weights, while every computation runs in double, so Prior is
+double where MATLAB returns single. The default is uniform.
 
 A predictor that takes one value throughout a class has no normal density
 to fit, and that combination of class and predictor is refused rather than
@@ -47772,7 +47831,7 @@ fitcnet
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6528
+# length: 7126
 statistics: Mdl = fitcnet (X, Y)
 statistics: Mdl = fitcnet (Tbl, ResponseVarName)
 statistics: Mdl = fitcnet (Tbl, formula)
@@ -47873,6 +47932,15 @@ Under 'sgd' this counts epochs, under
 'lbfgs' solver iterations.
 'DisplayInfo' A boolean flag indicating whether to
 print information during training. Default is false.
+'Weights' A nonnegative single or double vector of
+observation weights, one per row of X. An empirical prior sums them
+per class, and each class carries its prior spread over its observations in
+proportion to them; the network is trained on the loss so weighted, which
+is how a prior other than the empirical one enters the fit as well.
+Standardization weighs the observations the same way, and a row of zero or
+missing weight is left out. The model's W keeps the class of the
+weights, while every computation runs in double, so Prior is double
+where MATLAB returns single. The default is uniform.
 'ScoreTransform' A character vector defining one of
 the following functions or a user defined function handle, which is used
 for transforming the prediction scores returned by the predict and
@@ -47926,7 +47994,7 @@ fitcsvm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 8538
+# length: 8681
 statistics: Mdl = fitcsvm (X, Y)
 statistics: Mdl = fitcsvm (Tbl, ResponseVarName)
 statistics: Mdl = fitcsvm (Tbl, formula)
@@ -48026,13 +48094,15 @@ for 'KernelScale' is 1.
 the coef0 in kernel function. For the polynomial kernel, it influences
 the polynomial's shift, and for the sigmoid kernel, it affects the hyperbolic
 tangent's shift. The default value for 'KernelOffset' is 0.
-'Weights' A numeric vector of nonnegative observation
-weights, one per row of X. Each observation's box constraint is
-n times BoxConstraint times its weight, the weights scaled
-so that each class carries its prior times the cost of misclassifying it.
-An empirical prior sums the weights per class, standardization uses
-weighted means and standard deviations, and a row of zero weight is left
-out.
+'Weights' A single or double vector of nonnegative
+observation weights, one per row of X. Each observation's box
+constraint is n times BoxConstraint times its weight, the
+weights scaled so that each class carries its prior times the cost of
+misclassifying it. An empirical prior sums the weights per class,
+standardization uses weighted means and standard deviations, and a row of
+zero weight is left out. The model's W keeps the class of the
+weights, while every computation runs in double, so Prior is double
+where MATLAB returns single.
 'BoxConstraint' A positive scalar that specifies the
 upper bound of the Lagrange multipliers, i.e. the parameter C, which is used
 for training 'C_SVC' and 'one_class_SVM' type of models. It
@@ -48112,7 +48182,7 @@ fitctree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5530
+# length: 5694
 statistics: Mdl = fitctree (X, Y)
 statistics: Mdl = fitctree (Tbl, ResponseVarName)
 statistics: Mdl = fitctree (Tbl, formula)
@@ -48218,8 +48288,10 @@ to apply to the scores, or a function handle. The default is
 'none'.
 'SplitCriterion' 'gdi' (default), the Gini
 diversity index, or 'deviance', the cross entropy.
-'Weights' A nonnegative numeric vector with one element
-per observation. The default is uniform.
+'Weights' A nonnegative single or double vector with one
+element per observation. The default is uniform. The model's W keeps
+the class of the weights, while every computation runs in double, so
+Prior and the predictions are double where MATLAB returns single.
 
 Surrogate splits and the 'twoing' split criterion are not
 implemented, and an option asking for one of them is refused rather than
@@ -48252,7 +48324,7 @@ fitrensemble
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3461
+# length: 3623
 statistics: Mdl = fitrensemble (X, Y)
 statistics: Mdl = fitrensemble (Tbl, ResponseVarName)
 statistics: Mdl = fitrensemble (Tbl, formula)
@@ -48306,8 +48378,10 @@ resamples.
 'on', whether LSBoost resamples. Bag always does.
 'NPrint' 'off' (default) or a positive
 integer n, to print a line after every n trees.
-'Weights' A nonnegative vector with one weight per
-observation. The default is uniform.
+'Weights' A nonnegative single or double vector with
+one weight per observation. The default is uniform. The model's W
+keeps the class of the weights, while every computation runs in double, so
+the predictions are double where MATLAB returns single.
 'PredictorNames' A cell array of character vectors
 naming the columns of X.
 'ResponseName' The name of the response variable.
@@ -48355,7 +48429,7 @@ fitrgam
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 7574
+# length: 7728
 statistics: obj = fitrgam (X, Y)
 statistics: obj = fitrgam (Tbl, ResponseVarName)
 statistics: obj = fitrgam (Tbl, formula)
@@ -48494,8 +48568,10 @@ empty. The default is none.
 A predictor may be named rather than indexed, as a character matrix of one
 padded name per row, a string array or a cellstr; a name must match an entry
 of 'PredictorNames' exactly, its case included.
-'Weights' A numeric vector of non-negative observation
-weights, one per row of X. Only their proportions matter.
+'Weights' A single or double vector of non-negative
+observation weights, one per row of X. Only their proportions matter.
+The model's W keeps the class of the weights, while every computation
+runs in double, so the predictions are double where MATLAB returns single.
 
 You can parse either a 'formula' or an 'interactions'
 optional parameter. Parsing both parameters will result an error.
@@ -48690,7 +48766,7 @@ fitrnet
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5601
+# length: 6064
 statistics: Mdl = fitrnet (X, Y)
 statistics: Mdl = fitrnet (Tbl, ResponseVarName)
 statistics: Mdl = fitrnet (Tbl, formula)
@@ -48789,6 +48865,13 @@ Under 'sgd' this counts epochs, under
 'lbfgs' solver iterations.
 'DisplayInfo' A logical scalar indicating whether to
 print information during training. Default is false.
+'Weights' A nonnegative single or double vector of
+observation weights, one per row of X. The network is trained on the
+loss weighted by them, standardization and the prediction for a row missing
+a predictor weigh the observations the same way, and a row of zero or
+missing weight is left out. The model's W keeps the class of the
+weights, while every computation runs in double, so the predictions are
+double where MATLAB returns single. The default is uniform.
 
 The weights of each layer are drawn from a uniform range whose half-width
 is set by that layer's activation, and the scheme cannot be chosen: a
@@ -48827,7 +48910,7 @@ fitrsvm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3669
+# length: 4088
 statistics: Mdl = fitrsvm (X, Y)
 statistics: Mdl = fitrsvm (Tbl, ResponseVarName)
 statistics: Mdl = fitrsvm (Tbl, formula)
@@ -48885,6 +48968,13 @@ estimate of a tenth of the response's standard deviation, which is what
 MATLAB uses; where that is zero it falls back to 0.1.
 'BoxConstraint' A positive scalar bounding the dual
 coefficients, the cost of an error outside the tube. The default is 1.
+'Weights' A nonnegative single or double vector of
+observation weights, one per row of X. An observation's box
+constraint is n times BoxConstraint times its weight, the
+weights scaled to sum to one; standardization uses weighted means and
+standard deviations, and a row of zero or missing weight is left out. The
+model's W keeps the class of the weights, while every computation
+runs in double. The default is uniform.
 'KernelFunction' A character vector naming the kernel,
 one of 'linear', the default, 'rbf', 'gaussian',
 'polynomial' or 'sigmoid'.
@@ -48933,7 +49023,7 @@ fitrtree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4463
+# length: 4617
 statistics: Mdl = fitrtree (X, Y)
 statistics: Mdl = fitrtree (Tbl, ResponseVarName)
 statistics: Mdl = fitrtree (Tbl, formula)
@@ -49023,8 +49113,10 @@ transform to apply to the predicted response, or a function handle. The
 default is 'none'.
 'SplitCriterion' 'mse', the only criterion a
 regression tree has.
-'Weights' A nonnegative numeric vector with one element
-per observation. The default is uniform.
+'Weights' A nonnegative single or double vector with one
+element per observation. The default is uniform. The model's W keeps
+the class of the weights, while every computation runs in double, so the
+predictions are double where MATLAB returns single.
 
 Surrogate splits are not implemented, and an option asking for them is
 refused rather than quietly ignored.

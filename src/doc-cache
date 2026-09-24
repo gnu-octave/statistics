@@ -101,9 +101,10 @@ fcnntrain
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3967
+# length: 4494
 statistics: Mdl = fcnntrain (X, Y, LayerSizes, Activations, OutputLayerActivation, NumThreads, LearningRate, Epochs, DisplayInfo)
 statistics: Mdl = fcnntrain (..., LossFunction)
+statistics: Mdl = fcnntrain (..., LossFunction, SolverOptions)
 Train a fully connected Neural Network.
 
 Mdl = fcnntrain (...) requires the following input arguments.
@@ -129,6 +130,8 @@ Epochs : A positive scalar value defining the number of epochs for training the 
 DisplayInfo : A boolean scalar indicating whether to print information during training.
 
 Mdl = fcnntrain (..., LossFunction) also selects the loss the network is trained against. LossFunction is a scalar: 0 for mean squared error over a one-hot target, which is the default, 1 for cross entropy, and 2 for mean squared error over a continuous response. Cross entropy expects the output layer to report a probability over the classes, so it belongs with a softmax output; paired that way the two gradients compose to y - t. Its loss is undefined where the predicted probability of the true class is zero, so both the logarithm and its derivative are floored. Code 2 is regression: Y holds response values rather than labels, the output layer belongs with the identity activation, and the returned model carries no Accuracy field, there being no labels to count.
+
+Mdl = fcnntrain (..., LossFunction, SolverOptions) also takes a scalar structure setting the solver. Its Solver field is 'sgd', the epoch loop and the default, or 'lbfgs', whose GradientTolerance, LossTolerance, StepTolerance and HistorySize fields tune it. Its Weights field holds one nonnegative weight per row of X; they are scaled to sum to one and the loss becomes the weighted mean over the observations, while without it every observation weighs the same.
 
 fcnntrain returns the trained model, Mdl, as a structure containing the following fields:
 

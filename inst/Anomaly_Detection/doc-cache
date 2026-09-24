@@ -72,7 +72,7 @@ IsolationForest.IsolationForest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1231
+# length: 1408
 IsolationForest: Mdl = IsolationForest (X)
 IsolationForest: Mdl = IsolationForest (..., name, value)
 Fit an isolation forest.
@@ -80,7 +80,9 @@ Fit an isolation forest.
 Mdl = IsolationForest (X) fits an isolation forest to
 the N-by-P matrix X, whose rows are observations and
 columns are variables, and returns a IsolationForest object
-Mdl.
+Mdl. X must have at least 3 observations, the smallest
+subsample MATLAB accepts too; MATLAB takes fewer by default and returns
+a model that cannot tell one observation from another.
 
 Mdl = IsolationForest (..., name, value)
 takes the following Name-Value pairs.
@@ -731,7 +733,7 @@ iforest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1937
+# length: 2114
 statistics: Mdl = iforest (X)
 statistics: [Mdl, tf] = iforest (X)
 statistics: [Mdl, tf, scores] = iforest (X)
@@ -741,6 +743,9 @@ Detect anomalies with an isolation forest.
 Mdl = iforest (X) fits an isolation forest to the
 N-by-P matrix X, whose rows are observations and columns
 are variables, and returns an IsolationForest object Mdl.
+X must have at least 3 observations, the smallest subsample MATLAB
+accepts too; MATLAB takes fewer by default and returns a model that cannot
+tell one observation from another.
 
 [Mdl, tf, scores] = iforest (X) also returns
 the N-by-1 logical vector tf flagging the anomalous observations

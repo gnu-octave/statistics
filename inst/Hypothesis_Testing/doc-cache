@@ -842,7 +842,7 @@ anova2
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2151
+# length: 2212
 statistics: p = anova2 (x, reps)
 statistics: p = anova2 (x, reps, displayopt)
 statistics: p = anova2 (x, reps, displayopt, model)
@@ -857,7 +857,8 @@ fourth:
 
 x contains the data and it must be a matrix of at least two columns and
 two rows. NaN values are not accepted, since anova2 requires a
-balanced design; use anovan for data with missing observations.
+balanced design; use anovan for data with missing observations. An
+empty x is an error, whereas MATLAB returns NaN p-values.
 
 reps is the number of replicates for each combination of factor groups.
 

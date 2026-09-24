@@ -13,7 +13,7 @@ ff2n
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 410
+# length: 586
 statistics: dFF2 = ff2n (n)
 Two-level full factorial design.
 
@@ -22,6 +22,10 @@ full factorial design with n factors. dFF2 is m-by-n, where m is the
 number of treatments in the full-factorial design. Each row of dFF2
 corresponds to a single treatment. Each column contains the settings for a
 single factor, with values of 0 and 1 for the two levels.
+
+n must be a non-negative integer scalar. ff2n (0) returns a
+1-by-0 matrix, a single treatment with no factors. An empty n is an
+error, whereas MATLAB returns an empty matrix.
 
 See also:
 fullfact
