@@ -22,11 +22,11 @@ libsvmread.oct: libsvmread.cc
 libsvmwrite.oct: libsvmwrite.cc
 	$(MKOCTFILE) libsvmwrite.cc
 
-svmpredict.oct: svmpredict.cc svm.cpp svm_model_octave.cc
-	$(MKOCTFILE) svmpredict.cc svm.cpp svm_model_octave.cc
+svmpredict.oct: svmpredict.cc svm.cpp svm_model_octave.cpp
+	$(MKOCTFILE) svmpredict.cc svm.cpp svm_model_octave.cpp
 
-svmtrain.oct: svmtrain.cc svm.cpp svm_model_octave.cc
-	$(MKOCTFILE) svmtrain.cc svm.cpp svm_model_octave.cc
+svmtrain.oct: svmtrain.cc svm.cpp svm_model_octave.cpp
+	$(MKOCTFILE) svmtrain.cc svm.cpp svm_model_octave.cpp
 
 # fcnn.cpp is #included by both, so it is a prerequisite of both: without it
 # an edit to the network code leaves the oct-files stale and the build silent.
