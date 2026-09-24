@@ -41,8 +41,7 @@
 ## @end itemize
 ##
 ## For any data types that do not support missing values, @code{rmmissing}
-## returns @code{@var{R} == @var{A}} and if a second output argument is
-## requested it also returns @code{@var{TF} = false (size (@var{A}))}.
+## returns @code{@var{R} == @var{A}} and an all-false @var{TF}.
 ##
 ## Given an input matrix (2-D array) @var{A}, @code{@var{R} = rmmissing
 ## (@var{A}, @var{dim})} further specifies whether rows or columns containing
@@ -62,10 +61,11 @@
 ##
 ## @multitable @columnfractions 0.2 0.75
 ## @headitem Name @tab Value
-## @item @qcode{'MinNumMissing'} @tab A positive integer scalar value
+## @item @qcode{'MinNumMissing'} @tab A non-negative integer scalar value
 ## specifying the required minimum number of missing values for removing any
-## particular row or column from a matrix input.  Note that this argument is
-## ignored if input @var{A} is a vector.
+## particular row or column from a matrix input, or element from a vector
+## input (default 1).  With 0, everything is removed; above 1, nothing is
+## removed from a vector, whose elements are each missing at most once.
 ##
 ## @item @qcode{'MissingLocations'} @tab A logical array of the same size
 ## as input @var{A} indexing the locations of missing values in input array
@@ -75,6 +75,8 @@
 ##
 ## Optional return value @var{TF} is a logical array where @code{true} values
 ## represent removed entries, rows or columns from the original data @var{A}.
+## It has one element per element of a vector, and one per row or column of a
+## matrix, an empty @var{A} included.
 ##
 ## @seealso{fillmissing, ismissing, standardizeMissing}
 ## @end deftypefn
@@ -97,8 +99,8 @@ function [R, TF] = rmmissing (A, varargin)
 
   ## Validate optional Name-Value paired arguments
   if (! (isscalar (MinNumMissing) && isnumeric (MinNumMissing) &&
-         MinNumMissing > 0 && fix (MinNumMissing) == MinNumMissing))
-    error ("rmmissing: 'MinNumMissing' must be a positive integer value.");
+         MinNumMissing >= 0 && fix (MinNumMissing) == MinNumMissing))
+    error ("rmmissing: 'MinNumMissing' must be a non-negative integer value.");
   endif
   if (! isempty (MissingLocations))
     if (! (islogical (MissingLocations) &&
@@ -126,12 +128,6 @@ function [R, TF] = rmmissing (A, varargin)
     error ("rmmissing: too many input arguments.");
   endif
 
-  if (isempty (A))
-    R = A;
-    TF = false (size (A));
-    return;
-  endif
-
   ## Get missing values
   if (isempty (MissingLocations))
     TF = ismissing (A);
@@ -141,17 +137,12 @@ function [R, TF] = rmmissing (A, varargin)
 
   ## Remove missing values
   if (isvector (A))
-    R = A(TF == 0); # MinNumMissing does not matter here
+    TF = TF >= MinNumMissing;
+    R = A(! TF);
   else
     ## matrix: ismissing returns an array, so it must be converted
     ## to a row or column vector according to the "dim" of choice
-    if (MinNumMissing > 1)
-      TF = sum (TF, dim);
-      TF(TF < MinNumMissing) = 0; # true only if at least MinNumMissing
-      TF = logical (TF);
-    else
-      TF = any (TF, dim);
-    endif
+    TF = sum (TF, dim) >= MinNumMissing;
 
     if (dim == 2)
       ## remove the rows
@@ -172,6 +163,10 @@ endfunction
 %!assert_equal (rmmissing ([1, 2; NaN, 2]), [1, 2])
 %!assert_equal (rmmissing ([1, 2; NaN, 2], 2), [2, 2]')
 %!assert_equal (rmmissing ([1, 2; NaN, 4; NaN, NaN],'MinNumMissing', 2), [1, 2; NaN, 4])
+%!assert_equal (rmmissing ([1, NaN, 3], 'MinNumMissing', 0), zeros (1, 0))
+%!assert_equal (rmmissing ([1, NaN, 3], 'MinNumMissing', 2), [1, NaN, 3])
+%!assert_equal (rmmissing ([1, NaN; 3, 4], 'MinNumMissing', 0), zeros (0, 2))
+%!assert_equal (rmmissing ([1, NaN; 3, 4], 2, 'MinNumMissing', 0), zeros (2, 0))
 
 ## Test second output
 %!test
@@ -217,23 +212,45 @@ endfunction
 %!error rmmissing ()
 %!error <rmmissing: A must be a matrix; no more than 2 dimensions allowed.> ...
 %!       rmmissing (ones (2, 2, 2))
-%!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...
-%!       rmmissing (ones (2, 2), 'MinNumMissing', 0)
-%!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...
+%!error <rmmissing: 'MinNumMissing' must be a non-negative integer value.> ...
 %!       rmmissing ([1, 2; 3, 4], 2, 'MinNumMissing', -2)
-%!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...
+%!error <rmmissing: 'MinNumMissing' must be a non-negative integer value.> ...
 %!       rmmissing ([1, 2; 3, 4], 'MinNumMissing', 3.8)
-%!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...
+%!error <rmmissing: 'MinNumMissing' must be a non-negative integer value.> ...
 %!       rmmissing ([1, 2; 3, 4], 'MinNumMissing', [1, 2, 3])
-%!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...
+%!error <rmmissing: 'MinNumMissing' must be a non-negative integer value.> ...
 %!       rmmissing ([1, 2; 3, 4], 'MinNumMissing', 'xxx')
 %!error <rmmissing: 'MissingLocations' must be a logical matrix of the same size as input A.> ...
 %!       rmmissing ([1, 2; 3, 4], 'MissingLocations', false ([1, 1, 1]))
 %!error <rmmissing: specified DIM must be either 1 or 2.> rmmissing ([1, 2; 3, 4], 5)
 %!error <rmmissing: too many input arguments.> rmmissing ([1, 2; 3, 4], 'XXX', 1)
-%!error <rmmissing: 'MinNumMissing' must be a positive integer value.>
+%!error <rmmissing: 'MinNumMissing' must be a non-negative integer value.>
 %!       rmmissing ([], 'MinNumMissing', -2)
 %!error <rmmissing: specified DIM must be either 1 or 2.>
 %!       rmmissing ([], 5)
 %!error <rmmissing: 'MissingLocations' must be a logical matrix of the same size as input A.>
 %!       rmmissing ([], 'MissingLocations', true)
+%!test
+%! [R, TF] = rmmissing ([]);
+%! assert_equal (R, []);
+%! assert_equal (TF, false (0, 1));
+%!test
+%! [R, TF] = rmmissing (zeros (0, 3));
+%! assert_equal (R, zeros (0, 3));
+%! assert_equal (TF, false (0, 1));
+%!test
+%! [R, TF] = rmmissing (zeros (0, 3), 2);
+%! assert_equal (R, zeros (0, 3));
+%! assert_equal (TF, false (1, 3));
+%!test
+%! [R, TF] = rmmissing (zeros (3, 0));
+%! assert_equal (R, zeros (3, 0));
+%! assert_equal (TF, false (3, 1));
+%!test
+%! [R, TF] = rmmissing (zeros (1, 0));
+%! assert_equal (R, zeros (1, 0));
+%! assert_equal (TF, false (1, 0));
+%!test
+%! [R, TF] = rmmissing (cell (0, 2));
+%! assert_equal (R, cell (0, 2));
+%! assert_equal (TF, false (0, 1));
