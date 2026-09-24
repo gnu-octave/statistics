@@ -80,9 +80,10 @@ classdef ClassificationEnsemble < PredictiveModel
     ##
     ## Observation weights
     ##
-    ## The weights given, scaled so that the observations of each class sum
-    ## to its prior probability.  A cost matrix is not folded into them.
-    ## This property is read-only.
+    ## The weights given, scaled so that the observations of each class sum to
+    ## its prior probability.  A cost matrix is not folded into them.  It has
+    ## the class of the @qcode{'Weights'} given, single or double.  This
+    ## property is read-only.
     ##
     ## @end deftp
     W = [];
@@ -739,8 +740,10 @@ classdef ClassificationEnsemble < PredictiveModel
       if (! isempty (errmsg))
         error ("%s: %s", caller, errmsg);
       endif
-      this.W = priorNormalize (F.Weights, this.gY, this.Prior);
-      this.W /= sum (this.W);
+      ## The weights keep their class in the model; every computation runs on
+      ## them as double.
+      W = priorNormalize (F.Weights, this.gY, this.Prior);
+      this.W = cast (W / sum (W), F.WeightsClass);
       [~, this.DefaultIndex] = max (this.Prior);
       if (issub)
         ## The nearest neighbour and discriminant learners take no weights,
@@ -1178,7 +1181,7 @@ classdef ClassificationEnsemble < PredictiveModel
       if (isempty (this.State) && ! any (strcmp (this.Method, ...
                                                  {'Bag', 'Subspace'})))
         csum = sum (this.Cost, 2);
-        d0 = this.W .* csum(g);
+        d0 = double (this.W) .* csum(g);
         d0 /= sum (d0);
         switch (this.Method)
           case 'AdaBoostM2'
@@ -1504,11 +1507,12 @@ classdef ClassificationEnsemble < PredictiveModel
           case 'Bag'
             m = ceil (this.BagFResample * n);
             if (this.BagReplace)
-              cw = [0; cumsum(this.W)];
+              cw = [0; cumsum(double (this.W))];
               cw /= cw(end);
               idx = lookup (cw, rand (m, 1));
             else
-              [~, order] = sort (rand (n, 1) .^ (1 ./ this.W), 'descend');
+              [~, order] = sort (rand (n, 1) .^ (1 ./ double (this.W)), ...
+                                 'descend');
               idx = order(1:m);
             endif
             present = labelsFromIndex (this.ClassNames, unique (g(idx)));
@@ -2001,3 +2005,27 @@ endfunction
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <ClassificationEnsemble: 'Weights' must be a real vector of class single or double.> ...
+%! fitcensemble (ones (4, 2), [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))
+%!error <ClassificationEnsemble: 'Weights' must be a real vector of class single or double.> ...
+%! fitcensemble (ones (4, 2), [1; 1; 2; 2], 'Weights', true (4, 1))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = fitcensemble (meas, species, 'Weights', single (w), ...
+%!                     'NumLearningCycles', 10);
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Single weights compute as double
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! A = fitcensemble (meas, species, 'Weights', single (w), ...
+%!                   'NumLearningCycles', 10);
+%! B = fitcensemble (meas, species, 'Weights', double (single (w)), ...
+%!                   'NumLearningCycles', 10);
+%! assert_equal (nthargout (2, @predict, A, meas), nthargout (2, @predict, ...
+%!               B, meas));

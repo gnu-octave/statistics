@@ -990,6 +990,10 @@ classdef CompactClassificationTree < PredictiveModel
         error ("CompactClassificationTree.loss: invalid loss function.");
       endif
       LossFun = tolower (LossFun);
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("CompactClassificationTree.loss: %s", errmsg);
+      endif
       if (! isempty (Weights) && ! (isnumeric (Weights) && isvector (Weights)))
         error ("CompactClassificationTree.loss: invalid 'Weights'.");
       endif
@@ -1010,7 +1014,7 @@ classdef CompactClassificationTree < PredictiveModel
       if (isempty (Weights))
         w = ones (numel (gY), 1);
       else
-        w = Weights(:);
+        w = double (Weights(:));
         if (numel (w) != numel (gY))
           error (strcat ("CompactClassificationTree.loss: 'Weights' must", ...
                          " have one element per observation."));
@@ -1431,3 +1435,9 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <CompactClassificationTree.loss: 'Weights' must be a real vector of class single or double.> ...
+%! loss (compact (fitctree (ones (4, 2), [1; 1; 2; 2])), ones (4, 2), ...
+%!       [1; 1; 2; 2], ...
+%!       'Weights', int8 ([1; 1; 1; 1]))

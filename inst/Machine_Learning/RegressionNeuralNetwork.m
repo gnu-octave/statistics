@@ -1165,6 +1165,10 @@ classdef RegressionNeuralNetwork < PredictiveModel
       if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
         error ("RegressionNeuralNetwork.loss: unsupported 'LossFun' value.");
       endif
+      errmsg = weightsClass (W);
+      if (! isempty (errmsg))
+        error ("RegressionNeuralNetwork.loss: %s", errmsg);
+      endif
       if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
         error (strcat ("RegressionNeuralNetwork.loss: 'Weights' must be a", ...
                        " numeric vector."));
@@ -1184,7 +1188,8 @@ classdef RegressionNeuralNetwork < PredictiveModel
 
       ## Weights are normalized to sum to one, as MATLAB does, so a loss is
       ## a weighted average rather than a weighted sum.
-      W = W(:) / sum (W);
+      W = double (W(:));
+      W = W / sum (W);
       yFit = predict (this, X);
       Y = Y(:);
 
@@ -2028,8 +2033,10 @@ endfunction
 %! loss (RNNMdl, [1; 2], [2; 4], 'LossFun', 'mae')
 %!error<RegressionNeuralNetwork.loss: 'LossFun' must return a numeric scalar.> ...
 %! loss (RNNMdl, [1; 2], [2; 4], 'LossFun', @(y, yf, w) [1, 2])
-%!error<RegressionNeuralNetwork.loss: 'Weights' must be a numeric vector.> ...
+%!error<RegressionNeuralNetwork.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (RNNMdl, [1; 2], [2; 4], 'Weights', {'a'})
+%!error<RegressionNeuralNetwork.loss: 'Weights' must be a numeric vector.> ...
+%! loss (RNNMdl, [1; 2], [2; 4], 'Weights', ones (2, 2))
 %!error<RegressionNeuralNetwork.loss: size of 'Weights' must equal the number of rows in X.> ...
 %! loss (RNNMdl, [1; 2], [2; 4], 'Weights', [1; 2; 3])
 %!error<RegressionNeuralNetwork.loss: invalid optional paired argument.> ...

@@ -373,7 +373,8 @@ classdef ClassificationLinear < PredictiveModel
     ## @item @qcode{'ScoreTransform'} @tab A transformation applied to the
     ## scores, named or given as a function handle.
     ##
-    ## @item @qcode{'Weights'} @tab One nonnegative weight per observation.
+    ## @item @qcode{'Weights'} @tab One nonnegative weight per observation, as a
+    ## single or double vector.  Every computation runs in double.
     ##
     ## @item @qcode{'PredictorNames'} @tab One name per predictor.
     ##
@@ -631,6 +632,10 @@ classdef ClassificationLinear < PredictiveModel
         error (strcat ("ClassificationLinear: 'Prior' must be", ...
                        " 'empirical', 'uniform', a vector of", ...
                        " nonnegative values, or a structure."));
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationLinear: %s", errmsg);
       endif
       if (! isempty (Weights) &&
           ! (isnumeric (Weights) && isreal (Weights)
@@ -1121,6 +1126,10 @@ classdef ClassificationLinear < PredictiveModel
                        " 'logit', 'mincost', or 'quadratic'."));
       endif
       LossFun = lower (LossFun);
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationLinear.loss: %s", errmsg);
+      endif
       if (! isempty (Weights) &&
           ! (isnumeric (Weights) && isreal (Weights)
              && isvector (Weights) && all (Weights >= 0)))
@@ -1143,7 +1152,7 @@ classdef ClassificationLinear < PredictiveModel
       if (isempty (Weights))
         w = ones (numel (gY), 1);
       else
-        w = Weights(:);
+        w = double (Weights(:));
         if (numel (w) != numel (gY))
           error (strcat ("ClassificationLinear.loss: 'Weights' must", ...
                          " have one element per observation."));
@@ -2110,3 +2119,23 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <ClassificationLinear: 'Weights' must be a real vector of class single or double.> ...
+%! fitclinear ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ...
+%!             int8 ([1; 1; 1; 1]))
+%!error <ClassificationLinear: 'Weights' must be a real vector of class single or double.> ...
+%! fitclinear ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', true (4, 1))
+%!error <ClassificationLinear.loss: 'Weights' must be a real vector of class single or double.>
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! Y = [1; 1; 2; 2];
+%! loss (fitclinear (X, Y), X, Y, 'Weights', int8 ([1; 1; 1; 1]))
+%!test
+%! ## Single weights compute as double
+%! load fisheriris
+%! X = meas(51:end,:);
+%! Y = species(51:end);
+%! w = 1 + (1:100)' / 7;
+%! A = fitclinear (X, Y, 'Weights', single (w));
+%! B = fitclinear (X, Y, 'Weights', double (single (w)));
+%! assert_equal (nthargout (2, @predict, A, X), nthargout (2, @predict, B, X));

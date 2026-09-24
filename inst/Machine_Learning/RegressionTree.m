@@ -119,7 +119,8 @@ classdef RegressionTree < PredictiveModel
     ## Observation weights
     ##
     ## A numeric column vector of the weights the fit used, one per retained
-    ## observation.  They are the weights given, scaled to sum to one.  This
+    ## observation.  They are the weights given, scaled to sum to one.  It has
+    ## the class of the @qcode{'Weights'} given, single or double.  This
     ## property is read-only.
     ##
     ## @end deftp
@@ -634,8 +635,10 @@ classdef RegressionTree < PredictiveModel
     ## @item @qcode{'SplitCriterion'} @tab @qcode{'mse'}, the only criterion
     ## a regression tree has.
     ##
-    ## @item @qcode{'Weights'} @tab A nonnegative numeric vector with one
-    ## element per observation.  The default is uniform.
+    ## @item @qcode{'Weights'} @tab A nonnegative single or double vector with
+    ## one element per observation.  The default is uniform.  The model's
+    ## @code{W} keeps the class of the weights, while every computation runs in
+    ## double, so the predictions are double where MATLAB returns single.
     ##
     ## @end multitable
     ##
@@ -701,6 +704,10 @@ classdef RegressionTree < PredictiveModel
         error ("RegressionTree: 'ResponseName' must be a character vector.");
       endif
       this.ResponseTransform = ResponseTransform;
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionTree: %s", errmsg);
+      endif
       if (! isempty (Weights) &&
           ! (isnumeric (Weights) && isvector (Weights)
              && isreal (Weights)))
@@ -838,13 +845,17 @@ classdef RegressionTree < PredictiveModel
       if (isempty (Weights))
         RawWeights = ones (this.NumObservations, 1);
       else
-        RawWeights = double (Weights(:));
+        RawWeights = Weights(:);
       endif
+      ## The weights keep their class in the model; every computation runs on
+      ## them as double.
       this.RawWeights = RawWeights;
+      RawWeights = double (RawWeights);
 
       ## A regression carries no prior, so the weights are simply scaled to
       ## sum to one, which is the W MATLAB reports.
-      this.W = RawWeights / sum (RawWeights);
+      W = RawWeights / sum (RawWeights);
+      this.W = cast (W, class (this.RawWeights));
 
       if (isempty (MaxNumSplits))
         MaxNumSplits = max (this.NumObservations - 1, 0);
@@ -879,7 +890,7 @@ classdef RegressionTree < PredictiveModel
         opts.MaxNumCategories = MaxNumCat;
       endif
 
-      T = treetrain (X, this.Y, this.W, opts);
+      T = treetrain (X, this.Y, W, opts);
 
       ## The node table the engine returns
       this.NumNodes = T.NumNodes;
@@ -1367,7 +1378,7 @@ classdef RegressionTree < PredictiveModel
       endfor
 
       ## The loss is weighed by the model's own weights, which sum to one.
-      W = this.W(:);
+      W = double (this.W(:));
       E = W' * L;
 
       ## The standard error over the folds, each fold's loss being its
@@ -1636,6 +1647,10 @@ classdef RegressionTree < PredictiveModel
       endif
       if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
         error ("RegressionTree.loss: unsupported 'LossFun' value.");
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionTree.loss: %s", errmsg);
       endif
       if (! isempty (Weights) &&
           ! (isnumeric (Weights) && isvector (Weights) && isreal (Weights)))
@@ -2310,8 +2325,10 @@ endclassdef
 %! RegressionTree (ones (4, 2), (1:4)', 'ResponseTransform', 5)
 %!error<RegressionTree: unrecognized 'ResponseTransform' function.>
 %! RegressionTree (ones (4, 2), (1:4)', 'ResponseTransform', 'bogus')
-%!error<RegressionTree: 'Weights' must be a real numeric vector.>
+%!error<RegressionTree: 'Weights' must be a real vector of class single or double.>
 %! RegressionTree (ones (4, 2), (1:4)', 'Weights', 'a')
+%!error<RegressionTree: 'Weights' must be a real numeric vector.>
+%! RegressionTree (ones (4, 2), (1:4)', 'Weights', ones (2, 2))
 %!error<RegressionTree: 'Weights' must have one element per row in X.>
 %! RegressionTree (ones (4, 2), (1:4)', 'Weights', [1, 2, 3])
 %!error<RegressionTree: 'Weights' must be nonnegative and must not be all zero.>
@@ -2361,9 +2378,12 @@ endclassdef
 %!error<RegressionTree.loss: 'LossFun' must return a numeric scalar.>
 %! loss (RegressionTree (ones (4, 2), (1:4)'), ones (4, 2), (1:4)', ...
 %!       'LossFun', @(y, f, w) [1, 2])
-%!error<RegressionTree.loss: 'Weights' must be a real numeric vector.>
+%!error<RegressionTree.loss: 'Weights' must be a real vector of class single or double.>
 %! loss (RegressionTree (ones (4, 2), (1:4)'), ones (4, 2), (1:4)', ...
 %!       'Weights', 'a')
+%!error<RegressionTree.loss: 'Weights' must be a real numeric vector.>
+%! loss (RegressionTree (ones (4, 2), (1:4)'), ones (4, 2), (1:4)', ...
+%!       'Weights', ones (2, 2))
 %!error<RegressionTree.loss: 'Weights' must have one element per observation.>
 %! loss (RegressionTree (ones (4, 2), (1:4)'), ones (4, 2), (1:4)', ...
 %!       'Weights', [1, 2])
@@ -2551,3 +2571,28 @@ endclassdef
 %! loss (lrtM, lrtT, 'NoSuch')
 %!error<RegressionTree.loss: the table holds no variable 'SL'.> ...
 %! loss (lrtM, lrtT(:,1:2))
+
+## Observation weights of class single or double
+%!error <RegressionTree: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionTree ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', ...
+%!                 int8 ([1; 1; 1; 1]))
+%!error <RegressionTree: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionTree ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', true (4, 1))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! X = meas(:,2:4);
+%! y = meas(:,1);
+%! w = 1 + (1:150)' / 7;
+%! Mdl = RegressionTree (X, y, 'Weights', single (w));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Single weights compute as double
+%! load fisheriris
+%! X = meas(:,2:4);
+%! y = meas(:,1);
+%! w = 1 + (1:150)' / 7;
+%! A = RegressionTree (X, y, 'Weights', single (w));
+%! B = RegressionTree (X, y, 'Weights', double (single (w)));
+%! assert_equal (predict (A, X), predict (B, X));

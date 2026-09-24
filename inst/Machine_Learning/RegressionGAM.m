@@ -157,9 +157,10 @@ classdef RegressionGAM < PredictiveModel
     ##
     ## Observation weights
     ##
-    ## A numeric column vector with one entry per observation used for
-    ## training, the @qcode{'Weights'} normalised to sum to one, and equal
-    ## when none were given.  This property is read-only.
+    ## A numeric column vector with one entry per observation used for training,
+    ## the @qcode{'Weights'} normalised to sum to one, and equal when none were
+    ## given.  It has the class of the @qcode{'Weights'} given, single or
+    ## double.  This property is read-only.
     ##
     ## @end deftp
     W                     = [];
@@ -763,6 +764,10 @@ classdef RegressionGAM < PredictiveModel
                        " 'InitialLearnRateForInteractions' must be", ...
                        " greater than 0 and at most 1."));
       endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionGAM: %s", errmsg);
+      endif
       if (! isempty (Weights) &&
           ! (isnumeric (Weights) && isreal (Weights)
              && isvector (Weights)))
@@ -1015,7 +1020,9 @@ classdef RegressionGAM < PredictiveModel
       this.ExpandedPredictorNames = PredictorNames;
       ## The weights over their sum, as MATLAB reports them; the boosted fit
       ## sees them on the rows it is fitted to.
-      this.W = Wret / sum (Wret);
+      ## The weights keep their class in the model; every computation runs on
+      ## them as double.
+      this.W = cast (double (Wret) / sum (double (Wret)), class (Wret));
       this.IsStandardDeviationFit = false;
 
       this.FitMethod = FitMethod;
@@ -1173,7 +1180,8 @@ classdef RegressionGAM < PredictiveModel
           I = gamboostinter (Xfit, Yfit, f, 2, pairs, ...
                              MP.NumTreesPerInteraction, ...
                              MP.InitialLearnRateForInteractions, ...
-                             MP.MaxNumSplitsPerInteraction, this.W(cobs), cat);
+                             MP.MaxNumSplitsPerInteraction, ...
+                             double (this.W(cobs)), cat);
           ## A pair tree splitting on one predictor alone is a main effect and
           ## adds nothing, so a fit made only of such trees keeps no pair, as
           ## R2024a keeps none.
@@ -1524,6 +1532,10 @@ classdef RegressionGAM < PredictiveModel
       if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
         error ("RegressionGAM.loss: unsupported 'LossFun' value.");
       endif
+      errmsg = weightsClass (W);
+      if (! isempty (errmsg))
+        error ("RegressionGAM.loss: %s", errmsg);
+      endif
       if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
         error ("RegressionGAM.loss: 'Weights' must be a numeric vector.");
       endif
@@ -1541,7 +1553,8 @@ classdef RegressionGAM < PredictiveModel
 
       ## Weights are normalized to sum to one, as MATLAB does, so a loss is
       ## a weighted average rather than a weighted sum.
-      W = W(:) / sum (W);
+      W = double (W(:));
+      W = W / sum (W);
       yFit = predict (this, X);
       Y = Y(:);
 
@@ -1851,7 +1864,7 @@ classdef RegressionGAM < PredictiveModel
         M = gamboosttrain (X, Y, 2, numTrees, ...
                            MP.InitialLearnRateForPredictors, ...
                            MP.MaxNumSplitsPerPredictor, 0, MP.NumPrint, ...
-                           f(:), this.W(cobs), cat);
+                           f(:), double (this.W(cobs)), cat);
         if (M.NumTrees == 0)
           error (strcat ("RegressionGAM.resume: unable to resume", ...
                          " training because the software was unable to", ...
@@ -1877,7 +1890,8 @@ classdef RegressionGAM < PredictiveModel
                              this.TreeModel.Pairs, PM);
         I = gamboostinter (X, Y, f(:), 2, this.TreeModel.Pairs, numTrees, ...
                            MP.InitialLearnRateForInteractions, ...
-                           MP.MaxNumSplitsPerInteraction, this.W(cobs), cat);
+                           MP.MaxNumSplitsPerInteraction, ...
+                           double (this.W(cobs)), cat);
         if (I.NumTrees == 0)
           error (strcat ("RegressionGAM.resume: unable to resume", ...
                          " training because the software was unable to", ...
@@ -1936,7 +1950,7 @@ classdef RegressionGAM < PredictiveModel
 
       ## Method 2 boosts the squared error, which is what a regression fits,
       ## weighted by W over the rows the fit sees.
-      Wfit = this.W;
+      Wfit = double (this.W);
       [X, ~, cat, Levels] = gamCatCode (this.TreeModel, X);
       M = gamboosttrain (X, Y, 2, NTP, LRP, MSP, Verb, NPrint, [], Wfit, ...
                          cat);
@@ -2794,8 +2808,10 @@ endfunction
 %!error<RegressionGAM: 'categoricalpredictors' is a parameter of the boosted-tree engine and cannot be used with 'FitMethod' 'splines'.> ...
 %! RegressionGAM (ones (10, 2), (1:10)', 'FitMethod', 'splines', ...
 %!                'CategoricalPredictors', 1)
-%!error<RegressionGAM: 'Weights' must be a numeric vector.> ...
+%!error<RegressionGAM: 'Weights' must be a real vector of class single or double.> ...
 %! RegressionGAM (ones (10, 2), (1:10)', 'Weights', 'a')
+%!error<RegressionGAM: 'Weights' must be a numeric vector.> ...
+%! RegressionGAM (ones (10, 2), (1:10)', 'Weights', ones (2, 2))
 %!error<RegressionGAM: 'Weights' must have one element per row of X.> ...
 %! RegressionGAM (ones (10, 2), (1:10)', 'Weights', [1, 2])
 %!error<RegressionGAM: 'Weights' must hold finite non-negative values.> ...
@@ -3397,3 +3413,32 @@ endfunction
 %! assert_equal ([M.Knots, M.Order, M.DoF], [5, 4, 9]);
 %! M = fitrgam (X, Y, 'FitMethod', 'splines', 'Order', 2, 'DoF', 9);
 %! assert_equal ([M.Knots, M.Order, M.DoF], [7, 2, 9]);
+
+## Observation weights of class single or double
+%!error <RegressionGAM: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionGAM ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', ...
+%!                int8 ([1; 1; 1; 1]))
+%!error <RegressionGAM: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionGAM ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', true (4, 1))
+%!error <RegressionGAM.loss: 'Weights' must be a real vector of class single or double.>
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! y = (1:4)';
+%! loss (RegressionGAM (X, y), X, y, 'Weights', int8 ([1; 1; 1; 1]))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! X = meas(:,2:4);
+%! y = meas(:,1);
+%! w = 1 + (1:150)' / 7;
+%! Mdl = RegressionGAM (X, y, 'Weights', single (w));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Single weights compute as double, to the precision of the stored W
+%! load fisheriris
+%! X = meas(:,2:4);
+%! y = meas(:,1);
+%! w = 1 + (1:150)' / 7;
+%! A = RegressionGAM (X, y, 'Weights', single (w));
+%! B = RegressionGAM (X, y, 'Weights', double (single (w)));
+%! assert_equal (predict (A, X), predict (B, X), 1e-8);

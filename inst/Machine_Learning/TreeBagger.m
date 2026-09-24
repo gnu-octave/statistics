@@ -111,7 +111,8 @@ classdef TreeBagger < PredictiveModel
     ## A column of weights summing to one, one per observation.  For
     ## classification each class's weights sum to its prior.  The bootstrap
     ## draws observations in proportion to these weights, and the out-of-bag
-    ## error is weighted by them.  This property is read-only.
+    ## error is weighted by them.  It has the class of the @qcode{'Weights'}
+    ## given, single or double.  This property is read-only.
     ##
     ## @end deftp
     W = [];
@@ -547,8 +548,10 @@ classdef TreeBagger < PredictiveModel
     ## or @qcode{'on'}, to estimate the importance of each predictor by
     ## permuting it among each tree's out-of-bag observations.  It turns
     ## @qcode{'OOBPrediction'} on.
-    ## @item @qcode{'Weights'} @tab @tab A nonnegative vector with one weight
-    ## per observation.  The default is uniform.
+    ## @item @qcode{'Weights'} @tab @tab A nonnegative single or double vector
+    ## with one weight per observation.  The default is uniform.  The model's
+    ## @code{W} keeps the class of the weights, while every computation runs in
+    ## double.
     ## @item @qcode{'Prior'} @tab @tab @qcode{'empirical'} (default),
     ## @qcode{'uniform'}, a vector with one probability per class, or a
     ## structure with fields @qcode{ClassNames} and @qcode{ClassProbs}.
@@ -805,9 +808,17 @@ classdef TreeBagger < PredictiveModel
 
       ## Observation weights, before any row is left out
       N = rows (X);
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("TreeBagger: %s", errmsg);
+      endif
+      ## The weights keep their class in the model; every computation runs on
+      ## them as double.
+      Wclass = "double";
       if (isempty (Weights))
         RawW = ones (N, 1);
       else
+        Wclass = class (Weights);
         if (! (isnumeric (Weights) && isvector (Weights) && isreal (Weights)
                && numel (Weights) == N && all (Weights >= 0)))
           error (strcat ("TreeBagger: 'Weights' must be a nonnegative", ...
@@ -883,7 +894,7 @@ classdef TreeBagger < PredictiveModel
         this.Prior = P / sum (P);
         this.Cost = Cost;
         this.ClassNames = C;
-        this.W = priorNormalize (RawW, gY, this.Prior);
+        this.W = cast (priorNormalize (RawW, gY, this.Prior), Wclass);
         this.gY = gY;
         [~, this.DefaultIndex] = max (this.Prior);
         this.DefaultYfit = labelsFromIndex (C, this.DefaultIndex);
@@ -907,8 +918,8 @@ classdef TreeBagger < PredictiveModel
           error (strcat ("TreeBagger: 'Weights' must not be zero for", ...
                          " every observation used."));
         endif
-        this.W = RawW / sum (RawW);
-        this.DefaultYfit = sum (this.W .* Y);
+        this.W = cast (RawW / sum (RawW), Wclass);
+        this.DefaultYfit = sum (RawW .* Y) / sum (RawW);
 
       endif
 
@@ -1409,10 +1420,11 @@ classdef TreeBagger < PredictiveModel
       if (strcmp (o.mode, 'individual'))
         err = zeros (numel (o.trees), numel (tau));
         for j = 1:numel (o.trees)
-          err(j,:) = pinballLoss (this.Y, q(:,:,j), tau, this.W .* use(:,j));
+          err(j,:) = pinballLoss (this.Y, q(:,:,j), tau, ...
+                                  double (this.W) .* use(:,j));
         endfor
       else
-        err = pinballLoss (this.Y, q, tau, this.W);
+        err = pinballLoss (this.Y, q, tau, double (this.W));
       endif
 
     endfunction
@@ -1666,14 +1678,15 @@ classdef TreeBagger < PredictiveModel
       m = ceil (this.InBagFraction * N);
       isclass = strcmp (this.Method, 'classification');
       if (this.SampleWithReplacement)
-        c = cumsum (this.W);
+        c = cumsum (double (this.W));
         c = [0; c / c(end)];
       endif
       for t = 1:n
         if (this.SampleWithReplacement)
           idx = lookup (c, rand (m, 1));
         else
-          [~, order] = sort (rand (N, 1) .^ (1 ./ this.W), 'descend');
+          [~, order] = sort (rand (N, 1) .^ (1 ./ double (this.W)), ...
+                             'descend');
           idx = order(1:m);
         endif
         if (isclass)
@@ -1723,7 +1736,7 @@ classdef TreeBagger < PredictiveModel
       p = columns (this.X);
       d = zeros (1, p, 3);
       r = find (oob);
-      w = this.W(r);
+      w = double (this.W(r));
       if (isempty (r) || ! (sum (w) > 0))
         return;
       endif
@@ -2977,3 +2990,22 @@ endfunction
 %! assert_equal (quantilePredict (Mdl, T(:,1:3), 'Quantile', [0.25, 0.75]), a);
 %! assert_equal (quantilePredict (Mdl, T(:,[4, 3, 1, 2]), ...
 %!                                'Quantile', [0.25, 0.75]), a);
+
+## Observation weights of class single or double
+%!error <TreeBagger: 'Weights' must be a real vector of class single or double.> ...
+%! TreeBagger (3, [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!             'Weights', int8 ([1; 1; 1; 1]))
+%!error <TreeBagger: 'Weights' must be a real vector of class single or double.> ...
+%! TreeBagger (3, [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!             'Weights', true (4, 1))
+%!error <'Weights' must be a real vector of class single or double.> ...
+%! error (TreeBagger (3, [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2]), ...
+%!        [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ...
+%!   int8 ([1; 1; 1; 1]))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = TreeBagger (5, meas, species, 'Weights', single (w));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);

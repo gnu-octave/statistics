@@ -884,7 +884,7 @@ classdef RegressionPartitionedModel
       endif
       y = this.Y(idx);
       f = yFit(idx);
-      w = this.W(idx);
+      w = double (this.W(idx));
       w = w(:) / sum (w);
       if (is_function_handle (LossFun))
         L = LossFun (y(:), f(:), w);

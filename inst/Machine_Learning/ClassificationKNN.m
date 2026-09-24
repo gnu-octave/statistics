@@ -50,7 +50,8 @@ classdef ClassificationKNN < PredictiveModel
     ## A numeric column vector with one entry per observation used for fitting.
     ## Each class carries its prior, spread over its own observations in
     ## proportion to the @qcode{'Weights'} given, or evenly when none were.
-    ## Reassigning @qcode{Prior} re-derives it.  This property is read-only.
+    ## Reassigning @qcode{Prior} re-derives it.  It has the class of the
+    ## @qcode{'Weights'} given, single or double.  This property is read-only.
     ##
     ## @end deftp
     W               = [];
@@ -661,7 +662,7 @@ classdef ClassificationKNN < PredictiveModel
           if (isempty (this.RawWeights))
             pr(i) = sum (gY == i);
           else
-            pr(i) = sum (this.RawWeights(gY == i));
+            pr(i) = sum (double (this.RawWeights(gY == i)));
           endif
         endfor
         this.Prior = pr(:)' ./ sum (pr);
@@ -676,7 +677,8 @@ classdef ClassificationKNN < PredictiveModel
       if (isempty (this.RawWeights))
         this.W = priorWeights (this.Prior, gY, numel (gY));
       else
-        this.W = priorNormalize (this.RawWeights, gY, this.Prior);
+        this.W = cast (priorNormalize (double (this.RawWeights), gY, ...
+                                       this.Prior), class (this.RawWeights));
       endif
     endfunction
 
@@ -922,12 +924,13 @@ classdef ClassificationKNN < PredictiveModel
     ## class probabilities or @qcode{'uniform'} to assume equal class
     ## probabilities.
     ##
-    ## @item @qcode{'Weights'} @tab A numeric vector of nonnegative observation
-    ## weights, one per row of @var{X}.  Each class carries its prior, spread
-    ## over its observations in proportion to their weights, and a neighbour
-    ## votes with that weight.  An empirical prior sums the weights per class,
-    ## standardization uses weighted means and standard deviations, and a row
-    ## of zero weight is left out.
+    ## @item @qcode{'Weights'} @tab A single or double vector of nonnegative
+    ## observation weights, one per row of @var{X}.  Each class carries its
+    ## prior, spread over its observations in proportion to their weights, and a
+    ## neighbour votes with that weight.  An empirical prior sums the weights
+    ## per class, standardization uses weighted means and standard deviations,
+    ## and a row of zero weight is left out.  The model's @code{W} keeps the
+    ## class of the weights, while every computation runs in double.
     ##
     ## @item @qcode{'ScoreTransform'} @tab A user-defined function handle
     ## or a character vector specifying one of the following builtin functions
@@ -1052,6 +1055,10 @@ classdef ClassificationKNN < PredictiveModel
 
           case 'weights'
             Weights = varargin{2};
+            errmsg = weightsClass (Weights);
+            if (! isempty (errmsg))
+              error ("ClassificationKNN: %s", errmsg);
+            endif
             if (! (isnumeric (Weights) && isvector (Weights)
                    && isreal (Weights)))
               error (strcat ("ClassificationKNN: 'Weights' must be a real", ...
@@ -1329,7 +1336,7 @@ classdef ClassificationKNN < PredictiveModel
       if (isempty (Weights))
         this.RawWeights = ones (rows (Xret), 1);
       else
-        this.RawWeights = double (Weights(RowsUsed));
+        this.RawWeights = Weights(RowsUsed);
         this.RawWeights = this.RawWeights(:);
       endif
       cobs      = ! any (isnan (Xret), 2);
@@ -1371,7 +1378,10 @@ classdef ClassificationKNN < PredictiveModel
       ## Each class carries its prior, spread over its own observations in
       ## proportion to their weights.  Every retained row gets one, those
       ## missing a predictor included, so that W lines up with X.
-      this.W = priorNormalize (this.RawWeights, gret, this.Prior);
+      ## The weights keep their class in the model; every computation runs on
+      ## them as double.
+      W = priorNormalize (double (this.RawWeights), gret, this.Prior);
+      this.W = cast (W, class (this.RawWeights));
 
       ## Handle the Standardize option
       if (Standardize)
@@ -1385,7 +1395,7 @@ classdef ClassificationKNN < PredictiveModel
         for j = 1:columns (this.X)
           xj = this.X(:,j);
           ok = ! isnan (xj);
-          wj = this.W(ok) / sum (this.W(ok));
+          wj = W(ok) / sum (W(ok));
           xj = xj(ok);
           this.Mu(j)    = sum (wj .* xj);
           this.Sigma(j) = sqrt (sum (wj .* (xj - this.Mu(j)) .^ 2) ...
@@ -1670,7 +1680,7 @@ classdef ClassificationKNN < PredictiveModel
         ## Each neighbour also votes with its observation weight, W, which
         ## carries the prior: measured on R2024a, this reproduces its scores
         ## with and without weights, under any prior, to 4e-16.
-        w = w .* this.W(NN_idx(:))';
+        w = w .* double (this.W(NN_idx(:)))';
         for c = 1:rows (this.ClassNames)
           freq(c) = sum (w(kNNgY == c));
         endfor
@@ -1875,6 +1885,10 @@ classdef ClassificationKNN < PredictiveModel
                                             'quadratic'}))))
         error ("ClassificationKNN.loss: invalid loss function.");
       endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationKNN.loss: %s", errmsg);
+      endif
       if (! isempty (Weights) && ! (isnumeric (Weights) && isvector (Weights)))
         error ("ClassificationKNN.loss: invalid Weights.");
       endif
@@ -1916,6 +1930,7 @@ classdef ClassificationKNN < PredictiveModel
       if (isempty (Weights))
         Weights = ones (size (X, 1), 1);
       endif
+      Weights = double (Weights(:));
 
       ## Normalize Weights
       K = classCount (classes);
@@ -2770,8 +2785,10 @@ endfunction
 %! assert_equal (numel (margin (Mdl, X, ys)), 100);
 %! assert_equal (edge (Mdl, X, ys), edge (Mdl, X, yc), 1e-15);
 %! assert_equal (loss (fitcknn (X, ys), X, yc), 0.12, 1e-15);
-%!error<ClassificationKNN: 'Weights' must be a real numeric vector.> ...
+%!error<ClassificationKNN: 'Weights' must be a real vector of class single or double.> ...
 %! fitcknn ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', 'a')
+%!error<ClassificationKNN: 'Weights' must be a real numeric vector.> ...
+%! fitcknn ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ones (2, 2))
 %!error<ClassificationKNN: 'Weights' must have one element per row in X.> ...
 %! fitcknn ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', [1, 2])
 %!error<ClassificationKNN: 'Weights' must be nonnegative and must not be all zero.> ...
@@ -3553,9 +3570,12 @@ endfunction
 %!error<ClassificationKNN.loss: invalid optional paired argument.> ...
 %! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ...
 %!        ones (4,1), 'Bogus', 1)
-%!error<ClassificationKNN.loss: invalid Weights.> ...
+%!error<ClassificationKNN.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ...
 %!        ones (4,1), 'Weights', 'w')
+%!error<ClassificationKNN.loss: invalid Weights.> ...
+%! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ...
+%!        ones (4,1), 'Weights', ones (2, 2))
 %!error<ClassificationKNN.loss: size of Weights must be equal to the number of rows in X.> ...
 %! loss (ClassificationKNN (ones (4,2), ones (4,1)), ones (4,2), ...
 %!        ones (4,1), 'Weights', ones (3,1))
@@ -4581,3 +4601,24 @@ endfunction
 %! assert_equal (resubLoss (Mdl, 'LossFun', 'classiferror', 'Weights', w), ...
 %!               loss (Mdl, meas, species, 'LossFun', 'classiferror', ...
 %!                     'Weights', w));
+
+## Observation weights of class single or double
+%!error <ClassificationKNN: 'Weights' must be a real vector of class single or double.> ...
+%! fitcknn (ones (4, 2), [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))
+%!error <ClassificationKNN: 'Weights' must be a real vector of class single or double.> ...
+%! fitcknn (ones (4, 2), [1; 1; 2; 2], 'Weights', true (4, 1))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = fitcknn (meas, species, 'Weights', single (w));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Single weights compute as double
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! A = fitcknn (meas, species, 'Weights', single (w));
+%! B = fitcknn (meas, species, 'Weights', double (single (w)));
+%! assert_equal (nthargout (2, @predict, A, meas), nthargout (2, @predict, ...
+%!               B, meas));

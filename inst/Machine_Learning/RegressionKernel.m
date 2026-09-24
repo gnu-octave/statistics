@@ -340,7 +340,8 @@ classdef RegressionKernel < PredictiveModel
     ## @item @qcode{'ResponseTransform'} @tab A transformation applied to the
     ## predicted response, named or given as a function handle.
     ##
-    ## @item @qcode{'Weights'} @tab One nonnegative weight per observation.
+    ## @item @qcode{'Weights'} @tab One nonnegative weight per observation, as a
+    ## single or double vector.  Every computation runs in double.
     ##
     ## @item @qcode{'PredictorNames'} @tab One name per predictor.
     ##
@@ -474,6 +475,10 @@ classdef RegressionKernel < PredictiveModel
       if (! (isnumeric (Verbose) && isscalar (Verbose) && isreal (Verbose)
              && any (Verbose == [0, 1])))
         error ("RegressionKernel: 'Verbose' must be 0 or 1.");
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionKernel: %s", errmsg);
       endif
       if (! isempty (Weights) && ! (isnumeric (Weights) && isreal (Weights) &&
                                     isvector (Weights) && all (Weights >= 0)))
@@ -775,6 +780,10 @@ classdef RegressionKernel < PredictiveModel
                        " either 'mse' or 'epsiloninsensitive'."));
       endif
       LossFun = lower (LossFun);
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionKernel.loss: %s", errmsg);
+      endif
       if (! isempty (Weights) &&
           ! (isnumeric (Weights) && isreal (Weights)
              && isvector (Weights) && all (Weights >= 0)))
@@ -803,7 +812,7 @@ classdef RegressionKernel < PredictiveModel
       if (isempty (Weights))
         w = ones (numel (Y), 1);
       else
-        w = Weights(:);
+        w = double (Weights(:));
         if (numel (w) != numel (Y))
           error (strcat ("RegressionKernel.loss: 'Weights' must have one", ...
                          " element per observation."));
@@ -870,6 +879,10 @@ classdef RegressionKernel < PredictiveModel
                  parsePairedArguments (optNames, dfValues, varargin(:));
 
       ## Validate optional paired arguments
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionKernel.resume: %s", errmsg);
+      endif
       if (! isempty (Weights) && ! (isnumeric (Weights) && isreal (Weights) &&
                                     isvector (Weights) && all (Weights >= 0)))
         error (strcat ("RegressionKernel.resume: 'Weights' must", ...
@@ -928,7 +941,7 @@ classdef RegressionKernel < PredictiveModel
       if (isempty (Weights))
         W = ones (numel (Y), 1);
       else
-        W = Weights(:);
+        W = double (Weights(:));
         if (numel (W) != numel (Y))
           error (strcat ("RegressionKernel.resume: 'Weights' must have", ...
                          " one element per observation."));
@@ -1403,3 +1416,30 @@ endclassdef
 %! T = table (meas(:,2), meas(:,3), meas(:,1), ...
 %!            'VariableNames', {'SW', 'PL', 'SL'});
 %! resume (fitrkernel (T, 'SL'), T, 'IterationLimit', 5)
+
+## Observation weights of class single or double
+%!error <RegressionKernel: 'Weights' must be a real vector of class single or double.> ...
+%! fitrkernel ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', int8 ([1; 1; 1; 1]))
+%!error <RegressionKernel: 'Weights' must be a real vector of class single or double.> ...
+%! fitrkernel ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', true (4, 1))
+%!error <RegressionKernel.loss: 'Weights' must be a real vector of class single or double.>
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! y = (1:4)';
+%! loss (fitrkernel (X, y), X, y, 'Weights', int8 ([1; 1; 1; 1]))
+%!error <RegressionKernel.resume: 'Weights' must be a real vector of class single or double.>
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! y = (1:4)';
+%! resume (fitrkernel (X, y), X, y, 'Weights', int8 ([1; 1; 1; 1]))
+%!test
+%! ## Single weights compute as double
+%! load fisheriris
+%! X = meas(:,2:4);
+%! y = meas(:,1);
+%! w = 1 + (1:150)' / 7;
+%! rand ('seed', 1);
+%! randn ('seed', 1);
+%! A = fitrkernel (X, y, 'Weights', single (w));
+%! rand ('seed', 1);
+%! randn ('seed', 1);
+%! B = fitrkernel (X, y, 'Weights', double (single (w)));
+%! assert_equal (predict (A, X), predict (B, X));

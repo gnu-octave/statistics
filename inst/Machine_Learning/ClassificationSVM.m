@@ -330,8 +330,8 @@ classdef ClassificationSVM < PredictiveModel
     ## Observation weights
     ##
     ## A numeric column vector with one entry per training observation,
-    ## normalized to sum to one, as MATLAB reports it.  This property is
-    ## read-only.
+    ## normalized to sum to one, as MATLAB reports it.  It has the class of the
+    ## @qcode{'Weights'} given, single or double.  This property is read-only.
     ##
     ## Each class carries its prior, spread over its own observations in
     ## proportion to the @qcode{'Weights'} given, or evenly when none were.
@@ -677,13 +677,14 @@ classdef ClassificationSVM < PredictiveModel
     ## @item @qcode{'KernelOffset'} @tab A non-negative scalar specifying
     ## the kernel offset parameter.  Default is 0.
     ##
-    ## @item @qcode{'Weights'} @tab A numeric vector of nonnegative observation
-    ## weights, one per row of @var{X}.  Each observation's box constraint is
-    ## @math{n} times @qcode{BoxConstraint} times its weight, the weights scaled
-    ## so that each class carries its prior times the cost of misclassifying it.
-    ## An empirical prior sums the weights per class, standardization uses
-    ## weighted means and standard deviations, and a row of zero weight is left
-    ## out.
+    ## @item @qcode{'Weights'} @tab A single or double vector of nonnegative
+    ## observation weights, one per row of @var{X}.  Each observation's box
+    ## constraint is @math{n} times @qcode{BoxConstraint} times its weight, the
+    ## weights scaled so that each class carries its prior times the cost of
+    ## misclassifying it.  An empirical prior sums the weights per class,
+    ## standardization uses weighted means and standard deviations, and a row of
+    ## zero weight is left out.  The model's @code{W} keeps the class of the
+    ## weights, while every computation runs in double.
     ##
     ## @item @qcode{'BoxConstraint'} @tab A positive scalar specifying the
     ## box constraint parameter.  Default is 1.
@@ -749,6 +750,10 @@ classdef ClassificationSVM < PredictiveModel
                  parsePairedArguments (optNames, dfValues, varargin(:));
 
       ## Validate optional paired arguments
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationSVM: %s", errmsg);
+      endif
       if (! isempty (Weights) &&
           ! (isnumeric (Weights) && isvector (Weights)
              && isreal (Weights)))
@@ -912,10 +917,13 @@ classdef ClassificationSVM < PredictiveModel
       if (isempty (Weights))
         RawWeights = ones (rows (Xret), 1);
       else
-        RawWeights = double (Weights(RowsUsed));
+        RawWeights = Weights(RowsUsed);
         RawWeights = RawWeights(:);
       endif
+      ## The weights keep their class in the model; every computation runs on
+      ## them as double.
       this.RawWeights = RawWeights;
+      RawWeights = double (RawWeights);
       wc = RawWeights(cobs);
 
       ## Renew groups in Y over the retained observations, so a class held
@@ -1097,7 +1105,8 @@ classdef ClassificationSVM < PredictiveModel
       if (isempty (this.Coding_))
         this.ExpandedPredictorNames = PredictorNames;
       endif
-      this.W = priorNormalize (RawWeights, gret, this.Prior);
+      this.W = cast (priorNormalize (RawWeights, gret, this.Prior), ...
+                     class (this.RawWeights));
 
       ## Set svmtrain parameters for SVMtype and KernelFunction
       switch (SVMtype)
@@ -1707,6 +1716,10 @@ classdef ClassificationSVM < PredictiveModel
                                     'quadratic'})))
         error ("ClassificationSVM.loss: unsupported Loss function.");
       endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationSVM.loss: %s", errmsg);
+      endif
       if (! (isnumeric (Weights) && isvector (Weights)))
         error ("ClassificationSVM.loss: 'Weights' must be a numeric vector.");
       endif
@@ -1729,7 +1742,8 @@ classdef ClassificationSVM < PredictiveModel
       ## loss is their weighted sum, as in MATLAB.  The prior of a model fitted
       ## with weights is the weighted class frequency, so counting every row
       ## alike, as this did, disagreed with it.
-      Weights = priorNormalize (Weights(:), 1 + (Ypm(:) == -1), this.Prior);
+      Weights = priorNormalize (double (Weights(:)), 1 + (Ypm(:) == -1), ...
+                                this.Prior);
 
       ## Compute the classification score
       ## The model scores the coded, standardized predictors, which is the
@@ -1889,6 +1903,10 @@ classdef ClassificationSVM < PredictiveModel
                                     'hinge', 'logit', 'mincost', ...
                                     'quadratic'})))
         error ("ClassificationSVM.resubLoss: unsupported Loss function.");
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationSVM.resubLoss: %s", errmsg);
       endif
       if (! (isnumeric (Weights) && isvector (Weights)))
         error (strcat ("ClassificationSVM.resubLoss: 'Weights' must be a", ...
@@ -2738,8 +2756,10 @@ endclassdef
 %! assert_equal (edge (M, Q, ones (5, 1)), NaN);
 %! assert_equal (resubEdge (M), NaN);
 %! assert_equal (margin (compact (M), Q, ones (5, 1)), NaN (5, 1));
-%!error<ClassificationSVM: 'Weights' must be a real numeric vector.> ...
+%!error<ClassificationSVM: 'Weights' must be a real vector of class single or double.> ...
 %! fitcsvm ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', 'a')
+%!error<ClassificationSVM: 'Weights' must be a real numeric vector.> ...
+%! fitcsvm ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ones (2, 2))
 %!error<ClassificationSVM: 'Weights' must have one element per row in X.> ...
 %! fitcsvm ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', [1, 2])
 %!error<ClassificationSVM: 'Weights' must be nonnegative and must not be all zero.> ...
@@ -3123,10 +3143,13 @@ endclassdef
 %!error<ClassificationSVM.loss: unsupported Loss function.> ...
 %! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), zeros (2), ...
 %! ones (2,1), 'LossFun', 'some')
-%!error<ClassificationSVM.loss: 'Weights' must be a numeric vector.> ...
+%!error<ClassificationSVM.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), zeros (2), ...
 %! ones (2,1), 'Weights', ['a','b'])
 %!error<ClassificationSVM.loss: 'Weights' must be a numeric vector.> ...
+%! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), zeros (2), ...
+%! ones (2,1), 'Weights', ones (2, 2))
+%!error<ClassificationSVM.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), zeros (2), ...
 %! ones (2,1), 'Weights', 'a')
 %!error<ClassificationSVM.loss: size of 'Weights' must be equal to the number> ...
@@ -3146,9 +3169,12 @@ endclassdef
 %! resubLoss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), 'LossFun', 1)
 %!error<ClassificationSVM.resubLoss: unsupported Loss function.> ...
 %! resubLoss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), 'LossFun', 'some')
-%!error<ClassificationSVM.resubLoss: 'Weights' must be a numeric vector.> ...
+%!error<ClassificationSVM.resubLoss: 'Weights' must be a real vector of class single or double.> ...
 %! resubLoss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), 'Weights', ['a','b'])
 %!error<ClassificationSVM.resubLoss: 'Weights' must be a numeric vector.> ...
+%! resubLoss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), ...
+%!            'Weights', ones (2, 2))
+%!error<ClassificationSVM.resubLoss: 'Weights' must be a real vector of class single or double.> ...
 %! resubLoss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), 'Weights', 'a')
 %!error<ClassificationSVM.resubLoss: size of 'Weights' must be equal to the n> ...
 %! resubLoss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), 'Weights', [1,2,3])
@@ -3706,3 +3732,28 @@ endclassdef
 %! assert_equal (A.ModelParameters.Nu, 0.3);
 %! assert_equal (sum (A.Alpha), 15, 1e-10);
 %! assert_equal ([A.Bias; A.Alpha], [B.Bias; B.Alpha]);
+
+## Observation weights of class single or double
+%!error <ClassificationSVM: 'Weights' must be a real vector of class single or double.> ...
+%! fitcsvm ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ...
+%!          int8 ([1; 1; 1; 1]))
+%!error <ClassificationSVM: 'Weights' must be a real vector of class single or double.> ...
+%! fitcsvm ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', true (4, 1))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! X = meas(51:end,:);
+%! Y = species(51:end);
+%! w = 1 + (1:100)' / 7;
+%! Mdl = fitcsvm (X, Y, 'Weights', single (w));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Single weights compute as double
+%! load fisheriris
+%! X = meas(51:end,:);
+%! Y = species(51:end);
+%! w = 1 + (1:100)' / 7;
+%! A = fitcsvm (X, Y, 'Weights', single (w));
+%! B = fitcsvm (X, Y, 'Weights', double (single (w)));
+%! assert_equal (nthargout (2, @predict, A, X), nthargout (2, @predict, B, X));

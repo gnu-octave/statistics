@@ -500,7 +500,7 @@ classdef RegressionPartitionedEnsemble
     function L = setLoss (this, yf, rows, LossFun)
       f = this.RTfun (yf(rows));
       y = this.Y(rows);
-      w = this.W(rows);
+      w = double (this.W(rows));
       have = ! isnan (f);
       w = w(have);
       if (! (sum (w) > 0))

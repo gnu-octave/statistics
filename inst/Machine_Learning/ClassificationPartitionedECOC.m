@@ -413,7 +413,7 @@ classdef ClassificationPartitionedECOC
 
       m = kfoldMargin (this);
       keep = ! isnan (m);
-      w = this.W(:)(keep);
+      w = double (this.W(:))(keep);
       e = sum (w .* m(keep)) / sum (w);
 
     endfunction
@@ -467,7 +467,7 @@ classdef ClassificationPartitionedECOC
       ## left out of the loss rather than counted as an error.
       keep = ! any (isnan (NegLoss), 2);
       L = classificationLoss (LossFun, NegLoss(keep,:), gY(keep), ...
-                              this.W(keep), this.Cost);
+                              double (this.W(keep)), this.Cost);
 
     endfunction
 

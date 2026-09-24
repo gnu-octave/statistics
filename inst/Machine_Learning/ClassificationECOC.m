@@ -62,8 +62,9 @@ classdef ClassificationECOC < PredictiveModel
     ## -*- texinfo -*-
     ## @deftp {ClassificationECOC} {property} W
     ##
-    ## The observation weights, scaled so that each class carries its prior
-    ## and the whole sums to one.  This property is read-only.
+    ## The observation weights, scaled so that each class carries its prior and
+    ## the whole sums to one.  It has the class of the @qcode{'Weights'} given,
+    ## single or double.  This property is read-only.
     ##
     ## @end deftp
     W                     = [];
@@ -380,7 +381,7 @@ classdef ClassificationECOC < PredictiveModel
 
       this.X                     = F.X;
       this.Y                     = F.Y;
-      this.W                     = F.W;
+      this.W                     = cast (F.W, F.WeightsClass);
       this.RowsUsed              = F.RowsUsed;
       this.NumObservations       = F.n;
       this.ClassNames            = F.ClassNames;
@@ -1240,3 +1241,17 @@ endclassdef
 %! load fisheriris
 %! Mdl = ClassificationECOC (meas, species, 'FitPosterior', false);
 %! assert_equal (class (Mdl), 'ClassificationECOC');
+
+## Observation weights of class single or double
+%!error <ClassificationECOC: 'Weights' must be a real vector of class single or double.> ...
+%! fitcecoc ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ...
+%!           int8 ([1; 1; 1; 1]))
+%!error <ClassificationECOC: 'Weights' must be a real vector of class single or double.> ...
+%! fitcecoc ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', true (4, 1))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = fitcecoc (meas, species, 'Weights', single (w), 'Learners', 'tree');
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);

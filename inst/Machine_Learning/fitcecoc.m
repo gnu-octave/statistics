@@ -72,8 +72,9 @@
 ## @item @qcode{'Prior'} @tab @tab @qcode{'empirical'} (default),
 ## @qcode{'uniform'}, or a vector with one element per class.
 ##
-## @item @qcode{'Weights'} @tab @tab A nonnegative numeric vector with one
-## element per observation.  The default is uniform.
+## @item @qcode{'Weights'} @tab @tab A nonnegative single or double vector with
+## one element per observation.  The default is uniform.  The model's @code{W}
+## keeps the class of the weights, while every computation runs in double.
 ##
 ## @item @qcode{'CategoricalPredictors'} @tab @tab The predictors whose values
 ## are levels, as indices, a logical vector or @qcode{'all'}, passed as given

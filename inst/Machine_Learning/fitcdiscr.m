@@ -67,11 +67,13 @@
 ## Alternatively, you can specify @qcode{'empirical'} to use the empirical
 ## class probabilities or @qcode{'uniform'} to assume equal class probabilities.
 ##
-## @item @qcode{'Weights'} @tab A numeric vector of nonnegative observation
-## weights, one per row of @var{X}.  They weigh the class means and
-## covariances, the covariances being unbiased for them, and an empirical
-## prior sums them per class.  Only their proportions matter, and a row of
-## zero weight is left out of the fit.
+## @item @qcode{'Weights'} @tab A single or double vector of nonnegative
+## observation weights, one per row of @var{X}.  They weigh the class means and
+## covariances, the covariances being unbiased for them, and an empirical prior
+## sums them per class.  Only their proportions matter, and a row of zero weight
+## is left out of the fit.  The model's @code{W} keeps the class of the weights,
+## while every computation runs in double, so the predictions are double where
+## MATLAB returns single.
 ##
 ## @item @qcode{'Cost'} @tab A @math{N*R} numeric matrix containing
 ## misclassification cost for the corresponding instances in @var{X} where

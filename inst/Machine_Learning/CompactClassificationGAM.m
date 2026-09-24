@@ -889,6 +889,10 @@ classdef CompactClassificationGAM < PredictiveModel
       if (! any (strcmpi (LossFun, lossnames)))
         error ("CompactClassificationGAM.loss: unsupported Loss function.");
       endif
+      errmsg = weightsClass (W);
+      if (! isempty (errmsg))
+        error ("CompactClassificationGAM.loss: %s", errmsg);
+      endif
       if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
         error (strcat ("CompactClassificationGAM.loss: 'Weights' must be a", ...
                        " numeric vector."));
@@ -905,7 +909,8 @@ classdef CompactClassificationGAM < PredictiveModel
       if (isempty (W))
         W = ones (rows (X), 1);
       endif
-      W = W(:) / sum (W);
+      W = double (W(:));
+      W = W / sum (W);
 
       [label, scores] = predict (this, X);
       classes = this.ClassNames;
@@ -1503,3 +1508,8 @@ endfunction
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <CompactClassificationGAM.loss: 'Weights' must be a real vector of class single or double.> ...
+%! loss (compact (fitcgam ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2])), ...
+%!       [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))

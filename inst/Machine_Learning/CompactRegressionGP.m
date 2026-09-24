@@ -398,6 +398,10 @@ classdef CompactRegressionGP < PredictiveModel
                                     'epsiloninsensitive'})))
         error ("CompactRegressionGP.loss: unsupported 'LossFun' value.");
       endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("CompactRegressionGP.loss: %s", errmsg);
+      endif
       if (! isempty (Weights) &&
           ! (isnumeric (Weights) && isvector (Weights) && ...
              numel (Weights) == rows (X) && all (Weights >= 0)))
@@ -405,7 +409,7 @@ classdef CompactRegressionGP < PredictiveModel
                        " vector of non-negative values with one element", ...
                        " per observation."));
       endif
-      Weights = Weights(:);
+      Weights = double (Weights(:));
 
       if (! isempty (args))
         error ("CompactRegressionGP.loss: invalid optional paired argument.");
@@ -783,3 +787,9 @@ endclassdef
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'SL'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <CompactRegressionGP.loss: 'Weights' must be a real vector of class single or double.>
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! y = (1:4)';
+%! loss (compact (fitrgp (X, y)), X, y, 'Weights', int8 ([1; 1; 1; 1]))

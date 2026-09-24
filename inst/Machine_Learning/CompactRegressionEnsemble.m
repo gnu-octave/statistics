@@ -525,6 +525,10 @@ classdef CompactRegressionEnsemble < PredictiveModel
         endif
         o.Mode = tolower (Mode);
       endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("%s: %s", caller, errmsg);
+      endif
       if (! isempty (Weights))
         if (! (isnumeric (Weights) && isvector (Weights)
                && isreal (Weights) && numel (Weights) == rows (X)
@@ -731,3 +735,9 @@ endclassdef
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'SL'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <CompactRegressionEnsemble.loss: 'Weights' must be a real vector of class single or double.> ...
+%! loss (compact (fitrensemble ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', ...
+%!       'NumLearningCycles', 3)), ...
+%!       [1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', int8 ([1; 1; 1; 1]))

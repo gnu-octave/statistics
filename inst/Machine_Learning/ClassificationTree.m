@@ -117,9 +117,10 @@ classdef ClassificationTree < PredictiveModel
     ## Observation weights
     ##
     ## A numeric column vector of the weights the fit used, one per retained
-    ## observation.  They are the weights given, scaled so that the
-    ## observations of each class sum to that class's prior, and so that all
-    ## of them together sum to one.  This property is read-only.
+    ## observation.  They are the weights given, scaled so that the observations
+    ## of each class sum to that class's prior, and so that all of them together
+    ## sum to one.  It has the class of the @qcode{'Weights'} given, single or
+    ## double.  This property is read-only.
     ##
     ## @end deftp
     W = [];
@@ -668,7 +669,8 @@ classdef ClassificationTree < PredictiveModel
       ## other, and the node statistics follow both.
       if (! isempty (this.RawWeights))
         gY = labelIndices (this.ClassNames, this.Y);
-        this.W = priorNormalize (this.RawWeights, gY, this.Prior);
+        this.W = cast (priorNormalize (double (this.RawWeights), gY, ...
+                                       this.Prior), class (this.RawWeights));
       endif
       this = deriveNodes (this);
     endfunction
@@ -790,8 +792,10 @@ classdef ClassificationTree < PredictiveModel
     ## @item @qcode{'SplitCriterion'} @tab @qcode{'gdi'} (default), the Gini
     ## diversity index, or @qcode{'deviance'}, the cross entropy.
     ##
-    ## @item @qcode{'Weights'} @tab A nonnegative numeric vector with one
-    ## element per observation.  The default is uniform.
+    ## @item @qcode{'Weights'} @tab A nonnegative single or double vector with
+    ## one element per observation.  The default is uniform.  The model's
+    ## @code{W} keeps the class of the weights, while every computation runs in
+    ## double, so the predictions are double where MATLAB returns single.
     ##
     ## @end multitable
     ##
@@ -899,6 +903,10 @@ classdef ClassificationTree < PredictiveModel
              || (isnumeric (Cost) && issquare (Cost))))
         error (strcat ("ClassificationTree: 'Cost' must be a", ...
                        " numeric square matrix or a structure."));
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationTree: %s", errmsg);
       endif
       if (! isempty (Weights) &&
           ! (isnumeric (Weights) && isvector (Weights)
@@ -1073,9 +1081,12 @@ classdef ClassificationTree < PredictiveModel
       if (isempty (Weights))
         RawWeights = ones (this.NumObservations, 1);
       else
-        RawWeights = double (Weights(:));
+        RawWeights = Weights(:);
       endif
+      ## The weights keep their class in the model; every computation runs on
+      ## them as double.
       this.RawWeights = RawWeights;
+      RawWeights = double (RawWeights);
 
       ## Cost first: set.Prior counts the classes and set.Cost does not
       ## depend on the prior, and both are wanted before the weights.
@@ -1101,7 +1112,8 @@ classdef ClassificationTree < PredictiveModel
 
       ## Weights scaled so that each class carries its prior and the whole
       ## sums to one, which is the W MATLAB reports.
-      this.W = priorNormalize (RawWeights, gY, this.Prior);
+      W = priorNormalize (RawWeights, gY, this.Prior);
+      this.W = cast (W, class (this.RawWeights));
 
       ## The engine grows the tree on the cost-adjusted weights.  Scaling a
       ## class by the total cost of misclassifying it is the classical way a
@@ -1109,14 +1121,14 @@ classdef ClassificationTree < PredictiveModel
       ## criterion then needs no notion of cost, while everything reported
       ## below is measured on the unadjusted weights.
       cAdj = sum (this.Cost, 2)';
-      wAdj = this.W .* cAdj(gY)';
+      wAdj = W .* cAdj(gY)';
       if (sum (wAdj) > 0)
         wAdj = wAdj / sum (wAdj);
       else
         ## Nothing costs anything, which is what a single class means: its
         ## cost matrix is the one by one zero.  There is no misclassification
         ## to weigh, so the fit runs on the weights as they stand.
-        wAdj = this.W;
+        wAdj = W;
       endif
 
       if (isempty (MaxNumSplits))
@@ -1545,7 +1557,7 @@ classdef ClassificationTree < PredictiveModel
       ## Measured on R2024a, where a tree weighted 1 to 150 reports
       ## 0.0537748344370861 and the unweighted mean of the same losses is
       ## 0.0533333333333333.
-      W = this.W(:);
+      W = double (this.W(:));
       E = W' * L;
 
       ## The standard error over the folds, each fold's loss being its
@@ -2036,6 +2048,10 @@ classdef ClassificationTree < PredictiveModel
         error ("ClassificationTree.loss: invalid loss function.");
       endif
       LossFun = tolower (LossFun);
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationTree.loss: %s", errmsg);
+      endif
       if (! isempty (Weights) && ! (isnumeric (Weights) && isvector (Weights)))
         error ("ClassificationTree.loss: invalid 'Weights'.");
       endif
@@ -2055,7 +2071,7 @@ classdef ClassificationTree < PredictiveModel
       if (isempty (Weights))
         w = ones (numel (gY), 1);
       else
-        w = Weights(:);
+        w = double (Weights(:));
         if (numel (w) != numel (gY))
           error (strcat ("ClassificationTree.loss: 'Weights' must have", ...
                          " one element per observation."));
@@ -3021,8 +3037,10 @@ endfunction
 %! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'Prior', 'bogus')
 %!error<ClassificationTree: 'Cost' must be a numeric square matrix or a structure.>
 %! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'Cost', ones (2, 3))
-%!error<ClassificationTree: 'Weights' must be a real numeric vector.>
+%!error<ClassificationTree: 'Weights' must be a real vector of class single or double.>
 %! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'Weights', 'a')
+%!error<ClassificationTree: 'Weights' must be a real numeric vector.>
+%! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'Weights', ones (2, 2))
 %!error<ClassificationTree: 'Weights' must have one element per row in X.>
 %! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'Weights', [1, 2, 3])
 %!error<ClassificationTree: 'Weights' must be nonnegative and must not be all zero.>
@@ -3083,9 +3101,12 @@ endfunction
 %!error<ClassificationTree.loss: invalid loss function.>
 %! loss (ClassificationTree (ones (4, 2), [1; 1; 2; 2]), ones (4, 2), ...
 %!       [1; 1; 2; 2], 'LossFun', 'x')
-%!error<ClassificationTree.loss: invalid 'Weights'.>
+%!error<ClassificationTree.loss: 'Weights' must be a real vector of class single or double.>
 %! loss (ClassificationTree (ones (4, 2), [1; 1; 2; 2]), ones (4, 2), ...
 %!       [1; 1; 2; 2], 'Weights', 'a')
+%!error<ClassificationTree.loss: invalid 'Weights'.>
+%! loss (ClassificationTree (ones (4, 2), [1; 1; 2; 2]), ones (4, 2), ...
+%!       [1; 1; 2; 2], 'Weights', ones (2, 2))
 %!error<ClassificationTree.loss: invalid optional paired argument.>
 %! loss (ClassificationTree (ones (4, 2), [1; 1; 2; 2]), ones (4, 2), ...
 %!       [1; 1; 2; 2], 'Bogus', 1)
@@ -3394,3 +3415,25 @@ endfunction
 %! margin (lctM, lctT, 'NoSuch')
 %!error<ClassificationTree.margin: the table holds no variable 'Species'.> ...
 %! margin (lctM, lctT(:,1:2))
+
+## Observation weights of class single or double
+%!error <ClassificationTree: 'Weights' must be a real vector of class single or double.> ...
+%! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'Weights', ...
+%!                     int8 ([1; 1; 1; 1]))
+%!error <ClassificationTree: 'Weights' must be a real vector of class single or double.> ...
+%! ClassificationTree (ones (4, 2), [1; 1; 2; 2], 'Weights', true (4, 1))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = ClassificationTree (meas, species, 'Weights', single (w));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Single weights compute as double
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! A = ClassificationTree (meas, species, 'Weights', single (w));
+%! B = ClassificationTree (meas, species, 'Weights', double (single (w)));
+%! assert_equal (nthargout (2, @predict, A, meas), nthargout (2, @predict, ...
+%!               B, meas));

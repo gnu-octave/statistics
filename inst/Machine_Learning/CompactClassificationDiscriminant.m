@@ -1006,6 +1006,10 @@ classdef CompactClassificationDiscriminant < PredictiveModel
         error (strcat ("CompactClassificationDiscriminant.loss: invalid", ...
                        " loss function."));
       endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("CompactClassificationDiscriminant.loss: %s", errmsg);
+      endif
       if (! isempty (Weights) && ! (isnumeric (Weights) && isvector (Weights)))
         error ("CompactClassificationDiscriminant.loss: invalid 'Weights'.");
       endif
@@ -1058,6 +1062,7 @@ classdef CompactClassificationDiscriminant < PredictiveModel
       if (isempty (Weights))
         Weights = ones (size (X, 1), 1);
       endif
+      Weights = double (Weights(:));
 
       ## Normalize Weights
       unique_classes = this.ClassNames;
@@ -1886,8 +1891,10 @@ endclassdef
 %! loss (MODEL, ones (4,2), ones (3,1))
 %!error<CompactClassificationDiscriminant.loss: invalid loss function.> ...
 %! loss (MODEL, ones (4,2), ones (4,1), 'LossFun', 'a')
-%!error<CompactClassificationDiscriminant.loss: invalid 'Weights'.> ...
+%!error<CompactClassificationDiscriminant.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (MODEL, ones (4,2), ones (4,1), 'Weights', 'w')
+%!error<CompactClassificationDiscriminant.loss: invalid 'Weights'.> ...
+%! loss (MODEL, ones (4,2), ones (4,1), 'Weights', ones (2, 2))
 
 ## Test margin method
 %! load fisheriris

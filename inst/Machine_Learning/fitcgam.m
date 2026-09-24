@@ -190,9 +190,11 @@
 ## padded name per row, a string array or a cellstr; a name must match an entry
 ## of @qcode{'PredictorNames'} exactly, its case included.
 ##
-## @item @qcode{'Weights'} @tab A numeric vector of non-negative observation
-## weights, one per row of @var{X}.  Each class carries its @qcode{'Prior'},
-## spread over its observations in proportion to their weights.
+## @item @qcode{'Weights'} @tab A single or double vector of non-negative
+## observation weights, one per row of @var{X}.  Each class carries its
+## @qcode{'Prior'}, spread over its observations in proportion to their weights.
+## The model's @code{W} keeps the class of the weights, while every computation
+## runs in double, so the predictions are double where MATLAB returns single.
 ##
 ## @end multitable
 ## You can parse either a @qcode{'Formula'} or an @qcode{'Interactions'}

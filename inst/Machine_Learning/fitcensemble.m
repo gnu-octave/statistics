@@ -193,8 +193,9 @@
 ## costs.  The default is @code{1 - eye (K)}.
 ## @item @qcode{'Prior'} @tab @tab @qcode{'empirical'} (default),
 ## @qcode{'uniform'}, or a vector with one element per class.
-## @item @qcode{'Weights'} @tab @tab A nonnegative vector with one weight per
-## observation.  The default is uniform.
+## @item @qcode{'Weights'} @tab @tab A nonnegative single or double vector with
+## one weight per observation.  The default is uniform.  The model's @code{W}
+## keeps the class of the weights, while every computation runs in double.
 ## @item @qcode{'PredictorNames'} @tab @tab A cell array of character vectors
 ## naming the columns of @var{X}.
 ## @item @qcode{'ResponseName'} @tab @tab The name of the response variable.

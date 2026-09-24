@@ -611,7 +611,7 @@ classdef ClassificationPartitionedModel
           nclass = numel (this.Prior);
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            pf = gamFoldPrior (this.W, gY, nclass, idx);
+            pf = gamFoldPrior (double (this.W), gY, nclass, idx);
             fargs = [args, {'Prior', pf}];
             ## A boosted-tree fold also keeps the weights of the rows it holds.
             if (strcmp (Mdl.FitMethod, 'boostedtrees'))

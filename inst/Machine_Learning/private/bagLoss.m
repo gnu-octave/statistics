@@ -74,7 +74,7 @@ function out = bagLoss (what, M, X, Y, args, classname, fixedUse, W0)
   if (! isempty (o.w))
     w = o.w;
   elseif (! isempty (W0))
-    w = W0(:);
+    w = double (W0(:));
   else
     w = ones (N, 1);
   endif

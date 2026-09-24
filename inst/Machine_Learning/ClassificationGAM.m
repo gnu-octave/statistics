@@ -301,8 +301,9 @@ classdef ClassificationGAM < PredictiveModel
     ##
     ## Observation weights
     ##
-    ## A numeric column vector with one entry per observation used for
-    ## training, normalised to sum to one.  This property is read-only.
+    ## A numeric column vector with one entry per observation used for training,
+    ## normalised to sum to one.  It has the class of the @qcode{'Weights'}
+    ## given, single or double.  This property is read-only.
     ##
     ## Each class carries its prior, spread over its own observations in
     ## proportion to their @qcode{'Weights'}, and evenly when none were given.
@@ -889,6 +890,10 @@ classdef ClassificationGAM < PredictiveModel
       if (isnumeric (Prior) && numel (Prior) != 2 && ! isstruct (Prior))
         error ("ClassificationGAM: 'Prior' must be a 2-element vector.");
       endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationGAM: %s", errmsg);
+      endif
       if (! isempty (Weights) &&
           ! (isnumeric (Weights) && isreal (Weights)
              && isvector (Weights)))
@@ -1172,6 +1177,10 @@ classdef ClassificationGAM < PredictiveModel
         Wret    = Weights(RowsUsed);
         Wret    = Wret(:);
       endif
+      ## The weights keep their class in the model; every computation runs on
+      ## them as double.
+      Wclass    = class (Wret);
+      Wret      = double (Wret);
       this.X    = Xret;
       this.Y    = Yret;
       if (strcmp (FitMethod, 'boostedtrees'))
@@ -1267,6 +1276,7 @@ classdef ClassificationGAM < PredictiveModel
           this.W(idx) = this.Prior(k) * Wret(idx) / sum (Wret(idx));
         endif
       endfor
+      this.W = cast (this.W, Wclass);
       ## A categorical predictor is fitted on the indices of its levels,
       ## which the engine is handed in place of the values.
       this.CategoricalPredictors = [];
@@ -1986,6 +1996,10 @@ classdef ClassificationGAM < PredictiveModel
       if (! any (strcmpi (LossFun, lossnames)))
         error ("ClassificationGAM.loss: unsupported Loss function.");
       endif
+      errmsg = weightsClass (W);
+      if (! isempty (errmsg))
+        error ("ClassificationGAM.loss: %s", errmsg);
+      endif
       if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
         error ("ClassificationGAM.loss: 'Weights' must be a numeric vector.");
       endif
@@ -2000,7 +2014,8 @@ classdef ClassificationGAM < PredictiveModel
       if (isempty (W))
         W = ones (rows (X), 1);
       endif
-      W = W(:) / sum (W);
+      W = double (W(:));
+      W = W / sum (W);
 
       [label, scores] = predict (this, X);
       classes = this.ClassNames;
@@ -2260,7 +2275,7 @@ classdef ClassificationGAM < PredictiveModel
         M = gamboosttrain (X, Y, 1, numTrees, ...
                            MP.InitialLearnRateForPredictors, ...
                            MP.MaxNumSplitsPerPredictor, 0, MP.NumPrint, ...
-                           f(:), this.W(cobs), cat);
+                           f(:), double (this.W(cobs)), cat);
         if (M.NumTrees == 0)
           error (strcat ("ClassificationGAM.resume: unable to resume", ...
                          " training because the software was unable to", ...
@@ -2286,7 +2301,8 @@ classdef ClassificationGAM < PredictiveModel
                              this.TreeModel.Pairs, PM);
         I = gamboostinter (X, Y, f(:), 1, this.TreeModel.Pairs, numTrees, ...
                            MP.InitialLearnRateForInteractions, ...
-                           MP.MaxNumSplitsPerInteraction, this.W(cobs), cat);
+                           MP.MaxNumSplitsPerInteraction, ...
+                           double (this.W(cobs)), cat);
         if (I.NumTrees == 0)
           error (strcat ("ClassificationGAM.resume: unable to resume", ...
                          " training because the software was unable to", ...
@@ -2389,7 +2405,7 @@ classdef ClassificationGAM < PredictiveModel
       f = gamboostpredict (E, this.TreeModel.ShapeValues, X, ...
                            this.Intercept);
 
-      Wfit = this.W;
+      Wfit = double (this.W);
 
       ## Residuals of the predictor phase, which is what pairs are tested on.
       res = Y - 1 ./ (1 + exp (-f));
@@ -2490,7 +2506,7 @@ classdef ClassificationGAM < PredictiveModel
                                 MSI, LRP, LRI, MaxPValue, Verb, NPrint)
 
       ## The predictor phase, weighted by W over the rows the fit sees.
-      Wfit = this.W;
+      Wfit = double (this.W);
       [X, ~, cat, Levels] = gamCatCode (this.TreeModel, X);
       M = gamboosttrain (X, Y, 1, NTP, LRP, MSP, Verb, NPrint, [], Wfit, ...
                          cat);
@@ -3367,8 +3383,11 @@ endfunction
 %!error<ClassificationGAM: 'categoricalpredictors' is a parameter of the boosted-tree engine and cannot be used with 'FitMethod' 'splines'.> ...
 %! ClassificationGAM (ones (10, 2), [0; 1; 0; 1; 0; 1; 0; 1; 0; 1], ...
 %!                    'FitMethod', 'splines', 'CategoricalPredictors', 1)
-%!error<ClassificationGAM: 'Weights' must be a numeric vector.> ...
+%!error<ClassificationGAM: 'Weights' must be a real vector of class single or double.> ...
 %! ClassificationGAM (ones (10, 2), [ones(5,1); zeros(5,1)], 'Weights', 'a')
+%!error<ClassificationGAM: 'Weights' must be a numeric vector.> ...
+%! ClassificationGAM (ones (10, 2), [ones(5,1); zeros(5,1)], ...
+%!                    'Weights', ones (2, 2))
 %!error<ClassificationGAM: 'Weights' must have one element per row of X.> ...
 %! ClassificationGAM (ones (10, 2), [ones(5,1); zeros(5,1)], 'Weights', [1, 2])
 %!error<ClassificationGAM: 'Weights' must hold finite non-negative values.> ...
@@ -3839,8 +3858,10 @@ endfunction
 %! edge (Mdl, x, y, 'Weights')
 %!error<ClassificationGAM.edge: invalid optional paired argument.> ...
 %! edge (Mdl, x, y, 'LossFun', 'hinge')
-%!error<ClassificationGAM.edge: 'Weights' must be a numeric vector.> ...
+%!error<ClassificationGAM.edge: 'Weights' must be a real vector of class single or double.> ...
 %! edge (Mdl, x, y, 'Weights', 'a')
+%!error<ClassificationGAM.edge: 'Weights' must be a numeric vector.> ...
+%! edge (Mdl, x, y, 'Weights', ones (2, 2))
 %!error<ClassificationGAM.edge: size of 'Weights' must equal the number of rows in X.> ...
 %! edge (Mdl, x, y, 'Weights', [1, 2, 3])
 
@@ -4215,3 +4236,33 @@ endfunction
 %!                    'Formula', 'Y ~ x1 + x2')
 %!error<ClassificationGAM: invalid optional paired argument.> ...
 %! ClassificationGAM (ones (10,2), [ones(5,1); zeros(5,1)], 'Bogus', 1)
+
+## Observation weights of class single or double
+%!error <ClassificationGAM: 'Weights' must be a real vector of class single or double.> ...
+%! ClassificationGAM ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ...
+%!                    int8 ([1; 1; 1; 1]))
+%!error <ClassificationGAM: 'Weights' must be a real vector of class single or double.> ...
+%! ClassificationGAM ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ...
+%!                    true (4, 1))
+%!error <ClassificationGAM.loss: 'Weights' must be a real vector of class single or double.> ...
+%! loss (ClassificationGAM ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2]), ...
+%!       [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! X = meas(51:end,:);
+%! Y = species(51:end);
+%! w = 1 + (1:100)' / 7;
+%! Mdl = ClassificationGAM (X, Y, 'Weights', single (w));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Single weights compute as double, to the precision of the stored W
+%! load fisheriris
+%! X = meas(51:end,:);
+%! Y = species(51:end);
+%! w = 1 + (1:100)' / 7;
+%! A = ClassificationGAM (X, Y, 'Weights', single (w));
+%! B = ClassificationGAM (X, Y, 'Weights', double (single (w)));
+%! assert_equal (nthargout (2, @predict, A, X), ...
+%!               nthargout (2, @predict, B, X), 1e-8);

@@ -1043,6 +1043,10 @@ classdef RegressionSVM < PredictiveModel
                                      {'mse', 'epsiloninsensitive'})))
         error ("RegressionSVM.loss: unsupported 'LossFun' value.");
       endif
+      errmsg = weightsClass (W);
+      if (! isempty (errmsg))
+        error ("RegressionSVM.loss: %s", errmsg);
+      endif
       if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
         error ("RegressionSVM.loss: 'Weights' must be a numeric vector.");
       endif
@@ -1060,7 +1064,8 @@ classdef RegressionSVM < PredictiveModel
 
       ## Weights are normalized to sum to one, as MATLAB does, so a loss is
       ## a weighted average rather than a weighted sum.
-      W = W(:) / sum (W);
+      W = double (W(:));
+      W = W / sum (W);
       yFit = predict (this, X);
       Y = Y(:);
 
@@ -1750,8 +1755,10 @@ endclassdef
 %! loss (RSVM, [1, 1; 2, 1], [2; 4], 'LossFun', 'mae')
 %!error<RegressionSVM.loss: 'LossFun' must return a numeric scalar.> ...
 %! loss (RSVM, [1, 1; 2, 1], [2; 4], 'LossFun', @(y, yf, w) [1, 2])
-%!error<RegressionSVM.loss: 'Weights' must be a numeric vector.> ...
+%!error<RegressionSVM.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (RSVM, [1, 1; 2, 1], [2; 4], 'Weights', {'a'})
+%!error<RegressionSVM.loss: 'Weights' must be a numeric vector.> ...
+%! loss (RSVM, [1, 1; 2, 1], [2; 4], 'Weights', ones (2, 2))
 %!error<RegressionSVM.loss: size of 'Weights' must equal the number of rows in X.> ...
 %! loss (RSVM, [1, 1; 2, 1], [2; 4], 'Weights', [1; 2; 3])
 %!error<RegressionSVM.loss: invalid optional paired argument.> ...

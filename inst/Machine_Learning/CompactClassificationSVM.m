@@ -811,6 +811,10 @@ classdef CompactClassificationSVM < PredictiveModel
                                     'quadratic'})))
         error ("CompactClassificationSVM.loss: unsupported Loss function.");
       endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("CompactClassificationSVM.loss: %s", errmsg);
+      endif
       if (! (isnumeric (Weights) && isvector (Weights)))
         error (strcat ("CompactClassificationSVM.loss: 'Weights' must be a", ...
                        " numeric vector."));
@@ -832,7 +836,8 @@ classdef CompactClassificationSVM < PredictiveModel
 
       ## The weights are scaled so that each class carries its prior and the
       ## loss is their weighted sum, as in MATLAB.
-      Weights = priorNormalize (Weights(:), 1 + (Ypm(:) == -1), this.Prior);
+      Weights = priorNormalize (double (Weights(:)), 1 + (Ypm(:) == -1), ...
+                                this.Prior);
       ## The model scores the coded, standardized predictors, which is the
       ## scale predict gives it; X taken as it stands was scored unscaled.
       if (! isempty (this.Coding_))
@@ -1303,9 +1308,11 @@ endclassdef
 %! loss (CMdl, [1, 2], 1, 'LossFun', 1)
 %!error<CompactClassificationSVM.loss: unsupported Loss function.> ...
 %! loss (CMdl, [1, 2], 1, 'LossFun', 'some')
-%!error<CompactClassificationSVM.loss: 'Weights' must be a numeric vector.> ...
+%!error<CompactClassificationSVM.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (CMdl, [1, 2], 1, 'Weights', ['a', 'b'])
 %!error<CompactClassificationSVM.loss: 'Weights' must be a numeric vector.> ...
+%! loss (CMdl, [1, 2], 1, 'Weights', ones (2, 2))
+%!error<CompactClassificationSVM.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (CMdl, [1, 2], 1, 'Weights', 'a')
 %!error<CompactClassificationSVM.loss: size of 'Weights' must be equal to the number of rows in X.> ...
 %! loss (CMdl, [1, 2], 1, 'Weights', [1, 2])

@@ -90,8 +90,8 @@ classdef RegressionEnsemble < PredictiveModel
     ##
     ## Observation weights
     ##
-    ## The weights given, normalized to sum to one.  This property is
-    ## read-only.
+    ## The weights given, normalized to sum to one.  It has the class of the
+    ## @qcode{'Weights'} given, single or double.  This property is read-only.
     ##
     ## @end deftp
     W = [];
@@ -544,7 +544,9 @@ classdef RegressionEnsemble < PredictiveModel
       this.X = F.X;
       this.Y = double (F.Y);
       this.RowsUsed = F.RowsUsed;
-      this.W = F.W;
+      ## The weights keep their class in the model; every computation runs on
+      ## them as double.
+      this.W = cast (F.W, F.WeightsClass);
       this.NumObservations = F.n;
       this.PredictorNames = PredictorNames(:)';
       this.ExpandedPredictorNames = this.PredictorNames;
@@ -862,7 +864,7 @@ classdef RegressionEnsemble < PredictiveModel
 
       T = this.NumTrained;
       Y = this.Y;
-      W = this.W / sum (this.W);
+      W = double (this.W) / sum (double (this.W));
       P = zeros (numel (Y), T);
       for t = 1:T
         P(:,t) = predict (this.Trained{t}, this.X);
@@ -1042,12 +1044,12 @@ classdef RegressionEnsemble < PredictiveModel
         te = test (CV.Partition, k);
         Ek = regularize (CV.Trainable{k}, 'Lambda', Lambda, ...
                          'MaxIter', o.MaxIter, 'RelTol', o.RelTol);
-        wsum += sum (this.W(te));
+        wsum += sum (double (this.W(te)));
         for a = 1:L
           for b = 1:M
             Ck = shrink (Ek, 'WeightColumn', a, 'Threshold', o.Threshold(b));
             r = this.Y(te) - predict (Ck, this.X(te,:));
-            sse(a,b) += sum (this.W(te) .* r .^ 2);
+            sse(a,b) += sum (double (this.W(te)) .* r .^ 2);
             counts(a,b) += Ck.NumTrained;
           endfor
         endfor
@@ -1081,28 +1083,30 @@ classdef RegressionEnsemble < PredictiveModel
           if (this.Resampling)
             ## The tree sees the rows drawn; the prediction and the fit
             ## information run over every row, as in MATLAB R2024a.
-            [idx, sw, cnt] = boostSample (this.W, ...
+            [idx, sw, cnt] = boostSample (double (this.W), ...
                                           ceil (this.BagFResample * n), ...
                                           this.BagReplace);
             T = compact (RegressionTree (this.X(idx,:), r(idx), ...
                                          'Weights', sw, targs{:}));
             this.BagInBag(:,end+1) = cnt > 0;
           else
-            T = compact (RegressionTree (this.X, r, 'Weights', this.W, ...
+            T = compact (RegressionTree (this.X, r, ...
+                                         'Weights', double (this.W), ...
                                          targs{:}));
           endif
           h = predict (T, this.X);
-          this.FitInfo(end+1,1) = sum (this.W .* (r - h) .^ 2);
+          this.FitInfo(end+1,1) = sum (double (this.W) .* (r - h) .^ 2);
           this.F += this.LearnRate * h;
           this = addLearner (this, T, this.LearnRate);
         else
           m = ceil (this.BagFResample * n);
           if (this.BagReplace)
-            cw = [0; cumsum(this.W)];
+            cw = [0; cumsum(double (this.W))];
             cw /= cw(end);
             idx = lookup (cw, rand (m, 1));
           else
-            [~, order] = sort (rand (n, 1) .^ (1 ./ this.W), 'descend');
+            [~, order] = sort (rand (n, 1) .^ (1 ./ double (this.W)), ...
+                               'descend');
             idx = order(1:m);
           endif
           T = compact (RegressionTree (this.X(idx,:), this.Y(idx), ...
@@ -1565,3 +1569,19 @@ endfunction
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'SL'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <RegressionEnsemble: 'Weights' must be a real vector of class single or double.> ...
+%! fitrensemble ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', ...
+%!               int8 ([1; 1; 1; 1]))
+%!error <RegressionEnsemble: 'Weights' must be a real vector of class single or double.> ...
+%! fitrensemble ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', true (4, 1))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! X = meas(:,2:4);
+%! y = meas(:,1);
+%! w = 1 + (1:150)' / 7;
+%! Mdl = fitrensemble (X, y, 'Weights', single (w), 'NumLearningCycles', 10);
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);

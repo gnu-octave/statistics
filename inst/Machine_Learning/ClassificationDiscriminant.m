@@ -63,7 +63,8 @@ classdef ClassificationDiscriminant < PredictiveModel
     ##
     ## A numeric column vector with one entry per observation used for fitting:
     ## the @qcode{'Weights'} given, or equal weights, scaled to sum to one.  The
-    ## prior does not enter them.  This property is read-only.
+    ## prior does not enter them.  It has the class of the @qcode{'Weights'}
+    ## given, single or double.  This property is read-only.
     ##
     ## @end deftp
     W               = [];
@@ -626,7 +627,7 @@ classdef ClassificationDiscriminant < PredictiveModel
           if (isempty (this.RawWeights))
             pr(i) = sum (gY == i);
           else
-            pr(i) = sum (this.RawWeights(gY == i));
+            pr(i) = sum (double (this.RawWeights(gY == i)));
           endif
         endfor
         this.Prior = pr(:)' ./ sum (pr);
@@ -877,11 +878,13 @@ classdef ClassificationDiscriminant < PredictiveModel
     ## class probabilities or @qcode{'uniform'} to assume equal class
     ## probabilities.
     ##
-    ## @item @qcode{'Weights'} @tab A numeric vector of nonnegative observation
-    ## weights, one per row of @var{X}.  They weigh the class means and
-    ## covariances, the covariances being unbiased for them, and an empirical
-    ## prior sums them per class.  Only their proportions matter, and a row of
-    ## zero weight is left out of the fit.
+    ## @item @qcode{'Weights'} @tab A single or double vector of nonnegative
+    ## observation weights, one per row of @var{X}.  They weigh the class means
+    ## and covariances, the covariances being unbiased for them, and an
+    ## empirical prior sums them per class.  Only their proportions matter, and
+    ## a row of zero weight is left out of the fit.  The model's @code{W} keeps
+    ## the class of the weights, while every computation runs in double, so the
+    ## predictions are double where MATLAB returns single.
     ##
     ## @item @qcode{'ScoreTransform'} @tab A user-defined function handle
     ## or a character vector specifying one of the following builtin functions
@@ -992,6 +995,10 @@ classdef ClassificationDiscriminant < PredictiveModel
         error (strcat ("ClassificationDiscriminant: 'Prior' must be either", ...
                        " a numeric or a character vector."));
       endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationDiscriminant: %s", errmsg);
+      endif
       if (! isempty (Weights) &&
           ! (isnumeric (Weights) && isvector (Weights)
              && isreal (Weights)))
@@ -1086,14 +1093,16 @@ classdef ClassificationDiscriminant < PredictiveModel
       if (isempty (Weights))
         RawWeights = ones (rows (X), 1);
       else
-        RawWeights = double (Weights(RowsUsed));
+        RawWeights = Weights(RowsUsed);
         RawWeights = RawWeights(:);
       endif
 
-      ## Store the retained observations
+      ## Store the retained observations; the weights keep their class in the
+      ## model, and every computation runs on them as double
       this.X = X;
       this.Y = Y;
       this.RawWeights = RawWeights;
+      RawWeights = double (RawWeights);
 
       ## Renew groups in Y: the classes keep the type of Y, sorted or in the
       ## order ClassNames gives them
@@ -1121,7 +1130,7 @@ classdef ClassificationDiscriminant < PredictiveModel
       ## The weights scaled to sum to one.  The prior enters prediction rather
       ## than the weights: measured on R2024a, W is the same under an
       ## empirical, a uniform, a given or a reassigned prior.
-      this.W = RawWeights / sum (RawWeights);
+      this.W = cast (RawWeights / sum (RawWeights), class (this.RawWeights));
 
       ## Assign DiscrimType
       ## Reconcile the type with the regularization before anything is
@@ -1613,6 +1622,10 @@ classdef ClassificationDiscriminant < PredictiveModel
       elseif (! (ischar (LossFun) && any (strcmpi (LossFun, lf_opt))))
         error ("ClassificationDiscriminant.loss: invalid loss function.");
       endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationDiscriminant.loss: %s", errmsg);
+      endif
       if (! isempty (Weights) && ! (isnumeric (Weights) && isvector (Weights)))
         error ("ClassificationDiscriminant.loss: invalid 'Weights'.");
       endif
@@ -1655,6 +1668,7 @@ classdef ClassificationDiscriminant < PredictiveModel
       if (isempty (Weights))
         Weights = ones (size (X, 1), 1);
       endif
+      Weights = double (Weights(:));
 
       ## Normalize Weights
       K = classCount (classes);
@@ -2831,8 +2845,10 @@ endclassdef
 %! load fisheriris
 %! nLinearCoeffs (fitcdiscr (meas, species), "a")
 
-%!error<ClassificationDiscriminant: 'Weights' must be a real numeric vector.> ...
+%!error<ClassificationDiscriminant: 'Weights' must be a real vector of class single or double.> ...
 %! fitcdiscr ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', 'a')
+%!error<ClassificationDiscriminant: 'Weights' must be a real numeric vector.> ...
+%! fitcdiscr ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ones (2, 2))
 %!error<ClassificationDiscriminant: 'Weights' must have one element per row in X.> ...
 %! fitcdiscr ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', [1, 2])
 %!error<ClassificationDiscriminant: 'Weights' must be nonnegative and must not be all zero.> ...
@@ -3137,8 +3153,10 @@ endclassdef
 %! loss (MODEL, ones (4,2), ones (4,1), 'LossFun', 'a')
 %!error<ClassificationDiscriminant.loss: invalid optional paired argument.> ...
 %! loss (MODEL, ones (4,2), ones (4,1), 'Bogus', 1)
-%!error<ClassificationDiscriminant.loss: invalid 'Weights'.> ...
+%!error<ClassificationDiscriminant.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (MODEL, ones (4,2), ones (4,1), 'Weights', 'w')
+%!error<ClassificationDiscriminant.loss: invalid 'Weights'.> ...
+%! loss (MODEL, ones (4,2), ones (4,1), 'Weights', ones (2, 2))
 
 ## Test margin method
 %! load fisheriris
@@ -4357,3 +4375,25 @@ endclassdef
 %! assert_equal (resubLoss (Mdl, 'LossFun', 'classiferror', 'Weights', w), ...
 %!               loss (Mdl, meas, species, 'LossFun', 'classiferror', ...
 %!                     'Weights', w));
+
+## Observation weights of class single or double
+%!error <ClassificationDiscriminant: 'Weights' must be a real vector of class single or double.> ...
+%! fitcdiscr ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ...
+%!            int8 ([1; 1; 1; 1]))
+%!error <ClassificationDiscriminant: 'Weights' must be a real vector of class single or double.> ...
+%! fitcdiscr ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', true (4, 1))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = fitcdiscr (meas, species, 'Weights', single (w));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Single weights compute as double
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! A = fitcdiscr (meas, species, 'Weights', single (w));
+%! B = fitcdiscr (meas, species, 'Weights', double (single (w)));
+%! assert_equal (nthargout (2, @predict, A, meas), nthargout (2, @predict, ...
+%!               B, meas));

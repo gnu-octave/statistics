@@ -50,6 +50,10 @@ function W = edgeWeights (args, Y, ClassNames, Prior, classname, caller)
   [W, args] = parsePairedArguments ({'Weights'}, {[]}, args(:));
 
   ## Validate optional paired arguments
+  errmsg = weightsClass (W);
+  if (! isempty (errmsg))
+    error ("%s.%s: %s", classname, caller, errmsg);
+  endif
   if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
     error ("%s.%s: 'Weights' must be a numeric vector.", classname, caller);
   endif

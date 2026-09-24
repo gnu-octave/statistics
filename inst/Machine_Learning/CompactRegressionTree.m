@@ -755,6 +755,10 @@ classdef CompactRegressionTree < PredictiveModel
       if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
         error ("CompactRegressionTree.loss: unsupported 'LossFun' value.");
       endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("CompactRegressionTree.loss: %s", errmsg);
+      endif
       if (! isempty (Weights) &&
           ! (isnumeric (Weights) && isvector (Weights) && isreal (Weights)))
         error (strcat ("CompactRegressionTree.loss: 'Weights' must be a", ...
@@ -1120,3 +1124,9 @@ endclassdef
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'SL'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <CompactRegressionTree.loss: 'Weights' must be a real vector of class single or double.> ...
+%! loss (compact (fitrtree ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)')), ones (4, ...
+%!       2), (1:4)', ...
+%!       'Weights', int8 ([1; 1; 1; 1]))

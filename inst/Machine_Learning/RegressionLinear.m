@@ -330,7 +330,8 @@ classdef RegressionLinear < PredictiveModel
     ## @item @qcode{'ResponseTransform'} @tab A transformation applied to the
     ## predicted response, named or given as a function handle.
     ##
-    ## @item @qcode{'Weights'} @tab One nonnegative weight per observation.
+    ## @item @qcode{'Weights'} @tab One nonnegative weight per observation, as a
+    ## single or double vector.  Every computation runs in double.
     ##
     ## @item @qcode{'PredictorNames'} @tab One name per predictor.
     ##
@@ -558,6 +559,10 @@ classdef RegressionLinear < PredictiveModel
              && isreal (Verbose) && any (Verbose == [0, 1, 2])))
         error (strcat ("RegressionLinear: 'Verbose' must be 0, 1,", ...
                        " or 2."));
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionLinear: %s", errmsg);
       endif
       if (! isempty (Weights) &&
           ! (isnumeric (Weights) && isreal (Weights)
@@ -930,6 +935,10 @@ classdef RegressionLinear < PredictiveModel
                        " either 'mse' or 'epsiloninsensitive'."));
       endif
       LossFun = lower (LossFun);
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionLinear.loss: %s", errmsg);
+      endif
       if (! isempty (Weights) &&
           ! (isnumeric (Weights) && isreal (Weights)
              && isvector (Weights) && all (Weights >= 0)))
@@ -958,7 +967,7 @@ classdef RegressionLinear < PredictiveModel
       if (isempty (Weights))
         w = ones (numel (Y), 1);
       else
-        w = Weights(:);
+        w = double (Weights(:));
         if (numel (w) != numel (Y))
           error (strcat ("RegressionLinear.loss: 'Weights' must have one", ...
                          " element per observation."));
@@ -1498,3 +1507,22 @@ endclassdef
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'SL'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <RegressionLinear: 'Weights' must be a real vector of class single or double.> ...
+%! fitrlinear ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', int8 ([1; 1; 1; 1]))
+%!error <RegressionLinear: 'Weights' must be a real vector of class single or double.> ...
+%! fitrlinear ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', true (4, 1))
+%!error <RegressionLinear.loss: 'Weights' must be a real vector of class single or double.>
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! y = (1:4)';
+%! loss (fitrlinear (X, y), X, y, 'Weights', int8 ([1; 1; 1; 1]))
+%!test
+%! ## Single weights compute as double
+%! load fisheriris
+%! X = meas(:,2:4);
+%! y = meas(:,1);
+%! w = 1 + (1:150)' / 7;
+%! A = fitrlinear (X, y, 'Weights', single (w));
+%! B = fitrlinear (X, y, 'Weights', double (single (w)));
+%! assert_equal (predict (A, X), predict (B, X));

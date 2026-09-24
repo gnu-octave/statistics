@@ -539,6 +539,10 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
         error ("CompactClassificationNaiveBayes.loss: invalid loss function.");
       endif
       LossFun = tolower (LossFun);
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("CompactClassificationNaiveBayes.loss: %s", errmsg);
+      endif
       if (! isempty (Weights) && ! (isnumeric (Weights) && isvector (Weights)))
         error ("CompactClassificationNaiveBayes.loss: invalid 'Weights'.");
       endif
@@ -559,7 +563,7 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
       if (isempty (Weights))
         w = ones (numel (gY), 1);
       else
-        w = Weights(:);
+        w = double (Weights(:));
         if (numel (w) != numel (gY))
           error (strcat ("CompactClassificationNaiveBayes.loss:", ...
                          " 'Weights' must have one element per", ...
@@ -1014,3 +1018,8 @@ endclassdef
 %! a = logp (Mdl, meas);
 %! assert_equal (logp (Mdl, T(:,1:4)), a);
 %! assert_equal (logp (Mdl, T(:,[5, 4, 2, 3, 1])), a);
+
+## Observation weights of class single or double
+%!error <CompactClassificationNaiveBayes.loss: 'Weights' must be a real vector of class single or double.> ...
+%! loss (compact (fitcnb ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2])), ...
+%!       [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))

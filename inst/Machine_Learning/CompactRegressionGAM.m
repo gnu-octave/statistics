@@ -615,6 +615,10 @@ classdef CompactRegressionGAM < PredictiveModel
       if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
         error ("CompactRegressionGAM.loss: unsupported 'LossFun' value.");
       endif
+      errmsg = weightsClass (W);
+      if (! isempty (errmsg))
+        error ("CompactRegressionGAM.loss: %s", errmsg);
+      endif
       if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
         error (strcat ("CompactRegressionGAM.loss: 'Weights' must be a", ...
                        " numeric vector."));
@@ -633,7 +637,8 @@ classdef CompactRegressionGAM < PredictiveModel
 
       ## Weights are normalized to sum to one, as MATLAB does, so a loss is
       ## a weighted average rather than a weighted sum.
-      W = W(:) / sum (W);
+      W = double (W(:));
+      W = W / sum (W);
       yFit = predict (this, X);
       Y = Y(:);
 
@@ -958,3 +963,9 @@ endfunction
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'SL'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <CompactRegressionGAM.loss: 'Weights' must be a real vector of class single or double.>
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! y = (1:4)';
+%! loss (compact (fitrgam (X, y)), X, y, 'Weights', int8 ([1; 1; 1; 1]))

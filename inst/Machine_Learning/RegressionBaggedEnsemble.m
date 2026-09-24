@@ -366,7 +366,7 @@ classdef RegressionBaggedEnsemble < RegressionEnsemble
       for j = 1:numel (learners)
         t = learners(j);
         r = find (! this.UseObsForLearner(:,t));
-        w = this.W(r);
+        w = double (this.W(r));
         if (isempty (r) || ! (sum (w) > 0))
           continue;
         endif

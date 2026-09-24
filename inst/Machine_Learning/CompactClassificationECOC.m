@@ -685,13 +685,17 @@ classdef CompactClassificationECOC < PredictiveModel
       if (isempty (W))
         W = ones (n, 1);
       endif
+      errmsg = weightsClass (W);
+      if (! isempty (errmsg))
+        error ("CompactClassificationECOC.%s: %s", caller, errmsg);
+      endif
       if (! (isnumeric (W) && isvector (W) && numel (W) == n
              && all (W >= 0) && any (W > 0)))
         error (strcat ("CompactClassificationECOC.%s: 'Weights' must be a", ...
                        " nonnegative numeric vector with one element per", ...
                        " observation."), caller);
       endif
-      W = priorNormalize (W(:), gY, this.Prior);
+      W = priorNormalize (double (W(:)), gY, this.Prior);
 
     endfunction
 
@@ -887,3 +891,8 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <CompactClassificationECOC.loss: 'Weights' must be a real vector of class single or double.> ...
+%! loss (compact (fitcecoc ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2])), ...
+%!       [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))

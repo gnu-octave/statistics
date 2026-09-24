@@ -378,7 +378,8 @@ classdef ClassificationKernel < PredictiveModel
     ## @item @qcode{'ScoreTransform'} @tab A transformation applied to the
     ## scores, named or given as a function handle.
     ##
-    ## @item @qcode{'Weights'} @tab One nonnegative weight per observation.
+    ## @item @qcode{'Weights'} @tab One nonnegative weight per observation, as a
+    ## single or double vector.  Every computation runs in double.
     ##
     ## @item @qcode{'PredictorNames'} @tab One name per predictor.
     ##
@@ -532,6 +533,10 @@ classdef ClassificationKernel < PredictiveModel
         error (strcat ("ClassificationKernel: 'Prior' must be 'empirical',", ...
                        " 'uniform', a vector of nonnegative values, or a", ...
                        " structure."));
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationKernel: %s", errmsg);
       endif
       if (! isempty (Weights) && ! (isnumeric (Weights) && isreal (Weights) &&
                                     isvector (Weights) && all (Weights >= 0)))
@@ -923,6 +928,10 @@ classdef ClassificationKernel < PredictiveModel
                        " 'logit', 'mincost', or 'quadratic'."));
       endif
       LossFun = lower (LossFun);
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationKernel.loss: %s", errmsg);
+      endif
       if (! isempty (Weights) &&
           ! (isnumeric (Weights) && isreal (Weights)
              && isvector (Weights) && all (Weights >= 0)))
@@ -945,7 +954,7 @@ classdef ClassificationKernel < PredictiveModel
       if (isempty (Weights))
         w = ones (numel (gY), 1);
       else
-        w = Weights(:);
+        w = double (Weights(:));
         if (numel (w) != numel (gY))
           error (strcat ("ClassificationKernel.loss: 'Weights' must have", ...
                          " one element per observation."));
@@ -1009,6 +1018,10 @@ classdef ClassificationKernel < PredictiveModel
                  parsePairedArguments (optNames, dfValues, varargin(:));
 
       ## Validate optional paired arguments
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationKernel.resume: %s", errmsg);
+      endif
       if (! isempty (Weights) && ! (isnumeric (Weights) && isreal (Weights) &&
                                     isvector (Weights) && all (Weights >= 0)))
         error (strcat ("ClassificationKernel.resume: 'Weights'", ...
@@ -1183,7 +1196,7 @@ classdef ClassificationKernel < PredictiveModel
       if (isempty (Weights))
         Weights = ones (numel (gY), 1);
       else
-        Weights = Weights(:);
+        Weights = double (Weights(:));
         if (numel (Weights) != numel (gY))
           error (strcat ("ClassificationKernel.%s: 'Weights' must have", ...
                          " one element per observation."), caller);
@@ -1775,3 +1788,31 @@ endclassdef
 %! T = table (meas(51:150,1), meas(51:150,2), 'VariableNames', {'SL', 'SW'});
 %! T.Species = categorical (species(51:150));
 %! resume (fitckernel (T, 'Species'), T, 'IterationLimit', 5)
+
+## Observation weights of class single or double
+%!error <ClassificationKernel: 'Weights' must be a real vector of class single or double.> ...
+%! fitckernel ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ...
+%!             int8 ([1; 1; 1; 1]))
+%!error <ClassificationKernel: 'Weights' must be a real vector of class single or double.> ...
+%! fitckernel ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', true (4, 1))
+%!error <ClassificationKernel.loss: 'Weights' must be a real vector of class single or double.>
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! Y = [1; 1; 2; 2];
+%! loss (fitckernel (X, Y), X, Y, 'Weights', int8 ([1; 1; 1; 1]))
+%!error <ClassificationKernel.resume: 'Weights' must be a real vector of class single or double.>
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! Y = [1; 1; 2; 2];
+%! resume (fitckernel (X, Y), X, Y, 'Weights', int8 ([1; 1; 1; 1]))
+%!test
+%! ## Single weights compute as double
+%! load fisheriris
+%! X = meas(51:end,:);
+%! Y = species(51:end);
+%! w = 1 + (1:100)' / 7;
+%! rand ('seed', 1);
+%! randn ('seed', 1);
+%! A = fitckernel (X, Y, 'Weights', single (w));
+%! rand ('seed', 1);
+%! randn ('seed', 1);
+%! B = fitckernel (X, Y, 'Weights', double (single (w)));
+%! assert_equal (nthargout (2, @predict, A, X), nthargout (2, @predict, B, X));

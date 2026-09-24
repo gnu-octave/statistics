@@ -98,8 +98,9 @@ classdef RegressionGP < PredictiveModel
     ##
     ## Observation weights
     ##
-    ## An @math{Nx1} numeric vector, one weight per observation used to train
-    ## the model.  This property is read-only.
+    ## An @math{Nx1} vector, one weight per observation used to train the
+    ## model, scaled to sum to one and of the class of the @qcode{'Weights'}
+    ## given, single or double.  This property is read-only.
     ##
     ## @end deftp
     W                     = [];
@@ -533,8 +534,10 @@ classdef RegressionGP < PredictiveModel
     ## or a cellstr; a name must match an entry of @qcode{'PredictorNames'}
     ## exactly, its case included.
     ##
-    ## @item @qcode{'Weights'} @tab An @math{Nx1} numeric vector of non-negative
-    ## observation weights.  The default is a vector of ones.
+    ## @item @qcode{'Weights'} @tab An @math{Nx1} single or double vector of
+    ## non-negative observation weights.  The default is a vector of ones.  The
+    ## model's @code{W} keeps the class of the weights, while every computation
+    ## runs in double.
     ##
     ## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
     ## naming the predictors, in the order they appear in @var{X}.
@@ -736,8 +739,18 @@ classdef RegressionGP < PredictiveModel
       this.Y = Y;
       this.NumObservations = n;
       this.RowsUsed = RowsUsed;
-      this.W = this.getWeights_ (Weights, n, 'RegressionGP');
-      this.MissingResponse_ = missingResponse (Y(fitRows), this.W(fitRows));
+      ## The weights sum to one, as MATLAB reports them, and keep their class
+      ## in the model; every computation runs on them as double.
+      W = this.getWeights_ (Weights, n, 'RegressionGP');
+      if (sum (W) > 0)
+        W = W / sum (W);
+      endif
+      Wclass = "double";
+      if (! isempty (Weights))
+        Wclass = class (Weights);
+      endif
+      this.W = cast (W, Wclass);
+      this.MissingResponse_ = missingResponse (Y(fitRows), W(fitRows));
       if (isempty (PredictorNames))
         PredictorNames = arrayfun (@(k) sprintf ('x%d', k), 1:p, ...
                                    'UniformOutput', false);
@@ -1037,6 +1050,10 @@ classdef RegressionGP < PredictiveModel
                                     'epsiloninsensitive'})))
         error ("RegressionGP.loss: unsupported 'LossFun' value.");
       endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionGP.loss: %s", errmsg);
+      endif
       if (! isempty (Weights) &&
           ! (isnumeric (Weights) && isvector (Weights) && ...
              numel (Weights) == rows (X) && all (Weights >= 0)))
@@ -1044,7 +1061,7 @@ classdef RegressionGP < PredictiveModel
                        " non-negative values with one element per", ...
                        " observation."));
       endif
-      Weights = Weights(:);
+      Weights = double (Weights(:));
 
       if (! isempty (args))
         error ("RegressionGP.loss: invalid optional paired argument.");
@@ -1384,12 +1401,16 @@ classdef RegressionGP < PredictiveModel
         W = ones (n, 1);
         return;
       endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("%s: %s", caller, errmsg);
+      endif
       if (! (isnumeric (Weights) && isvector (Weights) && ...
              numel (Weights) == n && all (Weights >= 0)))
         error (strcat ("%s: 'Weights' must be a vector of non-negative", ...
                        " values with one element per observation."), caller);
       endif
-      W = Weights(:);
+      W = double (Weights(:));
     endfunction
 
   endmethods
@@ -2072,10 +2093,10 @@ endfunction
 %! assert_equal (Mdl.RowsUsed, []);
 
 %!test
-%! ## Observation weights default to one apiece
+%! ## Observation weights default to equal shares summing to one
 %! x = linspace (0, 1, 12)';
 %! Mdl = RegressionGP (x, cos (3*x));
-%! assert_equal (Mdl.W, ones (12, 1));
+%! assert_equal (Mdl.W, ones (12, 1) / 12);
 
 %!test
 %! ## A supplied covariance function is used, and reproduces the built-in one
@@ -2334,3 +2355,23 @@ endfunction
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'SL'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <RegressionGP: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionGP ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', ...
+%!               int8 ([1; 1; 1; 1]))
+%!error <RegressionGP: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionGP ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', true (4, 1))
+%!error <RegressionGP.loss: 'Weights' must be a real vector of class single or double.>
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! y = (1:4)';
+%! loss (RegressionGP (X, y), X, y, 'Weights', int8 ([1; 1; 1; 1]))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! X = meas(:,2:4);
+%! y = meas(:,1);
+%! w = 1 + (1:150)' / 7;
+%! Mdl = RegressionGP (X, y, 'Weights', single (w));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
