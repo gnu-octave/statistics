@@ -100,21 +100,21 @@ function jackstat = jackknife (anEstimator, varargin)
   ## Simple jackknifing can be done with a single vector argument, and
   ## first and foremost with a function that does not care about cell-arrays.
   if (length (varargin) == 1 && isnumeric (varargin {1}))
-  aSample = varargin{1};
-  g = length (aSample);
+    aSample = varargin{1};
+    g = length (aSample);
 
-  if (g <= 1)
-    jackstat = anEstimator (aSample);
-    jackstat = jackstat(:).';
-  else
-    jackstat = anEstimator (aSample(2:g));
-    jackstat = jackstat(:).';
-    jackstat = repmat (jackstat, g, 1);
+    if (g <= 1)
+      jackstat = anEstimator (aSample);
+      jackstat = jackstat(:).';
+    else
+      jackstat = anEstimator (aSample(2:g));
+      jackstat = jackstat(:).';
+      jackstat = repmat (jackstat, g, 1);
 
-    for k = 2:g
-      jackstat(k,:) = anEstimator (aSample([1:k - 1,k + 1:g]));
-    endfor
-  endif
+      for k = 2:g
+        jackstat(k,:) = anEstimator(aSample([1:k - 1,k + 1:g]));
+      endfor
+    endif
 
   ## More complicated input requires more work, however.
   else
@@ -130,8 +130,8 @@ function jackstat = jackknife (anEstimator, varargin)
     jackstat = repmat (jackstat, g, 1);
 
     for k = 2:g
-      jackstat(k,:) = anEstimator (cellfun (@(x) x([1:k - 1,k + 1:g]), ...
-                                    varargin, 'UniformOutput', false));
+      jackstat(k,:) = anEstimator(cellfun (@(x) x( [ 1 : k - 1, k + 1 : g ]), ...
+                                 varargin, 'UniformOutput', false));
     endfor
   endif
 
