@@ -84,7 +84,9 @@
 ## MATLAB uses; where that is zero it falls back to @math{0.1}.
 ##
 ## @item @qcode{'BoxConstraint'} @tab A positive scalar bounding the dual
-## coefficients, the cost of an error outside the tube.  The default is 1.
+## coefficients, the cost of an error outside the tube.  The default is
+## @code{iqr (@var{Y}) / 1.349} for a Gaussian kernel, or 1 where that is
+## zero, and 1 for any other kernel.
 ##
 ## @item @qcode{'Weights'} @tab A nonnegative single or double vector of
 ## observation weights, one per row of @var{X}.  An observation's box

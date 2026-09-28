@@ -482,7 +482,9 @@ classdef RegressionSVM < PredictiveModel
     ## @math{0.1} where that is zero.
     ##
     ## @item @qcode{'BoxConstraint'} @tab A positive scalar bounding the dual
-    ## coefficients, the cost of an error outside the tube.  The default is 1.
+    ## coefficients, the cost of an error outside the tube.  The default is
+    ## @code{iqr (@var{Y}) / 1.349} for a Gaussian kernel, or 1 where that is
+    ## zero, and 1 for any other kernel.
     ##
     ## @item @qcode{'Weights'} @tab A nonnegative single or double vector of
     ## observation weights, one per row of @var{X}.  An observation's box
@@ -573,9 +575,10 @@ classdef RegressionSVM < PredictiveModel
                   'Weights'};
       ## An empty default stands for one resolved once the data are known:
       ## 'Epsilon' is the interquartile range of the response over 13.49,
-      ## 'PredictorNames' are x1, x2, ... and 'ResponseName' is 'Y', and no
-      ## 'ResponseTransform' leaves the response as it is.
-      dfValues = {false, [], [], [], 'eps_svr', [], 'linear', 3, 1, 0, 1, ...
+      ## 'BoxConstraint' the same range over 1.349 for a Gaussian kernel and 1
+      ## for any other, 'PredictorNames' are x1, x2, ... and 'ResponseName' is
+      ## 'Y', and no 'ResponseTransform' leaves the response as it is.
+      dfValues = {false, [], [], [], 'eps_svr', [], 'linear', 3, 1, 0, [], ...
                   0.5, 1000, 1e-6, 1, [], []};
       [Standardize, PredictorNames, ResponseName, RTin, SVMtype, Epsilon, ...
        KernelFunction, PolynomialOrder, KernelScale, KernelOffset, ...
@@ -628,7 +631,8 @@ classdef RegressionSVM < PredictiveModel
                                       && KernelOffset >= 0))
         error ("RegressionSVM: 'KernelOffset' must be a non-negative scalar.");
       endif
-      if (! (isscalar (BoxConstraint) && BoxConstraint > 0))
+      if (! isempty (BoxConstraint)
+          && ! (isscalar (BoxConstraint) && BoxConstraint > 0))
         error ("RegressionSVM: 'BoxConstraint' must be a positive scalar.");
       endif
       if (! (isscalar (Nu) && Nu > 0 && Nu <= 1))
@@ -788,6 +792,16 @@ classdef RegressionSVM < PredictiveModel
         endif
       endif
       this.Epsilon = Epsilon;
+
+      ## BoxConstraint defaults to ten times that robust tenth for a Gaussian
+      ## kernel and to 1 for any other, as in MATLAB R2024a, which also falls
+      ## back to 1 on a zero interquartile range.
+      if (isempty (BoxConstraint))
+        BoxConstraint = 1;
+        if (any (strcmp (KernelFunction, {'rbf', 'gaussian'})) && iqr (Y) > 0)
+          BoxConstraint = iqr (Y) / 1.349;
+        endif
+      endif
 
       ## Set svmtrain parameters for SVMtype and KernelFunction
       switch (SVMtype)
@@ -1917,6 +1931,58 @@ endclassdef
 %!                'BoxConstraint', 2);
 %! assert_equal (Mdl.KernelParameters.Function, 'gaussian');
 %! assert_equal (unique (Mdl.BoxConstraints), 2);
+
+## The Gaussian kernel's default BoxConstraint, measured on MATLAB R2024a.
+%!test
+%! load carsmall
+%! X = [Horsepower, Weight];
+%! ok = ! any (isnan ([X, MPG]), 2);
+%! Mdl = fitrsvm (X(ok,:), MPG(ok), 'KernelFunction', 'gaussian');
+%! assert_equal (Mdl.ModelParameters.BoxConstraint, 9.266123054, 1e-9);
+%! assert_equal (Mdl.BoxConstraints(2), 9.266123054, 1e-9);
+
+%!test
+%! load carsmall
+%! X = [Horsepower, Weight];
+%! ok = ! any (isnan ([X, MPG]), 2);
+%! Mdl = fitrsvm (X(ok,:), MPG(ok), 'KernelFunction', 'rbf');
+%! assert_equal (Mdl.ModelParameters.BoxConstraint, 9.266123054, 1e-9);
+
+%!test
+%! load carsmall
+%! X = [Horsepower, Weight];
+%! ok = ! any (isnan ([X, MPG]), 2);
+%! w = (1:sum (ok))';
+%! Mdl = fitrsvm (X(ok,:), MPG(ok), 'KernelFunction', 'gaussian', ...
+%!                'Weights', w);
+%! assert_equal (Mdl.ModelParameters.BoxConstraint, 9.266123054, 1e-9);
+%! assert_equal (Mdl.BoxConstraints(2), 0.3943031087, 1e-9);
+
+%!test
+%! load carsmall
+%! X = [Horsepower, Weight];
+%! ok = ! any (isnan ([X, MPG]), 2);
+%! Y = MPG(ok);
+%! Y(1) = 100;
+%! w = [0; (2:numel(Y))'];
+%! Mdl = fitrsvm (X(ok,:), Y, 'KernelFunction', 'gaussian', 'Weights', w);
+%! assert_equal (Mdl.ModelParameters.BoxConstraint, 9.266123054, 1e-9);
+
+%!test
+%! load carsmall
+%! X = [Horsepower, Weight];
+%! ok = ! any (isnan ([X, MPG]), 2);
+%! Mdl = fitrsvm (X(ok,:), 5 * ones (sum (ok), 1), ...
+%!                'KernelFunction', 'gaussian');
+%! assert_equal (Mdl.ModelParameters.BoxConstraint, 1);
+
+%!test
+%! load carsmall
+%! X = [Horsepower, Weight];
+%! ok = ! any (isnan ([X, MPG]), 2);
+%! Mdl = fitrsvm (X(ok,:), MPG(ok), 'KernelFunction', 'polynomial', ...
+%!                'Standardize', true);
+%! assert_equal (Mdl.ModelParameters.BoxConstraint, 1);
 
 %!test
 %! load fisheriris
