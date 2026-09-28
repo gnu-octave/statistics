@@ -50,6 +50,12 @@
 ## the @var{oldopts} value in place.  Fields that are not recognized option
 ## names are ignored in both structures.
 ##
+## Any number of structures may lead the arguments, each merged over the ones
+## before it in this way, and name/value pairs may follow them.  An empty
+## value, such as @code{[]} or @code{struct ([])}, in place of a structure
+## stands for no structure, so @code{statset ([])} returns the same as
+## @code{statset ()}.
+##
 ## @code{statset ()} called with no output argument displays the recognized
 ## option names together with their permitted values, marking each default
 ## in braces.
@@ -154,20 +160,20 @@ function options = statset (varargin)
     return;
   endif
 
-  ## An optional leading structure supplies the starting values, and an
-  ## optional second structure overrides them where it is not empty.
+  ## Leading structures supply the starting values, each overriding the ones
+  ## before it where it is not empty.  An empty value stands for none.
   args = varargin;
-  if (isstruct (args{1}))
-    options = merge_struct (options, args{1}, names);
-    args(1) = [];
-    if (numel (args) > 0 && isstruct (args{1}))
-      options = merge_struct (options, args{1}, names);
-      args(1) = [];
-    endif
-  elseif (! ischar (args{1}) && ! isstring_scalar (args{1}))
+  if (! is_options (args{1}) && ! ischar (args{1}) ...
+        && ! isstring_scalar (args{1}))
     error (strcat ("statset: first argument must be a function name,", ...
                    " an option name, or an options structure."));
   endif
+  while (numel (args) > 0 && is_options (args{1}))
+    if (! isempty (args{1}))
+      options = merge_struct (options, args{1}, names);
+    endif
+    args(1) = [];
+  endwhile
 
   if (mod (numel (args), 2) != 0)
     error ("statset: arguments must occur in NAME/VALUE pairs.");
@@ -196,6 +202,11 @@ function options = statset (varargin)
     options.Tune = default_tune (options.RobustWgtFun);
   endif
 
+endfunction
+
+## True for an options structure, or an empty value standing for none.
+function tf = is_options (arg)
+  tf = isstruct (arg) || (isempty (arg) && ! ischar (arg));
 endfunction
 
 ## Copy the recognized, non-empty fields of S over those of OPTIONS.
@@ -646,6 +657,51 @@ endfunction
 %! old = statset ('nlinfit');
 %! assert_equal (statset (old, statset ()), old);
 
+## An empty value in place of a structure stands for none
+%!test
+%! assert_equal (statset ([]), statset ());
+
+%!test
+%! assert_equal (statset ({}), statset ());
+
+%!test
+%! assert_equal (statset (zeros (1, 0)), statset ());
+
+%!test
+%! assert_equal (statset (struct ([])), statset ());
+
+%!test
+%! assert_equal (statset ([], 'Display', 'iter').Display, 'iter');
+
+%!test
+%! old = statset ('nlinfit');
+%! assert_equal (statset ([], old), old);
+
+%!test
+%! old = statset ('nlinfit');
+%! assert_equal (statset (old, []), old);
+
+%!test
+%! options = statset (statset ('nlinfit'), [], 'MaxIter', 5);
+%! assert_equal (options.MaxIter, 5);
+%! assert_equal (options.TolFun, 1e-8);
+
+%!test
+%! assert_equal (statset ([], [], [], 'MaxIter', 5).MaxIter, 5);
+
+%!test
+%! options = statset (struct ('MaxIter', {}), 'TolX', 1);
+%! assert_equal (options.MaxIter, []);
+%! assert_equal (options.TolX, 1);
+
+## Any number of structures may lead, each merged over the ones before it
+%!test
+%! options = statset (statset ('nlinfit'), statset ('MaxIter', 7), ...
+%!                    statset ('TolX', 1));
+%! assert_equal (options.MaxIter, 7);
+%! assert_equal (options.TolX, 1);
+%! assert_equal (options.TolFun, 1e-8);
+
 ## Unrecognized fields of a supplied structure are ignored
 %!test
 %! options = statset (struct ('NotAnOption', 1), 'MaxIter', 5);
@@ -717,6 +773,9 @@ endfunction
 
 %!error<statset: first argument must be a function name, an option name, or an options structure.> ...
 %! statset (1, 2)
+
+%!error<statset: arguments must occur in NAME/VALUE pairs.> ...
+%! statset ([], 'MaxIter')
 
 %!error<statset: arguments must occur in NAME/VALUE pairs.> ...
 %! statset ('MaxIter', 5, 'TolX')
