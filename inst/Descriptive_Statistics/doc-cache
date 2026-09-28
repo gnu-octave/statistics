@@ -646,19 +646,25 @@ jackknife
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1710
+# length: 2815
 statistics: jackstat = jackknife (E, x)
 statistics: jackstat = jackknife (E, x, ...)
+statistics: jackstat = jackknife (..., 'Options', options)
 Compute jackknife estimates of a parameter taking one or more given samples
 as parameters.
 
 In particular, E is the estimator to be jackknifed as a function name,
 handle, or inline function, and x is the sample for which the estimate
-is to be taken. The i-th entry of jackstat will contain the
-value of the estimator on the sample x with its i-th row omitted.
+is to be taken. Each row of x is an observation, and a row vector is
+taken as a column of them. The i-th row of jackstat holds the
+estimator's value on x with its i-th row omitted, reshaped to a
+row, so an estimator returning m values gives an nxm matrix
+for n observations, and a scalar estimator a column vector. Every
+sample must give the estimator's result the same number of elements as the
+whole of x does. With fewer than two observations there is nothing
+to omit, and jackstat is the estimator's value on x itself.
 
-jackstat (i) = E(x(1 : i - 1,
-i + 1 : length(x)))
+jackstat (i,:) = E (x([1:i-1, i+1:end],:))
 
 Depending on the number of samples to be used, the estimator must have the
 appropriate form:
@@ -667,12 +673,27 @@ If only one sample is used, then the estimator need not be concerned with
 cell arrays, for example jackknifing the standard deviation of a sample can
 be performed with jackstat = jackknife (@std, rand (100, 1)).
 
-If, however, more than one sample is to be used, the samples must all be of
-equal size, and the estimator must address them as elements of a cell-array,
-in which they are aggregated in their order of appearance:
+If several samples are used, an estimator that takes as many inputs, or
+declares varargin, receives each sample as an argument of its own,
+as in MATLAB. A scalar is passed to every call unchanged, and the other
+samples must all have the same number of rows, the same row being omitted
+from each:
+
+jackstat = jackknife (@(x, y) std (x) / var (y),
+rand (100, 1), randn (100, 1))
+
+An estimator declaring exactly one input instead receives the samples as
+the elements of a cell array, in their order of appearance, and the samples
+must all have the same number of rows. This form is an Octave extension.
+An estimator written for it that also declares an optional second input
+receives the samples as separate arguments.
 
 jackstat = jackknife (@(x) std(x{1})/var(x{2}),
 rand (100, 1), randn (100, 1))
+
+'Options' takes an options structure, as made by statset,
+for MATLAB compatibility; it changes nothing, the samples being evaluated
+one after another.
 
 If all goes well, a theoretical value P for the parameter is already
 known, n is the sample size,

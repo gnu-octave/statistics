@@ -271,7 +271,7 @@ statset
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4198
+# length: 4475
 statistics: options = statset ()
 statistics: options = statset (funcname)
 statistics: options = statset (name, value, ...)
@@ -304,6 +304,12 @@ structures: every non-empty field of newopts overrides its
 counterpart in oldopts, while an empty field of newopts leaves
 the oldopts value in place. Fields that are not recognized option
 names are ignored in both structures.
+
+Any number of structures may lead the arguments, each merged over the ones
+before it in this way, and name/value pairs may follow them. An empty
+value, such as [] or struct ([]), in place of a structure
+stands for no structure, so statset ([]) returns the same as
+statset ().
 
 statset () called with no output argument displays the recognized
 option names together with their permitted values, marking each default

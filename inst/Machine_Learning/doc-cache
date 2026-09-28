@@ -16707,7 +16707,7 @@ ClassificationSVM.Beta
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 485
+# length: 572
 ClassificationSVM: property Beta
 Linear predictor coefficients
 
@@ -16716,8 +16716,9 @@ vector, where p is the number of predictors. Beta is
 the primal representation of the fitted hyperplane and exists only when
 the SVM classifier was trained with a 'linear' kernel function;
 for any other kernel there is no such representation and Beta is
-empty. It equals
-obj.SupportVectors' * (obj.Alpha .* obj.SupportVectorLabels).
+empty. It equals (obj.SupportVectors / s)' * (obj.Alpha .*
+obj.SupportVectorLabels), where s is the kernel scale, and a
+score is (x / s) * Beta + Bias, as in MATLAB.
 This property is read-only.
 
 
@@ -16884,7 +16885,7 @@ ClassificationSVM.ClassificationSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4492
+# length: 4829
 ClassificationSVM: obj = ClassificationSVM (X, Y)
 ClassificationSVM: obj = ClassificationSVM (Tbl, ResponseVarName)
 ClassificationSVM: obj = ClassificationSVM (Tbl, formula)
@@ -16950,10 +16951,15 @@ the kernel function to use. Supported values are 'linear',
 'sigmoid'.
 'PolynomialOrder' A positive integer specifying
 the order of the polynomial kernel function. Default is 3.
-'KernelScale' A positive scalar specifying the
-kernel scale parameter. Default is 1.
-'KernelOffset' A non-negative scalar specifying
-the kernel offset parameter. Default is 0.
+'KernelScale' A positive scalar dividing every
+predictor before any kernel is applied, as MATLAB does, so that with
+u and v the divided predictors the kernels are u'v,
+exp (-||u - v||^2), (1 + u'v)^q and tanh (u'v + c),
+c being 'KernelOffset'. The default is 1.
+'KernelOffset' A non-negative scalar, the constant
+c of the sigmoid kernel, which MATLAB does not have. MATLAB adds
+it to every element of the Gram matrix, which leaves the fitted model
+unchanged, so it changes no other kernel here. The default is 0.
 'Weights' A single or double vector of nonnegative
 observation weights, one per row of X. Each observation's box
 constraint is n times BoxConstraint times its weight, the
@@ -17517,7 +17523,7 @@ ClassificationSVM.SupportVectorLabels
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 490
+# length: 540
 ClassificationSVM: property SupportVectorLabels
 Support vector class labels
 
@@ -17528,7 +17534,8 @@ SupportVectorLabels indicates that the corresponding support
 vector
 belongs to the positive class (ClassNames{2}). A value of -1
 indicates that the corresponding support vector belongs to the negative
-class (ClassNames{1}). This property is read-only.
+class (ClassNames{1}). A one-class model labels every support
+vector +1. This property is read-only.
 
 
 # name: <cell-element>
@@ -25171,15 +25178,19 @@ CompactClassificationSVM.Beta
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 324
+# length: 579
 CompactClassificationSVM: property Beta
 Linear predictor coefficients
 
-The linear predictor coefficients specified as an sx1 numeric
-vector, where s is the number of support vectors,
-rows (obj.SupportVectors). If the SVM classifier was trained
-with a 'linear' kernel function, then Beta is empty.
-This property is read-only.
+The linear predictor coefficients specified as a px1 numeric
+vector, where p is the number of predictors. Beta is
+the primal representation of the fitted hyperplane and exists only when
+the SVM classifier was trained with a 'linear' kernel function;
+for any other kernel there is no such representation and Beta is
+empty. It equals (obj.SupportVectors / s)' * (obj.Alpha .*
+obj.SupportVectorLabels), where s is the kernel scale, and a
+score is (x / s) * Beta + Bias, as in MATLAB. This
+property is read-only.
 
 
 # name: <cell-element>
@@ -25609,7 +25620,7 @@ CompactClassificationSVM.SupportVectorLabels
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 489
+# length: 539
 CompactClassificationSVM: property SupportVectorLabels
 Support vector class labels
 
@@ -25619,7 +25630,8 @@ rows (obj.SupportVectors). A value of +1 in
 SupportVectorLabels indicates that the corresponding support
 vector belongs to the positive class (ClassNames{2}). A value
 of -1 indicates that the corresponding support vector belongs to the
-negative class (ClassNames{1}). This property is read-only.
+negative class (ClassNames{1}). A one-class model labels
+every support vector +1. This property is read-only.
 
 
 # name: <cell-element>
@@ -29756,13 +29768,15 @@ CompactRegressionSVM.Beta
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 214
+# length: 312
 CompactRegressionSVM: property Beta
 Primal coefficients, one per predictor
 
 A numeric column vector, equal to
-obj.SupportVectors' * obj.Alpha, and empty for any kernel other
-than linear. This property is read-only.
+(obj.SupportVectors / s)' * obj.Alpha, where s is the
+kernel scale, so that a prediction is (x / s) * Beta + Bias,
+as in MATLAB. It is empty for any kernel other than linear. This
+property is read-only.
 
 
 # name: <cell-element>
@@ -42223,14 +42237,16 @@ RegressionSVM.Beta
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 273
+# length: 369
 RegressionSVM: property Beta
 Primal coefficients, one per predictor
 
 A numeric column vector, equal to
-obj.SupportVectors' * obj.Alpha. It exists only for a linear
-kernel; for any other kernel there is no primal representation and this
-is empty. This property is read-only.
+(obj.SupportVectors / s)' * obj.Alpha, where s is the
+kernel scale, so that a prediction is (x / s) * Beta + Bias,
+as in MATLAB. It exists only for a linear kernel; for any other kernel
+there is no primal representation and this is empty. This property is
+read-only.
 
 
 # name: <cell-element>
@@ -42638,7 +42654,7 @@ RegressionSVM.RegressionSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4333
+# length: 4749
 RegressionSVM: obj = RegressionSVM (X, Y)
 RegressionSVM: obj = RegressionSVM (Tbl, ResponseVarName)
 RegressionSVM: obj = RegressionSVM (Tbl, formula)
@@ -42695,7 +42711,9 @@ default is 'none'.
 insensitive tube. The default is iqr (Y) / 13.49, or
 0.1 where that is zero.
 'BoxConstraint' A positive scalar bounding the dual
-coefficients, the cost of an error outside the tube. The default is 1.
+coefficients, the cost of an error outside the tube. The default is
+iqr (Y) / 1.349 for a Gaussian kernel, or 1 where that is
+zero, and 1 for any other kernel.
 'Weights' A nonnegative single or double vector of
 observation weights, one per row of X. An observation's box
 constraint is n times BoxConstraint times its weight, the
@@ -42709,10 +42727,15 @@ one of 'linear', the default, 'rbf', 'gaussian',
 'PolynomialOrder' A positive integer, the order of the
 polynomial kernel. The default is 3. It is ignored by every other
 kernel.
-'KernelScale' A positive scalar dividing the
-predictors before the kernel is applied. The default is 1.
-'KernelOffset' A non-negative scalar added to the
-kernel value. The default is 0.
+'KernelScale' A positive scalar dividing every
+predictor before any kernel is applied, as MATLAB does, so that with
+u and v the divided predictors the kernels are u'v,
+exp (-||u - v||^2), (1 + u'v)^q and tanh (u'v + c),
+c being 'KernelOffset'. The default is 1.
+'KernelOffset' A non-negative scalar, the constant
+c of the sigmoid kernel, which MATLAB does not have. MATLAB adds
+it to every element of the Gram matrix, which leaves the fitted model
+unchanged, so it changes no other kernel here. The default is 0.
 'SVMtype' A character vector selecting the
 formulation, either 'eps_svr', the default, or 'nu_svr'.
 MATLAB fits only the epsilon form; 'nu_svr' is an Octave
@@ -47994,7 +48017,7 @@ fitcsvm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 8681
+# length: 8601
 statistics: Mdl = fitcsvm (X, Y)
 statistics: Mdl = fitcsvm (Tbl, ResponseVarName)
 statistics: Mdl = fitcsvm (Tbl, formula)
@@ -48084,16 +48107,15 @@ is 'linear'.
 the order of polynomial in kernel function. The default value is 3. Unless
 the 'KernelFunction' is set to 'polynomial', this parameter
 is ignored.
-'KernelScale' A positive scalar that specifies a
-scaling factor for the γ (gamma) parameter, which can be seen as the
-inverse of the radius of influence of samples selected by the model as
-support vectors. The γ (gamma) parameter is computed as
-gamma = KernelScale / (number of features). The default value
-for 'KernelScale' is 1.
-'KernelOffset' A nonnegative scalar that specifies
-the coef0 in kernel function. For the polynomial kernel, it influences
-the polynomial's shift, and for the sigmoid kernel, it affects the hyperbolic
-tangent's shift. The default value for 'KernelOffset' is 0.
+'KernelScale' A positive scalar dividing every predictor
+before any kernel is applied, as MATLAB does, so that with u and
+v the divided predictors the kernels are u'v,
+exp (-||u - v||^2), (1 + u'v)^q and tanh (u'v + c),
+c being 'KernelOffset'. The default is 1.
+'KernelOffset' A non-negative scalar, the constant
+c of the sigmoid kernel, which MATLAB does not have. MATLAB adds
+it to every element of the Gram matrix, which leaves the fitted model
+unchanged, so it changes no other kernel here. The default is 0.
 'Weights' A single or double vector of nonnegative
 observation weights, one per row of X. Each observation's box
 constraint is n times BoxConstraint times its weight, the
@@ -48910,7 +48932,7 @@ fitrsvm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4088
+# length: 4504
 statistics: Mdl = fitrsvm (X, Y)
 statistics: Mdl = fitrsvm (Tbl, ResponseVarName)
 statistics: Mdl = fitrsvm (Tbl, formula)
@@ -48967,7 +48989,9 @@ insensitive tube. The default is iqr (Y) / 13.49, a robust
 estimate of a tenth of the response's standard deviation, which is what
 MATLAB uses; where that is zero it falls back to 0.1.
 'BoxConstraint' A positive scalar bounding the dual
-coefficients, the cost of an error outside the tube. The default is 1.
+coefficients, the cost of an error outside the tube. The default is
+iqr (Y) / 1.349 for a Gaussian kernel, or 1 where that is
+zero, and 1 for any other kernel.
 'Weights' A nonnegative single or double vector of
 observation weights, one per row of X. An observation's box
 constraint is n times BoxConstraint times its weight, the
@@ -48980,10 +49004,15 @@ one of 'linear', the default, 'rbf', 'gaussian',
 'polynomial' or 'sigmoid'.
 'PolynomialOrder' A positive integer, the order of the
 polynomial kernel. The default is 3. It is ignored by every other kernel.
-'KernelScale' A positive scalar dividing the predictors
-before the kernel is applied. The default is 1.
-'KernelOffset' A non-negative scalar added to the kernel
-value. The default is 0.
+'KernelScale' A positive scalar dividing every predictor
+before any kernel is applied, as MATLAB does, so that with u and
+v the divided predictors the kernels are u'v,
+exp (-||u - v||^2), (1 + u'v)^q and tanh (u'v + c),
+c being 'KernelOffset'. The default is 1.
+'KernelOffset' A non-negative scalar, the constant
+c of the sigmoid kernel, which MATLAB does not have. MATLAB adds
+it to every element of the Gram matrix, which leaves the fitted model
+unchanged, so it changes no other kernel here. The default is 0.
 'SVMtype' A character vector selecting the formulation,
 either 'eps_svr', the default, or 'nu_svr'. MATLAB fits
 only the epsilon form; 'nu_svr' is an Octave extension.
