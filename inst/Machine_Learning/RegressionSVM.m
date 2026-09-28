@@ -198,9 +198,11 @@ classdef RegressionSVM < PredictiveModel
     ## Primal coefficients, one per predictor
     ##
     ## A numeric column vector, equal to
-    ## @code{obj.SupportVectors' * obj.Alpha}.  It exists only for a linear
-    ## kernel; for any other kernel there is no primal representation and this
-    ## is empty.  This property is read-only.
+    ## @code{(obj.SupportVectors / s)' * obj.Alpha}, where @math{s} is the
+    ## kernel scale, so that a prediction is @code{(@var{x} / s) * Beta + Bias},
+    ## as in MATLAB.  It exists only for a linear kernel; for any other kernel
+    ## there is no primal representation and this is empty.  This property is
+    ## read-only.
     ##
     ## @end deftp
     Beta                  = [];
@@ -502,11 +504,16 @@ classdef RegressionSVM < PredictiveModel
     ## polynomial kernel.  The default is 3.  It is ignored by every other
     ## kernel.
     ##
-    ## @item @qcode{'KernelScale'} @tab A positive scalar dividing the
-    ## predictors before the kernel is applied.  The default is 1.
+    ## @item @qcode{'KernelScale'} @tab A positive scalar dividing every
+    ## predictor before any kernel is applied, as MATLAB does, so that with
+    ## @math{u} and @math{v} the divided predictors the kernels are @math{u'v},
+    ## @math{exp (-||u - v||^2)}, @math{(1 + u'v)^q} and @math{tanh (u'v + c)},
+    ## @math{c} being @qcode{'KernelOffset'}.  The default is 1.
     ##
-    ## @item @qcode{'KernelOffset'} @tab A non-negative scalar added to the
-    ## kernel value.  The default is 0.
+    ## @item @qcode{'KernelOffset'} @tab A non-negative scalar, the constant
+    ## @math{c} of the sigmoid kernel, which MATLAB does not have.  MATLAB adds
+    ## it to every element of the Gram matrix, which leaves the fitted model
+    ## unchanged, so it changes no other kernel here.  The default is 0.
     ##
     ## @item @qcode{'SVMtype'} @tab A character vector selecting the
     ## formulation, either @qcode{'eps_svr'}, the default, or @qcode{'nu_svr'}.
@@ -821,15 +828,27 @@ classdef RegressionSVM < PredictiveModel
           t = 3;
       endswitch
 
-      ## Set svmtrain parameters for gamma
-      g = KernelScale / ndims_X;
+      ## MATLAB divides the predictors by KernelScale for every kernel, so the
+      ## fit sees X / KernelScale with gamma 1.  Its polynomial kernel is
+      ## (1 + x'z) ^ q, and it adds KernelOffset to the Gram matrix, which
+      ## leaves the fitted model unchanged, so the offset reaches only the
+      ## sigmoid kernel, which is ours alone.
+      Xu = X;
+      X = X / KernelScale;
+      g = 1;
+      r = 0;
+      if (t == 1)
+        r = 1;
+      elseif (t == 3)
+        r = KernelOffset;
+      endif
 
       ## Build options string for svmtrain function
       str_options = strcat ("-s %d -t %d -g %.16g -d %d -r %.16g", ...
                             " -c %.16g -n %.16g -p %.16g -m %.16g", ...
                             " -e %e -h %d -q");
       svm_options = sprintf (str_options, s, t, g, PolynomialOrder, ...
-                             KernelOffset, BoxConstraint, Nu, Epsilon, ...
+                             r, BoxConstraint, Nu, Epsilon, ...
                              CacheSize, Tolerance, Shrinking);
 
       ## The weights enter the fit through one box constraint per
@@ -840,11 +859,10 @@ classdef RegressionSVM < PredictiveModel
       ## Train the SVM model using svmtrain from libsvm
       [Model, converged] = svmtrain (Y, X, svm_options, instW);
       if (! converged)
-        warning (strcat ("RegressionSVM: the solver stopped at its iteration", ...
-                         " limit without converging; standardizing the", ...
-                         " predictors may help."));
+        warning (strcat ("RegressionSVM: the solver stopped at its", ...
+                         " iteration limit without converging;", ...
+                         " standardizing the predictors may help."));
       endif
-      this.Model = Model;
 
       ## Populate the model properties.  For regression LIBSVM's sv_coef is
       ## already the difference of the two multipliers, so it is signed and
@@ -856,20 +874,32 @@ classdef RegressionSVM < PredictiveModel
       ## MATLAB reports is the negated rho.  Measured against svmpredict.
       this.Bias = -Model.rho;
 
-      ## BETA holds the primal coefficients, one per predictor, and exists
-      ## only for a linear kernel; for any other there is no primal
-      ## representation and MATLAB leaves it empty.
-      if (t == 0)
-        this.Beta = Model.SVs' * this.Alpha;
-      else
-        this.Beta = [];
-      endif
-
       this.IsSupportVector = false (this.NumObservations, 1);
       ## LIBSVM counts the observations the fit saw, the complete ones
       fitted = find (cobs);
       this.IsSupportVector(fitted(Model.sv_indices)) = true;
-      this.SupportVectors = Model.SVs;
+      this.SupportVectors = Xu(Model.sv_indices,:);
+
+      ## BETA holds the primal coefficients, one per predictor, and exists
+      ## only for a linear kernel; for any other there is no primal
+      ## representation and MATLAB leaves it empty.  It weighs the divided
+      ## predictors, as MATLAB's does.
+      if (t == 0)
+        this.Beta = (this.SupportVectors / KernelScale)' * this.Alpha;
+      else
+        this.Beta = [];
+      endif
+
+      ## Re-express the engine's model on the undivided predictors, which is
+      ## what every prediction hands it: the scale moves into gamma, or into
+      ## the coefficients of a linear kernel, which has no gamma.
+      Model.SVs = sparse (this.SupportVectors);
+      if (t == 0)
+        Model.sv_coef = Model.sv_coef / KernelScale ^ 2;
+      else
+        Model.Parameters(4) = 1 / KernelScale ^ 2;
+      endif
+      this.Model = Model;
 
       ## The kernel and the per-observation box constraints, in the shapes
       ## MATLAB reports them: an observation missing a predictor has none.
@@ -1992,6 +2022,30 @@ endclassdef
 %! Mdl = fitrsvm (X(ok,:), MPG(ok), 'KernelFunction', 'polynomial', ...
 %!                'Standardize', true);
 %! assert_equal (Mdl.ModelParameters.BoxConstraint, 1);
+
+## KernelScale divides every predictor, as in MATLAB; expected values are
+## R2024a's.
+%!test
+%! load fisheriris
+%! Mdl = fitrsvm (meas(:,1:3), meas(:,4), 'KernelScale', 2);
+%! assert_equal (predict (Mdl, meas([1, 75, 150], 1:3)), ...
+%!               [0.222015641544; 1.35505851032; 1.83323561521], 2e-3);
+%!test
+%! load fisheriris
+%! Mdl = fitrsvm (meas(:,1:3), meas(:,4), 'KernelFunction', 'gaussian', ...
+%!                'KernelScale', 2);
+%! assert_equal (predict (Mdl, meas([1, 75, 150], 1:3)), ...
+%!               [0.220070671683; 1.2611886798; 1.9057640742], 3e-3);
+%!test
+%! load fisheriris
+%! Mdl = fitrsvm (meas(:,1:3), meas(:,4), 'KernelScale', 2);
+%! Q = meas([1, 75, 150], 1:3);
+%! assert_equal (predict (Mdl, Q), (Q / 2) * Mdl.Beta + Mdl.Bias, 1e-12);
+%!test
+%! load fisheriris
+%! Mdl = fitrsvm (meas(:,1:3), meas(:,4), 'KernelFunction', 'gaussian', ...
+%!                'KernelScale', 2);
+%! assert_equal (Mdl.SupportVectors, meas(Mdl.IsSupportVector, 1:3));
 
 %!test
 %! load fisheriris

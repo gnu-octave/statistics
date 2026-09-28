@@ -123,8 +123,10 @@ classdef CompactRegressionSVM < PredictiveModel
     ## Primal coefficients, one per predictor
     ##
     ## A numeric column vector, equal to
-    ## @code{obj.SupportVectors' * obj.Alpha}, and empty for any kernel other
-    ## than linear.  This property is read-only.
+    ## @code{(obj.SupportVectors / s)' * obj.Alpha}, where @math{s} is the
+    ## kernel scale, so that a prediction is @code{(@var{x} / s) * Beta + Bias},
+    ## as in MATLAB.  It is empty for any kernel other than linear.  This
+    ## property is read-only.
     ##
     ## @end deftp
     Beta                  = [];

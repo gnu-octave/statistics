@@ -103,11 +103,16 @@
 ## @item @qcode{'PolynomialOrder'} @tab A positive integer, the order of the
 ## polynomial kernel.  The default is 3.  It is ignored by every other kernel.
 ##
-## @item @qcode{'KernelScale'} @tab A positive scalar dividing the predictors
-## before the kernel is applied.  The default is 1.
+## @item @qcode{'KernelScale'} @tab A positive scalar dividing every predictor
+## before any kernel is applied, as MATLAB does, so that with @math{u} and
+## @math{v} the divided predictors the kernels are @math{u'v},
+## @math{exp (-||u - v||^2)}, @math{(1 + u'v)^q} and @math{tanh (u'v + c)},
+## @math{c} being @qcode{'KernelOffset'}.  The default is 1.
 ##
-## @item @qcode{'KernelOffset'} @tab A non-negative scalar added to the kernel
-## value.  The default is 0.
+## @item @qcode{'KernelOffset'} @tab A non-negative scalar, the constant
+## @math{c} of the sigmoid kernel, which MATLAB does not have.  MATLAB adds
+## it to every element of the Gram matrix, which leaves the fitted model
+## unchanged, so it changes no other kernel here.  The default is 0.
 ##
 ## @item @qcode{'SVMtype'} @tab A character vector selecting the formulation,
 ## either @qcode{'eps_svr'}, the default, or @qcode{'nu_svr'}.  MATLAB fits

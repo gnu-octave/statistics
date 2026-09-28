@@ -232,8 +232,9 @@ classdef ClassificationSVM < PredictiveModel
     ## the primal representation of the fitted hyperplane and exists only when
     ## the SVM classifier was trained with a @qcode{'linear'} kernel function;
     ## for any other kernel there is no such representation and @qcode{Beta} is
-    ## empty.  It equals
-    ## @qcode{obj.SupportVectors' * (obj.Alpha .* obj.SupportVectorLabels)}.
+    ## empty.  It equals @qcode{(obj.SupportVectors / s)' * (obj.Alpha .*
+    ## obj.SupportVectorLabels)}, where @math{s} is the kernel scale, and a
+    ## score is @qcode{(@var{x} / s) * Beta + Bias}, as in MATLAB.
     ## This property is read-only.
     ##
     ## @end deftp
@@ -671,11 +672,16 @@ classdef ClassificationSVM < PredictiveModel
     ## @item @qcode{'PolynomialOrder'} @tab A positive integer specifying
     ## the order of the polynomial kernel function.  Default is 3.
     ##
-    ## @item @qcode{'KernelScale'} @tab A positive scalar specifying the
-    ## kernel scale parameter.  Default is 1.
+    ## @item @qcode{'KernelScale'} @tab A positive scalar dividing every
+    ## predictor before any kernel is applied, as MATLAB does, so that with
+    ## @math{u} and @math{v} the divided predictors the kernels are @math{u'v},
+    ## @math{exp (-||u - v||^2)}, @math{(1 + u'v)^q} and @math{tanh (u'v + c)},
+    ## @math{c} being @qcode{'KernelOffset'}.  The default is 1.
     ##
-    ## @item @qcode{'KernelOffset'} @tab A non-negative scalar specifying
-    ## the kernel offset parameter.  Default is 0.
+    ## @item @qcode{'KernelOffset'} @tab A non-negative scalar, the constant
+    ## @math{c} of the sigmoid kernel, which MATLAB does not have.  MATLAB adds
+    ## it to every element of the Gram matrix, which leaves the fitted model
+    ## unchanged, so it changes no other kernel here.  The default is 0.
     ##
     ## @item @qcode{'Weights'} @tab A single or double vector of nonnegative
     ## observation weights, one per row of @var{X}.  Each observation's box
@@ -1131,15 +1137,27 @@ classdef ClassificationSVM < PredictiveModel
           t = 3;
       endswitch
 
-      ## Set svmtrain parameters for gamma
-      g = KernelScale / ndims_X;
+      ## MATLAB divides the predictors by KernelScale for every kernel, so the
+      ## fit sees X / KernelScale with gamma 1.  Its polynomial kernel is
+      ## (1 + x'z) ^ q, and it adds KernelOffset to the Gram matrix, which
+      ## leaves the fitted model unchanged, so the offset reaches only the
+      ## sigmoid kernel, which is ours alone.
+      Xu = X;
+      X = X / KernelScale;
+      g = 1;
+      r = 0;
+      if (t == 1)
+        r = 1;
+      elseif (t == 3)
+        r = KernelOffset;
+      endif
 
       ## svmpredict:
       ##    '-s':  SVMtype
       ##    '-t':  KernelFunction
       ##    '-g':  Gamma
       ##    '-d':  PolynomialOrder
-      ##    '-r':  KernelOffset
+      ##    '-r':  coef0
       ##    '-c':  BoxConstraint
       ##    '-n':  Nu
       ##    '-m':  CacheSize
@@ -1147,10 +1165,10 @@ classdef ClassificationSVM < PredictiveModel
       ##    '-h':  Shrinking
 
       ## Build options string for svmtrain function
-      str_options = strcat ("-s %d -t %d -g %f -d %d -r %f", ...
+      str_options = strcat ("-s %d -t %d -g %f -d %d -r %.16g", ...
                             " -c %f -n %f -m %f -e %e -h %d -q");
       svm_options = sprintf (str_options, s, t, g, PolynomialOrder, ...
-                             KernelOffset, BoxConstraint, Nu, ...
+                             r, BoxConstraint, Nu, ...
                              CacheSize, Tolerance, Shrinking);
 
       ## Prior, Cost and the observation weights enter the fit through one
@@ -1176,9 +1194,9 @@ classdef ClassificationSVM < PredictiveModel
       ## Train the SVM model using svmtrain from libsvm
       [Model, converged] = svmtrain (Y, X, svm_options, instW);
       if (! converged)
-        warning (strcat ("ClassificationSVM: the solver stopped at its iteration", ...
-                         " limit without converging; standardizing the", ...
-                         " predictors may help."));
+        warning (strcat ("ClassificationSVM: the solver stopped at its", ...
+                         " iteration limit without converging;", ...
+                         " standardizing the predictors may help."));
       endif
       ## A one-class model's bias puts its least supported support vector on
       ## the boundary: R2024a's bias is minus the smallest kernel sum over the
@@ -1198,7 +1216,6 @@ classdef ClassificationSVM < PredictiveModel
           Model.rho = min (dsv + Model.rho);
         endif
       endif
-      this.Model = Model;
 
       ## Populate ClassificationSVM object properties.  LIBSVM returns the
       ## dual coefficients already multiplied by the class sign, whereas
@@ -1215,18 +1232,31 @@ classdef ClassificationSVM < PredictiveModel
       ## to the labelling MATLAB reports.
       this.SupportVectorLabels = -sign (Model.sv_coef);
 
+      this.IsSupportVector = false (this.NumObservations, 1);
+      this.IsSupportVector(Model.sv_indices) = true;
+      this.SupportVectors = Xu(Model.sv_indices,:);
+
       ## BETA holds the primal coefficients, one per predictor, and exists
       ## only for a linear kernel; for any other kernel there is no primal
-      ## representation and MATLAB leaves it empty.
+      ## representation and MATLAB leaves it empty.  It weighs the divided
+      ## predictors, as MATLAB's does.
       if (t == 0)
-        this.Beta = Model.SVs' * (this.Alpha .* this.SupportVectorLabels);
+        this.Beta = (this.SupportVectors / KernelScale)' ...
+                    * (this.Alpha .* this.SupportVectorLabels);
       else
         this.Beta = [];
       endif
 
-      this.IsSupportVector = false (this.NumObservations, 1);
-      this.IsSupportVector(Model.sv_indices) = true;
-      this.SupportVectors = Model.SVs;
+      ## Re-express the engine's model on the undivided predictors, which is
+      ## what every prediction hands it: the scale moves into gamma, or into
+      ## the coefficients of a linear kernel, which has no gamma.
+      Model.SVs = sparse (this.SupportVectors);
+      if (t == 0)
+        Model.sv_coef = Model.sv_coef / KernelScale ^ 2;
+      else
+        Model.Parameters(4) = 1 / KernelScale ^ 2;
+      endif
+      this.Model = Model;
 
       ## The kernel, the per-observation box constraints and the two
       ## one-class parameters, in the shapes MATLAB reports them.  The box
@@ -2984,7 +3014,9 @@ endclassdef
 %! assert_equal (sum (obj.IsSupportVector), numel (obj.Alpha))
 %! [label, score] = predict (obj, xc);
 %! assert_equal (label, [1; 2; 2]);
-%! assert_equal (score(:,1), [0.99285; -0.080296; -0.93694], 2e-5);
+%! ## R2024a's scores.
+%! assert_equal (score(:,1), [0.9813697204; -0.1752955874; ...
+%!                            -0.9410361822], 5e-4);
 %! assert_equal (score(:,1), -score(:,2), eps)
 %!test
 %! obj = fitcsvm (x, y);
@@ -3009,6 +3041,50 @@ endclassdef
 %! obj = fitcsvm (x, y, 'KernelFunction', 'rbf');
 %! assert_equal (isempty (obj.Beta), true);
 %! assert_equal (numel (obj.Alpha), sum (obj.IsSupportVector));
+
+## KernelScale divides every predictor, as in MATLAB; expected values are
+## R2024a's.
+%!test
+%! obj = fitcsvm (x, y, 'KernelScale', 2);
+%! assert_equal (obj.Beta, [3.19512195122; 2.55609756098], 1e-6);
+%!test
+%! obj = fitcsvm (x, y, 'KernelScale', 2);
+%! assert_equal (obj.Bias, -10.0870731707, 1e-6);
+%!test
+%! obj = fitcsvm (x, y, 'KernelScale', 2);
+%! Q = x([1, 30, 60, 90],:);
+%! [~, score] = predict (obj, Q);
+%! assert_equal (score(:,2), (Q / 2) * obj.Beta + obj.Bias, 1e-12);
+%!test
+%! obj = fitcsvm (x, y, 'KernelFunction', 'gaussian', 'KernelScale', 2);
+%! [~, score] = predict (obj, x([1, 30, 60, 90],:));
+%! assert_equal (score(:,2), [-0.827757529685; -2.17748767098; ...
+%!                            2.25809330158; 1.59440000202], 1e-6);
+%!test
+%! obj = fitcsvm (x, y, 'KernelFunction', 'polynomial', 'KernelScale', 2, ...
+%!                'PolynomialOrder', 2);
+%! [~, score] = predict (obj, x([1, 30, 60, 90],:));
+%! assert_equal (score(:,2), [-1.23481189405; -4.72633601992; ...
+%!                            6.48549554678; 2.83864647222], 2e-3);
+%!test
+%! obj = fitcsvm (x, y, 'KernelFunction', 'gaussian', 'KernelScale', 2);
+%! assert_equal (obj.SupportVectors, x(obj.IsSupportVector,:));
+%!test
+%! obj = fitcsvm (x, ones (100, 1), 'KernelFunction', 'gaussian', ...
+%!                'KernelScale', 2, 'Nu', 0.3);
+%! assert_equal (obj.Bias, -13.4656686131, 1e-6);
+%!test
+%! ## MATLAB adds KernelOffset to the Gram matrix, which changes no fit.
+%! A = fitcsvm (x, y, 'KernelFunction', 'polynomial');
+%! B = fitcsvm (x, y, 'KernelFunction', 'polynomial', 'KernelOffset', 0.5);
+%! [~, sA] = predict (A, x);
+%! [~, sB] = predict (B, x);
+%! assert_equal (sB, sA);
+%!test
+%! obj = fitcsvm (x, y, 'KernelScale', 2);
+%! [~, s1] = predict (obj, x);
+%! [~, s2] = predict (discardSupportVectors (obj), x);
+%! assert_equal (s2, s1, 1e-12);
 %!test
 %! ## the dual coefficients are magnitudes; their class is in the labels
 %! obj = fitcsvm (x, y);
@@ -3070,24 +3146,15 @@ endclassdef
 %!                       'Tolerance', 1e-7);
 %! obj = CVSVMModel.Trained{1};
 %! testInds = test (CVSVMModel.Partition);
-%! ## Every one of these fifteen is classified correctly, so every margin is
-%! ## positive.  They used to read -4.0000 downwards for the second class:
-%! ## the margin was formed from the response as given, so a 1/2 coding
-%! ## scaled that class by four instead of negating it, and the model looked
-%! ## as though it misclassified every observation of it.
-%! ##
-%! ## The values themselves are this engine's own and have no oracle: the
-%! ## partition comes from a seeded rand and the fit from LIBSVM, neither of
-%! ## which MATLAB can reproduce.  They moved in the third decimal when the
-%! ## folds began inheriting the model's prior, an 85-row training split of
-%! ## a balanced 100 not being exactly even; what the block asserts is
-%! ## unchanged.
-%! expected_margin = [2.000000;  0.856067;  1.666246;  3.419288; ...
-%!                    3.461257;  2.664258;  3.529112;  2.000000; ...
-%!                    3.168674;  3.223841;  1.528738;  3.744702; ...
-%!                    0.836534;  2.810381;  3.673740];
+%! ## R2024a's margins, fitted on the same training rows with the prior the
+%! ## fold inherits, [0.5 0.5].  Every one of the fifteen is classified
+%! ## correctly, so every margin is positive.
+%! expected_margin = [2.185059262; 0.993999246; 1.999333315; 3.078654435; ...
+%!                    2.977495193; 2.191955906; 3.269512295; 2.323010586; ...
+%!                    3.185859883; 3.140175181; 1.701291423; 3.210493533; ...
+%!                    1.034142171; 3.033060133; 2.799817759];
 %! computed_margin = margin (obj, x(testInds,:), y(testInds,:));
-%! assert_equal (computed_margin, expected_margin, 1e-4);
+%! assert_equal (computed_margin, expected_margin, 2e-3);
 %! assert (all (computed_margin > 0));
 
 ## Test input validation for margin method
@@ -3116,24 +3183,14 @@ endclassdef
 %! L4 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'hinge');
 %! L5 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'logit');
 %! L6 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'quadratic');
-%! ## These changed when loss stopped handing the response to LIBSVM
-%! ## unmapped: it used the labels 1 and 2 where the margin's sign wants +1
-%! ## and -1, so every loss but the error rate was scaled by the labels.
-%! ## margin had already been given svmPlusMinus and loss had been missed.
-%! ## Cross-checked against R2024a on a deterministic half-and-half split,
-%! ## where ours reads 0.1800, 0.0800, 0.3984, 0.1785, 0.3184, 0.2939 and
-%! ## MATLAB reads 0.1812, 0.0800, 0.4107, 0.1520, 0.3297, 0.1981: the
-%! ## error rate agrees exactly and the rest sit within the LIBSVM against
-%! ## SMO difference of section 1.  The old values were an order of
-%! ## magnitude out, a 53%% error rate among them.
-%! ## They moved again, by under 0.002, when loss began scaling the weights
-%! ## of each class to its prior, as MATLAB does.
-%! assert_equal (L1, 0.1125, 1e-4);
-%! assert_equal (L2, 0.0000, 1e-4);
-%! assert_equal (L3, 0.3140, 1e-4);
-%! assert_equal (L4, 0.1039, 1e-4);
-%! assert_equal (L5, 0.2656, 1e-4);
-%! assert_equal (L6, 0.3200, 1e-4);
+%! ## R2024a's losses, fitted on the same training rows with the prior the
+%! ## fold inherits, [0.5 0.5].
+%! assert_equal (L1, 0.1057769174, 5e-4);
+%! assert_equal (L2, 0, 5e-4);
+%! assert_equal (L3, 0.3138559104, 5e-4);
+%! assert_equal (L4, 0.07547010872, 5e-4);
+%! assert_equal (L5, 0.2681965038, 5e-4);
+%! assert_equal (L6, 0.1954123863, 5e-4);
 
 ## Test input validation for loss method
 %!error<ClassificationSVM.loss: too few input arguments.> ...

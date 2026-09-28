@@ -125,17 +125,16 @@
 ## the @qcode{'KernelFunction'} is set to @qcode{'polynomial'}, this parameter
 ## is ignored.
 ##
-## @item @qcode{'KernelScale'} @tab A positive scalar that specifies a
-## scaling factor for the @math{γ} (gamma) parameter, which can be seen as the
-## inverse of the radius of influence of samples selected by the model as
-## support vectors.  The @math{γ} (gamma) parameter is computed as
-## @math{gamma = @qcode{KernelScale} / (number of features)}.  The default value
-## for @qcode{'KernelScale'} is 1.
+## @item @qcode{'KernelScale'} @tab A positive scalar dividing every predictor
+## before any kernel is applied, as MATLAB does, so that with @math{u} and
+## @math{v} the divided predictors the kernels are @math{u'v},
+## @math{exp (-||u - v||^2)}, @math{(1 + u'v)^q} and @math{tanh (u'v + c)},
+## @math{c} being @qcode{'KernelOffset'}.  The default is 1.
 ##
-## @item @qcode{'KernelOffset'} @tab A nonnegative scalar that specifies
-## the @math{coef0} in kernel function. For the polynomial kernel, it influences
-## the polynomial's shift, and for the sigmoid kernel, it affects the hyperbolic
-## tangent's shift. The default value for @qcode{'KernelOffset'} is 0.
+## @item @qcode{'KernelOffset'} @tab A non-negative scalar, the constant
+## @math{c} of the sigmoid kernel, which MATLAB does not have.  MATLAB adds
+## it to every element of the Gram matrix, which leaves the fitted model
+## unchanged, so it changes no other kernel here.  The default is 0.
 ##
 ## @item @qcode{'Weights'} @tab A single or double vector of nonnegative
 ## observation weights, one per row of @var{X}.  Each observation's box
