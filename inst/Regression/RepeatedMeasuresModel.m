@@ -1230,6 +1230,145 @@ classdef RepeatedMeasuresModel
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {RepeatedMeasuresModel} {@var{h} =} plot (@var{rm})
+    ## @deftypefnx {RepeatedMeasuresModel} {@var{h} =} plot (@var{rm}, @var{name}, @var{value})
+    ##
+    ## Plot the repeated measures of every subject.
+    ##
+    ## @code{plot (@var{rm})} draws one line per subject of
+    ## @code{BetweenDesign} through its repeated measures, against the
+    ## positions 1 to @math{k} of the @math{k} responses, and returns the
+    ## column of line handles @var{h}.
+    ##
+    ## The name-value arguments are @qcode{'Group'}, the name of a
+    ## categorical between-subject factor or a cell array of them, which
+    ## colours the lines by group and adds a legend with one entry per group;
+    ## @qcode{'Marker'}, the marker, @qcode{'s'} by default; and
+    ## @qcode{'LineStyle'}, the line style, @qcode{'-'} by default.
+    ##
+    ## @seealso{fitrm, RepeatedMeasuresModel.plotprofile}
+    ## @end deftypefn
+    function h = plot (this, varargin)
+
+      [grp, marker, ls, args] = parsePairedArguments ( ...
+                {'Group', 'Marker', 'LineStyle'}, {'', 's', '-'}, varargin(:));
+      if (! isempty (args))
+        error ("RepeatedMeasuresModel.plot: invalid optional paired argument.");
+      endif
+      k = numel (this.ResponseNames);
+      n = rows (this.BetweenDesign);
+      Y = zeros (n, k);
+      for j = 1:k
+        Y(:,j) = double (this.BetweenDesign.(this.ResponseNames{j}));
+      endfor
+      gi = ones (n, 1);
+      labels = {};
+      if (! isempty (grp))
+        [F, errmsg] = factorInfo (this, grp);
+        if (isempty (errmsg) && ! all ([F.between]))
+          errmsg = "'Group' must name between-subject factors.";
+        endif
+        if (! isempty (errmsg))
+          error ("RepeatedMeasuresModel.plot: %s", errmsg);
+        endif
+        L = combos (F);
+        gi = zeros (n, 1);
+        for r = 1:rows (L)
+          gi(groupMembers (this, F, L(r,:))) = r;
+          labels{r} = groupLabel (F, L(r,:));
+        endfor
+      endif
+      ax = newplot ();
+      co = get (ax, 'ColorOrder');
+      h = zeros (n, 1);
+      for i = 1:n
+        c = co(mod (max (gi(i), 1) - 1, rows (co)) + 1,:);
+        h(i) = line (1:k, Y(i,:), 'Marker', marker, 'LineStyle', ls, ...
+                     'Color', c, 'Parent', ax);
+      endfor
+      if (! isempty (labels))
+        [u, first] = unique (gi, 'first');
+        keep = u > 0;
+        legend (h(first(keep)), labels(u(keep)));
+      endif
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {RepeatedMeasuresModel} {@var{h} =} plotprofile (@var{rm}, @var{X})
+    ## @deftypefnx {RepeatedMeasuresModel} {@var{h} =} plotprofile (@var{rm}, @var{X}, @var{name}, @var{value})
+    ##
+    ## Plot the estimated marginal means.
+    ##
+    ## @code{plotprofile (@var{rm}, @var{X})} draws the estimated marginal
+    ## means of @code{margmean} over the levels of the factor @var{X}, a
+    ## categorical between-subject factor or a within-subject factor, and
+    ## returns the line handles @var{h}.  A numeric within-subject factor is
+    ## drawn at its values; any other at the positions 1 to @math{L} of its
+    ## @math{L} levels, labelled with them.
+    ##
+    ## The name-value arguments are @qcode{'Group'}, the name of another
+    ## factor, which draws one line per level of it and adds a legend;
+    ## @qcode{'Marker'}, @qcode{'o'} by default; and @qcode{'LineStyle'},
+    ## @qcode{'-'} by default.
+    ##
+    ## @seealso{fitrm, RepeatedMeasuresModel.margmean,
+    ## RepeatedMeasuresModel.plot}
+    ## @end deftypefn
+    function h = plotprofile (this, X, varargin)
+
+      if (nargin < 2)
+        error ("RepeatedMeasuresModel.plotprofile: too few input arguments.");
+      endif
+      [grp, marker, ls, args] = parsePairedArguments ( ...
+                {'Group', 'Marker', 'LineStyle'}, {'', 'o', '-'}, varargin(:));
+      if (! isempty (args))
+        error ("RepeatedMeasuresModel.plotprofile: invalid optional paired argument.");
+      endif
+      if (! (ischar (X) && isrow (X)) && ! (isa (X, 'string') && isscalar (X)))
+        error ("RepeatedMeasuresModel.plotprofile: X must name one factor.");
+      endif
+      X = char (X);
+      names = {X};
+      if (! isempty (grp))
+        names = [cellstr(grp), names];
+      endif
+      [F, errmsg] = factorInfo (this, names);
+      if (! isempty (errmsg))
+        error ("RepeatedMeasuresModel.plotprofile: %s", errmsg);
+      endif
+      tbl = margmean (this, names);
+      nl = numel (F(end).levels);
+      m = reshape (tbl.Mean, nl, []);
+      if (! F(end).between && isnumeric (this.WithinDesign.(X)))
+        x = [F(end).native{:}];
+        ticks = {};
+      else
+        x = 1:nl;
+        ticks = F(end).levels;
+      endif
+      ax = newplot ();
+      co = get (ax, 'ColorOrder');
+      h = zeros (columns (m), 1);
+      for g = 1:columns (m)
+        h(g) = line (x, m(:,g)', 'Marker', marker, 'LineStyle', ls, ...
+                     'Color', co(mod (g - 1, rows (co)) + 1,:), 'Parent', ax);
+      endfor
+      if (! isempty (ticks))
+        set (ax, 'XTick', x, 'XTickLabel', ticks);
+      endif
+      xlabel (ax, X);
+      ylabel (ax, 'Estimated marginal means');
+      if (numel (F) > 1)
+        G = combos (F(1:end-1));
+        labels = arrayfun (@(r) groupLabel (F(1:end-1), G(r,:)), ...
+                           1:rows (G), 'UniformOutput', false);
+        legend (h, labels);
+      endif
+
+    endfunction
+
   endmethods
 
   methods (Access = private)
@@ -1501,6 +1640,14 @@ function L = combos (F)
     reps = prod (n(i+1:end));
     L(:,i) = repmat (kron ((1:n(i))', ones (reps, 1)), prod (n(1:i-1)), 1);
   endfor
+endfunction
+
+## The legend label of the group at the levels L of the factors F, as MATLAB
+## writes it, 'species=setosa' or 'g=1,A=2'.
+function s = groupLabel (F, L)
+  parts = arrayfun (@(i) sprintf ('%s=%s', F(i).name, F(i).levels{L(i)}), ...
+                    1:numel (F), 'UniformOutput', false);
+  s = strjoin (parts, ',');
 endfunction
 
 ## A table of the levels L of the factors F, one variable per column of L,
@@ -2462,6 +2609,56 @@ endfunction
 %! assert_equal (size (random (rm)), [150, 4]);
 %! assert_equal (size (random (rm, rm.BetweenDesign([1, 51, 101],:))), [3, 4]);
 
+## plot and plotprofile
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plot (rm);
+%!   assert_equal (numel (h), 150);
+%!   assert_equal (get (h(1), 'xdata'), [1, 2, 3, 4]);
+%!   assert_equal (get (h(1), 'ydata'), [5.1, 3.5, 1.4, 0.2]);
+%!   assert_equal (get (h(1), 'marker'), 's');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plot (rm, 'Group', 'species', 'Marker', 'o', 'LineStyle', '--');
+%!   assert_equal (get (legend (), 'string')(:)', {'species=setosa', ...
+%!                 'species=versicolor', 'species=virginica'});
+%!   assert_equal (isequal (get (h(1), 'color'), get (h(51), 'color')), false);
+%!   assert_equal (get (h(1), 'linestyle'), '--');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotprofile (rm, 'species');
+%!   assert_equal (numel (h), 1);
+%!   assert_equal (get (h, 'ydata'), [2.5355, 3.573, 4.285], -1e-13);
+%!   assert_equal (get (get (gca, 'xlabel'), 'string'), 'species');
+%!   assert_equal (get (get (gca, 'ylabel'), 'string'), ...
+%!                 'Estimated marginal means');
+%!   assert_equal (get (gca, 'xticklabel')', {'setosa', 'versicolor', ...
+%!                 'virginica'});
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotprofile (rm, 'Measurements', 'Group', 'species');
+%!   assert_equal (numel (h), 3);
+%!   assert_equal (get (h(1), 'xdata'), [1, 2, 3, 4]);
+%!   assert_equal (get (h(1), 'ydata'), [5.006, 3.428, 1.462, 0.246], -1e-12);
+%!   assert_equal (get (legend (), 'string')(:)', {'species=setosa', ...
+%!                 'species=versicolor', 'species=virginica'});
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
 ## Test input validation
 %!error<RepeatedMeasuresModel: too few input arguments.> RepeatedMeasuresModel (1)
 %!error<RepeatedMeasuresModel: T must be a table.> fitrm ([1, 2, 3], 'y1-y6 ~ g')
@@ -2560,3 +2757,17 @@ endfunction
 %!error<RepeatedMeasuresModel.random: TNEW must be a table.> random (rm, 1)
 %!error<RepeatedMeasuresModel.random: TNEW has no variable 'species'.> ...
 %! random (rm, table ([1; 2], 'VariableNames', {'z'}))
+%!error<RepeatedMeasuresModel.plot: 'Group' must name between-subject factors.> ...
+%! plot (rm, 'Group', 'Measurements')
+%!error<RepeatedMeasuresModel.plot: 'nosuch' is not a categorical factor of the model.> ...
+%! plot (rm, 'Group', 'nosuch')
+%!error<RepeatedMeasuresModel.plot: invalid optional paired argument.> ...
+%! plot (rm, 'Nonsense', 1)
+%!error<RepeatedMeasuresModel.plotprofile: too few input arguments.> ...
+%! plotprofile (rm)
+%!error<RepeatedMeasuresModel.plotprofile: X must name one factor.> ...
+%! plotprofile (rm, {'species', 'Measurements'})
+%!error<RepeatedMeasuresModel.plotprofile: 'nosuch' is not a categorical factor of the model.> ...
+%! plotprofile (rm, 'nosuch')
+%!error<RepeatedMeasuresModel.plotprofile: invalid optional paired argument.> ...
+%! plotprofile (rm, 'species', 'Nonsense', 1)

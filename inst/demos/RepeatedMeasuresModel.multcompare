@@ -1,0 +1,25 @@
+%!demo
+%! ## 1. Which species differ
+%!
+%! load fisheriris
+%! t = table (species, meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!            'VariableNames', {'species', 'meas1', 'meas2', 'meas3', 'meas4'});
+%! rm = fitrm (t, 'meas1-meas4 ~ species');
+%!
+%! ## Every ordered pair of species, on the mean of the four measurements,
+%! ## with Tukey-Kramer p-values and simultaneous limits
+%! multcompare (rm, 'species')
+
+%!demo
+%! ## 2. Comparisons within each group
+%!
+%! load fisheriris
+%! t = table (species, meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!            'VariableNames', {'species', 'meas1', 'meas2', 'meas3', 'meas4'});
+%! Meas = table ([1, 2, 3, 4]', 'VariableNames', {'Measurements'});
+%! rm = fitrm (t, 'meas1-meas4 ~ species', 'WithinDesign', Meas);
+%!
+%! ## `By` repeats the comparison of the measurements for each species,
+%! ## here with Bonferroni's adjustment
+%! multcompare (rm, 'Measurements', 'By', 'species', ...
+%!              'ComparisonType', 'bonferroni')

@@ -1,0 +1,23 @@
+%!demo
+%! ## 1. The marginal means of a between-subject factor
+%!
+%! load fisheriris
+%! t = table (species, meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!            'VariableNames', {'species', 'meas1', 'meas2', 'meas3', 'meas4'});
+%! rm = fitrm (t, 'meas1-meas4 ~ species');
+%!
+%! ## The mean over the four measurements, one point per species
+%! plotprofile (rm, 'species');
+
+%!demo
+%! ## 2. A profile over the measurements, one line per group
+%!
+%! load fisheriris
+%! t = table (species, meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!            'VariableNames', {'species', 'meas1', 'meas2', 'meas3', 'meas4'});
+%! Meas = table ([1, 2, 3, 4]', 'VariableNames', {'Measurements'});
+%! rm = fitrm (t, 'meas1-meas4 ~ species', 'WithinDesign', Meas);
+%!
+%! ## Lines that are not parallel are what `ranova` reports as the
+%! ## interaction of species with the measurements
+%! plotprofile (rm, 'Measurements', 'Group', 'species');
