@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 176
+# columns: 180
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -7774,6 +7774,218 @@ makedist
 # elements: 1
 # length: 43
 Random arrays from the stable distribution.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+stdrcdf
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1601
+statistics: p = stdrcdf (x, k, df)
+statistics: p = stdrcdf (x, k, df, 'upper')
+Studentized range cumulative distribution function (CDF).
+
+For each element of x, compute the cumulative distribution function
+(CDF) of the studentized range distribution for k groups and df
+degrees of freedom. The size of p is the common size of x,
+k and df. A scalar input functions as a constant matrix of the
+same size as the other inputs.
+
+The studentized range is the range of k independent standard normal
+variables divided by an independent sqrt (chi2 / df), where
+chi2 has a chi-square distribution with df degrees of
+freedom. It is the distribution behind Tukey's honestly significant
+difference and the Tukey-Kramer multiple comparison procedure. k
+must be an integer of at least 2 and df positive, Inf
+included, which gives the range of k standard normals; otherwise
+p is NaN.
+
+p = stdrcdf (x, k, df, "upper") computes the
+upper tail probability of the studentized range distribution at the values
+in x. Each tail is computed directly, so a small upper tail
+probability keeps its relative accuracy.
+
+The distribution is evaluated by numerical integration, accurate to about
+1e-13 relative to the tail probability for df up to 1e4, and to
+about 1e-8 for df of 1e8.
+
+MATLAB has no public counterpart of this function.
+
+Further information about the studentized range distribution can be found
+at https://en.wikipedia.org/wiki/Studentized_range_distribution
+
+Input arguments must be double or single; integer, logical,
+and character arrays are rejected.
+
+See also:
+stdrinv,
+stdrpdf,
+stdrrnd,
+stdrstat,
+multcompare
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 57
+Studentized range cumulative distribution function (CDF).
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+stdrinv
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1018
+statistics: x = stdrinv (p, k, df)
+Inverse of the studentized range cumulative distribution function (iCDF).
+
+For each element of p, compute the quantile (the inverse of the CDF)
+of the studentized range distribution for k groups and df
+degrees of freedom. The size of x is the common size of p,
+k and df. A scalar input functions as a constant matrix of the
+same size as the other inputs.
+
+stdrinv (1 - alpha, k, df) is the critical value
+of Tukey's honestly significant difference at level alpha. k
+must be an integer of at least 2 and df positive, Inf
+included; otherwise x is NaN, as it is for p outside
+[0, 1]. The quantile is found to about 1e-13 relative accuracy.
+
+MATLAB has no public counterpart of this function.
+
+Further information about the studentized range distribution can be found
+at https://en.wikipedia.org/wiki/Studentized_range_distribution
+
+Input arguments must be double or single; integer, logical,
+and character arrays are rejected.
+
+See also:
+stdrcdf,
+stdrpdf,
+stdrrnd,
+stdrstat,
+multcompare
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 73
+Inverse of the studentized range cumulative distribution function (iCDF).
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+stdrpdf
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 862
+statistics: y = stdrpdf (x, k, df)
+Studentized range probability density function (PDF).
+
+For each element of x, compute the probability density function (PDF)
+of the studentized range distribution for k groups and df
+degrees of freedom. The size of y is the common size of x,
+k and df. A scalar input functions as a constant matrix of the
+same size as the other inputs.
+
+k must be an integer of at least 2 and df positive, Inf
+included; otherwise y is NaN. The density is zero for
+negative x and, for k greater than 2, at zero.
+
+MATLAB has no public counterpart of this function.
+
+Further information about the studentized range distribution can be found
+at https://en.wikipedia.org/wiki/Studentized_range_distribution
+
+Input arguments must be double or single; integer, logical,
+and character arrays are rejected.
+
+See also:
+stdrcdf,
+stdrinv,
+stdrrnd,
+stdrstat
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Studentized range probability density function (PDF).
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+stdrrnd
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1251
+statistics: r = stdrrnd (k, df)
+statistics: r = stdrrnd (k, df, rows)
+statistics: r = stdrrnd (k, df, rows, cols, ...)
+statistics: r = stdrrnd (k, df, [sz])
+Random arrays from the studentized range distribution.
+
+r = stdrrnd (k, df) returns an array of random
+numbers chosen from the studentized range distribution for k groups
+and df degrees of freedom: the range of k standard normal
+variables divided by an independent sqrt (chi2 / df). The size of
+r is the common size of k and df. A scalar input functions
+as a constant matrix of the same size as the other input. k must be an
+integer of at least 2 and df positive, Inf included; otherwise
+NaN is returned.
+
+When called with a single size argument, stdrrnd returns a square
+matrix with the dimension specified. When called with more than one scalar
+argument, the first two arguments are taken as the number of rows and columns
+and any further arguments specify additional matrix dimensions. The size may
+also be specified with a row vector of dimensions, sz.
+
+MATLAB has no public counterpart of this function.
+
+Further information about the studentized range distribution can be found
+at https://en.wikipedia.org/wiki/Studentized_range_distribution
+
+See also:
+stdrcdf,
+stdrinv,
+stdrpdf,
+stdrstat
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+Random arrays from the studentized range distribution.
 
 
 

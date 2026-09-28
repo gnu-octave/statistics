@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 291
+# columns: 317
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -8970,6 +8970,992 @@ Simulate responses from the fitted model at Xnew (default: the training predicto
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 21
+RepeatedMeasuresModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1071
+statistics: RepeatedMeasuresModel
+Repeated measures model.
+
+A RepeatedMeasuresModel object holds a multivariate linear model
+of several responses measured on the same subjects, the repeated
+measures, on between-subject predictors. Each row of the data is a
+subject and each response a measurement taken on it; the between-subject
+model describes how the mean of every response depends on the
+predictors, and the within-subject design describes how the responses
+relate to one another, as the levels of one or more within-subject
+factors.
+
+The between-subject coefficients are estimated by least squares, one
+column per response, with categorical predictors in effects coding: a
+predictor of L levels contributes L - 1 columns named
+name_level, the last level coded -1 in all of them.
+ranova tests the within-subject effects, reporting the p-values
+corrected for departures from sphericity beside the uncorrected ones,
+epsilon gives those corrections and mauchly tests
+sphericity itself.
+
+Create a RepeatedMeasuresModel object with fitrm.
+
+See also:
+fitrm,
+anova2,
+manova1
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Repeated measures model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+RepeatedMeasuresModel.BetweenDesign
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 281
+RepeatedMeasuresModel: property BetweenDesign
+Design of the between-subject predictors
+
+The table the model was fitted to, one row per subject, responses
+included. A subject missing a response or a predictor is kept here,
+although the fit leaves it out. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+Design of the between-subject predictors
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+RepeatedMeasuresModel.BetweenFactorNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 251
+RepeatedMeasuresModel: property BetweenFactorNames
+Names of the between-subject predictors
+
+A cell row of character vectors naming the variables the
+between-subject model draws on, empty for a model with an intercept
+alone. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Names of the between-subject predictors
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+RepeatedMeasuresModel.BetweenModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 200
+RepeatedMeasuresModel: property BetweenModel
+Between-subject model
+
+A character vector holding the right side of the model formula, with
+its intercept, as in '1 + species'. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Between-subject model
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+RepeatedMeasuresModel.Coefficients
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 233
+RepeatedMeasuresModel: property Coefficients
+Estimated between-subject coefficients
+
+A table with one row per coefficient, named after the terms of the
+between-subject model, and one variable per response. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+Estimated between-subject coefficients
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+RepeatedMeasuresModel.Covariance
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 254
+RepeatedMeasuresModel: property Covariance
+Estimated covariance of the responses
+
+A table holding the covariance of the residuals of the responses,
+their cross products over DFE, with rows and variables named by
+the responses. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+Estimated covariance of the responses
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+RepeatedMeasuresModel.DFE
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 174
+RepeatedMeasuresModel: property DFE
+Error degrees of freedom
+
+The number of subjects the fit used less the number of between-subject
+coefficients. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Error degrees of freedom
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+RepeatedMeasuresModel.RepeatedMeasuresModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1720
+RepeatedMeasuresModel: rm = RepeatedMeasuresModel (t, modelspec)
+RepeatedMeasuresModel: rm = RepeatedMeasuresModel (t, modelspec, name, value)
+Fit a repeated measures model.
+
+rm = RepeatedMeasuresModel (t, modelspec) fits
+the repeated measures in the table t on the between-subject
+model given by the formula modelspec, a character vector or a
+string scalar of the form 'responses ~ terms'.
+The responses are a range of the table's variables, as in
+'y1-y6', which takes every variable from y1 to
+y6 in the table's order, a comma list, as in
+'y1,y2,y3', or both. The terms are a Wilkinson formula over the
+other variables, as in 'species' or 'g*x', or
+'1' for an intercept alone. A categorical, logical,
+text or string variable is a categorical predictor and any other a
+continuous one.
+
+A subject missing a response or a predictor is left out of the fit.
+
+The following name-value arguments are accepted.
+
+Name Value
+'WithinDesign' The design of the within-subject
+factors: a table with one row per response and one variable per factor,
+or a numeric vector with one element per response, which becomes a
+single factor Time. The default is Time holding the
+values 1 to k for k responses.
+'WithinModel' The within-subject model:
+'separatemeans', the default, which compares the means of the
+responses; 'orthogonalcontrasts', which tests the orthogonal
+polynomial trends over a single numeric within-subject factor; a
+formula over the within-subject factors, as in 'A*B'; or a
+contrast matrix with one row per response.
+
+'orthogonalcontrasts' is refused at fitting unless the
+within-subject design holds a single numeric factor. MATLAB accepts
+the fit and refuses the model only when a test is asked of it.
+
+See also:
+fitrm
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+Fit a repeated measures model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+RepeatedMeasuresModel.ResponseNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 204
+RepeatedMeasuresModel: property ResponseNames
+Names of the responses
+
+A cell row of character vectors naming the repeated measures, in the
+order of the columns of Coefficients. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Names of the responses
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+RepeatedMeasuresModel.WithinDesign
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 315
+RepeatedMeasuresModel: property WithinDesign
+Design of the within-subject factors
+
+A table with one row per response, named by the responses, and one
+variable per within-subject factor. Without a design given at fitting
+it holds a single factor Time of the values 1 to k for
+k responses. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+Design of the within-subject factors
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+RepeatedMeasuresModel.WithinFactorNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 183
+RepeatedMeasuresModel: property WithinFactorNames
+Names of the within-subject factors
+
+A cell row of character vectors, the variable names of
+WithinDesign. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+Names of the within-subject factors
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+RepeatedMeasuresModel.WithinModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 218
+RepeatedMeasuresModel: property WithinModel
+Within-subject model
+
+'separatemeans', 'orthogonalcontrasts', a formula over
+the within-subject factors or a contrast matrix, as given at fitting.
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Within-subject model
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+RepeatedMeasuresModel.anova
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1219
+RepeatedMeasuresModel: tbl = anova (rm)
+RepeatedMeasuresModel: tbl = anova (rm, 'WithinModel', WM)
+Analysis of variance for between-subject effects.
+
+tbl = anova (rm) tests the between-subject terms of
+the repeated measures model rm on the average of the repeated
+measures, one univariate analysis of variance. tbl has the
+variables Within, the within-subject response analysed,
+Between, the between-subject term tested or Error,
+SumSq, DF, MeanSq, F and
+pValue. The intercept is named constant.
+
+anova (rm, 'WithinModel', WM) analyses
+other responses built from the repeated measures, one block of rows
+each:
+
+'separatemeans', the default: the average, named
+Constant.
+'orthogonalcontrasts': the average and the orthogonal
+polynomial trends over a single numeric within-subject factor.
+A formula over the within-subject factors: each column of its
+effects-coded design, scaled to unit length and named after it.
+A contrast matrix with one row per response: each column as
+given, named Contrast1, Contrast2, ...
+
+MATLAB R2024a and R2026a fail on 'separatemeans' given
+explicitly, though it is their documented default; here it is the
+default.
+
+See also:
+fitrm,
+RepeatedMeasuresModel.ranova,
+RepeatedMeasuresModel.manova
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+Analysis of variance for between-subject effects.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+RepeatedMeasuresModel.coeftest
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 670
+RepeatedMeasuresModel: tbl = coeftest (rm, A, C)
+RepeatedMeasuresModel: tbl = coeftest (rm, A, C, D)
+Linear hypothesis test on the coefficients of a repeated measures
+model.
+
+tbl = coeftest (rm, A, C) tests the
+hypothesis A B C = 0 on the coefficient matrix B of
+rm, A having one column per between-subject coefficient
+and C one row per response. tbl holds the four
+multivariate statistics as manova reports them: the variables
+Statistic, Value, F, RSquare,
+df1, df2 and pValue.
+
+tbl = coeftest (rm, A, C, D) tests
+A B C = D instead, D a scalar or a matrix with as many
+rows as A and as many columns as C. The default is 0.
+
+See also:
+fitrm,
+RepeatedMeasuresModel.manova
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 72
+Linear hypothesis test on the coefficients of a repeated measures model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+RepeatedMeasuresModel.epsilon
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 688
+RepeatedMeasuresModel: tbl = epsilon (rm)
+RepeatedMeasuresModel: tbl = epsilon (rm, C)
+Epsilon adjustments for repeated measures analysis of variance.
+
+tbl = epsilon (rm) returns the corrections for
+departures from sphericity that ranova applies to its
+p-values, over the contrasts between successive responses: the
+variables Uncorrected, which is 1, GreenhouseGeisser,
+HuynhFeldt and LowerBound. The Huynh-Feldt value is
+Lecoutre's corrected form, capped at 1, and the lower bound is
+1 / p for p contrasts.
+
+tbl = epsilon (rm, C) computes them over the
+contrast matrix C, which must have one row per response.
+
+See also:
+fitrm,
+RepeatedMeasuresModel.ranova,
+RepeatedMeasuresModel.mauchly
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 63
+Epsilon adjustments for repeated measures analysis of variance.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+RepeatedMeasuresModel.grpstats
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 813
+RepeatedMeasuresModel: tbl = grpstats (rm, g)
+RepeatedMeasuresModel: tbl = grpstats (rm, g, stats)
+Descriptive statistics of the repeated measures by group.
+
+tbl = grpstats (rm, g) pools the repeated
+measures of every subject and summarizes them at each combination of
+the levels of the factors named by g, a character vector or a
+cell array of them, each a categorical between-subject factor or a
+within-subject factor. tbl holds one variable per factor,
+GroupCount, the number of values in the group, and their
+mean and std.
+
+tbl = grpstats (rm, g, stats) computes
+the statistics named by stats instead, a character vector or a
+cell array of them, each one of 'mean', 'median',
+'std', 'var', 'sem', 'min',
+'max', 'range' and 'numel'. Missing values are
+left out.
+
+See also:
+fitrm,
+RepeatedMeasuresModel.margmean
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 57
+Descriptive statistics of the repeated measures by group.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+RepeatedMeasuresModel.manova
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1623
+RepeatedMeasuresModel: tbl = manova (rm)
+RepeatedMeasuresModel: tbl = manova (rm, name, value)
+RepeatedMeasuresModel: [tbl, A, C, D] = manova (...)
+Multivariate analysis of variance.
+
+tbl = manova (rm) tests every term of the
+within-subject model of rm, as it was fitted, against every
+between-subject term, by the four multivariate statistics. tbl
+has the variables Within, Between, Statistic,
+one of Pillai, Wilks, Hotelling and
+Roy, its Value, the F statistic that
+approximates it, RSquare, the degrees of freedom df1
+and df2, and the pValue. Under
+'separatemeans' the within-subject hypothesis is that of equal
+means, named Constant, and a contrast matrix is named
+Specified contrast.
+
+The name-value arguments are 'WithinModel', which takes the
+forms fitrm takes but 'orthogonalcontrasts', and
+'By', the name of a between-subject factor, which tests the
+within-subject hypotheses at each of its levels in place of the
+between-subject terms.
+
+[tbl, A, C, D] = manova (...) also
+returns the hypotheses as A B C = D: A a cell column of
+the between-subject hypothesis matrices, C the within-subject
+contrast, a cell row of one per term when there are several, and
+D zero.
+
+Pillai's trace, Wilks' lambda and Roy's root are approximated by F as
+in MATLAB. The Hotelling-Lawley trace uses McKeon's F approximation
+with its own second degrees of freedom, as SAS does, and the
+Pillai-Samson one where McKeon's is undefined. MATLAB R2024a computes
+McKeon's F but refers it to the Pillai-Samson degrees of freedom,
+which makes its p-values too small.
+
+See also:
+fitrm,
+RepeatedMeasuresModel.coeftest,
+RepeatedMeasuresModel.ranova
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Multivariate analysis of variance.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+RepeatedMeasuresModel.margmean
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 914
+RepeatedMeasuresModel: tbl = margmean (rm, vars)
+RepeatedMeasuresModel: tbl = margmean (rm, vars, 'Alpha', alpha)
+Estimated marginal means.
+
+tbl = margmean (rm, vars) estimates the mean
+of the repeated measures at each combination of the levels of the
+factors named by vars, a character vector or a cell array of
+them, each a categorical between-subject factor or a within-subject
+factor. The other between-subject factors are averaged over their
+levels with equal weights, a continuous predictor is held at its mean
+over the subjects the fit used, and the responses are averaged over
+the other within-subject factors. tbl holds one variable per
+factor, the first varying slowest, and Mean, StdErr,
+Lower and Upper, the limits of a 100 (1 -
+alpha) per cent confidence interval on DFE degrees of freedom.
+The default alpha is 0.05.
+
+See also:
+fitrm,
+RepeatedMeasuresModel.multcompare,
+RepeatedMeasuresModel.grpstats
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+Estimated marginal means.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+RepeatedMeasuresModel.mauchly
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 668
+RepeatedMeasuresModel: tbl = mauchly (rm)
+RepeatedMeasuresModel: tbl = mauchly (rm, C)
+Mauchly's test of sphericity.
+
+tbl = mauchly (rm) tests whether the covariance of
+the contrasts between successive responses is a multiple of the
+identity, the sphericity that the uncorrected p-values of
+ranova assume. tbl holds Mauchly's W, the
+chi-square statistic ChiStat with Bartlett's factor, its
+degrees of freedom DF and the pValue. A singular
+covariance gives W 0, ChiStat Inf and a p-value of
+0.
+
+tbl = mauchly (rm, C) tests the contrasts of
+the matrix C, which must have one row per response.
+
+See also:
+fitrm,
+RepeatedMeasuresModel.ranova,
+RepeatedMeasuresModel.epsilon
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+Mauchly's test of sphericity.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+RepeatedMeasuresModel.multcompare
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1261
+RepeatedMeasuresModel: tbl = multcompare (rm, var)
+RepeatedMeasuresModel: tbl = multcompare (rm, var, name, value)
+Multiple comparison of estimated marginal means.
+
+tbl = multcompare (rm, var) compares the
+estimated marginal means of every pair of levels of the factor
+var, a categorical between-subject factor or a within-subject
+factor, as margmean estimates them. tbl holds one row per
+ordered pair, with the variables var_1 and
+var_2, Difference, StdErr, the adjusted
+pValue, and Lower and Upper, the limits of the
+simultaneous confidence interval.
+
+The name-value arguments are:
+
+Name Value
+'By' The name of another factor; the comparisons are
+made at each of its levels, which become the first variable of
+tbl.
+'ComparisonType' 'tukey-kramer', the
+default, 'bonferroni', 'dunn-sidak', 'lsd' or
+'scheffe'.
+'Alpha' The significance level of the intervals.
+The default is 0.05.
+
+The Tukey-Kramer p-values and limits come from the studentized range
+distribution, stdrcdf and stdrinv. MATLAB R2024a and
+R2026a floor their Tukey-Kramer p-values, 9.56e-10 over three groups
+whatever the difference, and R2024a's Dunn-Sidak p-values read 0 where
+the Bonferroni ones are near 1e-36; both are computed here.
+
+See also:
+fitrm,
+RepeatedMeasuresModel.margmean,
+stdrcdf
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 48
+Multiple comparison of estimated marginal means.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+RepeatedMeasuresModel.plot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 637
+RepeatedMeasuresModel: h = plot (rm)
+RepeatedMeasuresModel: h = plot (rm, name, value)
+Plot the repeated measures of every subject.
+
+plot (rm) draws one line per subject of
+BetweenDesign through its repeated measures, against the
+positions 1 to k of the k responses, and returns the
+column of line handles h.
+
+The name-value arguments are 'Group', the name of a
+categorical between-subject factor or a cell array of them, which
+colours the lines by group and adds a legend with one entry per group;
+'Marker', the marker, 's' by default; and
+'LineStyle', the line style, '-' by default.
+
+See also:
+fitrm,
+RepeatedMeasuresModel.plotprofile
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+Plot the repeated measures of every subject.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+RepeatedMeasuresModel.plotprofile
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 725
+RepeatedMeasuresModel: h = plotprofile (rm, X)
+RepeatedMeasuresModel: h = plotprofile (rm, X, name, value)
+Plot the estimated marginal means.
+
+plotprofile (rm, X) draws the estimated marginal
+means of margmean over the levels of the factor X, a
+categorical between-subject factor or a within-subject factor, and
+returns the line handles h. A numeric within-subject factor is
+drawn at its values; any other at the positions 1 to L of its
+L levels, labelled with them.
+
+The name-value arguments are 'Group', the name of another
+factor, which draws one line per level of it and adds a legend;
+'Marker', 'o' by default; and 'LineStyle',
+'-' by default.
+
+See also:
+fitrm,
+RepeatedMeasuresModel.margmean,
+RepeatedMeasuresModel.plot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Plot the estimated marginal means.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+RepeatedMeasuresModel.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1363
+RepeatedMeasuresModel: ypred = predict (rm)
+RepeatedMeasuresModel: ypred = predict (rm, tnew)
+RepeatedMeasuresModel: ypred = predict (..., name, value)
+RepeatedMeasuresModel: [ypred, yci] = predict (...)
+Predict the repeated measures.
+
+ypred = predict (rm, tnew) returns the
+predicted repeated measures of the subjects in the table tnew,
+one row each, from their between-subject predictors. tnew
+defaults to BetweenDesign. A subject missing a predictor, or
+holding a level the model was not fitted on, is predicted as
+NaN.
+
+Under 'separatemeans' the prediction is one column per
+response. Under any other within-subject model the means are smoothed
+through that model: projected onto the terms of a formula, or onto the
+polynomial of 'orthogonalcontrasts', and evaluated at the
+within-subject design, which may then be a new one.
+
+The name-value arguments are 'WithinDesign', the within-subject
+design to predict at, as fitrm takes it; 'WithinModel',
+the within-subject model, by default the one fitted; and
+'Alpha', the significance level of the intervals, 0.05 by
+default. Under 'separatemeans' a new within-subject design is
+ignored with a warning, as in MATLAB.
+
+[ypred, yci] = predict (...) also returns the
+confidence limits of the predicted means as an array of the size of
+ypred by 2, the lower limits first.
+
+See also:
+fitrm,
+RepeatedMeasuresModel.random
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+Predict the repeated measures.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+RepeatedMeasuresModel.random
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 465
+RepeatedMeasuresModel: ysim = random (rm)
+RepeatedMeasuresModel: ysim = random (rm, tnew)
+Generate new random repeated measures.
+
+ysim = random (rm, tnew) draws one set of
+repeated measures for each subject of the table tnew, from a
+normal distribution with the subject's predicted means and the
+estimated covariance Covariance. tnew defaults to
+BetweenDesign. A subject missing a predictor gets a row of
+NaN.
+
+See also:
+fitrm,
+RepeatedMeasuresModel.predict,
+mvnrnd
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+Generate new random repeated measures.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+RepeatedMeasuresModel.ranova
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1726
+RepeatedMeasuresModel: tbl = ranova (rm)
+RepeatedMeasuresModel: tbl = ranova (rm, 'WithinModel', WM)
+RepeatedMeasuresModel: [tbl, A, C, D] = ranova (...)
+Repeated measures analysis of variance.
+
+tbl = ranova (rm) tests the within-subject effects of
+the repeated measures model rm: whether the means of the
+responses differ, and whether each between-subject term changes that
+difference. tbl holds one row per test and one per error term,
+with the variables SumSq, DF, MeanSq, F
+and pValue, and beside them the p-values under the
+Greenhouse-Geisser, Huynh-Feldt and lower bound corrections for
+departures from sphericity, pValueGG, pValueHF and
+pValueLB. The corrections are reported and never applied.
+
+ranova (rm, 'WithinModel', WM) tests the
+within-subject model WM instead, which takes the forms the
+'WithinModel' argument of fitrm takes. The default is
+'separatemeans' whatever the model was fitted with, as in
+MATLAB. Under 'separatemeans' or a contrast matrix the rows
+are named after the within-subject factor, or Time when there
+are several. A formula or 'orthogonalcontrasts' gives one
+block of rows per within-subject term, the constant term first, whose
+tests are the between-subject tests of the mean of the responses.
+
+[tbl, A, C, D] = ranova (...) also
+returns the hypothesis of each test as A B C = D: A a cell
+column holding the between-subject hypothesis matrix of each term,
+C the within-subject contrast, a cell row of one per term when
+there are several, and D zero.
+
+'orthogonalcontrasts' works here where MATLAB R2024a and R2026a
+both fail inside ranova; its results agree with those of
+MATLAB's anova for the same contrasts.
+
+See also:
+fitrm,
+RepeatedMeasuresModel.epsilon,
+RepeatedMeasuresModel.mauchly
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Repeated measures analysis of variance.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 8
 coxphfit
 
@@ -9771,6 +10757,52 @@ fitglm
 # elements: 1
 # length: 33
 Fit a nonlinear regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+fitrm
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 881
+statistics: rm = fitrm (t, modelspec)
+statistics: rm = fitrm (t, modelspec, name, value)
+Fit a repeated measures model.
+
+rm = fitrm (t, modelspec) fits the repeated
+measures held in the table t, one row per subject, on the
+between-subject model modelspec, and returns a
+RepeatedMeasuresModel object. modelspec is a character vector
+or a string scalar of the form 'responses ~ terms': the
+responses a range of the table's variables such as 'y1-y6', a comma
+list such as 'y1,y2,y3', or both, and the terms a Wilkinson formula
+over the other variables, such as 'species' or 'g*x', or
+'1' for an intercept alone.
+
+rm = fitrm (..., name, value) takes the
+within-subject design and model as the name-value arguments
+'WithinDesign' and 'WithinModel'; see
+RepeatedMeasuresModel for both.
+
+ranova, epsilon and mauchly test the fitted model.
+
+See also:
+RepeatedMeasuresModel,
+anova2,
+manova1
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+Fit a repeated measures model.
 
 
 

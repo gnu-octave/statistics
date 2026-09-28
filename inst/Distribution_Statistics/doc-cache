@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 37
+# columns: 38
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -1415,6 +1415,53 @@ ricelike
 # elements: 1
 # length: 46
 Compute statistics of the Rician distribution.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+stdrstat
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 940
+statistics: [m, v] = stdrstat (k, df)
+Compute statistics of the studentized range distribution.
+
+[m, v] = stdrstat (k, df) returns the mean
+and variance of the studentized range distribution for k groups and
+df degrees of freedom.
+
+The size of m (mean) and v (variance) is the common size of the
+input arguments. A scalar input functions as a constant matrix of the same
+size as the other input. k must be an integer of at least 2 and
+df positive, Inf included; otherwise both are NaN. The
+mean exists only for df greater than 1 and the variance only for
+df greater than 2; where either does not, it is NaN. For
+df equal to Inf they are the mean and variance of the range of
+k standard normal variables.
+
+MATLAB has no public counterpart of this function.
+
+Further information about the studentized range distribution can be found
+at https://en.wikipedia.org/wiki/Studentized_range_distribution
+
+See also:
+stdrcdf,
+stdrinv,
+stdrpdf,
+stdrrnd
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 57
+Compute statistics of the studentized range distribution.
 
 
 
