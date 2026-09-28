@@ -172,10 +172,11 @@ function [sig, mu, mah, outliers, s] = robustcov (X, varargin)
     [Togk, Sogk] = ogk (X, numogkiter, univestimator);
     d2 = mahal2 (X, Togk, Sogk);
     ## Scale so that the median squared distance matches the chi-square median,
-    ## making the reweighting cutoff meaningful.
+    ## making the reweighting cutoff meaningful.  Maronna and Zamar reweight at
+    ## the 0.9 quantile, not the 0.975 used to flag outliers.
     scale = median (d2) / chi2inv (0.5, p);
     d2 = d2 / scale;
-    keep = d2 <= cutoff;
+    keep = d2 <= chi2inv (0.9, p);
     mu = mean (X(keep, :));
     sig = cov (X(keep, :), 1);          # 1/N normalization, as MATLAB's OGK
   endif
@@ -369,11 +370,14 @@ function [T, C] = ogk (X, niter, estimator)
   C = (C + C') / 2;
 endfunction
 
-## Robust univariate scale (and location) via tau-scale or Qn.
+## Robust univariate scale (and location) via tau-scale or Qn.  The tau-scale
+## thresholds apply to residuals over the raw MAD.  A constant factor on the
+## scale cancels in the reweighted estimate, so the tau-scale carries no
+## consistency factor.
 function [s, m] = uniscale (x, estimator)
   x = x(:);
   med = median (x);
-  s0 = 1.4826 * median (abs (x - med));
+  s0 = median (abs (x - med));
   if (s0 == 0)
     s = 0;
     m = med;
@@ -398,13 +402,10 @@ endfunction
 
 ## Qn robust scale estimator (Croux & Rousseeuw).
 function s = qn (x)
-  x = sort (x(:));
+  x = x(:);
   n = numel (x);
-  diffs = [];
-  for i = 1:(n - 1)
-    diffs = [diffs; abs (x((i + 1):n) - x(i))];
-  endfor
-  diffs = sort (diffs);
+  d = abs (x - x.');
+  diffs = sort (d(tril (true (n), -1)));
   h = floor (n / 2) + 1;
   k = h * (h - 1) / 2;
   if (k < 1)
@@ -480,6 +481,76 @@ endfunction
 %! assert_equal (sig, eye (3), 1e-12);
 %! assert_equal (mu, [0 0 0], 1e-12);
 %! assert_equal (ol, logical ([0;0;0;0;0;0;0;0;1;1]));
+
+## OGK on moderate contamination: expected values from MATLAB R2024a
+%!shared A, B, C
+%! A = [0.34 0.6; 0.32 0.96; -0.49 0.23; -0.84 -0.8; 2.77 -0.6; -0.21 -1.31; ...
+%!      -1.57 -2.15; -0.76 1.76; -0.57 0.68; -0.88 -0.18; -1.39 -0.6; ...
+%!      1.75 0.58; -0.54 0.15; -0.52 -0.7; -1.7 0.16; 1.26 -0.11; ...
+%!      -1.05 0.84; -0.25 1.72; 1.09 -1.17; 2.23 2.41; 3.22 3.23; ...
+%!      1.76 4.47; 1.9 2.17; 1.23 1.13];
+%! B = [1.39 -0.25 -0.72; -0.31 -0.24 1.55; -0.02 -0.07 -1.59; ...
+%!      1.5 -0.84 0.91; -0.04 0.02 -0.01; -1.04 -1.34 -0.22; ...
+%!      -0.3 -0.25 0.62; -0.42 -2.01 -0.04; -0.81 -0.14 1.13; ...
+%!      0.91 0.5 1.91; -0.06 -2.11 -2; 0.08 -1.65 -0.98; -0.85 0.25 -0.14; ...
+%!      -0.12 0.12 0.66; -0.84 -1.26 -0.92; 0.12 -0.3 0.54; ...
+%!      -0.3 -0.19 0.87; -0.22 0.14 0.76; 0 -1.45 1.23; 2.96 0.65 3.32; ...
+%!      3.93 0.25 -0.76; 1.93 3.02 0.77; 3.35 1.08 2.56; 2.19 1.23 3];
+%! C = [0.29 -0.61 -1.36; -0.17 -0.49 1.17; 0.69 0.11 -0.14; ...
+%!      0.42 0.66 -1.19; 0.58 -0.41 -0.62; -0.77 -1.08 1.15; ...
+%!      -1.01 -0.89 -0.12; -0.17 0.4 -0.69; -1.13 2.84 0.86; ...
+%!      1.51 -0.72 -0.72; 0.64 2.95 -0.08; -0.12 -1.92 -0.55; ...
+%!      1.57 -1.36 -1.85; -0.02 0.51 -0.32; -1.18 -0.25 -1.38; ...
+%!      -2.82 -0.44 -0.05; 0.82 -1.14 -0.01; -0.25 0.81 -1.19; ...
+%!      1.42 -0.67 -0.98; -0.14 2.88 1.61; 2.25 1.46 1.94; ...
+%!      -0.18 3.07 1.89; 2.67 1.94 2.91; 2.39 -0.03 1.95];
+%!test
+%! [sig, mu, ~, ol] = robustcov (A, "Method", "ogk");
+%! assert_equal (sig, [1.722767148760330 1.020670247933884; ...
+%!                     1.020670247933884 1.646486776859504], 1e-12);
+%! assert_equal (mu, [0.116818181818182 0.436363636363636], 1e-12);
+%! assert_equal (find (ol)', [5, 22]);
+%!test
+%! [sig, mu, ~, ol] = robustcov (A, "Method", "ogk", ...
+%!                               "UnivariateEstimator", "qn");
+%! assert_equal (sig, [1.324408616780046 0.636798412698413; ...
+%!                     0.636798412698413 1.335555555555556], 1e-12);
+%! assert_equal (mu, [-0.030952380952381 0.303333333333333], 1e-12);
+%! assert_equal (find (ol)', [5, 21, 22]);
+%!test
+%! [sig, mu, ~, ol] = robustcov (B, "Method", "ogk");
+%! assert_equal (sig, [0.4791385802469 0.0781234567901 0.0867438271605; ...
+%!                     0.0781234567901 0.5096617283951 0.2086302469136; ...
+%!                     0.0867438271605 0.2086302469136 0.8511209876543], ...
+%!               1e-12);
+%! assert_equal (mu, [-0.0705555555556 -0.4977777777778 0.3088888888889], ...
+%!               1e-12);
+%! assert_equal (find (ol)', 20:24);
+%!test
+%! [sig, mu, ~, ol] = robustcov (B, "Method", "ogk", ...
+%!                               "UnivariateEstimator", "qn");
+%! assert_equal (sig, [0.673841 0.264091 0.378851; ...
+%!                     0.264091 0.737886 0.606261; ...
+%!                     0.378851 0.606261 1.394296], 1e-12);
+%! assert_equal (mu, [0.043 -0.492 0.328], 1e-12);
+%! assert_equal (find (ol)', 20:23);
+%!test
+%! [sig, mu, ~, ol] = robustcov (C, "Method", "ogk", "NumOGKIterations", 1);
+%! assert_equal (sig, [0.64969 -0.302265 -0.327265; ...
+%!                     -0.302265 2.27578475 0.799012; ...
+%!                     -0.327265 0.799012 1.068354], 1e-12);
+%! assert_equal (mu, [0.14 0.2345 -0.226], 1e-12);
+%! assert_equal (find (ol)', [16, 21, 23, 24]);
+%!test
+%! [sig, mu, ~, ol] = robustcov (C, "Method", "ogk", "NumOGKIterations", 1, ...
+%!                               "UnivariateEstimator", "qn");
+%! assert_equal (sig, [1.159454320988 -0.2871074074074 -0.3650679012346; ...
+%!                     -0.2871074074074 1.065891666667 0.1486175925926; ...
+%!                     -0.3650679012346 0.1486175925926 0.7041015432099], ...
+%!               1e-12);
+%! assert_equal (mu, [-0.0188888888889 -0.2583333333333 -0.4438888888889], ...
+%!               1e-12);
+%! assert_equal (find (ol)', [9, 11, 20:24]);
 
 ## FMCD in 3-D returns a symmetric positive-definite estimate (p > 2 path)
 %!test
