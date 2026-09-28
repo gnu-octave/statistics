@@ -175,12 +175,15 @@ classdef RepeatedMeasuresModel
 
   properties (Access = private, Hidden)
     ## Complete subjects' design matrix and residuals, the coefficients as a
-    ## matrix, and for each between term its name and its columns.
+    ## matrix, for each between term its name, its columns and its variables
+    ## (the intercept's first, and none), and the coding of each variable.
     X_          = [];
     R_          = [];
     B_          = [];
     TermNames_  = {};
     TermCols_   = {};
+    TermVars_   = {};
+    Coding_     = struct ();
   endproperties
 
   methods (Hidden)
@@ -327,8 +330,16 @@ classdef RepeatedMeasuresModel
 
       ## Effects-coded design over the complete subjects
       vars = unique ([terms{:}], 'stable');
-      [X, cnames, tcols, tnames, bad] = effectsDesign (t, terms, intercept, vars);
+      [X, cnames, tcols, tnames, bad, coding] = effectsDesign (t, terms, ...
+                                                           intercept, vars);
       ok = ! bad & all (! isnan (Y), 2);
+      ## A continuous predictor enters a marginal mean at its mean over the
+      ## subjects the fit used, as in MATLAB
+      for i = 1:numel (vars)
+        if (! coding.(vars{i}).iscat)
+          coding.(vars{i}).mean = mean (double (t.(vars{i})(ok)));
+        endif
+      endfor
       Xc = X(ok,:);
       Yc = Y(ok,:);
       if (rank (Xc) < columns (Xc) || rows (Xc) <= rank (Xc))
@@ -392,6 +403,8 @@ classdef RepeatedMeasuresModel
       this.B_ = B;
       this.TermNames_ = tnames;
       this.TermCols_ = tcols;
+      this.TermVars_ = terms;
+      this.Coding_ = coding;
 
     endfunction
 
@@ -569,7 +582,9 @@ classdef RepeatedMeasuresModel
       S = Q' * (this.R_' * this.R_ / this.DFE) * Q;
       W = det (S) / (trace (S) / p) ^ p;
       df = p * (p + 1) / 2 - 1;
-      if (! (W > 0))
+      ## Singularity is read from the conditioning, since rounding leaves the
+      ## determinant of a singular matrix a small number of either sign
+      if (rcond (S) < p * eps || ! (W > 0))
         W = 0;
         chi = Inf;
         pval = 0;
@@ -859,6 +874,362 @@ classdef RepeatedMeasuresModel
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {RepeatedMeasuresModel} {@var{tbl} =} margmean (@var{rm}, @var{vars})
+    ## @deftypefnx {RepeatedMeasuresModel} {@var{tbl} =} margmean (@var{rm}, @var{vars}, @qcode{'Alpha'}, @var{alpha})
+    ##
+    ## Estimated marginal means.
+    ##
+    ## @code{@var{tbl} = margmean (@var{rm}, @var{vars})} estimates the mean
+    ## of the repeated measures at each combination of the levels of the
+    ## factors named by @var{vars}, a character vector or a cell array of
+    ## them, each a categorical between-subject factor or a within-subject
+    ## factor.  The other between-subject factors are averaged over their
+    ## levels with equal weights, a continuous predictor is held at its mean
+    ## over the subjects the fit used, and the responses are averaged over
+    ## the other within-subject factors.  @var{tbl} holds one variable per
+    ## factor, the first varying slowest, and @qcode{Mean}, @qcode{StdErr},
+    ## @qcode{Lower} and @qcode{Upper}, the limits of a @math{100 (1 -
+    ## alpha)} per cent confidence interval on @code{DFE} degrees of freedom.
+    ## The default @var{alpha} is 0.05.
+    ##
+    ## @seealso{fitrm, RepeatedMeasuresModel.multcompare,
+    ## RepeatedMeasuresModel.grpstats}
+    ## @end deftypefn
+    function tbl = margmean (this, vars, varargin)
+
+      if (nargin < 2)
+        error ("RepeatedMeasuresModel.margmean: too few input arguments.");
+      endif
+      [alpha, args] = parsePairedArguments ({'Alpha'}, {0.05}, varargin(:));
+      if (! isempty (args))
+        error ("RepeatedMeasuresModel.margmean: invalid optional paired argument.");
+      endif
+      checkAlpha (alpha, 'margmean');
+      [F, errmsg] = factorInfo (this, vars);
+      if (! isempty (errmsg))
+        error ("RepeatedMeasuresModel.margmean: %s", errmsg);
+      endif
+      L = combos (F);
+      S = this.R_' * this.R_ / this.DFE;
+      V = inv (this.X_' * this.X_);
+      est = zeros (rows (L), 4);
+      tq = tinv (1 - alpha / 2, this.DFE);
+      for r = 1:rows (L)
+        [a, w] = weights (this, F, L(r,:));
+        m = a * this.B_ * w;
+        se = sqrt ((a * V * a') * (w' * S * w));
+        est(r,:) = [m, se, m - tq * se, m + tq * se];
+      endfor
+      tbl = levelTable (F, L, {});
+      tbl = [tbl, array2table(est, 'VariableNames', ...
+                              {'Mean', 'StdErr', 'Lower', 'Upper'})];
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {RepeatedMeasuresModel} {@var{tbl} =} grpstats (@var{rm}, @var{g})
+    ## @deftypefnx {RepeatedMeasuresModel} {@var{tbl} =} grpstats (@var{rm}, @var{g}, @var{stats})
+    ##
+    ## Descriptive statistics of the repeated measures by group.
+    ##
+    ## @code{@var{tbl} = grpstats (@var{rm}, @var{g})} pools the repeated
+    ## measures of every subject and summarizes them at each combination of
+    ## the levels of the factors named by @var{g}, a character vector or a
+    ## cell array of them, each a categorical between-subject factor or a
+    ## within-subject factor.  @var{tbl} holds one variable per factor,
+    ## @qcode{GroupCount}, the number of values in the group, and their
+    ## @qcode{mean} and @qcode{std}.
+    ##
+    ## @code{@var{tbl} = grpstats (@var{rm}, @var{g}, @var{stats})} computes
+    ## the statistics named by @var{stats} instead, a character vector or a
+    ## cell array of them, each one of @qcode{'mean'}, @qcode{'median'},
+    ## @qcode{'std'}, @qcode{'var'}, @qcode{'sem'}, @qcode{'min'},
+    ## @qcode{'max'}, @qcode{'range'} and @qcode{'numel'}.  Missing values are
+    ## left out.
+    ##
+    ## @seealso{fitrm, RepeatedMeasuresModel.margmean}
+    ## @end deftypefn
+    function tbl = grpstats (this, g, stats)
+
+      if (nargin < 2)
+        error ("RepeatedMeasuresModel.grpstats: too few input arguments.");
+      endif
+      if (nargin < 3)
+        stats = {'mean', 'std'};
+      endif
+      if (ischar (stats) || (isa (stats, 'string') && isscalar (stats)))
+        stats = cellstr (stats);
+      endif
+      known = {'mean', 'median', 'std', 'var', 'sem', 'min', 'max', ...
+               'range', 'numel'};
+      if (! iscellstr (stats) || ! all (ismember (stats, known)))
+        error (strcat ("RepeatedMeasuresModel.grpstats: STATS must name", ...
+                       " statistics among 'mean', 'median', 'std',", ...
+                       " 'var', 'sem', 'min', 'max', 'range' and", ...
+                       " 'numel'."));
+      endif
+      [F, errmsg] = factorInfo (this, g);
+      if (! isempty (errmsg))
+        error ("RepeatedMeasuresModel.grpstats: %s", errmsg);
+      endif
+      L = combos (F);
+      Y = zeros (rows (this.BetweenDesign), numel (this.ResponseNames));
+      for j = 1:columns (Y)
+        Y(:,j) = double (this.BetweenDesign.(this.ResponseNames{j}));
+      endfor
+      keep = true (rows (L), 1);
+      vals = zeros (rows (L), numel (stats) + 1);
+      for r = 1:rows (L)
+        [rows_, cols_] = groupMembers (this, F, L(r,:));
+        y = Y(rows_, cols_)(:);
+        y = y(! isnan (y));
+        keep(r) = ! isempty (y);
+        vals(r,1) = numel (y);
+        for i = 1:numel (stats)
+          vals(r,i+1) = groupStatistic (y, stats{i});
+        endfor
+      endfor
+      tbl = levelTable (F, L(keep,:), {});
+      tbl = [tbl, array2table(vals(keep,:), 'VariableNames', ...
+                              [{'GroupCount'}, stats(:)'])];
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {RepeatedMeasuresModel} {@var{tbl} =} multcompare (@var{rm}, @var{var})
+    ## @deftypefnx {RepeatedMeasuresModel} {@var{tbl} =} multcompare (@var{rm}, @var{var}, @var{name}, @var{value})
+    ##
+    ## Multiple comparison of estimated marginal means.
+    ##
+    ## @code{@var{tbl} = multcompare (@var{rm}, @var{var})} compares the
+    ## estimated marginal means of every pair of levels of the factor
+    ## @var{var}, a categorical between-subject factor or a within-subject
+    ## factor, as @code{margmean} estimates them.  @var{tbl} holds one row per
+    ## ordered pair, with the variables @qcode{@var{var}_1} and
+    ## @qcode{@var{var}_2}, @qcode{Difference}, @qcode{StdErr}, the adjusted
+    ## @qcode{pValue}, and @qcode{Lower} and @qcode{Upper}, the limits of the
+    ## simultaneous confidence interval.
+    ##
+    ## The name-value arguments are:
+    ##
+    ## @multitable @columnfractions 0.25 0.75
+    ## @headitem Name @tab Value
+    ## @item @qcode{'By'} @tab The name of another factor; the comparisons are
+    ## made at each of its levels, which become the first variable of
+    ## @var{tbl}.
+    ##
+    ## @item @qcode{'ComparisonType'} @tab @qcode{'tukey-kramer'}, the
+    ## default, @qcode{'bonferroni'}, @qcode{'dunn-sidak'}, @qcode{'lsd'} or
+    ## @qcode{'scheffe'}.
+    ##
+    ## @item @qcode{'Alpha'} @tab The significance level of the intervals.
+    ## The default is 0.05.
+    ## @end multitable
+    ##
+    ## The Tukey-Kramer p-values and limits come from the studentized range
+    ## distribution, @code{stdrcdf} and @code{stdrinv}.  MATLAB R2024a and
+    ## R2026a floor their Tukey-Kramer p-values, 9.56e-10 over three groups
+    ## whatever the difference, and R2024a's Dunn-Sidak p-values read 0 where
+    ## the Bonferroni ones are near 1e-36; both are computed here.
+    ##
+    ## @seealso{fitrm, RepeatedMeasuresModel.margmean, stdrcdf}
+    ## @end deftypefn
+    function tbl = multcompare (this, var, varargin)
+
+      if (nargin < 2)
+        error ("RepeatedMeasuresModel.multcompare: too few input arguments.");
+      endif
+      [by, ctype, alpha, args] = parsePairedArguments ( ...
+                {'By', 'ComparisonType', 'Alpha'}, ...
+                {'', 'tukey-kramer', 0.05}, varargin(:));
+      if (! isempty (args))
+        error ("RepeatedMeasuresModel.multcompare: invalid optional paired argument.");
+      endif
+      checkAlpha (alpha, 'multcompare');
+      types = {'tukey-kramer', 'bonferroni', 'dunn-sidak', 'lsd', 'scheffe'};
+      if (! ((ischar (ctype) || isa (ctype, 'string')) ...
+             && any (strcmpi (char (ctype), types))))
+        error (strcat ("RepeatedMeasuresModel.multcompare: 'ComparisonType'", ...
+                       " must be 'tukey-kramer', 'bonferroni',", ...
+                       " 'dunn-sidak', 'lsd' or 'scheffe'."));
+      endif
+      ctype = lower (char (ctype));
+      if (isempty (by))
+        names = {var};
+      else
+        names = {by, var};
+        if (strcmp (char (by), char (var)))
+          error (strcat ("RepeatedMeasuresModel.multcompare: 'By' must", ...
+                         " differ from the factor compared."));
+        endif
+      endif
+      [F, errmsg] = factorInfo (this, names);
+      if (! isempty (errmsg))
+        error ("RepeatedMeasuresModel.multcompare: %s", errmsg);
+      endif
+      nb = 1;
+      if (numel (F) == 2)
+        nb = numel (F(1).levels);
+      endif
+      m = numel (F(end).levels);
+      npairs = m * (m - 1) / 2;
+      S = this.R_' * this.R_ / this.DFE;
+      V = inv (this.X_' * this.X_);
+      crit = critical (m, npairs, this.DFE, ctype, alpha);
+      L = zeros (0, numel (F) + 1);
+      vals = zeros (0, 5);
+      for b = 1:nb
+        ## A pair and its reverse share their p-value
+        pp = NaN (m);
+        for i = 1:m
+          for j = [1:i-1, i+1:m]
+            if (numel (F) == 2)
+              [ai, wi] = weights (this, F, [b, i]);
+              [aj, wj] = weights (this, F, [b, j]);
+            else
+              [ai, wi] = weights (this, F, i);
+              [aj, wj] = weights (this, F, j);
+            endif
+            d = ai * this.B_ * wi - aj * this.B_ * wj;
+            if (F(end).between)
+              se = sqrt (((ai - aj) * V * (ai - aj)') * (wi' * S * wi));
+            else
+              se = sqrt ((ai * V * ai') * ((wi - wj)' * S * (wi - wj)));
+            endif
+            if (isnan (pp(j,i)))
+              pp(i,j) = pairwise (abs (d) / se, m, npairs, this.DFE, ctype);
+            else
+              pp(i,j) = pp(j,i);
+            endif
+            pv = pp(i,j);
+            vals(end+1,:) = [d, se, pv, d - crit * se, d + crit * se];
+            if (numel (F) == 2)
+              L(end+1,:) = [b, i, j];
+            else
+              L(end+1,:) = [i, j];
+            endif
+          endfor
+        endfor
+      endfor
+      if (numel (F) == 1)
+        G = [F, F];
+      else
+        G = [F, F(2)];
+      endif
+      vn = {sprintf('%s_1', F(end).name), sprintf('%s_2', F(end).name)};
+      if (numel (F) == 2)
+        vn = [{F(1).name}, vn];
+      endif
+      tbl = levelTable (G, L, vn);
+      tbl = [tbl, array2table(vals, 'VariableNames', ...
+             {'Difference', 'StdErr', 'pValue', 'Lower', 'Upper'})];
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {RepeatedMeasuresModel} {@var{ypred} =} predict (@var{rm})
+    ## @deftypefnx {RepeatedMeasuresModel} {@var{ypred} =} predict (@var{rm}, @var{tnew})
+    ## @deftypefnx {RepeatedMeasuresModel} {@var{ypred} =} predict (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {RepeatedMeasuresModel} {[@var{ypred}, @var{yci}] =} predict (@dots{})
+    ##
+    ## Predict the repeated measures.
+    ##
+    ## @code{@var{ypred} = predict (@var{rm}, @var{tnew})} returns the
+    ## predicted repeated measures of the subjects in the table @var{tnew},
+    ## one row each, from their between-subject predictors.  @var{tnew}
+    ## defaults to @code{BetweenDesign}.  A subject missing a predictor, or
+    ## holding a level the model was not fitted on, is predicted as
+    ## @code{NaN}.
+    ##
+    ## Under @qcode{'separatemeans'} the prediction is one column per
+    ## response.  Under any other within-subject model the means are smoothed
+    ## through that model: projected onto the terms of a formula, or onto the
+    ## polynomial of @qcode{'orthogonalcontrasts'}, and evaluated at the
+    ## within-subject design, which may then be a new one.
+    ##
+    ## The name-value arguments are @qcode{'WithinDesign'}, the within-subject
+    ## design to predict at, as @code{fitrm} takes it; @qcode{'WithinModel'},
+    ## the within-subject model, by default the one fitted; and
+    ## @qcode{'Alpha'}, the significance level of the intervals, 0.05 by
+    ## default.  Under @qcode{'separatemeans'} a new within-subject design is
+    ## ignored with a warning, as in MATLAB.
+    ##
+    ## @code{[@var{ypred}, @var{yci}] = predict (@dots{})} also returns the
+    ## confidence limits of the predicted means as an array of the size of
+    ## @var{ypred} by 2, the lower limits first.
+    ##
+    ## @seealso{fitrm, RepeatedMeasuresModel.random}
+    ## @end deftypefn
+    function [ypred, yci] = predict (this, varargin)
+
+      tnew = this.BetweenDesign;
+      if (numel (varargin) > 0 && istable (varargin{1}))
+        tnew = varargin{1};
+        varargin(1) = [];
+      endif
+      [WDn, WM, alpha, args] = parsePairedArguments ( ...
+                {'WithinDesign', 'WithinModel', 'Alpha'}, ...
+                {[], this.WithinModel, 0.05}, varargin(:));
+      if (! isempty (args))
+        error ("RepeatedMeasuresModel.predict: invalid optional paired argument.");
+      endif
+      checkAlpha (alpha, 'predict');
+      [Xn, errmsg] = newDesign (this, tnew);
+      if (! isempty (errmsg))
+        error ("RepeatedMeasuresModel.predict: %s", errmsg);
+      endif
+      [P, errmsg] = smoother (this, WM, WDn);
+      if (! isempty (errmsg))
+        error ("RepeatedMeasuresModel.predict: %s", errmsg);
+      endif
+      ypred = Xn * this.B_ * P;
+      if (nargout > 1)
+        S = this.R_' * this.R_ / this.DFE;
+        vx = sum ((Xn / (this.X_' * this.X_)) .* Xn, 2);
+        se = sqrt (vx .* sum (P .* (S * P), 1));
+        tq = tinv (1 - alpha / 2, this.DFE);
+        yci = cat (3, ypred - tq * se, ypred + tq * se);
+      endif
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {RepeatedMeasuresModel} {@var{ysim} =} random (@var{rm})
+    ## @deftypefnx {RepeatedMeasuresModel} {@var{ysim} =} random (@var{rm}, @var{tnew})
+    ##
+    ## Generate new random repeated measures.
+    ##
+    ## @code{@var{ysim} = random (@var{rm}, @var{tnew})} draws one set of
+    ## repeated measures for each subject of the table @var{tnew}, from a
+    ## normal distribution with the subject's predicted means and the
+    ## estimated covariance @code{Covariance}.  @var{tnew} defaults to
+    ## @code{BetweenDesign}.  A subject missing a predictor gets a row of
+    ## @code{NaN}.
+    ##
+    ## @seealso{fitrm, RepeatedMeasuresModel.predict, mvnrnd}
+    ## @end deftypefn
+    function ysim = random (this, tnew)
+
+      if (nargin < 2)
+        tnew = this.BetweenDesign;
+      elseif (! istable (tnew))
+        error ("RepeatedMeasuresModel.random: TNEW must be a table.");
+      endif
+      [Xn, errmsg] = newDesign (this, tnew);
+      if (! isempty (errmsg))
+        error ("RepeatedMeasuresModel.random: %s", errmsg);
+      endif
+      S = this.R_' * this.R_ / this.DFE;
+      mu = Xn * this.B_;
+      ysim = NaN (size (mu));
+      ok = all (isfinite (mu), 2);
+      if (any (ok))
+        ysim(ok,:) = mvnrnd (mu(ok,:), S);
+      endif
+
+    endfunction
+
   endmethods
 
   methods (Access = private)
@@ -874,6 +1245,181 @@ classdef RepeatedMeasuresModel
                meth, k);
       endif
       Q = orth (double (C));
+    endfunction
+
+    ## The factors named by NAMES, each categorical and either between or
+    ## within: its name, side, level keys and native values.
+    function [F, errmsg] = factorInfo (this, names)
+      F = struct ('name', {}, 'between', {}, 'levels', {}, 'native', {});
+      errmsg = '';
+      if (ischar (names) || (isa (names, 'string') && isscalar (names)))
+        names = cellstr (names);
+      endif
+      if (! iscellstr (names) || isempty (names))
+        errmsg = "factor names must be text.";
+        return;
+      endif
+      for i = 1:numel (names)
+        nm = names{i};
+        if (any (strcmp (nm, this.BetweenFactorNames)) ...
+            && this.Coding_.(nm).iscat)
+          c = this.Coding_.(nm);
+          F(end+1) = struct ('name', nm, 'between', true, ...
+                             'levels', {c.levels}, 'native', {c.native});
+        elseif (any (strcmp (nm, this.WithinFactorNames)))
+          [lev, ~, native, iscat] = levelsOf (this.WithinDesign.(nm));
+          if (! iscat)
+            v = this.WithinDesign.(nm);
+            u = unique (v(:));
+            lev = arrayfun (@num2str, u, 'UniformOutput', false);
+            native = num2cell (u);
+          endif
+          F(end+1) = struct ('name', nm, 'between', false, ...
+                             'levels', {lev}, 'native', {native});
+        else
+          errmsg = sprintf ("'%s' is not a categorical factor of the model.", nm);
+          return;
+        endif
+      endfor
+    endfunction
+
+    ## The between-subject row A and the within-subject weights W at the
+    ## levels IDX of the factors F, the other factors averaged.
+    function [a, w] = weights (this, F, idx)
+      fixed = struct ();
+      k = numel (this.ResponseNames);
+      w = ones (k, 1);
+      for i = 1:numel (F)
+        if (F(i).between)
+          fixed.(F(i).name) = idx(i);
+        else
+          v = this.WithinDesign.(F(i).name);
+          if (isnumeric (v))
+            w &= (double (v(:)) == F(i).native{idx(i)});
+          else
+            w &= strcmp (cellstr (v(:)), F(i).levels{idx(i)});
+          endif
+        endif
+      endfor
+      w = double (w) / sum (w);
+      a = zeros (1, columns (this.X_));
+      off = numel (this.TermNames_) - numel (this.TermVars_);
+      if (off)
+        a(1) = 1;
+      endif
+      for t = 1:numel (this.TermVars_)
+        M = 1;
+        for v = this.TermVars_{t}
+          c = this.Coding_.(v{1});
+          if (! c.iscat)
+            e = c.mean;
+          elseif (isfield (fixed, v{1}))
+            L = numel (c.levels);
+            e = zeros (1, L - 1);
+            l = fixed.(v{1});
+            if (l < L)
+              e(l) = 1;
+            else
+              e(:) = -1;
+            endif
+          else
+            e = zeros (1, numel (c.levels) - 1);
+          endif
+          M = kron (M, e);
+        endfor
+        a(this.TermCols_{t+off}) = M;
+      endfor
+    endfunction
+
+    ## The subjects and responses at the levels IDX of the factors F.
+    function [r, c] = groupMembers (this, F, idx)
+      r = true (rows (this.BetweenDesign), 1);
+      c = true (numel (this.ResponseNames), 1);
+      for i = 1:numel (F)
+        if (F(i).between)
+          [~, ic] = levelsOf (this.BetweenDesign.(F(i).name), F(i).levels);
+          r &= (ic(:) == idx(i));
+        else
+          v = this.WithinDesign.(F(i).name);
+          if (isnumeric (v))
+            c &= (double (v(:)) == F(i).native{idx(i)});
+          else
+            c &= strcmp (cellstr (v(:)), F(i).levels{idx(i)});
+          endif
+        endif
+      endfor
+    endfunction
+
+    ## The effects-coded design of the subjects of TNEW, NaN on a row missing
+    ## a predictor or holding a level the model does not know.
+    function [X, errmsg] = newDesign (this, tnew)
+      X = [];
+      errmsg = '';
+      if (! istable (tnew))
+        errmsg = "TNEW must be a table.";
+        return;
+      endif
+      miss = setdiff (this.BetweenFactorNames, tnew.Properties.VariableNames);
+      if (! isempty (miss))
+        errmsg = sprintf ("TNEW has no variable '%s'.", miss{1});
+        return;
+      endif
+      intercept = numel (this.TermNames_) > numel (this.TermVars_);
+      [X, ~, ~, ~, bad] = effectsDesign (tnew, this.TermVars_, intercept, ...
+                                         this.BetweenFactorNames, this.Coding_);
+      X(bad,:) = NaN;
+    endfunction
+
+    ## The matrix that maps fitted means over the responses onto the
+    ## predictions at the within-subject design WDN under the model WM.
+    function [P, errmsg] = smoother (this, WM, WDn)
+      errmsg = '';
+      k = numel (this.ResponseNames);
+      P = [];
+      if (isa (WM, 'string') && isscalar (WM))
+        WM = char (WM);
+      endif
+      if (isnumeric (WM) || strcmpi (WM, 'separatemeans'))
+        if (! isempty (WDn))
+          warning (strcat ("RepeatedMeasuresModel.predict: the", ...
+                           " 'separatemeans' model does not use the", ...
+                           " 'WithinDesign' given."));
+        endif
+        P = eye (k);
+        return;
+      endif
+      WD = this.WithinDesign;
+      wn = this.WithinFactorNames;
+      if (isempty (WDn))
+        WDn = WD;
+      elseif (isnumeric (WDn) && isvector (WDn) && numel (wn) == 1)
+        WDn = table (double (WDn(:)), 'VariableNames', wn);
+      elseif (! istable (WDn) || ! all (ismember (wn, WDn.Properties.VariableNames)))
+        errmsg = "'WithinDesign' must hold the within-subject factors.";
+        return;
+      endif
+      [~, errmsg] = withinTerms (WM, WD, wn, k);
+      if (! isempty (errmsg))
+        return;
+      endif
+      if (strcmpi (WM, 'orthogonalcontrasts'))
+        v = double (WD.(wn{1}));
+        mu = mean (v);
+        sc = max (1, std (v));
+        Wd = ((v(:) - mu) / sc) .^ (0:k-1);
+        Wn = ((double (WDn.(wn{1}))(:) - mu) / sc) .^ (0:k-1);
+      else
+        s = parseWilkinsonFormula (['~', WM]);
+        model = s.model;
+        empty = cellfun (@isempty, model);
+        terms = cellfun (@cellstr, model(! empty), 'UniformOutput', false);
+        vars = unique ([terms{:}], 'stable');
+        intercept = any (empty) || isempty (model);
+        [Wd, ~, ~, ~, ~, coding] = effectsDesign (WD, terms, intercept, vars);
+        [Wn, ~, ~, ~, bad] = effectsDesign (WDn, terms, intercept, vars, coding);
+        Wn(bad,:) = NaN;
+      endif
+      P = (Wn * pinv (Wd))';
     endfunction
 
     ## The four multivariate statistics of A B C = D, one row each of Value,
@@ -944,6 +1490,104 @@ function [gg, hf, lb] = sphericity (S, p, dfe)
   gg = trace (S) ^ 2 / (p * trace (S ^ 2));
   hf = min (1, ((dfe + 1) * p * gg - 2) / (p * (dfe - p * gg)));
   lb = 1 / p;
+endfunction
+
+## Every combination of the levels of the factors F, the first varying
+## slowest, one row of level indices each.
+function L = combos (F)
+  n = cellfun (@numel, {F.levels});
+  L = zeros (prod (n), numel (n));
+  for i = 1:numel (n)
+    reps = prod (n(i+1:end));
+    L(:,i) = repmat (kron ((1:n(i))', ones (reps, 1)), prod (n(1:i-1)), 1);
+  endfor
+endfunction
+
+## A table of the levels L of the factors F, one variable per column of L,
+## named NAMES or after the factors, in the type each factor was given in.
+function tbl = levelTable (F, L, names)
+  if (isempty (names))
+    names = {F.name};
+  endif
+  cols = cell (1, columns (L));
+  for i = 1:columns (L)
+    nat = F(i).native(L(:,i));
+    if (iscell (nat{1}))
+      cols{i} = [nat{:}]';
+    else
+      cols{i} = vertcat (nat{:});
+    endif
+  endfor
+  tbl = table (cols{:}, 'VariableNames', names);
+endfunction
+
+## One statistic of the values Y.
+function v = groupStatistic (y, name)
+  switch (name)
+    case 'mean'
+      v = mean (y);
+    case 'median'
+      v = median (y);
+    case 'std'
+      v = std (y);
+    case 'var'
+      v = var (y);
+    case 'sem'
+      v = std (y) / sqrt (numel (y));
+    case 'min'
+      v = min (y);
+    case 'max'
+      v = max (y);
+    case 'range'
+      v = max (y) - min (y);
+    case 'numel'
+      v = numel (y);
+  endswitch
+endfunction
+
+## The adjusted p-value of a pairwise comparison with |t| = T among M means,
+## NPAIRS pairs and DFE error degrees of freedom.  The two-sided t tail is the
+## incomplete beta function, which keeps its digits far out where tcdf
+## rounds to zero.
+function p = pairwise (T, m, npairs, dfe, ctype)
+  p2 = betainc (T ^ 2 / (dfe + T ^ 2), 1/2, dfe / 2, 'upper');
+  switch (ctype)
+    case 'tukey-kramer'
+      p = stdrcdf (sqrt (2) * T, m, dfe, 'upper');
+    case 'bonferroni'
+      p = min (1, npairs * p2);
+    case 'dunn-sidak'
+      p = - expm1 (npairs * log1p (- p2));
+    case 'lsd'
+      p = p2;
+    case 'scheffe'
+      p = fcdf (T ^ 2 / (m - 1), m - 1, dfe, 'upper');
+  endswitch
+endfunction
+
+## The multiple of the standard error that gives simultaneous limits at
+## level ALPHA for the comparison type CTYPE.
+function crit = critical (m, npairs, dfe, ctype, alpha)
+  switch (ctype)
+    case 'tukey-kramer'
+      crit = stdrinv (1 - alpha, m, dfe) / sqrt (2);
+    case 'bonferroni'
+      crit = tinv (1 - alpha / (2 * npairs), dfe);
+    case 'dunn-sidak'
+      crit = tinv (1 - (1 - (1 - alpha) ^ (1 / npairs)) / 2, dfe);
+    case 'lsd'
+      crit = tinv (1 - alpha / 2, dfe);
+    case 'scheffe'
+      crit = sqrt ((m - 1) * finv (1 - alpha, m - 1, dfe));
+  endswitch
+endfunction
+
+## Refuse an ALPHA outside (0, 1).
+function checkAlpha (alpha, meth)
+  if (! (isnumeric (alpha) && isscalar (alpha) && alpha > 0 && alpha < 1))
+    error ("RepeatedMeasuresModel.%s: 'Alpha' must be a scalar in (0, 1).", ...
+           meth);
+  endif
 endfunction
 
 ## Pillai's trace, Wilks' lambda, the Hotelling-Lawley trace and Roy's root
@@ -1066,47 +1710,47 @@ endfunction
 
 ## Effects-coded design matrix of the terms, the coefficient names, and for
 ## each term (the intercept first) its name and its columns.  BAD marks the
-## subjects missing a predictor.
-function [X, cnames, tcols, tnames, bad] = effectsDesign (t, terms, intercept, vars)
+## subjects missing a predictor or holding a level CODING does not know.
+## CODING, one field per variable, is built from T unless given; for a
+## categorical variable it holds the level keys and their native values, and
+## for a continuous one its mean, set by the caller.
+function [X, cnames, tcols, tnames, bad, coding] = effectsDesign (t, terms, intercept, vars, coding)
   n = rows (t);
   bad = false (n, 1);
+  given = (nargin > 4);
+  if (! given)
+    coding = struct ();
+  endif
   code = struct ();
   for i = 1:numel (vars)
     v = t.(vars{i});
-    if (iscategorical (v))
-      miss = isundefined (v);
-      lev = categories (v(! miss));
-      lev = lev(ismember (lev, cellstr (v(! miss))));
-      [~, ic] = ismember (cellstr (v), lev);
-      iscat = true;
-    elseif (iscellstr (v) || isa (v, 'string') || ischar (v) || islogical (v))
-      if (ischar (v))
-        v = cellstr (v);
-      elseif (islogical (v))
-        v = cellstr (num2str (double (v(:))));
+    if (given)
+      cd = coding.(vars{i});
+      if (cd.iscat)
+        [~, ic, ~, ~, miss] = levelsOf (v, cd.levels);
       else
-        v = cellstr (v);
+        [~, ~, ~, ~, miss] = levelsOf (v);
       endif
-      miss = cellfun (@isempty, v);
-      lev = unique (v(! miss));
-      [~, ic] = ismember (v, lev);
-      iscat = true;
     else
-      v = double (v(:));
-      miss = isnan (v);
-      iscat = false;
+      [lev, ic, native, iscat, miss] = levelsOf (v);
+      cd = struct ('iscat', iscat, 'levels', {lev}, 'native', {native}, ...
+                   'mean', NaN);
+      coding.(vars{i}) = cd;
+    endif
+    if (cd.iscat)
+      miss |= (ic(:) == 0);
     endif
     bad |= miss(:);
-    if (iscat)
-      L = numel (lev);
+    if (cd.iscat)
+      L = numel (cd.levels);
       M = zeros (n, L - 1);
       for l = 1:L-1
         M(:,l) = (ic(:) == l) - (ic(:) == L);
       endfor
       code.(vars{i}) = struct ('M', M, 'names', ...
-                               {strcat(vars{i}, '_', lev(1:L-1)(:)')});
+                               {strcat(vars{i}, '_', cd.levels(1:L-1)(:)')});
     else
-      code.(vars{i}) = struct ('M', v, 'names', {vars(i)});
+      code.(vars{i}) = struct ('M', double (v(:)), 'names', {vars(i)});
     endif
   endfor
 
@@ -1144,6 +1788,58 @@ function [X, cnames, tcols, tnames, bad] = effectsDesign (t, terms, intercept, v
     tnames{end+1} = strjoin (terms{i}, ':');
     X = [X, M];
     cnames = [cnames, nm];
+  endfor
+endfunction
+
+## Levels of the variable V: their keys as text, the code of each element
+## (0 where it is missing or not among LEV when LEV is given), one native
+## value per level, whether V is categorical, and which elements are
+## missing.  A numeric V is continuous and has no levels.
+function [lev, ic, native, iscat, miss] = levelsOf (v, lev)
+  native = {};
+  ic = [];
+  if (iscategorical (v))
+    miss = isundefined (v(:));
+    keys = cellstr (v(:));
+    iscat = true;
+  elseif (iscellstr (v) || isa (v, 'string') || ischar (v) || islogical (v))
+    if (islogical (v))
+      keys = cellstr (num2str (double (v(:))));
+    else
+      keys = cellstr (v);
+      keys = keys(:);
+    endif
+    miss = cellfun (@isempty, keys);
+    iscat = true;
+  else
+    v = double (v(:));
+    miss = isnan (v);
+    iscat = false;
+    if (nargin < 2)
+      lev = {};
+    endif
+    return;
+  endif
+  if (nargin < 2)
+    if (iscategorical (v))
+      lev = categories (v);
+      lev = lev(ismember (lev, keys(! miss)));
+    else
+      lev = unique (keys(! miss));
+    endif
+  endif
+  [~, ic] = ismember (keys, lev);
+  ic(miss) = 0;
+  native = cell (numel (lev), 1);
+  for l = 1:numel (lev)
+    j = find (ic == l, 1);
+    if (isempty (j))
+      native{l} = lev{l};
+    elseif (iscategorical (v) || islogical (v))
+      native{l} = v(j);
+    else
+      native{l} = keys(j);
+    endif
   endfor
 endfunction
 
@@ -1593,6 +2289,179 @@ endfunction
 %! assert_equal (tbl.Value(1), 0.792486767123089, -1e-12);
 %! assert_equal (tbl.F(1), 561.38855894648, -1e-12);
 
+## margmean
+%!test
+%! tbl = margmean (rm, 'species');
+%! assert_equal (tbl.species, {'setosa'; 'versicolor'; 'virginica'});
+%! assert_equal (tbl.Mean, [2.5355; 3.573; 4.285], -1e-13);
+%! assert_equal (tbl.StdErr, 0.0428073718935813 * ones (3, 1), -1e-12);
+%! assert_equal (tbl.Lower(1), 2.45090264579764, -1e-12);
+%!test
+%! tbl = margmean (rm, 'Measurements');
+%! assert_equal (tbl.Measurements, [1; 2; 3; 4]);
+%! assert_equal (tbl.StdErr, [0.0420323814271256; 0.0277353871557668; ...
+%!               0.0351366622491893; 0.0167096045540803], -1e-12);
+%!test
+%! tbl = margmean (rm, {'species', 'Measurements'});
+%! assert_equal (rows (tbl), 12);
+%! assert_equal (tbl.Mean(1:4), [5.006; 3.428; 1.462; 0.246], -1e-12);
+%! assert_equal (tbl.StdErr(5), 0.072802220194896, -1e-12);
+%!test
+%! tbl = margmean (rm, 'species', 'Alpha', 0.01);
+%! assert_equal (tbl.Lower(1), 2.42378611949266, -1e-12);
+## A continuous predictor enters at its mean
+%!test
+%! rm2 = fitrm (t2, 'y1-y6 ~ g + x', 'WithinDesign', W);
+%! tbl = margmean (rm2, 'g');
+%! assert_equal (tbl.Mean, [15.8555692391899; 17.3944307608101], -1e-12);
+%! assert_equal (tbl.StdErr, 0.446919101103406 * ones (2, 1), -1e-12);
+%!test
+%! rm2 = fitrm (t2, 'y1-y6 ~ g + x', 'WithinDesign', W);
+%! tbl = margmean (rm2, {'g', 'A'});
+%! assert_equal (tbl.Mean, [13.3163656267105; 18.3947728516694; ...
+%!               14.2391899288451; 20.549671592775], -1e-12);
+%! assert_equal (tbl.StdErr(1:2), [1.12245927784633; 0.768527281387124], ...
+%!               -1e-12);
+%!test
+%! rm2 = fitrm (t2, 'y1-y6 ~ g + x', 'WithinDesign', W);
+%! tbl = margmean (rm2, {'B', 'g'});
+%! assert_equal (tbl.Mean([1, 4, 6]), [13.8103448275862; 16.301724137931; ...
+%!               19.6919129720854], -1e-12);
+%! assert_equal (tbl.StdErr([1, 3, 5]), [0.863939313862951; ...
+%!               0.870431298727607; 0.688406615362842], -1e-12);
+
+## grpstats
+%!test
+%! tbl = grpstats (rm, 'species');
+%! assert_equal (tbl.GroupCount, [200; 200; 200]);
+%! assert_equal (tbl.mean, [2.5355; 3.573; 4.285], -1e-13);
+%! assert_equal (tbl.std, [1.84834293572383; 1.76238503313695; ...
+%!               1.91538993235446], -1e-12);
+%!test
+%! tbl = grpstats (rm, 'Measurements');
+%! assert_equal (tbl.GroupCount, 150 * ones (4, 1));
+%! assert_equal (tbl.std, [0.828066127977863; 0.435866284936698; ...
+%!               1.76529823325947; 0.762237668960347], -1e-12);
+%!test
+%! tbl = grpstats (rm, 'species', {'min', 'max'});
+%! assert_equal (tbl.Properties.VariableNames, {'species', 'GroupCount', ...
+%!               'min', 'max'});
+%! assert_equal ([tbl.min, tbl.max], [0.1, 5.8; 1, 7; 1.4, 7.9]);
+%!test
+%! rm2 = fitrm (t2, 'y1-y6 ~ g + x', 'WithinDesign', W);
+%! tbl = grpstats (rm2, {'g', 'B'});
+%! assert_equal (tbl.GroupCount, 12 * ones (6, 1));
+%! assert_equal (tbl.std([1, 5]), [4.56767297030297; 3.29944898981082], ...
+%!               -1e-12);
+%!test
+%! rm2 = fitrm (t2, 'y1-y6 ~ g + x', 'WithinDesign', W);
+%! tbl = grpstats (rm2, 'g', {'mean', 'sem', 'var', 'range', 'numel', ...
+%!                            'median'});
+%! assert_equal ([tbl.sem, tbl.var], [0.797344578852233, ...
+%!               22.8873015873016; 0.874599933736397, 27.5373015873016], ...
+%!               -1e-12);
+%! assert_equal ([tbl.range, tbl.numel, tbl.median], [19, 36, 16.25; ...
+%!                                                    22, 36, 17.5]);
+
+## multcompare
+%!test
+%! tbl = multcompare (rm, 'species', 'ComparisonType', 'bonferroni');
+%! assert_equal (tbl.Difference(1:2), [-1.0375; -1.7495], -1e-12);
+%! assert_equal (tbl.StdErr(1), 0.0605387659014515, -1e-12);
+%! assert_equal (tbl.pValue(1:2), [2.15970302648855e-36; ...
+%!               5.03902053290415e-62], -1e-9);
+%! assert_equal (tbl.Lower(1), -1.18410589638625, -1e-12);
+%!test
+%! tbl = multcompare (rm, 'species', 'ComparisonType', 'lsd');
+%! assert_equal (tbl.pValue(1), 7.19901008829516e-37, -1e-9);
+%! assert_equal (tbl.Lower(1), -1.15713872565386, -1e-12);
+%!test
+%! tbl = multcompare (rm, 'species', 'ComparisonType', 'scheffe');
+%! assert_equal (tbl.pValue(1), 8.97549175066402e-36, -1e-9);
+%! assert_equal (tbl.Lower(1), -1.18720639857468, -1e-12);
+## R2024a floors these Tukey-Kramer p-values, and takes its limits from the
+## studentized range on infinite degrees of freedom; the quantile here is
+## R 4.5.0's qtukey (0.95, 3, 147)
+%!test
+%! tbl = multcompare (rm, 'species');
+%! assert_equal (tbl.Lower(1), -1.0375 - 3.34842406186643 / sqrt (2) ...
+%!               * 0.0605387659014515, -1e-10);
+%! assert_equal (all (tbl.pValue < 1e-20), true);
+%!test
+%! tbl = multcompare (rm, 'Measurements', 'By', 'species');
+%! assert_equal (rows (tbl), 36);
+%! assert_equal (tbl.Properties.VariableNames(1:3), {'species', ...
+%!               'Measurements_1', 'Measurements_2'});
+%! assert_equal (tbl.StdErr(1:3), [0.0624425722558894; 0.047993196796791; ...
+%!               0.0678361370996215], -1e-12);
+%!test
+%! rm2 = fitrm (t2, 'y1-y6 ~ g + x', 'WithinDesign', W);
+%! tbl = multcompare (rm2, 'B');
+%! assert_equal (tbl.StdErr([1, 2, 4]), [0.914225240599476; ...
+%!               0.826222282469959; 0.710493930524169], -1e-12);
+%! ## R2024a's studentized range is good to about 2e-7 here
+%! assert_equal (tbl.pValue([1, 2, 4]), [0.278857228960382; ...
+%!               0.00693824145665634; 0.0634575438808659], -1e-6);
+%! assert_equal (tbl.Lower(1:2), [-4.05252199083511; -5.68181723897677], ...
+%!               -1e-7);
+%!test
+%! rm2 = fitrm (t2, 'y1-y6 ~ g + x', 'WithinDesign', W);
+%! tbl = multcompare (rm2, 'B', 'By', 'g');
+%! assert_equal (tbl.Difference([1, 8]), [-2.88793103448276; ...
+%!               -3.50225779967159], -1e-12);
+%! assert_equal (tbl.pValue([1, 10]), [0.122845632074643; ...
+%!               0.0214216738123368], -1e-7);
+%!test
+%! rm2 = fitrm (t2, 'y1-y6 ~ g + x', 'WithinDesign', W);
+%! tbl = multcompare (rm2, 'g', 'By', 'A');
+%! assert_equal (tbl.StdErr([1, 3]), [1.60451755027924; 1.09858373946539], ...
+%!               -1e-12);
+%! assert_equal (tbl.pValue([1, 3]), [0.579288143050048; ...
+%!               0.0814446080647632], -1e-7);
+%!test
+%! rm2 = fitrm (t2, 'y1-y6 ~ g + x', 'WithinDesign', W);
+%! tbl = multcompare (rm2, 'B', 'ComparisonType', 'dunn-sidak');
+%! assert_equal (tbl.pValue([1, 2, 4]), [0.353395443395346; ...
+%!               0.00819161456139628; 0.0787120565287793], -1e-10);
+%! assert_equal (tbl.Lower(1), -4.17216326867877, -1e-10);
+
+## predict and random
+%!test
+%! rm2 = fitrm (t2, 'y1-y6 ~ g + x', 'WithinDesign', W);
+%! assert_equal (predict (rm2, t2(1:2,:))(1,:), [11.2614942528736, ...
+%!               13.2783251231527, 13.1005747126437, 14.7040229885058, ...
+%!               20.3940886699507, 18.4835796387521], -1e-12);
+%!test
+%! rm2 = fitrm (t2, 'y1-y6 ~ g + x', 'WithinDesign', W);
+%! [~, yci] = predict (rm2, t2(1:2,:));
+%! assert_equal (size (yci), [2, 6, 2]);
+%! assert_equal ([yci(1,1,1), yci(1,1,2)], [7.64052800884495, ...
+%!                                          14.8824604969022], -1e-12);
+%!test
+%! rm2 = fitrm (t2, 'y1-y6 ~ g + x', 'WithinDesign', W);
+%! t4 = t2(1:2,:);
+%! t4.x(1) = NaN;
+%! yp = predict (rm2, t4);
+%! assert_equal (isnan (yp(:,1)), [true; false]);
+%!test
+%! rm2 = fitrm (t2, 'y1-y6 ~ g + x', 'WithinDesign', W);
+%! assert_equal (size (predict (rm2)), [12, 6]);
+%!test
+%! rm3 = fitrm (t2, 'y1-y6 ~ g', 'WithinDesign', [1, 2, 4, 8, 16, 32]', ...
+%!              'WithinModel', 'orthogonalcontrasts');
+%! assert_equal (predict (rm3, t2(1,:), 'WithinDesign', [3, 5]'), ...
+%!               [13.8420137222029, 14.4827614967302], -1e-11);
+%!test
+%! rm9 = fitrm (t2, 'y1-y6 ~ g', 'WithinDesign', W, 'WithinModel', 'A+B');
+%! assert_equal (predict (rm9, t2(1,:)), [10.9166666666667, ...
+%!               14.1666666666667, 14, 16.0833333333333, 19.3333333333333, ...
+%!               19.1666666666667], -1e-12);
+%!warning<RepeatedMeasuresModel.predict: the 'separatemeans' model does not use the 'WithinDesign' given.> ...
+%! predict (rm, rm.BetweenDesign(1,:), 'WithinDesign', [1.5, 2.5]');
+%!test
+%! assert_equal (size (random (rm)), [150, 4]);
+%! assert_equal (size (random (rm, rm.BetweenDesign([1, 51, 101],:))), [3, 4]);
+
 ## Test input validation
 %!error<RepeatedMeasuresModel: too few input arguments.> RepeatedMeasuresModel (1)
 %!error<RepeatedMeasuresModel: T must be a table.> fitrm ([1, 2, 3], 'y1-y6 ~ g')
@@ -1654,3 +2523,40 @@ endfunction
 %! coeftest (rm, [0, 1, 0], [1, -1, 0]')
 %!error<RepeatedMeasuresModel.coeftest: D must be a scalar or a 1-by-1 matrix.> ...
 %! coeftest (rm, [0, 1, 0], [1, -1, 0, 0]', [1, 2])
+%!error<RepeatedMeasuresModel.margmean: too few input arguments.> margmean (rm)
+%!error<RepeatedMeasuresModel.margmean: 'nosuch' is not a categorical factor of the model.> ...
+%! margmean (rm, 'nosuch')
+%!error<RepeatedMeasuresModel.margmean: 'x' is not a categorical factor of the model.> ...
+%! margmean (fitrm (t2, 'y1-y6 ~ g + x'), 'x')
+%!error<RepeatedMeasuresModel.margmean: 'Alpha' must be a scalar in \(0, 1\).> ...
+%! margmean (rm, 'species', 'Alpha', 1)
+%!error<RepeatedMeasuresModel.margmean: invalid optional paired argument.> ...
+%! margmean (rm, 'species', 'Nonsense', 1)
+%!error<RepeatedMeasuresModel.grpstats: too few input arguments.> grpstats (rm)
+%!error<RepeatedMeasuresModel.grpstats: 'nosuch' is not a categorical factor of the model.> ...
+%! grpstats (rm, 'nosuch')
+%!error<RepeatedMeasuresModel.grpstats: STATS must name statistics among 'mean', 'median', 'std', 'var', 'sem', 'min', 'max', 'range' and 'numel'.> ...
+%! grpstats (rm, 'species', 'mode')
+%!error<RepeatedMeasuresModel.multcompare: too few input arguments.> multcompare (rm)
+%!error<RepeatedMeasuresModel.multcompare: 'nosuch' is not a categorical factor of the model.> ...
+%! multcompare (rm, 'nosuch')
+%!error<RepeatedMeasuresModel.multcompare: 'ComparisonType' must be 'tukey-kramer', 'bonferroni', 'dunn-sidak', 'lsd' or 'scheffe'.> ...
+%! multcompare (rm, 'species', 'ComparisonType', 'hsd')
+%!error<RepeatedMeasuresModel.multcompare: 'By' must differ from the factor compared.> ...
+%! multcompare (rm, 'species', 'By', 'species')
+%!error<RepeatedMeasuresModel.multcompare: 'Alpha' must be a scalar in \(0, 1\).> ...
+%! multcompare (rm, 'species', 'Alpha', 0)
+%!error<RepeatedMeasuresModel.multcompare: invalid optional paired argument.> ...
+%! multcompare (rm, 'species', 'Nonsense', 1)
+%!error<RepeatedMeasuresModel.predict: TNEW has no variable 'species'.> ...
+%! predict (rm, table ([1; 2], 'VariableNames', {'z'}))
+%!error<RepeatedMeasuresModel.predict: 'Alpha' must be a scalar in \(0, 1\).> ...
+%! predict (rm, 'Alpha', 2)
+%!error<RepeatedMeasuresModel.predict: invalid optional paired argument.> ...
+%! predict (rm, 'Nonsense', 1)
+%!error<RepeatedMeasuresModel.predict: 'WithinDesign' must hold the within-subject factors.> ...
+%! predict (fitrm (t2, 'y1-y6 ~ g', 'WithinDesign', W, 'WithinModel', 'A+B'), ...
+%!          'WithinDesign', {1})
+%!error<RepeatedMeasuresModel.random: TNEW must be a table.> random (rm, 1)
+%!error<RepeatedMeasuresModel.random: TNEW has no variable 'species'.> ...
+%! random (rm, table ([1; 2], 'VariableNames', {'z'}))
