@@ -397,6 +397,7 @@ Distribution Functions
  raylcdf raylinv raylpdf raylrnd
  ricecdf riceinv ricepdf ricernd
  stblcdf stblinv stblpdf stblrnd
+ stdrcdf stdrinv stdrpdf stdrrnd
  tcdf tinv tpdf trnd
  tlscdf tlsinv tlspdf tlsrnd
  tricdf triinv tripdf trirnd
@@ -438,6 +439,7 @@ Distribution Statistics
  poisstat
  raylstat
  ricestat
+ stdrstat
  tlsstat
  tristat
  tstat
