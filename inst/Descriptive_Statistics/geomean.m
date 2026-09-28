@@ -161,7 +161,7 @@ function m = geomean (x, varargin)
     ## Two numeric input arguments, dimensions given.  Note scalar is vector!
     vecdim = varargin{1};
     if (isempty (vecdim) || ! (isvector (vecdim) && all (vecdim > 0)) ...
-          || any (rem (vecdim, 1)))
+          || any (rem (vecdim, 1)) || any (! isfinite (vecdim)))
       error ("geomean: DIM must be a positive integer scalar or vector.");
     endif
 
@@ -300,6 +300,12 @@ endfunction
 %! geomean (repmat ([1:20;6:25], [5 2 6 3 5]), -1)
 %!error <geomean: DIM must be a positive integer scalar or vector.> ...
 %! geomean (repmat ([1:20;6:25], [5 2 6 3 5]), 0)
+%!error <geomean: DIM must be a positive integer scalar or vector.> ...
+%! geomean ([1 2 4], Inf)
+%!error <geomean: DIM must be a positive integer scalar or vector.> ...
+%! geomean ([1 2 4], [1 Inf])
+%!error <geomean: DIM must be a positive integer scalar or vector.> ...
+%! geomean ([1 2 4], [Inf 1])
 %!error <geomean: VECDIM must contain non-repeating positive integers.> ...
 %! geomean (repmat ([1:20;6:25], [5 2 6 3 5]), [1 1])
 
