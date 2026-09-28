@@ -275,7 +275,8 @@ classdef ClassificationSVM < PredictiveModel
     ## vector
     ## belongs to the positive class @qcode{(ClassNames@{2@})}.  A value of -1
     ## indicates that the corresponding support vector belongs to the negative
-    ## class @qcode{(ClassNames@{1@})}.  This property is read-only.
+    ## class @qcode{(ClassNames@{1@})}.  A one-class model labels every support
+    ## vector +1.  This property is read-only.
     ##
     ## @end deftp
     SupportVectorLabels = [];
@@ -1165,8 +1166,9 @@ classdef ClassificationSVM < PredictiveModel
       ##    '-h':  Shrinking
 
       ## Build options string for svmtrain function
-      str_options = strcat ("-s %d -t %d -g %f -d %d -r %.16g", ...
-                            " -c %f -n %f -m %f -e %e -h %d -q");
+      str_options = strcat ("-s %d -t %d -g %.16g -d %d -r %.16g", ...
+                            " -c %.16g -n %.16g -m %.16g -e %.16g", ...
+                            " -h %d -q");
       svm_options = sprintf (str_options, s, t, g, PolynomialOrder, ...
                              r, BoxConstraint, Nu, ...
                              CacheSize, Tolerance, Shrinking);
@@ -1230,7 +1232,12 @@ classdef ClassificationSVM < PredictiveModel
       ## One label per support vector, in the order of SupportVectors, taking
       ## the sign from the coefficients themselves.  LIBSVM's sign is opposite
       ## to the labelling MATLAB reports.
-      this.SupportVectorLabels = -sign (Model.sv_coef);
+      ## A one-class model labels every support vector +1, as MATLAB does.
+      if (strcmp (SVMtype, 'one_class_svm'))
+        this.SupportVectorLabels = ones (size (Model.sv_coef));
+      else
+        this.SupportVectorLabels = -sign (Model.sv_coef);
+      endif
 
       this.IsSupportVector = false (this.NumObservations, 1);
       this.IsSupportVector(Model.sv_indices) = true;
@@ -3073,6 +3080,22 @@ endclassdef
 %! obj = fitcsvm (x, ones (100, 1), 'KernelFunction', 'gaussian', ...
 %!                'KernelScale', 2, 'Nu', 0.3);
 %! assert_equal (obj.Bias, -13.4656686131, 1e-6);
+%!test
+%! obj = fitcsvm (x, ones (100, 1), 'KernelFunction', 'linear', 'Nu', 0.3);
+%! assert_equal (unique (obj.SupportVectorLabels), 1);
+%!test
+%! obj = fitcsvm (x, ones (100, 1), 'KernelFunction', 'linear', 'Nu', 0.3);
+%! assert_equal (obj.Beta, [119.2; 36.4], 1e-9);
+%!test
+%! ## Parameters reach the engine at full precision.
+%! obj = fitcsvm (x, y, 'BoxConstraint', 1e-7);
+%! assert_equal (max (obj.Alpha), 1e-7, 1e-20);
+%!test
+%! obj = fitcsvm (x, y, 'BoxConstraint', 0.1234567891);
+%! assert_equal (max (obj.Alpha), 0.1234567891, 1e-15);
+%!test
+%! obj = fitcsvm (x, ones (100, 1), 'Nu', 1e-7);
+%! assert_equal (sum (obj.Alpha), 1e-5, 1e-18);
 %!test
 %! ## MATLAB adds KernelOffset to the Gram matrix, which changes no fit.
 %! A = fitcsvm (x, y, 'KernelFunction', 'polynomial');

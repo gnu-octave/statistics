@@ -232,7 +232,8 @@ classdef CompactClassificationSVM < PredictiveModel
     ## @code{SupportVectorLabels} indicates that the corresponding support
     ## vector belongs to the positive class @qcode{(ClassNames@{2@})}.  A value
     ## of -1 indicates that the corresponding support vector belongs to the
-    ## negative class @qcode{(ClassNames@{1@})}.  This property is read-only.
+    ## negative class @qcode{(ClassNames@{1@})}.  A one-class model labels
+    ## every support vector +1.  This property is read-only.
     ##
     ## @end deftp
     SupportVectorLabels = [];
