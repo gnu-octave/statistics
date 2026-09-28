@@ -70,6 +70,10 @@ static void print_string_stdout(const char *s)
 	fflush(stdout);
 }
 static void (*svm_print_string) (const char *) = &print_string_stdout;
+
+// The number of solver runs that stopped at their iteration limit, read by
+// the caller after svm_train so that it can report the fit unconverged.
+static int svm_max_iter_count = 0;
 #if 1
 static void info(const char *fmt,...)
 {
@@ -763,7 +767,8 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 			active_size = l;
 			info("*");
 		}
-		fprintf(stderr,"\nWARNING: reaching max number of iterations\n");
+		svm_max_iter_count++;
+		info("\nWARNING: reaching max number of iterations\n");
 	}
 
 	// calculate rho
@@ -3422,6 +3427,16 @@ int svm_check_probability_model(const svm_model *model)
 		(model->param.svm_type == ONE_CLASS && model->prob_density_marks!=NULL) ||
 		((model->param.svm_type == EPSILON_SVR || model->param.svm_type == NU_SVR) &&
 		 model->probA!=NULL);
+}
+
+int svm_get_max_iter_count(void)
+{
+	return svm_max_iter_count;
+}
+
+void svm_reset_max_iter_count(void)
+{
+	svm_max_iter_count = 0;
 }
 
 void svm_set_print_string_function(void (*print_func)(const char *))

@@ -363,6 +363,7 @@ DEFUN_DLD (svmtrain, args, nargout,
            "-*- texinfo -*- \n\n\
  @deftypefn  {statistics} {@var{model} =} svmtrain (@var{labels}, @var{data}, \"libsvm_options\")\n\
  @deftypefnx {statistics} {@var{model} =} svmtrain (@var{labels}, @var{data}, \"libsvm_options\", @var{weights})\n\
+ @deftypefnx {statistics} {[@var{model}, @var{converged}] =} svmtrain (@dots{})\n\
 \n\
 \n\
 This function trains an SVM @var{model} based on known @var{labels} and their \
@@ -507,6 +508,11 @@ conducted and the returned model is just a scalar: cross-validation \
 accuracy for classification and mean-squared error for regression. \
 \n\
 \n\
+The optional output @var{converged} is @code{false} when any solver run \
+stopped at its iteration limit before meeting the tolerance, and @code{true} \
+otherwise. \
+\n\
+\n\
 @emph{Note on LIBSVM 3.36 Update}: This implementation is based on LIBSVM 3.36 \
 (2025) and now supports probability estimates for One-Class SVM (@code{-s 2}) \
 when combined with the probability flag (@code{-b 1}).  For One-Class SVM, \
@@ -522,7 +528,7 @@ probability of the instance being an inlier. \n\
 	srand(1);
 	int nlhs = nargout;
 	int nrhs = args.length();
-	if(nlhs > 1)
+	if(nlhs > 2)
 	{
     error ("svmtrain: wrong number of output arguments.");
 	}
@@ -623,6 +629,7 @@ probability of the instance being an inlier. \n\
 			return plhs;
 		}
 
+		svm_reset_max_iter_count();
 		if(cross_validation)
 		{
 			double ptr = do_cross_validation();
@@ -641,6 +648,9 @@ probability of the instance being an inlier. \n\
       }
 			svm_free_and_destroy_model(&model);
 		}
+    // False when any solver run stopped at its iteration limit.
+    if(nlhs > 1)
+      plhs(1) = octave_value(svm_get_max_iter_count() == 0);
 		svm_destroy_param(&param);
 		free(prob.y);
 		free(prob.x);
@@ -696,7 +706,7 @@ probability of the instance being an inlier. \n\
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %!
 %! # Check argument count errors
-%!error <svmtrain: wrong number of output arguments.> [L, D] = svmtrain (L, D);
+%!error <svmtrain: wrong number of output arguments.> [L, D, C] = svmtrain (L, D);
 %!error <svmtrain: wrong number of input arguments.> model = svmtrain (L, D, "", ones (270, 1), 1);
 %!
 %! # Check argument type errors
@@ -723,6 +733,14 @@ probability of the instance being an inlier. \n\
 %! svmtrain ([1; -1; 1; -1], [1; 2; 3; 4], "-q", [1, 1])
 %!error <svmtrain: weights must be finite and nonnegative.> ...
 %! svmtrain ([1; -1; 1; -1], [1; 2; 3; 4], "-q", [1; -1; 1; 1])
+%!test
+%! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
+%! [~, converged] = svmtrain (L, D, '-c 1 -g 0.07 -q');
+%! assert_equal (converged, true);
+%!test
+%! x = (1:20)' * 1000;
+%! [~, converged] = svmtrain (x / 100, x, '-s 3 -t 1 -g 1 -r 0 -c 1 -q');
+%! assert_equal (converged, false);
 %! # Test 5: One-Class Probability Training (New LIBSVM 3.36 Feature)
 %! # This ensures svmtrain DOES NOT reject -s 2 combined with -b 1
 %! # and correctly populates the new ProbDensityMarks field.

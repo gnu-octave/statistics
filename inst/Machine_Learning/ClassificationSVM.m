@@ -1174,7 +1174,12 @@ classdef ClassificationSVM < PredictiveModel
       endif
 
       ## Train the SVM model using svmtrain from libsvm
-      Model = svmtrain (Y, X, svm_options, instW);
+      [Model, converged] = svmtrain (Y, X, svm_options, instW);
+      if (! converged)
+        warning (strcat ("ClassificationSVM: the solver stopped at its iteration", ...
+                         " limit without converging; standardizing the", ...
+                         " predictors may help."));
+      endif
       ## A one-class model's bias puts its least supported support vector on
       ## the boundary: R2024a's bias is minus the smallest kernel sum over the
       ## support vectors, which reproduces it to 1e-13 for linear and gaussian
@@ -2759,6 +2764,12 @@ endclassdef
 %! assert_equal (edge (M, Q, ones (5, 1)), NaN);
 %! assert_equal (resubEdge (M), NaN);
 %! assert_equal (margin (compact (M), Q, ones (5, 1)), NaN (5, 1));
+
+## A fit stopped at the solver's iteration limit says so.
+%!warning<ClassificationSVM: the solver stopped at its iteration limit without converging; standardizing the predictors may help.> ...
+%! ClassificationSVM ((1:20)' * 1000, repmat ([1; 2], 10, 1), ...
+%!                    'KernelFunction', 'polynomial');
+
 %!error<ClassificationSVM: 'Weights' must be a real vector of class single or double.> ...
 %! fitcsvm ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', 'a')
 %!error<ClassificationSVM: 'Weights' must be a real numeric vector.> ...

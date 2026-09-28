@@ -125,6 +125,9 @@ int svm_check_probability_model(const struct svm_model *model);
 
 void svm_set_print_string_function(void (*print_func)(const char *));
 
+int svm_get_max_iter_count(void);
+void svm_reset_max_iter_count(void);
+
 #ifdef __cplusplus
 }
 #endif

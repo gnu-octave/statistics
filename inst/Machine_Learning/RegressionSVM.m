@@ -838,7 +838,12 @@ classdef RegressionSVM < PredictiveModel
       instW = this.NumObservations * wfit;
 
       ## Train the SVM model using svmtrain from libsvm
-      Model = svmtrain (Y, X, svm_options, instW);
+      [Model, converged] = svmtrain (Y, X, svm_options, instW);
+      if (! converged)
+        warning (strcat ("RegressionSVM: the solver stopped at its iteration", ...
+                         " limit without converging; standardizing the", ...
+                         " predictors may help."));
+      endif
       this.Model = Model;
 
       ## Populate the model properties.  For regression LIBSVM's sv_coef is
@@ -1714,6 +1719,10 @@ endclassdef
 %! X = [(1:10)', mod((1:10)', 3)];
 %! Mdl = RegressionSVM (X, (1:10)');
 %! assert_equal (predict (Mdl, [NaN, 1]), 5);
+
+## A fit stopped at the solver's iteration limit says so.
+%!warning<RegressionSVM: the solver stopped at its iteration limit without converging; standardizing the predictors may help.> ...
+%! RegressionSVM ((1:20)' * 1000, (1:20)' * 10, 'KernelFunction', 'polynomial');
 
 %!error<RegressionSVM.discardSupportVectors: you cannot discard support vectors for a non-linear kernel.> ...
 %! load fisheriris
