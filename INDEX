@@ -97,6 +97,7 @@ Regression
  fitlme
  fitlmematrix
  fitnlm
+ fitrm
  GeneralizedLinearMixedModel
  GeneralizedLinearModel
  glmfit
@@ -120,6 +121,7 @@ Regression
  plsregress
  regress
  regress_gp
+ RepeatedMeasuresModel
  ridge
  robustfit
  stepwisefit
