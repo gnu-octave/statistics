@@ -102,10 +102,6 @@ function c = nancov (varargin)
 
   ## Assemble the data matrix (observations in rows, variables in columns)
   if (y_given)
-    if (isequal (size (x), [0, 0]) && isequal (size (y), [0, 0]))
-      c = NaN;
-      return;
-    endif
     if (! (isnumeric (y) || islogical (y)) || ! isreal (y))
       error ("nancov: Y must be a real numeric matrix or vector.");
     endif
@@ -195,6 +191,7 @@ endfunction
 %!assert_equal (nancov ([1 2 3 4 5]'), 2.5)
 %!assert_equal (nancov (5), 0)
 %!assert_equal (nancov (NaN (3, 2)), NaN (2, 2))
+%!assert_equal (nancov ([], []), NaN (2, 2))
 
 ## Test input validation
 %!error <Invalid call to nancov> nancov ()
