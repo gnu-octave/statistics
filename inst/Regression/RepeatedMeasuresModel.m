@@ -585,6 +585,280 @@ classdef RepeatedMeasuresModel
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {RepeatedMeasuresModel} {@var{tbl} =} anova (@var{rm})
+    ## @deftypefnx {RepeatedMeasuresModel} {@var{tbl} =} anova (@var{rm}, @qcode{'WithinModel'}, @var{WM})
+    ##
+    ## Analysis of variance for between-subject effects.
+    ##
+    ## @code{@var{tbl} = anova (@var{rm})} tests the between-subject terms of
+    ## the repeated measures model @var{rm} on the average of the repeated
+    ## measures, one univariate analysis of variance.  @var{tbl} has the
+    ## variables @qcode{Within}, the within-subject response analysed,
+    ## @qcode{Between}, the between-subject term tested or @qcode{Error},
+    ## @qcode{SumSq}, @qcode{DF}, @qcode{MeanSq}, @qcode{F} and
+    ## @qcode{pValue}.  The intercept is named @qcode{constant}.
+    ##
+    ## @code{anova (@var{rm}, @qcode{'WithinModel'}, @var{WM})} analyses
+    ## other responses built from the repeated measures, one block of rows
+    ## each:
+    ##
+    ## @itemize
+    ## @item @qcode{'separatemeans'}, the default: the average, named
+    ## @qcode{Constant}.
+    ## @item @qcode{'orthogonalcontrasts'}: the average and the orthogonal
+    ## polynomial trends over a single numeric within-subject factor.
+    ## @item A formula over the within-subject factors: each column of its
+    ## effects-coded design, scaled to unit length and named after it.
+    ## @item A contrast matrix with one row per response: each column as
+    ## given, named @qcode{Contrast1}, @qcode{Contrast2}, @dots{}
+    ## @end itemize
+    ##
+    ## MATLAB R2024a and R2026a fail on @qcode{'separatemeans'} given
+    ## explicitly, though it is their documented default; here it is the
+    ## default.
+    ##
+    ## @seealso{fitrm, RepeatedMeasuresModel.ranova,
+    ## RepeatedMeasuresModel.manova}
+    ## @end deftypefn
+    function tbl = anova (this, varargin)
+
+      [WM, args] = parsePairedArguments ({'WithinModel'}, {'separatemeans'}, ...
+                                         varargin(:));
+      if (! isempty (args))
+        error ("RepeatedMeasuresModel.anova: invalid optional paired argument.");
+      endif
+      k = numel (this.ResponseNames);
+      [W, errmsg] = withinTerms (WM, this.WithinDesign, ...
+                                 this.WithinFactorNames, k);
+      if (! isempty (errmsg))
+        error ("RepeatedMeasuresModel.anova: %s", errmsg);
+      endif
+
+      ## One response per column, and its name
+      switch (W.kind)
+        case 'separatemeans'
+          Cs = {ones(k, 1) / sqrt(k)};
+          wn = {'Constant'};
+        case 'matrix'
+          Cs = num2cell (W.C{1}, 1);
+          wn = arrayfun (@(i) sprintf ('Contrast%d', i), 1:numel (Cs), ...
+                         'UniformOutput', false);
+        case 'orthogonalcontrasts'
+          Cs = [{ones(k, 1) / sqrt(k)}, W.C(2:end)];
+          wn = W.cols;
+        case 'formula'
+          Cs = {};
+          wn = {};
+          for w = 1:numel (W.C)
+            for j = 1:columns (W.C{w})
+              c = W.C{w}(:,j);
+              Cs{end+1} = c / norm (c);
+              wn{end+1} = W.cols{w}{j};
+            endfor
+          endfor
+      endswitch
+
+      X = this.X_;
+      E = this.R_' * this.R_;
+      XtXi = inv (X' * X);
+      bn = this.TermNames_;
+      bn(strcmp (bn, '(Intercept)')) = {'constant'};
+      within = {};
+      between = {};
+      vals = zeros (0, 5);
+      for w = 1:numel (Cs)
+        c = Cs{w};
+        MSE = c' * E * c / this.DFE;
+        for i = 1:numel (this.TermNames_)
+          A = eye (columns (X))(this.TermCols_{i},:);
+          Abc = A * this.B_ * c;
+          SS = Abc' * ((A * XtXi * A') \ Abc);
+          df = rows (A);
+          F = (SS / df) / MSE;
+          vals(end+1,:) = [SS, df, SS / df, F, fcdf(F, df, this.DFE, 'upper')];
+          within{end+1} = wn{w};
+          between{end+1} = bn{i};
+        endfor
+        vals(end+1,:) = [MSE * this.DFE, this.DFE, MSE, NaN, NaN];
+        within{end+1} = wn{w};
+        between{end+1} = 'Error';
+      endfor
+
+      tbl = table (categorical (within(:)), categorical (between(:)), ...
+                   vals(:,1), vals(:,2), vals(:,3), vals(:,4), vals(:,5), ...
+                   'VariableNames', {'Within', 'Between', 'SumSq', 'DF', ...
+                   'MeanSq', 'F', 'pValue'});
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {RepeatedMeasuresModel} {@var{tbl} =} manova (@var{rm})
+    ## @deftypefnx {RepeatedMeasuresModel} {@var{tbl} =} manova (@var{rm}, @var{name}, @var{value})
+    ## @deftypefnx {RepeatedMeasuresModel} {[@var{tbl}, @var{A}, @var{C}, @var{D}] =} manova (@dots{})
+    ##
+    ## Multivariate analysis of variance.
+    ##
+    ## @code{@var{tbl} = manova (@var{rm})} tests every term of the
+    ## within-subject model of @var{rm}, as it was fitted, against every
+    ## between-subject term, by the four multivariate statistics.  @var{tbl}
+    ## has the variables @qcode{Within}, @qcode{Between}, @qcode{Statistic},
+    ## one of @qcode{Pillai}, @qcode{Wilks}, @qcode{Hotelling} and
+    ## @qcode{Roy}, its @qcode{Value}, the @qcode{F} statistic that
+    ## approximates it, @qcode{RSquare}, the degrees of freedom @qcode{df1}
+    ## and @qcode{df2}, and the @qcode{pValue}.  Under
+    ## @qcode{'separatemeans'} the within-subject hypothesis is that of equal
+    ## means, named @qcode{Constant}, and a contrast matrix is named
+    ## @qcode{Specified contrast}.
+    ##
+    ## The name-value arguments are @qcode{'WithinModel'}, which takes the
+    ## forms @code{fitrm} takes but @qcode{'orthogonalcontrasts'}, and
+    ## @qcode{'By'}, the name of a between-subject factor, which tests the
+    ## within-subject hypotheses at each of its levels in place of the
+    ## between-subject terms.
+    ##
+    ## @code{[@var{tbl}, @var{A}, @var{C}, @var{D}] = manova (@dots{})} also
+    ## returns the hypotheses as @math{A B C = D}: @var{A} a cell column of
+    ## the between-subject hypothesis matrices, @var{C} the within-subject
+    ## contrast, a cell row of one per term when there are several, and
+    ## @var{D} zero.
+    ##
+    ## Pillai's trace, Wilks' lambda and Roy's root are approximated by F as
+    ## in MATLAB.  The Hotelling-Lawley trace uses McKeon's F approximation
+    ## with its own second degrees of freedom, as SAS does, and the
+    ## Pillai-Samson one where McKeon's is undefined.  MATLAB R2024a computes
+    ## McKeon's F but refers it to the Pillai-Samson degrees of freedom,
+    ## which makes its p-values too small.
+    ##
+    ## @seealso{fitrm, RepeatedMeasuresModel.coeftest,
+    ## RepeatedMeasuresModel.ranova}
+    ## @end deftypefn
+    function [tbl, A, C, D] = manova (this, varargin)
+
+      [WM, By, args] = parsePairedArguments ({'WithinModel', 'By'}, ...
+                                             {this.WithinModel, ''}, ...
+                                             varargin(:));
+      if (! isempty (args))
+        error ("RepeatedMeasuresModel.manova: invalid optional paired argument.");
+      endif
+      if ((ischar (WM) || isa (WM, 'string')) ...
+          && strcmpi (char (WM), 'orthogonalcontrasts'))
+        error (strcat ("RepeatedMeasuresModel.manova: the", ...
+                       " 'orthogonalcontrasts' model cannot be used with", ...
+                       " manova."));
+      endif
+      k = numel (this.ResponseNames);
+      [W, errmsg] = withinTerms (WM, this.WithinDesign, ...
+                                 this.WithinFactorNames, k);
+      if (! isempty (errmsg))
+        error ("RepeatedMeasuresModel.manova: %s", errmsg);
+      endif
+      switch (W.kind)
+        case 'separatemeans'
+          wn = {'Constant'};
+        case 'matrix'
+          wn = {'Specified contrast'};
+        otherwise
+          wn = W.names;
+          wn(cellfun (@isempty, wn)) = {'(Intercept)'};
+      endswitch
+
+      ## The between-subject hypotheses: each term, or each level of BY
+      X = this.X_;
+      nc = columns (X);
+      if (isempty (By))
+        A = cell (numel (this.TermNames_), 1);
+        for i = 1:numel (A)
+          A{i} = eye (nc)(this.TermCols_{i},:);
+        endfor
+        bn = this.TermNames_;
+      else
+        [A, bn, errmsg] = byHypotheses (this, By);
+        if (! isempty (errmsg))
+          error ("RepeatedMeasuresModel.manova: %s", errmsg);
+        endif
+      endif
+
+      stat = {'Pillai'; 'Wilks'; 'Hotelling'; 'Roy'};
+      within = {};
+      between = {};
+      vals = zeros (0, 6);
+      for w = 1:numel (W.C)
+        for i = 1:numel (A)
+          vals = [vals; mvtests(this, A{i}, W.C{w}, 0)];
+          within = [within; repmat(wn(w), 4, 1)];
+          between = [between; repmat(bn(i), 4, 1)];
+        endfor
+      endfor
+      tbl = table (categorical (within), categorical (between), ...
+                   categorical (repmat (stat, rows (vals) / 4, 1)), ...
+                   vals(:,1), vals(:,2), vals(:,3), vals(:,4), vals(:,5), ...
+                   vals(:,6), 'VariableNames', {'Within', 'Between', ...
+                   'Statistic', 'Value', 'F', 'RSquare', 'df1', 'df2', ...
+                   'pValue'});
+      if (numel (W.C) == 1)
+        C = W.C{1};
+      else
+        C = W.C;
+      endif
+      D = 0;
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {RepeatedMeasuresModel} {@var{tbl} =} coeftest (@var{rm}, @var{A}, @var{C})
+    ## @deftypefnx {RepeatedMeasuresModel} {@var{tbl} =} coeftest (@var{rm}, @var{A}, @var{C}, @var{D})
+    ##
+    ## Linear hypothesis test on the coefficients of a repeated measures
+    ## model.
+    ##
+    ## @code{@var{tbl} = coeftest (@var{rm}, @var{A}, @var{C})} tests the
+    ## hypothesis @math{A B C = 0} on the coefficient matrix @math{B} of
+    ## @var{rm}, @var{A} having one column per between-subject coefficient
+    ## and @var{C} one row per response.  @var{tbl} holds the four
+    ## multivariate statistics as @code{manova} reports them: the variables
+    ## @qcode{Statistic}, @qcode{Value}, @qcode{F}, @qcode{RSquare},
+    ## @qcode{df1}, @qcode{df2} and @qcode{pValue}.
+    ##
+    ## @code{@var{tbl} = coeftest (@var{rm}, @var{A}, @var{C}, @var{D})} tests
+    ## @math{A B C = D} instead, @var{D} a scalar or a matrix with as many
+    ## rows as @var{A} and as many columns as @var{C}.  The default is 0.
+    ##
+    ## @seealso{fitrm, RepeatedMeasuresModel.manova}
+    ## @end deftypefn
+    function tbl = coeftest (this, A, C, D)
+
+      if (nargin < 3)
+        error ("RepeatedMeasuresModel.coeftest: too few input arguments.");
+      endif
+      nc = columns (this.X_);
+      k = numel (this.ResponseNames);
+      if (! (isnumeric (A) && isreal (A) && ismatrix (A) && columns (A) == nc ...
+             && ! isempty (A)))
+        error ("RepeatedMeasuresModel.coeftest: A must be a matrix with %d columns.", ...
+               nc);
+      endif
+      if (! (isnumeric (C) && isreal (C) && ismatrix (C) && rows (C) == k ...
+             && ! isempty (C)))
+        error ("RepeatedMeasuresModel.coeftest: C must be a matrix with %d rows.", ...
+               k);
+      endif
+      if (nargin < 4)
+        D = 0;
+      endif
+      if (! (isnumeric (D) && isreal (D) && (isscalar (D) ...
+             || isequal (size (D), [rows(A), columns(C)]))))
+        error (strcat ("RepeatedMeasuresModel.coeftest: D must be a scalar", ...
+                       " or a %d-by-%d matrix."), rows (A), columns (C));
+      endif
+      vals = mvtests (this, double (A), double (C), double (D));
+      tbl = table (categorical ({'Pillai'; 'Wilks'; 'Hotelling'; 'Roy'}), ...
+                   vals(:,1), vals(:,2), vals(:,3), vals(:,4), vals(:,5), ...
+                   vals(:,6), 'VariableNames', {'Statistic', 'Value', 'F', ...
+                   'RSquare', 'df1', 'df2', 'pValue'});
+
+    endfunction
+
   endmethods
 
   methods (Access = private)
@@ -600,6 +874,58 @@ classdef RepeatedMeasuresModel
                meth, k);
       endif
       Q = orth (double (C));
+    endfunction
+
+    ## The four multivariate statistics of A B C = D, one row each of Value,
+    ## F, RSquare, df1, df2 and pValue.
+    function vals = mvtests (this, A, C, D)
+      X = this.X_;
+      Q = orth (C);
+      T = C \ Q;
+      E = Q' * (this.R_' * this.R_) * Q;
+      M = (A * this.B_ * C - D) * T;
+      H = M' * ((A / (X' * X) * A') \ M);
+      lam = sort (max (real (eig (E \ H)), 0), 'descend');
+      vals = multivariateF (lam, columns (Q), rank (A), this.DFE);
+    endfunction
+
+    ## The hypotheses at each level of the between-subject factor BY: the
+    ## intercept and BY's own columns at that level's effects code.
+    function [A, names, errmsg] = byHypotheses (this, by)
+      A = {};
+      names = {};
+      errmsg = '';
+      by = char (by);
+      if (! any (strcmp (by, this.BetweenFactorNames)))
+        errmsg = sprintf ("'By' must name a between-subject factor, not '%s'.", ...
+                          by);
+        return;
+      endif
+      v = this.BetweenDesign.(by);
+      if (iscategorical (v))
+        lev = categories (v);
+        lev = lev(ismember (lev, cellstr (v)));
+      elseif (iscellstr (v) || isa (v, 'string') || ischar (v))
+        lev = unique (cellstr (v));
+      else
+        errmsg = sprintf ("'By' must name a categorical factor, not '%s'.", by);
+        return;
+      endif
+      col = find (strcmp (this.TermNames_, by));
+      L = numel (lev);
+      for l = 1:L
+        a = zeros (1, columns (this.X_));
+        a(1) = 1;
+        e = zeros (1, L - 1);
+        if (l < L)
+          e(l) = 1;
+        else
+          e(:) = -1;
+        endif
+        a(this.TermCols_{col}) = e;
+        A{end+1,1} = a;
+        names{end+1} = sprintf ('%s=%s', by, lev{l});
+      endfor
     endfunction
 
   endmethods
@@ -618,6 +944,58 @@ function [gg, hf, lb] = sphericity (S, p, dfe)
   gg = trace (S) ^ 2 / (p * trace (S ^ 2));
   hf = min (1, ((dfe + 1) * p * gg - 2) / (p * (dfe - p * gg)));
   lb = 1 / p;
+endfunction
+
+## Pillai's trace, Wilks' lambda, the Hotelling-Lawley trace and Roy's root
+## from the eigenvalues LAM of inv (E) * H, for P contrasts, a hypothesis of
+## rank Q and DFE error degrees of freedom: one row each of Value, F,
+## RSquare, df1, df2 and pValue.  The Hotelling-Lawley trace uses McKeon's F
+## approximation where it is defined and the Pillai-Samson one elsewhere,
+## which is exact for a single nonzero eigenvalue.
+function vals = multivariateF (lam, p, q, dfe)
+  s = min (p, q);
+  m = (abs (p - q) - 1) / 2;
+  n = (dfe - p - 1) / 2;
+  vals = zeros (4, 6);
+
+  V = sum (lam ./ (1 + lam));
+  r2 = V / s;
+  d1 = s * (2 * m + s + 1);
+  d2 = s * (2 * n + s + 1);
+  vals(1,:) = [V, d2 / d1 * r2 / (1 - r2), r2, d1, d2, 0];
+
+  L = prod (1 ./ (1 + lam));
+  if (p ^ 2 + q ^ 2 - 5 > 0)
+    t = sqrt ((p ^ 2 * q ^ 2 - 4) / (p ^ 2 + q ^ 2 - 5));
+  else
+    t = 1;
+  endif
+  r2 = 1 - L ^ (1 / t);
+  d1 = p * q;
+  d2 = (dfe - (p - q + 1) / 2) * t - (p * q - 2) / 2;
+  vals(2,:) = [L, d2 / d1 * r2 / (1 - r2), r2, d1, d2, 0];
+
+  T = sum (lam);
+  r2 = (T / s) / (1 + T / s);
+  if (s > 1 && n > 1)
+    b = (p + 2 * n) * (q + 2 * n) / (2 * (2 * n + 1) * (n - 1));
+    d2 = 4 + (p * q + 2) / (b - 1);
+    c = p * q * (d2 - 2) / (d2 * (dfe - p - 1));
+    d1 = p * q;
+    F = T / c;
+  else
+    d1 = s * (2 * m + s + 1);
+    d2 = 2 * (s * n + 1);
+    F = d2 * T / (s * d1);
+  endif
+  vals(3,:) = [T, F, r2, d1, d2, 0];
+
+  th = max ([lam; 0]);
+  rr = max (p, q);
+  d2 = dfe - rr + q;
+  vals(4,:) = [th, th * d2 / rr, th / (1 + th), rr, d2, 0];
+
+  vals(:,6) = fcdf (vals(:,2), vals(:,4), vals(:,5), 'upper');
 endfunction
 
 ## Response names from the left side of the formula: ranges of the table's
@@ -770,9 +1148,10 @@ function [X, cnames, tcols, tnames, bad] = effectsDesign (t, terms, intercept, v
 endfunction
 
 ## The within-subject terms of the model WM over the design WD: their
-## contrast matrices, W.C, and names, W.names, empty for the constant term.
+## contrast matrices, W.C, and names, W.names, empty for the constant term,
+## the names of the columns of each, W.cols, and the kind of model, W.kind.
 function [W, errmsg] = withinTerms (WM, WD, wnames, k)
-  W = struct ('C', {{}}, 'names', {{}});
+  W = struct ('C', {{}}, 'names', {{}}, 'cols', {{}}, 'kind', '');
   errmsg = '';
   if (numel (wnames) == 1)
     label = wnames{1};
@@ -789,11 +1168,13 @@ function [W, errmsg] = withinTerms (WM, WD, wnames, k)
     endif
     W.C = {double(WM)};
     W.names = {label};
+    W.kind = 'matrix';
   elseif (! (ischar (WM) && isrow (WM)))
     errmsg = "invalid 'WithinModel'.";
   elseif (strcmpi (WM, 'separatemeans'))
     W.C = {successive(k)};
     W.names = {label};
+    W.kind = 'separatemeans';
   elseif (strcmpi (WM, 'orthogonalcontrasts'))
     if (numel (wnames) != 1 || ! isnumeric (WD.(wnames{1})))
       errmsg = strcat ("the 'orthogonalcontrasts' model requires a", ...
@@ -807,6 +1188,9 @@ function [W, errmsg] = withinTerms (WM, WD, wnames, k)
     W.names = [{''}, {wnames{1}}, ...
                arrayfun(@(d) sprintf ('%s^%d', wnames{1}, d), 2:k-1, ...
                         'UniformOutput', false)];
+    W.cols = W.names;
+    W.cols{1} = 'Constant';
+    W.kind = 'orthogonalcontrasts';
   else
     try
       s = parseWilkinsonFormula (['~', WM]);
@@ -821,16 +1205,19 @@ function [W, errmsg] = withinTerms (WM, WD, wnames, k)
       errmsg = "invalid 'WithinModel'.";
       return;
     endif
-    [Xw, ~, tc, tn] = effectsDesign (WD, terms, true, unique ([terms{:}], ...
-                                     'stable'));
+    [Xw, cn, tc, tn] = effectsDesign (WD, terms, true, unique ([terms{:}], ...
+                                      'stable'));
     if (any (empty) || isempty (model))
       W.C = {ones(k, 1)};
       W.names = {''};
+      W.cols = {{'(Intercept)'}};
     endif
     for i = 1:numel (terms)
       W.C{end+1} = Xw(:,tc{i+1});
       W.names{end+1} = tn{i+1};
+      W.cols{end+1} = cn(tc{i+1});
     endfor
+    W.kind = 'formula';
   endif
 endfunction
 
@@ -1077,6 +1464,135 @@ endfunction
 %! tbl = mauchly (fitrm (t5, 'y1-y6 ~ g'));
 %! assert_equal (table2array (tbl), [0, Inf, 14, 0]);
 
+## anova
+%!test
+%! tbl = anova (rm);
+%! assert_equal (cellstr (tbl.Between)', {'constant', 'species', 'Error'});
+%! assert_equal (cellstr (tbl.Within)', {'Constant', 'Constant', 'Constant'});
+%!test
+%! tbl = anova (rm);
+%! assert_equal (tbl.SumSq, [7201.65615000065; 309.606699999999; ...
+%!                           53.87465], -1e-12);
+%! assert_equal (tbl.DF, [1; 2; 147]);
+%! assert_equal (tbl.F(1:2), [19650.1221641365; 422.389610883782], -1e-12);
+%!test
+%! assert_equal (anova (rm, 'WithinModel', 'separatemeans').SumSq, ...
+%!               anova (rm).SumSq);
+%!test
+%! tbl = anova (rm, 'WithinModel', [1, -1, 0, 0; 0, 1, -1, 0]');
+%! assert_equal (cellstr (tbl.Within([1, 4]))', {'Contrast1', 'Contrast2'});
+%! assert_equal (tbl.SumSq, [1164.2694; 114.4624; 28.6582; ...
+%!               73.6400666666671; 562.926933333334; 27.943], -1e-12);
+%! assert_equal (tbl.F([4, 5]), [387.39898364528; 1480.69747700676], -1e-12);
+%!test
+%! tbl = anova (rm, 'WithinModel', [1, 1, 1, 1]');
+%! assert_equal (tbl.SumSq(1), 28806.6246000026, -1e-12);
+## R2026a's values, as for ranova
+%!test
+%! tbl = anova (rm, 'WithinModel', 'orthogonalcontrasts');
+%! assert_equal (cellstr (tbl.Within([1, 4, 7, 10]))', {'Constant', ...
+%!               'Measurements', 'Measurements^2', 'Measurements^3'});
+%! assert_equal (tbl.SumSq([4, 7, 10]), [1313.01136333336; ...
+%!               1.93801666666664; 341.313870000001], -1e-11);
+%!test
+%! rm2 = fitrm (t2, 'y1-y6 ~ g + x', 'WithinDesign', W);
+%! tbl = anova (rm2, 'WithinModel', 'A*B');
+%! assert_equal (cellstr (tbl.Within(1:4:end))', {'(Intercept)', 'A_1', ...
+%!               'B_1', 'B_2', 'A_1:B_1', 'A_1:B_2'});
+%! assert_equal (tbl.SumSq(9:12), [10.539317448175; 0.186084518387707; ...
+%!               7.3161945812808; 73.7254720853859], -1e-12);
+%! assert_equal (tbl.pValue(22:23), [0.153846787233791; ...
+%!               0.29518761419548], -1e-11);
+
+## manova
+%!test
+%! tbl = manova (rm);
+%! assert_equal (cellstr (tbl.Statistic(1:4))', {'Pillai', 'Wilks', ...
+%!               'Hotelling', 'Roy'});
+%! assert_equal (cellstr (tbl.Between([1, 5]))', {'(Intercept)', 'species'});
+%! assert_equal (cellstr (tbl.Within(1)), {'Constant'});
+%!test
+%! tbl = manova (rm);
+%! assert_equal (tbl.Value(5:8), [0.969092455350808; 0.0411531658067895; ...
+%!               23.0505039998432; 23.0396981666769], -1e-12);
+%! assert_equal (tbl.RSquare(5:8), [0.484546227675404; 0.797137569257416; ...
+%!               0.920161286974006; 0.958402139949237], -1e-12);
+%!test
+%! tbl = manova (rm);
+%! assert_equal (tbl.F([5, 6, 8]), [45.7485249172255; 189.92336681764; ...
+%!               1121.26531077827], -1e-11);
+%! assert_equal ([tbl.df1([5, 6, 8]), tbl.df2([5, 6, 8])], ...
+%!               [6, 292; 6, 290; 3, 146]);
+%! assert_equal (tbl.pValue([5, 6, 8]), [2.47288601081631e-39; ...
+%!               2.39583203496623e-97; 1.47713689662351e-100], -1e-10);
+## The Hotelling-Lawley F is R2024a's; its second degrees of freedom are
+## McKeon's, and the p-value follows from them
+%!test
+%! tbl = manova (rm);
+%! assert_equal (tbl.F(7), 555.166436056617, -1e-11);
+%! n = (147 - 3 - 1) / 2;
+%! b = (3 + 2 * n) * (2 + 2 * n) / (2 * (2 * n + 1) * (n - 1));
+%! d2 = 4 + 8 / (b - 1);
+%! assert_equal ([tbl.df1(7), tbl.df2(7)], [6, d2], -1e-14);
+%! assert_equal (tbl.pValue(7), fcdf (tbl.F(7), 6, d2, 'upper'), -1e-12);
+%!test
+%! tbl = manova (rm, 'By', 'species');
+%! assert_equal (cellstr (tbl.Between(1:4:end))', {'species=setosa', ...
+%!               'species=versicolor', 'species=virginica'});
+%! assert_equal (tbl.Value(1:4:end), [0.982302126154032; ...
+%!               0.97000070863222; 0.972606348435736], -1e-12);
+%! assert_equal (tbl.F(1), 2682.69152049929, -1e-11);
+%!test
+%! tbl = manova (rm, 'WithinModel', [1, -1, 0, 0; 0, 1, -1, 0]');
+%! assert_equal (cellstr (tbl.Within(1)), {'Specified contrast'});
+%! assert_equal (tbl.Value(5), 0.960761007306465, -1e-12);
+%! assert_equal (tbl.F(1), 4126.8008429193, -1e-11);
+%!test
+%! rm2 = fitrm (t2, 'y1-y6 ~ g + x', 'WithinDesign', W, 'WithinModel', 'A*B');
+%! [tbl, A, C, D] = manova (rm2);
+%! assert_equal (rows (tbl), 48);
+%! assert_equal (unique (cellstr (tbl.Within), 'stable')', ...
+%!               {'(Intercept)', 'A', 'B', 'A:B'});
+%! assert_equal (A, {[1, 0, 0]; [0, 1, 0]; [0, 0, 1]});
+%! assert_equal (cellfun (@columns, C), [1, 1, 2, 2]);
+%! assert_equal (D, 0);
+%!test
+%! rm2 = fitrm (t2, 'y1-y6 ~ g + x', 'WithinDesign', W, 'WithinModel', 'A*B');
+%! tbl = manova (rm2);
+%! assert_equal (tbl.Value(41:44), [0.486347963843071; 0.513652036156928; ...
+%!               0.946843251088535; 0.946843251088535], -1e-12);
+%! assert_equal (tbl.pValue(41), 0.069610708832983, -1e-11);
+%!test
+%! rm2 = fitrm (t2, 'y1-y6 ~ g + x', 'WithinDesign', W, 'WithinModel', 'A*B');
+%! tbl = manova (rm2, 'WithinModel', 'separatemeans');
+%! assert_equal (tbl.Value(1), 0.786551501991551, -1e-12);
+%! assert_equal ([tbl.F(3), tbl.df1(3), tbl.df2(3)], ...
+%!               [3.68497089148136, 5, 5], -1e-12);
+%! assert_equal (tbl.pValue(3), 0.0893171383745427, -1e-11);
+
+## coeftest
+%!test
+%! tbl = coeftest (rm, [0, 1, 0; 0, 0, 1], [1, -1, 0, 0; 0, 1, -1, 0]');
+%! assert_equal (tbl.Value, [0.960761007306465; 0.0420065576612523; ...
+%!               22.739922777632; 22.7370251198758], -1e-12);
+%! assert_equal (tbl.F([1, 2, 4]), [67.9496579068885; 283.175722000404; ...
+%!               1671.17134631087], -1e-11);
+%! assert_equal (tbl.F(3), 828.147118575719, -1e-11);
+%!test
+%! tbl = coeftest (rm, [0, 1, 0; 0, 0, 1], [1, -1, 0, 0; 0, 1, -1, 0]', ...
+%!                 [0.5, 0.1; -0.2, 0.3]);
+%! assert_equal (tbl.Value, [1.07175176658522; 0.0463873977279332; ...
+%!               18.0107848010586; 17.8682529938836], -1e-12);
+%! assert_equal (tbl.pValue(4), 1.71285549134517e-94, -1e-10);
+%!test
+%! tbl = coeftest (rm, [1, 0, 0], [1, -1, 0, 0]', 1);
+%! assert_equal (tbl.F, 2454.27144063479 * ones (4, 1), -1e-12);
+%! assert_equal ([tbl.df1, tbl.df2], repmat ([1, 147], 4, 1));
+%!test
+%! tbl = coeftest (rm, [0, 1, 0], [1, -1, 0, 0]');
+%! assert_equal (tbl.Value(1), 0.792486767123089, -1e-12);
+%! assert_equal (tbl.F(1), 561.38855894648, -1e-12);
+
 ## Test input validation
 %!error<RepeatedMeasuresModel: too few input arguments.> RepeatedMeasuresModel (1)
 %!error<RepeatedMeasuresModel: T must be a table.> fitrm ([1, 2, 3], 'y1-y6 ~ g')
@@ -1118,3 +1634,23 @@ endfunction
 %! mauchly (rm, ones (5, 1))
 %!error<RepeatedMeasuresModel.epsilon: C must be a matrix with 4 rows.> ...
 %! epsilon (rm, ones (5, 1))
+%!error<RepeatedMeasuresModel.anova: invalid 'WithinModel'.> ...
+%! anova (rm, 'WithinModel', 'C*D')
+%!error<RepeatedMeasuresModel.anova: invalid optional paired argument.> ...
+%! anova (rm, 'Nonsense', 1)
+%!error<RepeatedMeasuresModel.manova: the 'orthogonalcontrasts' model cannot be used with manova.> ...
+%! manova (rm, 'WithinModel', 'orthogonalcontrasts')
+%!error<RepeatedMeasuresModel.manova: 'By' must name a between-subject factor, not 'g'.> ...
+%! manova (rm, 'By', 'g')
+%!error<RepeatedMeasuresModel.manova: 'By' must name a categorical factor, not 'x'.> ...
+%! manova (fitrm (t2, 'y1-y6 ~ x'), 'By', 'x')
+%!error<RepeatedMeasuresModel.manova: invalid optional paired argument.> ...
+%! manova (rm, 'Nonsense', 1)
+%!error<RepeatedMeasuresModel.coeftest: too few input arguments.> ...
+%! coeftest (rm, [0, 1, 0])
+%!error<RepeatedMeasuresModel.coeftest: A must be a matrix with 3 columns.> ...
+%! coeftest (rm, [1, 0], [1, -1, 0, 0]')
+%!error<RepeatedMeasuresModel.coeftest: C must be a matrix with 4 rows.> ...
+%! coeftest (rm, [0, 1, 0], [1, -1, 0]')
+%!error<RepeatedMeasuresModel.coeftest: D must be a scalar or a 1-by-1 matrix.> ...
+%! coeftest (rm, [0, 1, 0], [1, -1, 0, 0]', [1, 2])
