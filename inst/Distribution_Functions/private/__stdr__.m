@@ -137,9 +137,13 @@ function [F, U] = rangecdf (w, k)
   F = k * sum (wz .* phi .* a .^ (k - 1), 1);
   ## Phi(z)^(k-1) - a^(k-1), written so that no two close numbers are
   ## subtracted: a = Phi(z) - Phi(z-w).
+  ## The ratio is at most 1 in exact arithmetic, but where w is tiny against z
+  ## a libm whose erfc is not monotone in the last bit can push it above,
+  ## and log1p would then turn complex.
   logPz = log (Pz);
   logPz(z > 0) = log1p (- Qz(z > 0));
-  d = exp ((k - 1) * logPz) .* (- expm1 ((k - 1) * log1p (- Pzw ./ Pz)));
+  r = min (Pzw ./ Pz, 1);
+  d = exp ((k - 1) * logPz) .* (- expm1 ((k - 1) * log1p (- r)));
   U = k * sum (wz .* phi .* d, 1);
   ## Beyond w = 40 the upper tail is below exp (-400).
   far = (w > 40);
@@ -200,5 +204,6 @@ function [z, wz, phi, a, Pz, Qz, Pzw] = grid (w, k)
   s = (z > 0) & (zw <= 0);
   E = erf (z / sqrt (2)) - erf (zw / sqrt (2));
   a(s) = 0.5 * E(s);
+  a = max (a, 0);
 
 endfunction

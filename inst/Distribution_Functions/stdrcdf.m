@@ -152,6 +152,8 @@ endfunction
 %!assert_equal (stdrcdf (x, 2, 5, 'upper'), 2 * tcdf (-x / sqrt (2), 5), -1e-13)
 %!assert_equal (stdrcdf (x, 2, Inf), erf (x / 2), -1e-13)
 %!assert_equal (stdrcdf (x, 2, Inf, 'upper'), erfc (x / 2), -1e-13)
+%!assert_equal (stdrcdf ([x, 900], 2, 1, 'upper'), ...
+%!              2 * tcdf (-[x, 900] / sqrt (2), 1), -1e-13)
 
 ## A far upper tail keeps its relative accuracy
 %!assert_equal (stdrcdf (20, 2, 30, 'upper'), ...
