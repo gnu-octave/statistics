@@ -102,10 +102,19 @@ function jackstat = jackknife (anEstimator, varargin)
   if (length (varargin) == 1 && isnumeric (varargin {1}))
     aSample = varargin{1};
     g = length (aSample);
-    jackstat = zeros (1, g);
-    for k = 1:g
-      jackstat(k) = anEstimator(aSample([1:k - 1,k + 1:g]));
-    endfor
+
+    if (g <= 1)
+      jackstat = anEstimator (aSample);
+      jackstat = jackstat(:).';
+    else
+      jackstat = anEstimator (aSample(2:g));
+      jackstat = jackstat(:).';
+      jackstat = repmat (jackstat, g, 1);
+
+      for k = 2:g
+        jackstat(k,:) = anEstimator(aSample([1:k - 1,k + 1:g]));
+      endfor
+    endif
 
   ## More complicated input requires more work, however.
   else
@@ -115,10 +124,13 @@ function jackstat = jackknife (anEstimator, varargin)
       error ("jackknife: all passed data must be of equal length.");
     endif
     g = g(1);
-    jackstat = zeros (1, g);
+    jackstat = anEstimator (cellfun (@(x) x(2:g), ...
+                           varargin, 'UniformOutput', false));
+    jackstat = jackstat(:).';
+    jackstat = repmat (jackstat, g, 1);
 
-    for k = 1:g
-      jackstat(k) = anEstimator(cellfun (@(x) x( [ 1 : k - 1, k + 1 : g ]), ...
+    for k = 2:g
+      jackstat(k,:) = anEstimator(cellfun (@(x) x( [ 1 : k - 1, k + 1 : g ]), ...
                                  varargin, 'UniformOutput', false));
     endfor
   endif
@@ -157,3 +169,19 @@ endfunction
 %! d=[0.18 4.00 1.04 0.85 2.14 1.01 3.01 2.33 1.57 2.19];
 %! jackstat = jackknife ( @(x) 1/mean (x), d );
 %! assert_equal ( 10 / mean (d) - 9 * mean (jackstat), 0.5240, 1e-5 );
+
+%!test
+%! ## Empty input
+%! assert_equal (jackknife (@mean, []), NaN);
+
+%!test
+%! ## Single-element input
+%! assert_equal (jackknife (@mean, 5), 5);
+
+%!test
+%! ## Estimator returning multiple values
+%! expected = [2.5, sqrt(0.5);
+%!             2.0, sqrt(2);
+%!             1.5, sqrt(0.5)];
+%! jackstat = jackknife (@(x) [mean(x); std(x)], [1 2 3]);
+%! assert_equal (jackstat, expected, 1e-5);
