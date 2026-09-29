@@ -1295,9 +1295,9 @@ binotest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1068
-statistics: [h, pval, ci] = binotest (pos, N, p0)
-statistics: [h, pval, ci] = binotest (pos, N, p0, Name, Value)
+# length: 1519
+statistics: [h, pval, ci, stats] = binotest (pos, N, p0)
+statistics: [h, pval, ci, stats] = binotest (pos, N, p0, Name, Value)
 Test for probability p of a binomial sample
 
 Perform a test of the null hypothesis p == p0 for a sample
@@ -1309,8 +1309,9 @@ of the test (the default value is 0.05). The option 'tail',
 can be used to select the desired alternative hypotheses. If the
 value is 'both' (default) the null is tested against the two-sided
 alternative p != p0. The value of pval is
-determined by adding the probabilities of all event less or equally
-likely than the observed number pos of positive events.
+determined by adding the probabilities of all events less or equally
+likely than the observed number pos of positive events, equally
+likely to within a relative 1e-7, as R's binom.test compares them.
 If the value of 'tail' is 'right'
 the one-sided alternative p > p0 is considered.
 Similarly for 'left', the one-sided alternative
@@ -1318,7 +1319,15 @@ p < p0 is considered.
 
 If h is 0 the null hypothesis is accepted, if it is 1 the null
 hypothesis is rejected. The p-value of the test is returned in pval.
-A 100(1-alpha)% confidence interval is returned in ci.
+A 100(1-alpha)% Clopper-Pearson confidence interval for p is returned
+in ci, one-sided for a one-sided test. stats is a structure
+with the following fields:
+
+phat the estimated probability, pos / N.
+CohensH Cohen's h, the difference between the
+arcsine transforms 2 asin (sqrt (phat)) - 2 asin (sqrt (p0)).
+CohensHCI its confidence interval, ci under the same
+transform, which is monotone and so keeps its coverage.
 
 
 # name: <cell-element>
