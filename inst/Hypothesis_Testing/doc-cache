@@ -4742,41 +4742,56 @@ ztest2
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1446
+# length: 2127
 statistics: h = ztest2 (x1, n1, x2, n2)
 statistics: h = ztest2 (x1, n1, x2, n2, Name, Value)
-statistics: [h, pval] = ztest2 (...)
-statistics: [h, pval, zvalue] = ztest2 (...)
+statistics: [h, p] = ztest2 (...)
+statistics: [h, p, ci] = ztest2 (...)
+statistics: [h, p, ci, stats] = ztest2 (...)
 Two proportions Z-test.
 
 If x1 and n1 are the counts of successes and trials in one
 sample, and x2 and n2 those in a second one, test the null
 hypothesis that the success probabilities p1 and p2 are the
 same. The result is h = 0 if the null hypothesis cannot be rejected at
-the 5% significance level, or h = 1 if the null hypothesis can be
-rejected at the 5% level.
+the significance level alpha, or h = 1 if it can.
 
-Under the null, the test statistic zvalue approximately follows a
-standard normal distribution.
+Under the null, the test statistic approximately follows a standard normal
+distribution.
 
-The size of h, pval, and zvalue is the common size of
-x1, n1, x2, and n2, which must be scalars or of
-common
-size. A scalar input functions as a constant matrix of the same size as the
-other inputs.
+The size of h and p is the common size of x1, n1,
+x2, and n2, which must be scalars or of common size. A scalar
+input functions as a constant matrix of the same size as the other inputs.
 
-[h, pval] = ztest2 (...) returns the p-value. That
+[h, p] = ztest2 (...) returns the p-value. That
 is the probability of observing the given result, or one more extreme, by
 chance if the null hypothesis true.
 
-[h, pval, zvalue] = ztest2 (...) returns the
-value of the test statistic.
+[h, p, ci] = ztest2 (...) returns a
+100 (1 - alpha)% confidence interval for p1 - p2, Newcombe's
+hybrid score interval, which combines the Wilson score intervals of the two
+proportions. It has one row per test, and is one-sided for a one-sided
+test: [lower, 1] for 'right', [-1, upper] for
+'left'.
+
+[h, p, ci, stats] = ztest2 (...) also
+returns a structure with the following fields:
+
+zval the value of the test statistic.
+CohensH Cohen's h, the difference between the
+arcsine transforms 2 asin (sqrt (p1)) - 2 asin (sqrt (p2)) of the
+two estimated proportions.
+CohensHCI its confidence interval,
+h -/+ z sqrt (1/n1 + 1/n2) with z the normal quantile at the
+level of the test, one row per test, within [-pi, pi] and one-sided
+as ci is.
 
 [...] = ztest2 (..., Name, Value, ...)
 specifies one or more of the following Name/Value pairs:
 
 Name Value
-'alpha' the significance level. Default is 0.05.
+'alpha' the significance level of h and the level
+of both confidence intervals. Default is 0.05.
 'tail' a string specifying the alternative hypothesis
 
 'both' p1 is not p2
