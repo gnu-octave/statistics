@@ -3141,62 +3141,72 @@ regression_ftest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2213
-statistics: [h, pval, stats] = regression_ftest (y, x, fm)
-statistics: [...] = regression_ftest (y, x, fm, rm)
-statistics: [...] = regression_ftest (y, x, fm, rm, Name, Value)
-statistics: [...] = regression_ftest (y, x, fm, [], Name, Value)
-F-test for General Linear Regression Analysis
+# length: 2376
+statistics: h = regression_ftest (y, x)
+statistics: h = regression_ftest (y, x, keep)
+statistics: h = regression_ftest (..., Name, Value)
+statistics: [h, p, stats] = regression_ftest (...)
+F-test for nested linear regression models.
 
-Perform a general linear regression F test for the null hypothesis that the
-full model of the form y = b_0 + b_1 * x_1 + b_2 * x_2 + ... +
-b_n * x_n + e, where n is the number of variables in x, does not
-perform better than a reduced model, such as y = b'_0 + b'_1 * x_1 +
-b'_2 * x_2 + ... + b'_k * x_k + e, where k < n and it corresponds to the
-first k variables in x. Explanatory (dependent) variable y and
-response (independent) variables x must not contain any missing values
-(NaNs).
+Fit the full linear model of the response y on every column of
+x, and a reduced model on the columns of x indexed by
+keep, both by least squares, and test the null hypothesis that the
+columns the reduced model leaves out add nothing to it. keep holds
+column indices or a logical mask; left out or empty, the reduced model has
+no predictors and the test is of every column of x together. Both
+models include a constant term unless 'Intercept' is false.
+y must be a vector with one element per row of x, and neither
+may contain missing values.
 
-The full model, fm, must be a vector of length equal to the columns of
-x, in which case the constant term b_0 is assumed 0, or equal to
-the columns of x plus one, in which case the first element is the
-constant b_0.
+The test decision is returned in h, which is 1 when the null
+hypothesis is rejected at the significance level alpha and 0
+otherwise, and the p-value in p. stats is a structure with the
+following fields:
 
-The reduced model, rm, must include the constant term and a subset of
-the variables (columns) in x. If rm is not given, then a constant
-term b'_0 is assumed equal to the constant term, b_0, of the full model or 0,
-if the full model, fm, does not have a constant term. rm must be
-a vector or a scalar if only a constant term is passed into the function.
+fstat the F statistic.
+df1 its numerator degrees of freedom, the number of
+coefficients the reduced model leaves out.
+df2 its denominator degrees of freedom, the residual
+degrees of freedom of the full model.
+betafull the coefficients of the full model, the constant
+first where there is one.
+betareduced those of the reduced model.
+ssefull the residual sum of squares of the full model.
+ssereduced that of the reduced model.
+CohensF2 Cohen's f^2, the effect size of the
+columns tested.
+CohensF2CI its 100 (1 - alpha)% confidence
+interval.
 
-Name-Value pair arguments can be used to set statistical significance.
-'alpha' can be used to specify the significance level of the test
-(the default value is 0.05). If you want to pass optional Name-Value pair
-without a reduced model, make sure that the latter is passed as an empty
-variable.
+The degrees of freedom come from the ranks of the two designs. Cohen's
+f^2 is taken, as Cohen defines it, from the noncentrality of the F
+statistic, lambda = f^2 (df1 + df2 + 1): the point estimate from
+max (F df1 (df2 - 2) / df2 - df1, 0), unbiased for the noncentrality
+before its truncation at zero, and the interval by inverting the noncentral
+F distribution. Where the interval would need a noncentrality above
+10^5, where ncfcdf loses accuracy, it is NaN.
 
-If h is 1 the null hypothesis is rejected, meaning that the full model
-explains the variance better than the restricted model. If h is 0, it
-can be assumed that the full model does NOT explain the variance any better
-than the restricted model.
+The following Name/Value pairs are accepted:
 
-The p-value (1 minus the CDF of this distribution at f) is returned
-in pval.
+'Alpha' the significance level of h and the level
+of the confidence interval. Default is 0.05.
+'Intercept' whether both models include a constant term.
+Default is true.
 
-Under the null, the test statistic f follows an F distribution with
-'df1' and 'df2' degrees of freedom, which are returned as fields in the
-stats structure along with the test's F-statistic, 'fstat'
+The same tests, and any linear hypothesis on the coefficients, are available
+from a fitted LinearModel through its coefTest method.
 
 See also:
 regression_ttest,
 regress,
-regress_gp
+fitlm
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 45
-F-test for General Linear Regression Analysis
+# length: 43
+F-test for nested linear regression models.
 
 
 
