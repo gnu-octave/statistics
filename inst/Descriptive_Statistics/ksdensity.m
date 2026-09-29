@@ -310,7 +310,11 @@ function v = ksdensity_eval_ (q, x, w, h, kernel, L, U, bc, want)
       g = (kernelpdf (z, kernel) * w(:)) / h;
       v = g .* ksdensity_logjac_ (q, L, U);
     elseif (isfinite (U) && ! isfinite (L))    ## upper bound only: t decreases
-      v = 1 - kernelcdf (z, kernel) * w(:);
+      if (is_function_handle (kernel))
+        v = 1 - kernelcdf (z, kernel) * w(:);
+      else
+        v = kernelcdf (-z, kernel) * w(:);      ## the kernels are symmetric
+      endif
     else
       v = kernelcdf (z, kernel) * w(:);
     endif
@@ -525,6 +529,11 @@ endfunction
 %! f = ksdensity (y, [-1 -0.1 5], "Support", "positive", ...
 %!                "BoundaryCorrection", "reflection");
 %! assert_equal (f(1:2), [0 0]);
+%!test
+%! ## The lower tail with an upper bound only, below the resolution of 1 - cdf
+%! f = ksdensity (1:5, -60, 'Support', [-Inf, 10], 'Function', 'cdf');
+%! I = integral (@(t) ksdensity (1:5, t, 'Support', [-Inf, 10]), -Inf, -60);
+%! assert_equal (f, I, -1e-8);
 
 ## Test input validation
 %!error <Invalid call to ksdensity> ksdensity ()

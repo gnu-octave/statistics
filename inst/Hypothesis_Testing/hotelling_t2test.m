@@ -141,13 +141,22 @@ function [h, pval, stats] = hotelling_t2test (x, my, varargin)
   stats.Tsq = n * d * (cov (x) \ d');
   stats.df1 = p;
   stats.df2 = n - p;
-  pval = 1 - fcdf ((n-p) * stats.Tsq / (p * (n-1)), stats.df1, stats.df2);
+  pval = fcdf ((n-p) * stats.Tsq / (p * (n-1)), stats.df1, stats.df2, 'upper');
 
   ## Determine the test outcome
   ## MATLAB returns this a double instead of a logical array
   h = double (pval < alpha);
 
 endfunction
+
+%!test
+%! ## Below the resolution of 1 - fcdf
+%! u = (1:30)';
+%! [~, p, st] = hotelling_t2test ([u, sin(u)] + 100);
+%! F = (30 - 2) * st.Tsq / (2 * 29);
+%! d1 = st.df1;
+%! d2 = st.df2;
+%! assert_equal (p, betainc (d2 / (d2 + d1 * F), d2 / 2, d1 / 2), -1e-12);
 
 ## Test input validation
 %!error<Invalid call to hotelling_t2test.  Correct usage> hotelling_t2test ();

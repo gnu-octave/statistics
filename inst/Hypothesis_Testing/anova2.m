@@ -248,21 +248,21 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
 
   ## Calculate F statistics and p values
   F_MSR = MSR / MSE;            ## F statistic for Row Factor
-  p_MSR = 1 - fcdf (F_MSR, df_SSR, df_SSE);
+  p_MSR = fcdf (F_MSR, df_SSR, df_SSE, 'upper');
   MSC = SSC / df_SSC;           ## Mean Square for Column Factor
   F_MSC = MSC / MS_DENOM;       ## F statistic for Column Factor
   if (isempty (epsilonhat))
-    p_MSC = 1 - fcdf (F_MSC, df_SSC, df_DENOM);
+    p_MSC = fcdf (F_MSC, df_SSC, df_DENOM, 'upper');
   else
     ## Apply correction for sphericity to the p-value of the column factor
-    p_MSC = 1 - fcdf (F_MSC, dfN_GG, dfD_GG);
+    p_MSC = fcdf (F_MSC, dfN_GG, dfD_GG, 'upper');
   endif
 
   ## With replication
   if (reps > 1)
     MSI = SSI / df_SSI;         ## Mean Square for Interaction
     F_MSI = MSI / MSE;          ## F statistic for Interaction
-    p_MSI = 1 - fcdf (F_MSI, df_SSI, df_SSE);
+    p_MSI = fcdf (F_MSI, df_SSI, df_SSE, 'upper');
   else
     MSI = 0;
     F_MSI = 0;
@@ -431,6 +431,12 @@ endfunction
 %! assert_equal (atab{3,5}, 9.25800729165627, 1e-10);
 %! assert_equal (atab{2,6}, 0.141597630656771, 1e-10);
 %! assert_equal (atab{3,6}, 0.000636643812875719, 1e-10);
+%!test
+%! ## Below the resolution of 1 - fcdf, values from MATLAB R2024a
+%! q = (1:6)';
+%! p = anova2 ([q, q + 100, q + 200] + 0.1 * sin (reshape (1:18, 6, 3)), 1, ...
+%!            'off');
+%! assert_equal (p, [6.92646657901359e-38, 7.28337250041466e-20], -1e-6);
 
 ## Test input validation
 %!error <anova2: X must not be empty.> anova2 ([], 1, 'off')

@@ -163,7 +163,7 @@ function [h, pval, stats] = regression_ftest (y, x, fm, rm, varargin)
   stats.df1 = fm_len - rm_len;
   stats.df2 = s - v;
   stats.fstat = ((SSE_rm - SSE_fm) / stats.df1) / (SSE_fm / stats.df2);
-  pval = 1 - fcdf (stats.fstat, stats.df1, stats.df2);
+  pval = fcdf (stats.fstat, stats.df1, stats.df2, 'upper');
 
   ## Determine the test outcome
   ## MATLAB returns this a double instead of a logical array

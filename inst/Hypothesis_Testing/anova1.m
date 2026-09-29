@@ -281,7 +281,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
       otherwise
         error ("anova1: invalid fourth (vartype) argument to anova1.");
     endswitch
-    p = 1 - fcdf (F, dfm, dfe);     ## Probability of F given equal means.
+    p = fcdf (F, dfm, dfe, 'upper');     ## Probability of F given equal means.
   elseif (SSM == 0)                 ## Constant Matrix case.
     ## Both sums-of-squares vanish, so F is 0/0.  There is no within-group
     ## scale to test against, and the limit depends on the direction of
@@ -564,3 +564,7 @@ endfunction
 %! [p, tbl] = anova1 (zeros (0, 3), [], 'off');
 %! assert_equal (p, NaN);
 %! assert_equal (cell2mat (tbl(2:4,2:3)), zeros (3, 2));
+%!test
+%! ## Below the resolution of 1 - fcdf, values from MATLAB R2024a
+%! p = anova1 ([1:10, 101:110, 201:210]', kron ((1:3)', ones (10, 1)), 'off');
+%! assert_equal (p, 5.522164708181e-40, -1e-10);

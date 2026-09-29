@@ -102,7 +102,7 @@ function [h, p, ci] = binotest (pos, n, p0, varargin)
       endif
       ci = [p_low, p_high];
     case 'left'
-      p = 1 - binocdf (pos - 1, n, p0);
+      p = binocdf (pos - 1, n, p0, 'upper');
       if (pos == n)
         p_high = 1;
       else

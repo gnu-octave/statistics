@@ -99,13 +99,13 @@ function [A,B,r,U,V,stats] = canoncorr (X,Y)
     Wilks = fliplr (cumprod (fliplr ((1 - r .^ 2))));
     chisq = - (k - 1 - (rankX + rankY + 1)/2) * log (Wilks);
     df1 = (rankX - (1:d) + 1) .* (rankY - (1:d) + 1);
-    pChisq = 1 - chi2cdf (chisq, df1);
+    pChisq = chi2cdf (chisq, df1, 'upper');
     s = sqrt ((df1.^2 - 4) ./ ((rankX - (1:d) + 1).^2 + ...
                                (rankY - (1:d) + 1).^2 - 5));
     df2 = (k - 1 - (rankX + rankY + 1)/2) * s - df1/2 + 1;
     ls = Wilks .^ (1 ./ s);
     F = (1 ./ ls  -  1) .* (df2 ./ df1);
-    pF = 1 - fcdf (F, df1, df2);
+    pF = fcdf (F, df1, df2, 'upper');
     stats.Wilks = Wilks;
     stats.df1 = df1;
     stats.df2 = df2;
@@ -180,6 +180,13 @@ endfunction
 %! assert_equal ((Ur' * Ur) / (kk - 1), eye (numel (rr)), 1e-10);
 %! assert_equal ((Vr' * Vr) / (kk - 1), eye (numel (rr)), 1e-10);
 %! assert_equal ((Ur' * Vr) / (kk - 1), diag (rr), 1e-10);
+%!test
+%! ## Below the resolution of 1 - chi2cdf and 1 - fcdf, values from MATLAB
+%! ## R2024a
+%! u = (1:30)';
+%! [~, ~, ~, ~, ~, st] = canoncorr (u, u + 0.01 * sin (u));
+%! assert_equal ([st.pChisq, st.pF], ...
+%!               [6.27210601481829e-87, 6.68262095310285e-88], -1e-7);
 
 %!error <X must contain at least one non-constant column.> ...
 %! canoncorr (ones (10, 2), [tan(1:10); tanh((1:10)/10)]')

@@ -322,7 +322,7 @@ function [h, p, stats] = chi2gof (x, varargin)
   endif
   df = nbins - 1 - nparams;
   if (df > 0)
-    p = 1 - chi2cdf (cstat, df);
+    p = chi2cdf (cstat, df, 'upper');
   else
     df = 0;
     p = NaN;
@@ -431,6 +431,12 @@ endfunction
 %! expCounts = n * poisspdf (bins,lambdaHat);
 %! [h, p, stats] = chi2gof (bins, 'binctrs', bins, 'frequency', obsCounts, ...
 %!                          'expected', expCounts, 'nparams',1)
+%!test
+%! ## Below the resolution of 1 - chi2cdf, values from MATLAB R2024a
+%! [~, p] = chi2gof (1:5, 'Ctrs', 1:5, ...
+%!                  'Frequency', [500, 300, 300, 300, 600], ...
+%!                  'Expected', 400 * ones (1, 5), 'NParams', 0);
+%! assert_equal (p, 3.75727673578105e-42, -1e-10);
 
 ## Test input validation
 %!error chi2gof ()

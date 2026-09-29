@@ -171,7 +171,7 @@ function [b, bint, r, rint, stats] = regress (y, X, alpha)
     R2 = 1 - SSE / sum ((y - mean (y)) .^ 2);
 #    F = (R2 / (p - 1)) / ((1 - R2) / dof);
     F = dof / (p - 1) / (1 / R2 - 1);
-    pval = 1 - fcdf (F, p - 1, dof);
+    pval = fcdf (F, p - 1, dof, 'upper');
 
     stats = [R2 F pval v];
 
@@ -220,4 +220,10 @@ endfunction
 %! X = [ones(6, 1), (1:6)'];
 %! y = [1.1 1.9 3.2 3.9 5.1 6.2];
 %! assert_equal (regress (y, X), regress (y', X));
+%!test
+%! ## Below the resolution of 1 - fcdf, values from MATLAB R2024a
+%! u = (1:30)';
+%! [~, ~, ~, ~, st] = regress (2 * u + 0.01 * sin (u), [ones(30, 1), u]);
+%! assert_equal (st(3), 2.48569519842005e-96, -1e-8);
+
 %!error <regress: y must be a vector.> regress (ones (3, 2), ones (3, 2))

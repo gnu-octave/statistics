@@ -107,10 +107,10 @@ function [h, pval, chisq] = mcnemar_test (x, varargin)
   switch (lower (testtype))
     case 'asymptotic'
       chisq = (b - c) .^2 / (b + c);
-      pval = 1 - chi2cdf (chisq, 1);
+      pval = chi2cdf (chisq, 1, 'upper');
     case 'corrected'
       chisq = (abs (b - c) - 1) .^2 / (b + c);
-      pval = 1 - chi2cdf (chisq, 1);
+      pval = chi2cdf (chisq, 1, 'upper');
     case 'exact'
       chisq = [];
       pval = 2 * (binocdf (b, b + c, 0.5));
@@ -175,6 +175,10 @@ endfunction
 %! assert_equal (h, 1);
 %! assert_equal (pval, 0.055009, 1e-6);
 %! assert_equal (chisq, 3.6818, 1e-4);
+%!test
+%! ## Below the resolution of 1 - chi2cdf
+%! [~, p, c] = mcnemar_test ([100, 200; 0, 100]);
+%! assert_equal (p, erfc (sqrt (c / 2)), -1e-12);
 
 %!error<mcnemar_test: too many input arguments.> mcnemar_test (59, 6, 16, 80)
 %!error<mcnemar_test: X must be a 2x2 matrix.> mcnemar_test (ones (3, 3))

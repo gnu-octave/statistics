@@ -152,7 +152,7 @@ function [h, pval, ci, stats] = vartest2 (x, y, varargin)
   F(t2) = Inf;
   ## Calculate p-value for the test and confidence intervals (if requested)
   if (strcmpi (tail, 'both'))
-    pval = 2 * min (fcdf (F, df1, df2), 1 - fcdf (F, df1, df2));
+    pval = 2 * min (fcdf (F, df1, df2), fcdf (F, df1, df2, 'upper'));
     if (nargout > 2)
       ci = cat (dim, F .* finv (alpha / 2, df2, df1), ...
                      F ./ finv (alpha / 2, df1, df2));
@@ -207,6 +207,12 @@ function [df, data_var] = getstats (data, dim)
      df = df(1);
   endif
 endfunction
+
+%!test
+%! ## Below the resolution of 1 - fcdf, values from MATLAB R2024a
+%! s = sin (1:50)';
+%! [~, p] = vartest2 (100 * s, 0.01 * s);
+%! assert_equal (p, 6.38404544818042e-183, -1e-10);
 
 ## Test input validation
 %!error<vartest2: too few input arguments.> vartest2 ();

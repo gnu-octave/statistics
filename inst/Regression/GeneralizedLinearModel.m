@@ -683,11 +683,11 @@ classdef GeneralizedLinearModel < PredictiveModel
         drop = this.nulldev_ - this.Deviance;
         if (this.DispersionEstimated)
           Fstat = (drop / df1) / this.Dispersion;
-          pval  = 1 - fcdf (Fstat, df1, this.DFE);
+          pval  = fcdf (Fstat, df1, this.DFE, 'upper');
           fprintf ("F-statistic vs. constant model: %g, p-value = %g\n", ...
                    Fstat, pval);
         else
-          pval = 1 - chi2cdf (drop, df1);
+          pval = chi2cdf (drop, df1, 'upper');
           fprintf (strcat ("Chi^2-statistic vs. constant model: %g,", ...
                            " p-value = %g\n"), drop, pval);
         endif
@@ -1431,7 +1431,7 @@ classdef GeneralizedLinearModel < PredictiveModel
       HVH = H * mdl.CoefficientCovariance * H';
       ## Wald F statistic (MATLAB uses the F distribution for coefTest).
       stat = (Hb' * (HVH \ Hb)) / df;
-      p = 1 - fcdf (stat, df, mdl.DFE);
+      p = fcdf (stat, df, mdl.DFE, 'upper');
     endfunction
 
     ## -*- texinfo -*-
@@ -1449,7 +1449,7 @@ classdef GeneralizedLinearModel < PredictiveModel
       dev_null = mdl.nulldev_;
       df_diff  = mdl.NumCoefficients - 1;
       chi2stat = dev_null - dev_full;
-      pval     = 1 - chi2cdf (chi2stat, df_diff);
+      pval     = chi2cdf (chi2stat, df_diff, 'upper');
       Deviance   = [dev_null; dev_full];
       DFE        = [mdl.DFE + df_diff; mdl.DFE];
       chi2Stat   = [NaN; chi2stat];
@@ -1949,6 +1949,21 @@ endfunction
 %! assert_equal (class (mdl), "GeneralizedLinearModel");
 %! assert_equal (mdl.Distribution.Name, "Poisson");
 %! assert_equal (mdl.Link.Name, "log");
+%!test
+%! ## Below the resolution of 1 - fcdf, values from MATLAB R2024a
+%! u = (1:30)';
+%! m = fitglm (u, 2 * u + 0.01 * sin (u));
+%! assert_equal (coefTest (m), 2.48569519842047e-96, -1e-8);
+%!test
+%! ## Below the resolution of 1 - chi2cdf
+%! u = (1:20)';
+%! N = 30 * ones (20, 1);
+%! m = fitglm (u, [round(N ./ (1 + exp (5 - 0.5 * u))), N], ...
+%!             'Distribution', 'binomial');
+%! D = devianceTest (m);
+%! assert_equal (D.pValue(2), gammainc (D.chi2Stat(2) / 2, 1/2, 'upper'), ...
+%!               -1e-12);
+
 %!error<DATA, RESP, and MODELSPEC are required> GeneralizedLinearModel (1)
 %!error<X must be a real matrix.> ...
 %! GeneralizedLinearModel ("a", [1;2], "linear")

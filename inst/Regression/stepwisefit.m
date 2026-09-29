@@ -490,7 +490,7 @@ stats.xr = xr;
   if (stats.df0 > 0)
     stats.fstat = ((stats.SStotal - stats.SSresid) / stats.df0) ...
                   / (stats.SSresid / stats.dfe);
-    stats.pval = 1 - fcdf (stats.fstat, stats.df0, stats.dfe);
+    stats.pval = fcdf (stats.fstat, stats.df0, stats.dfe, 'upper');
   else
     stats.fstat = NaN;
     stats.pval = NaN;
@@ -703,6 +703,13 @@ endfunction
 %! [~, ~, pval] = stepwisefit ([x1, x2], x2 + 0.001 * cos (1:30)', ...
 %!                             'Display', 'off');
 %! assert_equal (pval(2), 3.00226579216343e-116, -1e-9);
+%!test
+%! ## Below the resolution of 1 - fcdf, values from MATLAB R2024a
+%! u = (1:30)';
+%! u2 = u + 0.1 * sin (u);
+%! [~, ~, ~, ~, st] = stepwisefit ([u, u2], u2 + 0.001 * cos (u), ...
+%!                               'Display', 'off');
+%! assert_equal (st.pval, 3.0022657921636e-116, -1e-9);
 
 %!error <stepwisefit: Keep length must match number of predictors> ...
 %!       stepwisefit (randn (20,4), randn (20,1), 'Keep', [true false])

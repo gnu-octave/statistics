@@ -138,7 +138,7 @@ function [p, tbl, stats] = friedman (x, reps, displayopt)
   if (chi_r > 0)
     chi_r = chi_r / sigmasq;
   endif
-  p = 1 - chi2cdf (chi_r, c - 1);
+  p = chi2cdf (chi_r, c - 1, 'upper');
 
   ## Create ANOVA table data for output
   if (reps > 1)
@@ -308,6 +308,11 @@ endfunction
 %! assert_equal (size (atab), [4, 6], 0);
 %! assert_equal (atab{3,1}, 'Error');
 %! assert_equal (isempty (atab{2,5}), false);
+%!test
+%! ## Below the resolution of 1 - chi2cdf, values from MATLAB R2024a
+%! q = (1:60)';
+%! p = friedman ([q, q + 100, q + 200], 1, 'off');
+%! assert_equal (p, 8.75651076269649e-27, -1e-10);
 
 %!error<friedman: displayopt must be either 'on' or 'off'.> ...
 %! friedman ([5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; 6.5, 5.0, 4.0; ...

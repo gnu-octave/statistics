@@ -218,7 +218,7 @@ function [p, stats] = vartestn (x, group, varargin)
       ## Compute p-value.  Fewer than two groups leaves nothing to compare,
       ## so the test is undefined rather than significant.
       if (Bdf > 0)
-        p = 1 - chi2cdf (F, Bdf);
+        p = chi2cdf (F, Bdf, 'upper');
       else
         p = NaN;
       endif
@@ -372,6 +372,12 @@ endfunction
 %!
 %! load examgrades
 %! [p, stats] = vartestn (grades, 'TestType', 'BrownForsythe', 'Display', 'off')
+%!test
+%! ## Below the resolution of 1 - chi2cdf, values from MATLAB R2024a
+%! s = sin (1:50)';
+%! p = vartestn ([0.01 * s; 100 * s], [ones(50, 1); 2 * ones(50, 1)], ...
+%!               'Display', 'off');
+%! assert_equal (p, 1.05713927539863e-181, -1e-10);
 
 ## Test input validation
 %!error<vartestn: too few input arguments.> vartestn ();

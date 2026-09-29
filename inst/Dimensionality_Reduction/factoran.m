@@ -322,7 +322,7 @@ function [lambda, psi, T, stats, F] = factoran (X, m, varargin)
                          " is a covariance matrix."));
       else
         stats.chisq = (n - 1 - (2 * p + 5) / 6 - 2 * m / 3) * fmin;
-        stats.p = 1 - chi2cdf (stats.chisq, dfe);
+        stats.p = chi2cdf (stats.chisq, dfe, 'upper');
       endif
     endif
   endif

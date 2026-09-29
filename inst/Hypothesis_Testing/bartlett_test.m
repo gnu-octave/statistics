@@ -199,7 +199,7 @@ function [h, pval, chisq, df] = bartlett_test (x, varargin)
   ## significant.
   df = k - 1;
   if (df > 0)
-    pval = 1 - chi2cdf (chisq, df);
+    pval = chi2cdf (chisq, df, 'upper');
   else
     pval = NaN;
   endif
@@ -207,6 +207,13 @@ function [h, pval, chisq, df] = bartlett_test (x, varargin)
   ## Determine the test outcome
   h = double (pval < alpha);
 endfunction
+
+%!test
+%! ## Below the resolution of 1 - chi2cdf
+%! s = sin (1:50)';
+%! [~, p, c, df] = bartlett_test ([0.01 * s; 100 * s], ...
+%!                               [ones(50, 1); 2 * ones(50, 1)]);
+%! assert_equal (p, gammainc (c / 2, df / 2, 'upper'), -1e-12);
 
 ## Test input validation
 %!error<bartlett_test: invalid number of input arguments.> bartlett_test ()

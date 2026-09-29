@@ -345,13 +345,18 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
   ## Calculate chi-squared and p-value
   cells = ((x - E) .^2) ./ E;
   chisq = sum (cells(:));
-  pval = 1 - chi2cdf (chisq, df);
+  pval = chi2cdf (chisq, df, 'upper');
   ## Print results if no output requested
   if (nargout == 0)
     printf ("p-val = %f with chi^2 statistic = %f and d.f. = %d.\n", ...
             pval, chisq, df);
   endif
 endfunction
+
+%!test
+%! ## Below the resolution of 1 - chi2cdf
+%! [p, c] = chi2test ([300, 100; 100, 300]);
+%! assert_equal (p, erfc (sqrt (c / 2)), -1e-12);
 
 ## Input validation tests
 %!error chi2test ();

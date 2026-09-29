@@ -1157,7 +1157,7 @@ classdef RegressionGAM < PredictiveModel
 
         if (wanted > 0 && columns (Xfit) > 1)
           S = gamboostpairs (Xfit, res, cat);
-          pval = 1 - fcdf (S.F, S.DF1, S.DF2);
+          pval = fcdf (S.F, S.DF1, S.DF2, 'upper');
           pval(S.DF1 <= 0) = 1;
           [pval, ord] = sort (pval);
           ranked = S.Pairs(ord, :);
@@ -1983,7 +1983,7 @@ classdef RegressionGAM < PredictiveModel
         ## The F ratio becomes a probability through the package's own fcdf,
         ## which is verified against MATLAB; the engine deliberately does not
         ## carry a second incomplete beta of its own.
-        pval = 1 - fcdf (S.F, S.DF1, S.DF2);
+        pval = fcdf (S.F, S.DF1, S.DF2, 'upper');
         pval(S.DF1 <= 0) = 1;
         [pval, ord] = sort (pval);
         ranked = S.Pairs(ord, :);

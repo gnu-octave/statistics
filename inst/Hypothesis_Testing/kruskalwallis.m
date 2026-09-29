@@ -186,7 +186,7 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
     ChiSq = NaN;
     p = NaN;
   else
-    p = 1 - chi2cdf (ChiSq, dfm);
+    p = chi2cdf (ChiSq, dfm, 'upper');
   endif
 
   ## Create results table (if requested)
@@ -328,3 +328,7 @@ endfunction
 %! [p, tbl] = kruskalwallis ([], [], 'off');
 %! assert_equal (p, NaN);
 %! assert_equal (cell2mat (tbl(2:4,2:3)), zeros (3, 2));
+%!test
+%! ## Below the resolution of 1 - chi2cdf, values from MATLAB R2024a
+%! p = kruskalwallis ((1:200)', [ones(100, 1); 2 * ones(100, 1)], 'off');
+%! assert_equal (p, 2.5239394239903e-34, -1e-10);

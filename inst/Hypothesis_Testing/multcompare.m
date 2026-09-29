@@ -741,9 +741,9 @@ function [padj, critval, dfe] = scheffe (p, t, Ng, dfe, R, ALPHA)
 
   ## Calculate the p-value
   if (isinf (dfe))
-    padj = 1 - chi2cdf (t.^2, Ng - 1);
+    padj = chi2cdf (t.^2, Ng - 1, 'upper');
   else
-    padj = 1 - fcdf ((t.^2) / (Ng - 1), Ng - 1, dfe);
+    padj = fcdf ((t.^2) / (Ng - 1), Ng - 1, dfe, 'upper');
   endif
 
   ## Calculate critical value at Scheffe-adjusted ALPHA level
@@ -1366,3 +1366,11 @@ endfunction
 %! C = multcompare (stats, 'CriticalValueType', 'lsd', 'Display', 'off');
 %! assert_equal (C(:,6), [1.07511774090732e-32; 8.40615185462431e-41; ...
 %!                        1.07511774090732e-32], -1e-13);
+%!test
+%! ## Scheffe below the resolution of 1 - fcdf, values from MATLAB R2024a
+%! w = [1:10, 101:110, 201:210]';
+%! g = kron ((1:3)', ones (10, 1));
+%! [~, ~, st] = anova1 (w, g, 'off');
+%! C = multcompare (st, 'CriticalValueType', 'scheffe', 'Display', 'off');
+%! assert_equal (C(:,6), [7.05050215176788e-32; 5.522164708181e-40; ...
+%!                        7.05050215176788e-32], -1e-10);

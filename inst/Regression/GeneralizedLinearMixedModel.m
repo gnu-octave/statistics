@@ -432,7 +432,7 @@ classdef GeneralizedLinearMixedModel < PredictiveModel
       Fstat = (this.beta_ ./ se) .^ 2;
       DF1 = ones (p, 1);
       DF2 = repmat (this.DFE, p, 1);
-      pValue = 1 - fcdf (Fstat, DF1, DF2);
+      pValue = fcdf (Fstat, DF1, DF2, 'upper');
       tbl = table (Fstat(:), DF1(:), DF2(:), pValue(:), ...
         "VariableNames", {"FStat", "DF1", "DF2", "pValue"}, ...
         "RowNames", this.CoefficientNames(:));
@@ -451,7 +451,7 @@ classdef GeneralizedLinearMixedModel < PredictiveModel
       df1 = rank (H);
       df2 = this.DFE;
       F = (Hb' * ((H * this.covbeta_ * H') \ Hb)) / df1;
-      pval = 1 - fcdf (F, df1, df2);
+      pval = fcdf (F, df1, df2, 'upper');
     endfunction
 
     ## -*- texinfo -*-
@@ -593,6 +593,21 @@ endfunction
 %! m = fitglme (T, 'y ~ x + (1|g)', 'FitMethod', 'Laplace');
 %! assert_equal (m.LogLikelihood, fitlme (T, 'y ~ x + (1|g)').LogLikelihood, ...
 %!               -1e-8);
+%!test
+%! ## Below the resolution of 1 - fcdf, values from MATLAB R2024a
+%! u = (1:30)';
+%! g = repmat ((1:5)', 6, 1);
+%! T = table (u, g, 2 * u + g + 0.01 * sin (u), ...
+%!            'VariableNames', {'x', 'g', 'y'});
+%! m = fitglme (T, 'y ~ x + (1|g)');
+%! assert_equal (coefTest (m), 1.12635133546576e-95, -1e-3);
+%!test
+%! u = (1:30)';
+%! g = repmat ((1:5)', 6, 1);
+%! T = table (u, g, 2 * u + g + 0.01 * sin (u), ...
+%!            'VariableNames', {'x', 'g', 'y'});
+%! A = anova (fitglme (T, 'y ~ x + (1|g)'));
+%! assert_equal (A.pValue(2), 1.12635133546576e-95, -1e-3);
 
 ## Error handling
 %!error <unknown ResidualType> residuals (glme, "ResidualType", "xxx")

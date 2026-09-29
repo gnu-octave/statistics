@@ -262,7 +262,7 @@ function [h, pval, W, df] = levene_test (x, varargin)
   ## groups leaves nothing to compare, so the test is undefined rather than
   ## significant.
   if (k > 1)
-    pval = 1 - fcdf (W, k - 1, N - k);
+    pval = fcdf (W, k - 1, N - k, 'upper');
   else
     pval = NaN;
   endif
@@ -273,6 +273,15 @@ function [h, pval, W, df] = levene_test (x, varargin)
   ## Determine the test outcome
   h = double (pval < alpha);
 endfunction
+
+%!test
+%! ## Below the resolution of 1 - fcdf
+%! s = sin (1:50)';
+%! [~, p, W, df] = levene_test ([0.01 * s; 100 * s], ...
+%!                             [ones(50, 1); 2 * ones(50, 1)]);
+%! d1 = df(1);
+%! d2 = df(2);
+%! assert_equal (p, betainc (d2 / (d2 + d1 * W), d2 / 2, d1 / 2), -1e-12);
 
 ## Test input validation
 %!error<levene_test: invalid number of input arguments.> levene_test ()

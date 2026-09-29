@@ -780,7 +780,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                                     ALPHA, VARNAMES, Nt);
     endif
     F = ms ./ msdenom;
-    P = 1 - fcdf (F, df, dfdenom);
+    P = fcdf (F, df, dfdenom, 'upper');
     ## The denominator columns describe a random-effects fit, so they stay
     ## empty when every factor is fixed and the error term is the denominator.
     if (isempty (RANDOM))
@@ -2377,6 +2377,13 @@ endfunction
 %! dfe = stats.dfe;
 %! assert_equal (stats.coeffs(:,6), ...
 %!               betainc (dfe ./ (dfe + t .^ 2), dfe / 2, 1/2), -1e-12);
+%!test
+%! ## Below the resolution of 1 - fcdf, values from MATLAB R2024a
+%! w = [1:10, 101:110, 201:210]';
+%! g = kron ((1:3)', ones (10, 1));
+%! p = anovan (w, {g}, 'display', 'off');
+%! assert_equal (p, 5.52216470815463e-40, -1e-10);
+
 %!error <categorical factors cannot have exponent> ...
 %! anovan ((1:4)', {[1; 1; 2; 2], [1; 2; 1; 2]}, ...
 %!         'model', [2, 0], 'display', 'off')

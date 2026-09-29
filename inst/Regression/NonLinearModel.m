@@ -396,7 +396,7 @@ classdef NonLinearModel < PredictiveModel
         ## squares (a nonlinear model has no guaranteed intercept term).
         yhat  = this.Fitted;
         Fstat = (sum (yhat .^ 2) / this.NumCoefficients) / this.MSE;
-        pval  = 1 - fcdf (Fstat, this.NumCoefficients, this.DFE);
+        pval  = fcdf (Fstat, this.NumCoefficients, this.DFE, 'upper');
         fprintf ("F-statistic vs. zero model: %.3g, p-value = %.3g\n", ...
                  Fstat, pval);
       endif
@@ -811,7 +811,7 @@ classdef NonLinearModel < PredictiveModel
       df = rows (H);
       M  = H * mdl.CoefficientCovariance * H';
       F  = ((H * b)' * pinv (M) * (H * b)) / df;
-      p  = 1 - fcdf (F, df, mdl.DFE);
+      p  = fcdf (F, df, mdl.DFE, 'upper');
     endfunction
 
     ## -*- texinfo -*-
@@ -1143,6 +1143,13 @@ endfunction
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
+%!test
+%! ## Below the resolution of 1 - fcdf
+%! u = (1:30)';
+%! m = fitnlm (u, 2 * u + 0.01 * sin (u), @(b, t) b(1) + b(2) * t, [1, 1]);
+%! [p, F, df] = coefTest (m);
+%! d2 = m.DFE;
+%! assert_equal (p, betainc (d2 / (d2 + df * F), d2 / 2, df / 2), -1e-12);
 
 ## Test input validation
 %!error<DATA, RESP, MODELFUN, and BETA0 are required> NonLinearModel (1)

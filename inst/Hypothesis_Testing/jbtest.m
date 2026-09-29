@@ -129,7 +129,7 @@ function [h, p, jbstat, critval] = jbtest (x, alpha, mctol)
     if (n > tsizes(end))
       ## Beyond the tabulated sample sizes: large-sample chi-square with two
       ## degrees of freedom
-      p = 1 - chi2cdf (jbstat, 2);
+      p = chi2cdf (jbstat, 2, 'upper');
       critval = chi2inv (1 - alpha, 2);
       if (isnan (jbstat))
         p = 0;
