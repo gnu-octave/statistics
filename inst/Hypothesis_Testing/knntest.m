@@ -148,23 +148,11 @@ function [knnstat, p, h] = knntest (X, Y, varargin)
     error ("knntest: 'NumNeighbors' must be a positive integer.");
   endif
 
-  ## One column per variable in each sample, and whether it holds levels
-  [xc, yc, names, iscat, errmsg] = knnVariables (X, Y, vnames);
+  ## The pooled sample coded one column per variable, rows holding a missing
+  ## value left out, and which variables hold levels
+  [Z, iscat, mx, my, errmsg] = __twosample__ (X, Y, vnames, catvars);
   if (! isempty (errmsg))
     error ("knntest: %s", errmsg);
-  endif
-  [iscat, errmsg] = knnCategorical (catvars, iscat, names, istable (X));
-  if (! isempty (errmsg))
-    error ("knntest: %s", errmsg);
-  endif
-  K = numel (xc);
-
-  ## Observations holding a missing value are left out
-  [xc, mx] = knnComplete (xc);
-  [yc, my] = knnComplete (yc);
-  if (mx < 1 || my < 1)
-    error (strcat ("knntest: X and Y must each hold an observation with", ...
-                   " no missing value."));
   endif
   m = mx + my;
 
@@ -190,16 +178,6 @@ function [knnstat, p, h] = knntest (X, Y, varargin)
   endif
   dist = lower (dist);
 
-  ## Every variable coded over the pooled sample: continuous ones as numbers,
-  ## those holding levels as codes 1, 2, ...
-  Z = zeros (m, K);
-  for j = 1:K
-    if (iscat(j))
-      Z(:,j) = grp2idx (vertcat (xc{j}, yc{j}));
-    else
-      Z(:,j) = double (vertcat (xc{j}, yc{j}));
-    endif
-  endfor
   g = [zeros(mx, 1); ones(my, 1)];
 
   ## The same-sample share among each observation's k nearest neighbours
@@ -227,181 +205,6 @@ function [knnstat, p, h] = knntest (X, Y, varargin)
   p = 0.5 * erfc ((knnstat - mu) / sigma / sqrt (2));
   h = double (p <= alpha);
 
-endfunction
-
-## The columns of X and Y, one per variable used, the variable names, and
-## which variables hold levels by their type.
-function [xc, yc, names, iscat, errmsg] = knnVariables (X, Y, vnames)
-
-  xc = {};
-  yc = {};
-  names = {};
-  iscat = [];
-  errmsg = '';
-  if (istable (X) != istable (Y))
-    errmsg = "X and Y must both be matrices or both be tables.";
-    return;
-  endif
-
-  if (! istable (X))
-    if (! isempty (vnames))
-      errmsg = "'VariableNames' applies only where X and Y are tables.";
-      return;
-    endif
-    if (! (isnumeric (X) && isreal (X) && ismatrix (X)
-           && isnumeric (Y) && isreal (Y) && ismatrix (Y)))
-      errmsg = "X and Y must be real numeric matrices or tables.";
-      return;
-    endif
-    if (columns (X) != columns (Y) || columns (X) < 1)
-      errmsg = "X and Y must have the same number of columns.";
-      return;
-    endif
-    K = columns (X);
-    xc = cell (1, K);
-    yc = cell (1, K);
-    for j = 1:K
-      xc{j} = X(:,j);
-      yc{j} = Y(:,j);
-    endfor
-    names = cell (1, K);
-    iscat = false (1, K);
-    return;
-  endif
-
-  xn = X.Properties.VariableNames;
-  yn = Y.Properties.VariableNames;
-  if (all (ismember (yn, xn)))
-    shared = yn;
-  elseif (all (ismember (xn, yn)))
-    shared = xn;
-  else
-    errmsg = strcat ("the variable names of one of X and Y must all be", ...
-                     " names of the other.");
-    return;
-  endif
-  names = shared;
-  if (! isempty (vnames))
-    if (isa (vnames, 'string'))
-      vnames = cellstr (vnames);
-    elseif (ischar (vnames) && isrow (vnames))
-      vnames = {vnames};
-    endif
-    if (! (iscellstr (vnames) && all (ismember (vnames, shared))))
-      errmsg = "'VariableNames' must name variables X and Y share.";
-      return;
-    endif
-    names = vnames(:)';
-  endif
-  K = numel (names);
-  xc = cell (1, K);
-  yc = cell (1, K);
-  iscat = false (1, K);
-  for j = 1:K
-    a = X.(names{j});
-    c = Y.(names{j});
-    if (columns (a) != 1 || columns (c) != 1)
-      errmsg = sprintf ("variable '%s' must be one column.", names{j});
-      return;
-    endif
-    [ka, oka] = knnKind (a);
-    [kc, okc] = knnKind (c);
-    if (! (oka && okc))
-      errmsg = sprintf (strcat ("variable '%s' must hold numbers, logical", ...
-                                " values, categories or text."), names{j});
-      return;
-    endif
-    if (ka != kc)
-      errmsg = sprintf (strcat ("variable '%s' must hold the same kind of", ...
-                                " values in X and Y."), names{j});
-      return;
-    endif
-    iscat(j) = ka;
-    if (isa (a, 'categorical') && ! ka)
-      ## An ordinal category is read as its position among the categories
-      a = double (grp2idx (a));
-      c = double (grp2idx (c));
-    endif
-    xc{j} = a;
-    yc{j} = c;
-  endfor
-
-endfunction
-
-## Whether a table variable holds levels by its type, and whether its type is
-## one this test reads at all.
-function [iscat, ok] = knnKind (v)
-  ok = true;
-  if (islogical (v) || isa (v, 'string') || iscellstr (v))
-    iscat = true;
-  elseif (isa (v, 'categorical'))
-    iscat = ! isordinal (v);
-  elseif (isnumeric (v) && isreal (v))
-    iscat = false;
-  else
-    iscat = false;
-    ok = false;
-  endif
-endfunction
-
-## The variables named in 'CategoricalVariables', added to those holding levels
-## by their type.
-function [iscat, errmsg] = knnCategorical (cv, iscat, names, istab)
-
-  errmsg = '';
-  if (isempty (cv))
-    return;
-  endif
-  K = numel (iscat);
-  if (isa (cv, 'string'))
-    cv = cellstr (cv);
-  endif
-  if (iscellstr (cv) && numel (cv) == 1)
-    cv = cv{1};
-  endif
-  if (ischar (cv) && strcmpi (cv, 'all'))
-    iscat(:) = true;
-  elseif (ischar (cv) || iscellstr (cv))
-    if (! istab)
-      errmsg = strcat ("'CategoricalVariables' can name variables only", ...
-                       " where X and Y are tables.");
-      return;
-    endif
-    cv = cellstr (cv);
-    if (! all (ismember (cv, names)))
-      errmsg = "'CategoricalVariables' must name variables in use.";
-      return;
-    endif
-    iscat(ismember (names, cv)) = true;
-  elseif (islogical (cv))
-    if (numel (cv) != K)
-      errmsg = sprintf (strcat ("'CategoricalVariables' must hold one", ...
-                                " logical value for each of the %d", ...
-                                " variables."), K);
-      return;
-    endif
-    iscat(cv(:)') = true;
-  elseif (isnumeric (cv) && isreal (cv) && all (cv(:) == fix (cv(:)))
-          && all (cv(:) >= 1) && all (cv(:) <= K))
-    iscat(cv(:)') = true;
-  else
-    errmsg = sprintf (strcat ("'CategoricalVariables' must be 'all',", ...
-                              " indices from 1 to %d, a logical vector", ...
-                              " or variable names."), K);
-  endif
-
-endfunction
-
-## The columns with every observation holding a missing value removed.
-function [cols, n] = knnComplete (cols)
-  keep = true (rows (cols{1}), 1);
-  for j = 1:numel (cols)
-    keep &= ! ismissing (cols{j});
-  endfor
-  for j = 1:numel (cols)
-    cols{j} = cols{j}(keep);
-  endfor
-  n = sum (keep);
 endfunction
 
 ## Distances from every observation to the observations B, one column each.

@@ -65,6 +65,7 @@ Hypothesis Testing
  lillietest
  manova1
  mcnemar_test
+ mmdtest
  multcompare
  ranksum
  regression_ftest

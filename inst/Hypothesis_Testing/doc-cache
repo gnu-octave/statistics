@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 61
+# columns: 62
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -2723,6 +2723,95 @@ fishertest
 # elements: 1
 # length: 48
 Perform a McNemar's test on paired nominal data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+mmdtest
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3073
+statistics: mmdval = mmdtest (X, Y)
+statistics: mmdval = mmdtest (X, Y, Name, Value)
+statistics: [mmdval, p] = mmdtest (...)
+statistics: [mmdval, p, h] = mmdtest (...)
+Two-sample multivariate test on the maximum mean discrepancy.
+
+mmdval = mmdtest (X, Y) returns the squared
+maximum mean discrepancy between the samples X and Y, whose rows
+are observations and whose columns are variables. It measures how far
+apart the two distributions lie, 0 where the two samples are alike. With
+m rows in X, n in Y and k the kernel, it is
+the biased estimate
+$$\mathrm{MMD}^2 = {1 \over m^2} \sum_{i,j=1}^{m} k(x_i, x_j)
+- {2 \over m n} \sum_{i=1}^{m} \sum_{j=1}^{n} k(x_i, y_j)
++ {1 \over n^2} \sum_{i,j=1}^{n} k(y_i, y_j).$$
+
+X and Y are both numeric matrices with the same number of
+columns, or both tables, read over the variables they share, which must be
+all the variables of one of them. An observation holding a missing value in
+a variable used is left out.
+
+The kernel is Gaussian, k(u, v) = exp (-d^2 / s). Each continuous
+variable is standardised by the mean and standard deviation of X, a
+standard deviation of 0 being taken as 1, and contributes its squared
+difference to d^2; a variable holding levels contributes 2 where the
+two observations differ, as one column per level would. The scale s
+is the median of d^2 over the pairs of observations in X, taken
+as 1 where that median is 0.
+
+[mmdval, p, h] = mmdtest (...) also returns the
+p-value of the permutation test of the null hypothesis that X and
+Y come from the same distribution, and h, which is 1 where the
+null hypothesis is rejected at the significance level 'Alpha' and 0
+otherwise. Each permutation deals the pooled observations out again as
+X and Y, standardises and scales them afresh, and computes the
+statistic; p is the share of the permutations whose statistic is at
+least the observed one. The permutations are drawn with randperm,
+so the state of rand decides them. They are drawn only where
+p or h is asked for.
+
+mmdval = mmdtest (..., Name, Value) takes the
+following options.
+
+Name Value
+'Alpha' The significance level, a scalar between 0
+and 1, 0.05 by default.
+'NumPermutations' The number of permutations, a
+positive integer, 1000 by default.
+'VariableNames' The variables to use, among those
+the two tables share, as a character vector, a string array or a cell array
+of character vectors. All the shared variables by default.
+'CategoricalVariables' The variables holding
+levels: 'all', their indices, a logical vector over the variables,
+or, for tables, their names. A table variable holding logical values, an
+unordered categorical array, a string array or a cell array of
+character vectors holds levels whether named here or not. A matrix holds
+none unless named.
+'Options' A structure as statset returns.
+Parallel computing and random streams are not implemented, and are refused
+where asked for.
+
+Reference: A. Gretton, K. M. Borgwardt, M. J. Rasch, B. Schoelkopf and
+A. Smola (2012). A kernel two-sample test. Journal of Machine Learning
+Research, 13, 723-773.
+
+See also:
+knntest,
+kstest2
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 61
+Two-sample multivariate test on the maximum mean discrepancy.
 
 
 
