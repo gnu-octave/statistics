@@ -8046,7 +8046,7 @@ tinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 982
+# length: 1228
 statistics: x = tinv (p, df)
 Inverse of the Student's T cumulative distribution function (iCDF).
 
@@ -8066,6 +8066,11 @@ Input arguments must be double or single; integer, logical,
 and character arrays are rejected. MATLAB accepts a character array and
 evaluates it at the character codes, which Octave deliberately does not,
 since a character array is an integer type and integers are refused too.
+
+Far in the tails the quantile stays accurate to the last few digits.
+MATLAB's does not with one degree of freedom, where it evaluates
+tan (pi (p - 0.5)) and p - 0.5 loses the digits that
+matter: at p = 10^{-10} it is off by 5 10^{-7}, relative.
 
 See also:
 tcdf,

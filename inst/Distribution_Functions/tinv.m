@@ -39,6 +39,11 @@
 ## evaluates it at the character codes, which Octave deliberately does not,
 ## since a character array is an integer type and integers are refused too.
 ##
+## Far in the tails the quantile stays accurate to the last few digits.
+## MATLAB's does not with one degree of freedom, where it evaluates
+## @code{tan (pi (p - 0.5))} and @math{p - 0.5} loses the digits that
+## matter: at @math{p = 10^{-10}} it is off by @math{5 10^{-7}}, relative.
+##
 ## @seealso{tcdf, tpdf, trnd, tstat}
 ## @end deftypefn
 
@@ -127,6 +132,11 @@ endfunction
 %!assert_equal (tinv (p, 1), [NaN -Inf 0 Inf NaN], eps)
 %!assert_equal (tinv (p, [1 0 NaN 1 1]), [NaN NaN NaN Inf NaN], eps)
 %!assert_equal (tinv ([p(1:2) NaN p(4:5)], 1), [NaN -Inf NaN Inf NaN])
+
+%!test
+%! ## Deep in the tail, -cot (pi p); MATLAB gives -3183097229.936, the value
+%! ## of tan (pi (p - 0.5)), whose p - 0.5 loses the digits that matter
+%! assert_equal (tinv (1e-10, 1), -cot (pi * 1e-10), -1e-14);
 
 ## Test class of input preserved
 %!assert_equal (tinv ([p, NaN], 1), [NaN -Inf 0 Inf NaN NaN], eps)
