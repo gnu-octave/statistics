@@ -102,7 +102,7 @@ function [h, p, ci] = binotest (pos, n, p0, varargin)
       endif
       ci = [p_low, p_high];
     case 'left'
-      p = binocdf (pos - 1, n, p0, 'upper');
+      p = binocdf (pos, n, p0);
       if (pos == n)
         p_high = 1;
       else
@@ -110,7 +110,7 @@ function [h, p, ci] = binotest (pos, n, p0, varargin)
       endif
       ci = [0, p_high];
     case 'right'
-      p = binocdf (pos, n, p0);
+      p = binocdf (pos - 1, n, p0, 'upper');
       if (pos == 0)
         p_low = 0;
       else
@@ -136,14 +136,34 @@ endfunction
 
 %!demo
 %! % flip a coin 100 times, showing 65 heads
-%! % Hypothesis: coin shows less than 50% heads, i.e. p<=1/2
-%! [h,p_val,ci] = binotest (65,100,0.5,'tail','left','alpha',0.01)
+%! % Alternative: coin shows more heads than tails, i.e. p>1/2
+%! [h,p_val,ci] = binotest (65,100,0.5,'tail','right','alpha',0.01)
 %! % Result: h = 1 : null hypothesis is rejected, i.e. coin shows more heads than tails
 %! %         P value 0.0018, i.e. hypothesis not rejected for alpha up to 0.18%
-%! %         0 <= p <= 0.76 with 99% confidence
+%! %         0.53 <= p <= 1 with 99% confidence
 
 %!test #example from https://en.wikipedia.org/wiki/Binomial_test
 %! [h,p_val,ci] = binotest (51,235,1/6);
 %! assert_equal (p_val, 0.0437, 0.00005)
-%! [h,p_val,ci] = binotest (51,235,1/6,'tail','left');
+%! [h,p_val,ci] = binotest (51,235,1/6,'tail','right');
 %! assert_equal (p_val, 0.027, 0.0005)
+%!test
+%! [~, p] = binotest (51, 235, 1/6, 'tail', 'right');
+%! assert_equal (p, sum (binopdf (51:235, 235, 1/6)), -1e-12);
+%!test
+%! [~, p] = binotest (51, 235, 1/6, 'tail', 'left');
+%! assert_equal (p, sum (binopdf (0:51, 235, 1/6)), -1e-12);
+%!test
+%! ## 95 of 100 is no evidence that p < 0.2
+%! [h, p] = binotest (95, 100, 0.2, 'tail', 'left');
+%! assert_equal ([h, p], [0, 1]);
+%!test
+%! ## Below the resolution of 1 - binocdf
+%! [~, p] = binotest (95, 100, 0.2, 'tail', 'right');
+%! assert_equal (p, sum (binopdf (95:100, 100, 0.2)), -1e-12);
+%!test
+%! [~, ~, ci] = binotest (51, 235, 1/6, 'tail', 'right');
+%! assert_equal (ci(2), 1);
+%!test
+%! [~, ~, ci] = binotest (51, 235, 1/6, 'tail', 'left');
+%! assert_equal (ci(1), 0);
