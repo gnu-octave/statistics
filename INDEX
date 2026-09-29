@@ -57,6 +57,7 @@ Hypothesis Testing
  hotelling_t2test
  hotelling_t2test2
  jbtest
+ knntest
  kruskalwallis
  kstest
  kstest2

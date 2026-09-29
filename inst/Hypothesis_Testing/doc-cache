@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 60
+# columns: 61
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -2075,6 +2075,125 @@ swtest
 # elements: 1
 # length: 51
 Jarque-Bera hypothesis test of composite normality.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+knntest
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4331
+statistics: knnstat = knntest (X, Y)
+statistics: knnstat = knntest (X, Y, Name, Value)
+statistics: [knnstat, p] = knntest (...)
+statistics: [knnstat, p, h] = knntest (...)
+Two-sample multivariate test based on nearest neighbours.
+
+knnstat = knntest (X, Y) returns the nearest
+neighbour statistic of the two samples X and Y, whose rows are
+observations and whose columns are variables. The two samples are pooled,
+each observation's k nearest neighbours are found among the others,
+and knnstat is the share of those neighbours that belong to the same
+sample as the observation. It lies in [0, 1]: near 1 the samples
+are well separated, and near 0.5 two samples of equal size are alike.
+
+X and Y are both numeric matrices with the same number of
+columns, or both tables. Two tables are read over the variables they share,
+which must be all the variables of one of them. An observation holding a
+missing value in a variable used is left out.
+
+[knnstat, p, h] = knntest (...) also returns
+the p-value of the right-tailed test of the null hypothesis that X and
+Y come from the same distribution, and h, which is 1 where the
+null hypothesis is rejected at the significance level 'Alpha' and 0
+otherwise. The p-value takes (knnstat - mu) / sigma as standard
+normal, with m_x and m_y the sizes of the samples, m
+their sum, and q = m_x m_y / m^2:
+$$\mu = {m_x (m_x - 1) + m_y (m_y - 1) \over m (m - 1)}, \qquad
+\sigma^2 = {q + 4 q^2 \over m k}.$$
+
+knnstat = knntest (..., Name, Value) takes the
+following options.
+
+Name Value
+'Alpha' The significance level, a scalar between 0
+and 1, 0.05 by default.
+'NumNeighbors' The number of nearest neighbours
+k, a positive integer, 10 by default. It is taken as one less than
+the number of observations where it exceeds that.
+'Distance' The distance between observations; see
+below.
+'VariableNames' The variables to use, among those
+the two tables share, as a character vector, a string array or a cell array
+of character vectors. All the shared variables by default.
+'CategoricalVariables' The variables holding
+levels: 'all', their indices, a logical vector over the variables,
+or, for tables, their names. A table variable holding logical values, an
+unordered categorical array, a string array or a cell array of
+character vectors holds levels whether named here or not. A matrix holds
+none unless named.
+
+'Distance' is one of the following, 'seuclidean' by default
+where every variable is continuous, 'hamming' where every variable
+holds levels, and 'goodall3' where the two are mixed.
+
+Distance Description
+'euclidean' Euclidean distance.
+'seuclidean' Euclidean distance with each variable
+divided by its standard deviation over [X; Y].
+'cityblock' City block distance.
+'cosine' One minus the cosine of the angle between
+two observations.
+'correlation' One minus the correlation between two
+observations.
+'fasteuclidean', 'fastseuclidean' The same
+distances as 'euclidean' and 'seuclidean', computed exactly.
+'hamming' The share of variables that differ.
+'goodall3' The Goodall 3 dissimilarity of
+nomdist, with level frequencies counted over
+[X; Y] and the observation whose neighbours are sought
+counted once more, as nomdist2 counts a query with
+'CountQuery'. A continuous variable adds its absolute difference
+divided by its range over [X; Y], and the sum over
+every variable is divided by their number.
+
+The first five treat a variable holding levels as numbers, its levels coded
+1, 2, ...; 'hamming' treats every distinct value
+of a continuous variable as a level.
+
+A tie between two neighbours at the same distance is broken by the order of
+the pooled sample, the rows of X coming before those of Y, and
+distances equal to within rounding count as tied, so the result does not
+depend on the platform. MATLAB lets rounding decide such ties, so on data
+where many distances are equal, such as values on a coarse grid,
+knnstat can differ slightly from MATLAB's.
+
+MATLAB defines its 'goodall3' for a continuous variable in a way it
+does not document, and which none of the constructions tried here
+reproduces, so on mixed data knnstat differs from MATLAB's. On
+levels alone the two agree.
+
+Reference: M. Williams (2010). How good are your fits? Unbinned
+multivariate goodness-of-fit tests in high energy physics. Journal of
+Instrumentation, 5(09), P09004.
+
+See also:
+nomdist,
+nomdist2,
+kstest2
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 57
+Two-sample multivariate test based on nearest neighbours.
 
 
 
