@@ -1439,15 +1439,15 @@ chi2test
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3754
-statistics: pval = chi2test (x)
-statistics: [pval, chisq] = chi2test (x)
-statistics: [pval, chisq, dF] = chi2test (x)
-statistics: [pval, chisq, dF, E] = chi2test (x)
+# length: 4765
+statistics: h = chi2test (x)
+statistics: [h, p] = chi2test (x)
+statistics: [h, p, stats] = chi2test (x)
 statistics: [...] = chi2test (x, name, value)
+statistics: [...] = chi2test (..., 'Alpha', alpha)
 Perform a chi-squared test (for independence or homogeneity).
 
-For 2-way contingency tables, chi2test performs and a chi-squared test
+For 2-way contingency tables, chi2test performs a chi-squared test
 for independence or homogeneity, according to the sampling scheme and related
 question. Independence means that the two variables forming the 2-way
 table are not associated, hence you cannot predict from one another.
@@ -1465,14 +1465,36 @@ habits (e.g. smokers vs non-smokers).
 
 When chi2test is called without any output arguments, it will print
 the result in the terminal including p-value, chi^2 statistic, and degrees of
-freedom. Otherwise it can return the following output arguments:
+freedom. Otherwise it returns h, 1 if the null hypothesis is rejected
+at the significance level alpha and 0 otherwise, the p-value p,
+and a structure stats with the following fields:
 
-pval the p-value of the relevant test.
-chisq the chi^2 statistic of the relevant test.
-dF the degrees of freedom of the relevant test.
+chi2stat the chi^2 statistic of the test.
+df its degrees of freedom.
+O the table tested: x, or for "marginal" the
+two-way table left after collapsing x.
 E the expected values under the tested model, in the
-layout of x; for "marginal", of the two-way table left after
-collapsing x.
+layout of O.
+CohensW Cohen's w, the effect size of the test.
+CohensWCI its confidence interval.
+CramersV Cramer's V, for a two-way table and for
+the "joint" and "marginal" models, which test one.
+CramersVCI its confidence interval.
+
+Both effect sizes are corrected for bias. With n observations,
+w = sqrt (max (chi^2 - df, 0) / n), and V = w / sqrt (k) with
+k one less than the smaller dimension of the two-way table; for
+"joint" that table has the variable it names as rows and every
+combination of the other two as columns. The uncorrected
+sqrt (chi^2 / n) is biased upwards, by df / n in its square.
+The confidence intervals invert the noncentral chi^2 distribution: the
+bounds lambda of the noncentrality consistent with the observed
+chi^2 give sqrt (lambda / n) for w, divided by
+sqrt (k) for V, whose upper bound is at most 1.
+
+'Alpha' sets the significance level alpha of h and the
+level 100 (1 - alpha)% of both confidence intervals. It is 0.05 by
+default.
 
 Unlike MATLAB, in GNU Octave chi2test also supports 3-way tables,
 which involve three categorical variables (each in a different dimension of

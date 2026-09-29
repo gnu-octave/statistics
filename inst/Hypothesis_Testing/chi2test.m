@@ -16,15 +16,15 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{pval} =} chi2test (@var{x})
-## @deftypefnx {statistics} {[@var{pval}, @var{chisq}] =} chi2test (@var{x})
-## @deftypefnx {statistics} {[@var{pval}, @var{chisq}, @var{dF}] =} chi2test (@var{x})
-## @deftypefnx {statistics} {[@var{pval}, @var{chisq}, @var{dF}, @var{E}] =} chi2test (@var{x})
+## @deftypefn  {statistics} {@var{h} =} chi2test (@var{x})
+## @deftypefnx {statistics} {[@var{h}, @var{p}] =} chi2test (@var{x})
+## @deftypefnx {statistics} {[@var{h}, @var{p}, @var{stats}] =} chi2test (@var{x})
 ## @deftypefnx {statistics} {[@dots{}] =} chi2test (@var{x}, @var{name}, @var{value})
+## @deftypefnx {statistics} {[@dots{}] =} chi2test (@dots{}, @qcode{'Alpha'}, @var{alpha})
 ##
 ## Perform a chi-squared test (for independence or homogeneity).
 ##
-## For 2-way contingency tables, @code{chi2test} performs and a chi-squared test
+## For 2-way contingency tables, @code{chi2test} performs a chi-squared test
 ## for independence or homogeneity, according to the sampling scheme and related
 ## question.  Independence means that the two variables forming the 2-way
 ## table are not associated, hence you cannot predict from one another.
@@ -42,16 +42,38 @@
 ##
 ## When @code{chi2test} is called without any output arguments, it will print
 ## the result in the terminal including p-value, chi^2 statistic, and degrees of
-## freedom.  Otherwise it can return the following output arguments:
+## freedom.  Otherwise it returns @var{h}, 1 if the null hypothesis is rejected
+## at the significance level @var{alpha} and 0 otherwise, the p-value @var{p},
+## and a structure @var{stats} with the following fields:
 ##
-## @multitable @columnfractions 0.1 0.85
-## @item @var{pval} @tab the p-value of the relevant test.
-## @item @var{chisq} @tab the chi^2 statistic of the relevant test.
-## @item @var{dF} @tab the degrees of freedom of the relevant test.
-## @item @var{E} @tab the expected values under the tested model, in the
-## layout of @var{x}; for @qcode{"marginal"}, of the two-way table left after
-## collapsing @var{x}.
+## @multitable @columnfractions 0.2 0.75
+## @item @qcode{chi2stat} @tab the chi^2 statistic of the test.
+## @item @qcode{df} @tab its degrees of freedom.
+## @item @qcode{O} @tab the table tested: @var{x}, or for @qcode{"marginal"} the
+## two-way table left after collapsing @var{x}.
+## @item @qcode{E} @tab the expected values under the tested model, in the
+## layout of @qcode{O}.
+## @item @qcode{CohensW} @tab Cohen's @math{w}, the effect size of the test.
+## @item @qcode{CohensWCI} @tab its confidence interval.
+## @item @qcode{CramersV} @tab Cramer's @math{V}, for a two-way table and for
+## the @qcode{"joint"} and @qcode{"marginal"} models, which test one.
+## @item @qcode{CramersVCI} @tab its confidence interval.
 ## @end multitable
+##
+## Both effect sizes are corrected for bias.  With @math{n} observations,
+## @math{w = sqrt (max (chi^2 - df, 0) / n)}, and @math{V = w / sqrt (k)} with
+## @math{k} one less than the smaller dimension of the two-way table; for
+## @qcode{"joint"} that table has the variable it names as rows and every
+## combination of the other two as columns.  The uncorrected
+## @math{sqrt (chi^2 / n)} is biased upwards, by @math{df / n} in its square.
+## The confidence intervals invert the noncentral chi^2 distribution: the
+## bounds @math{lambda} of the noncentrality consistent with the observed
+## chi^2 give @math{sqrt (lambda / n)} for @math{w}, divided by
+## @math{sqrt (k)} for @math{V}, whose upper bound is at most 1.
+##
+## @qcode{'Alpha'} sets the significance level @var{alpha} of @var{h} and the
+## level @math{100 (1 - alpha)}% of both confidence intervals.  It is 0.05 by
+## default.
 ##
 ## Unlike MATLAB, in GNU Octave @code{chi2test} also supports 3-way tables,
 ## which involve three categorical variables (each in a different dimension of
@@ -96,7 +118,7 @@
 ## @seealso{crosstab, fishertest, mcnemar_test}
 ## @end deftypefn
 
-function [pval, chisq, df, E] = chi2test (x, varargin)
+function [h, p, stats] = chi2test (x, varargin)
   ## Check input arguments
   if (nargin < 1)
     print_usage ();
@@ -113,41 +135,76 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
   ## Get size and dimensions of contingency table
   sz = size (x);
   dim = length (sz);
-  ## Check optional arguments
-  if (dim == 2 && nargin > 1)
-    error ("chi2test: optional arguments are not supported for 2-way tables.");
-  endif
-  ## 'mutual' and 'homogeneous' take no value, though an empty one is accepted
-  if (dim == 3 && numel (varargin) == 1 && ischar (varargin{1}) ...
-      && any (strcmpi (varargin{1}, {'mutual', 'homogeneous'})))
-    varargin{2} = [];
-  endif
-  if (dim == 3 && mod (numel (varargin(:)), 2) != 0)
-    error ("chi2test: optional arguments must be in pairs.");
-  endif
-  if (dim == 3 && nargin > 1 && ! isnumeric (varargin{2}))
-    error (strcat ("chi2test: value must be numeric in optional argument", ...
-                   " name/value pair, for 3-way tables."));
-  endif
-  if (dim == 3 && nargin > 1 && numel (varargin{2}) > 1)
-    error (strcat ("chi2test: value must be empty or scalar in optional", ...
-                   " argument name/value pair, for 3-way tables."));
-  endif
-  if (dim >= 4 && nargin > 1)
-    error ("chi2test: optional arguments are not supported for k>3.");
-  endif
+  ## Parse the optional arguments: a model for a 3-way table with the
+  ## dimension it names ('mutual' and 'homogeneous' take none, though an
+  ## empty value is accepted), and 'Alpha'
+  alpha = 0.05;
+  model = 'mutual';
+  c_dim = [];
+  models = {'mutual', 'joint', 'marginal', 'conditional', 'homogeneous'};
+  i = 1;
+  while (i <= numel (varargin))
+    name = varargin{i};
+    if (ischar (name) && strcmpi (name, 'alpha'))
+      if (i == numel (varargin))
+        error ("chi2test: optional arguments must be in pairs.");
+      endif
+      alpha = varargin{i+1};
+      if (! (isnumeric (alpha) && isscalar (alpha) && isreal (alpha)
+             && alpha > 0 && alpha < 1))
+        error ("chi2test: invalid value for alpha.");
+      endif
+      i += 2;
+    elseif (ischar (name) && any (strcmpi (name, models)))
+      if (dim != 3)
+        error ("chi2test: a model applies only to 3-way tables.");
+      endif
+      model = lower (name);
+      novalue = any (strcmp (model, {'mutual', 'homogeneous'}));
+      if (novalue && (i == numel (varargin) || ischar (varargin{i+1})))
+        i += 1;
+        continue;
+      endif
+      if (i == numel (varargin))
+        error ("chi2test: optional arguments must be in pairs.");
+      endif
+      value = varargin{i+1};
+      if (! isnumeric (value))
+        error (strcat ("chi2test: value must be numeric in optional", ...
+                       " argument name/value pair, for 3-way tables."));
+      endif
+      if (numel (value) > 1)
+        error (strcat ("chi2test: value must be empty or scalar in", ...
+                       " optional argument name/value pair, for 3-way", ...
+                       " tables."));
+      endif
+      if (! novalue && ! (isscalar (value) && any (value == 1:3)))
+        error ("chi2test: the dimension must be 1, 2, or 3.");
+      endif
+      c_dim = value;
+      i += 2;
+    elseif (dim == 3)
+      error ("chi2test: invalid model name for testing a 3-way table.");
+    else
+      error ("chi2test: invalid optional argument.");
+    endif
+  endwhile
+
+  ## The smaller dimension of a two-way table less one, for Cramer's V;
+  ## empty where the test has no two-way table
+  vk = [];
   ## Calculate total sample size
   n = sum (x(:));
   ## For 2-way contingency table
   if (length (sz) == 2)
     ## Calculate degrees of freedom
     df = prod (sz - 1);
+    vk = min (sz) - 1;
     ## Calculate expected values
     E = sum (x')' * sum (x) / n;
   ## For 3-way contingency table
   elseif (length (sz) == 3)
-    ## Check optional arguments
-    if (nargin == 1 || strcmpi (varargin{1}, 'mutual'))
+    if (strcmp (model, 'mutual'))
       ## Calculate degrees of freedom
       df = prod (sz) - sum (sz) + 2;
       ## Calculate marginal table sums
@@ -162,9 +219,10 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
           endfor
         endfor
       endfor
-    elseif (strcmpi (varargin{1}, 'joint'))
-      ## Get dimension of independent variable (dim)
-      c_dim = varargin{2};
+    elseif (strcmp (model, 'joint'))
+      ## The test is of the table with the named variable as rows and every
+      ## combination of the other two as columns
+      vk = min (sz(c_dim), prod (sz) / sz(c_dim)) - 1;
       ## Calculate degrees of freedom
       c_sz = sz;
       c_sz(c_dim) = [];
@@ -187,18 +245,16 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
       ## Rearrange OBSERVED and EXPECTED matrices in original dimensions
       x = ipermute (x, [c_dim, dm]);
       E = ipermute (E, [c_dim, dm]);
-    elseif (strcmpi (varargin{1}, 'marginal'))
+    elseif (strcmp (model, 'marginal'))
       ## Collapse over the ignored variable and test independence in the
       ## two-way table that remains
-      c_dim = varargin{2};
       x = reshape (sum (x, c_dim), sz(setdiff (1:3, c_dim)));
       sz = size (x);
+      vk = min (sz) - 1;
       dim = 2;
       df = prod (sz - 1);
       E = sum (x, 2) * sum (x, 1) / n;
-    elseif (strcmpi (varargin{1}, 'conditional'))
-      ## Get dimension of conditional variable (dim)
-      c_dim = varargin{2};
+    elseif (strcmp (model, 'conditional'))
       ## Calculate degrees of freedom
       c_sz = sz;
       c_sz(c_dim) = [];
@@ -222,7 +278,7 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
       ## Rearrange OBSERVED and EXPECTED matrices in original dimensions
       x = ipermute (x, [c_dim, dm]);
       E = ipermute (E, [c_dim, dm]);
-    elseif (strcmpi (varargin{1}, 'homogeneous'))
+    else  # homogeneous
       ## Calculate degrees of freedom
       df = prod (sz - 1);
       ## Fit the three two-way margins by iterative proportional fitting,
@@ -244,8 +300,6 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
       if (! converged)
         warning ("chi2test: the homogeneous model did not converge.");
       endif
-    else
-      error ("chi2test: invalid model name for testing a 3-way table.");
     endif
   ## For k-way contingency table, where k > 3
   else
@@ -297,120 +351,230 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
   ## Calculate chi-squared and p-value
   cells = ((x - E) .^2) ./ E;
   chisq = sum (cells(:));
-  pval = chi2cdf (chisq, df, 'upper');
+  p = chi2cdf (chisq, df, 'upper');
+  h = double (p < alpha);
+
+  ## Statistics, and the effect sizes with their confidence intervals
+  stats.chi2stat = chisq;
+  stats.df = df;
+  stats.O = x;
+  stats.E = E;
+  if (isfinite (chisq))
+    n = sum (x(:));
+    stats.CohensW = sqrt (max (chisq - df, 0) / n);
+    stats.CohensWCI = sqrt (ncx2bounds (chisq, df, alpha) / n);
+  else
+    stats.CohensW = NaN;
+    stats.CohensWCI = [NaN, NaN];
+  endif
+  if (! isempty (vk) && vk > 0)
+    stats.CramersV = stats.CohensW / sqrt (vk);
+    stats.CramersVCI = min (stats.CohensWCI / sqrt (vk), 1);
+  endif
+
   ## Print results if no output requested
   if (nargout == 0)
     printf ("p-val = %f with chi^2 statistic = %f and d.f. = %d.\n", ...
-            pval, chisq, df);
+            p, chisq, df);
   endif
+
 endfunction
+
+## The noncentralities at which the observed statistic falls at the upper and
+## at the lower ALPHA/2 point of the noncentral chi^2 distribution; zero
+## where the central distribution already puts it beyond that point.
+function lambda = ncx2bounds (chisq, df, alpha)
+
+  target = [1 - alpha / 2, alpha / 2];
+  lambda = [0, 0];
+  for j = 1:2
+    if (chi2cdf (chisq, df) > target(j))
+      hi = max (chisq, 1);
+      while (ncx2cdf (chisq, df, hi) > target(j))
+        hi *= 2;
+      endwhile
+      lambda(j) = fzero (@(l) ncx2cdf (chisq, df, l) - target(j), [0, hi]);
+    endif
+  endfor
+
+endfunction
+
+%!function p = chi2p (varargin)
+%!  [~, p] = chi2test (varargin{:});
+%!endfunction
 
 %!test
 %! ## Below the resolution of 1 - chi2cdf
-%! [p, c] = chi2test ([300, 100; 100, 300]);
-%! assert_equal (p, erfc (sqrt (c / 2)), -1e-12);
-
-## Input validation tests
-%!error chi2test ();
-%!error chi2test ([1, 2, 3, 4, 5]);
-%!error chi2test ([1, 2; 2, 1+3i]);
-%!error chi2test ([NaN, 6; 34, 12]);
-%!error<chi2test: optional arguments are not supported for 2-way> ...
-%! p = chi2test (ones (3, 3), 'mutual', []);
-%!error<chi2test: invalid model name for testing a 3-way table.> ...
-%! p = chi2test (ones (3, 3, 3), 'testtype', 2);
-%!error<chi2test: optional arguments must be in pairs.> ...
-%! p = chi2test (ones (3, 3, 3), 'joint');
-%!error<chi2test: value must be numeric in optional argument> ...
-%! p = chi2test (ones (3, 3, 3), 'joint', ['a']);
-%!error<chi2test: value must be empty or scalar in optional argument> ...
-%! p = chi2test (ones (3, 3, 3), 'joint', [2, 3]);
-%!error<chi2test: optional arguments are not supported for k> ...
-%! p = chi2test (ones (3, 3, 3, 4), 'mutual', [])
-
-## Check warning
-%!warning<chi2test: Expected values less than 5.> p = chi2test (ones (2));
-%!warning<chi2test: Expected values less than 5.> p = chi2test (ones (3, 2));
-%!warning<chi2test: Expected values less than 1.> p = chi2test (0.4 * ones (3));
-## Output validation tests
+%! [~, p, st] = chi2test ([300, 100; 100, 300]);
+%! assert_equal (p, erfc (sqrt (st.chi2stat / 2)), -1e-12);
 %!test
 %! x = [11, 3, 8; 2, 9, 14; 12, 13, 28];
-%! p = chi2test (x);
+%! [~, p] = chi2test (x);
 %! assert_equal (p, 0.017787, 1e-6);
 %!test
 %! x = [11, 3, 8; 2, 9, 14; 12, 13, 28];
-%! [p, chisq] = chi2test (x);
-%! assert_equal (chisq, 11.9421, 1e-4);
+%! [~, ~, st] = chi2test (x);
+%! assert_equal (st.chi2stat, 11.9421, 1e-4);
 %!test
 %! x = [11, 3, 8; 2, 9, 14; 12, 13, 28];
-%! [p, chisq, df] = chi2test (x);
-%! assert_equal (df, 4);
+%! [~, ~, st] = chi2test (x);
+%! assert_equal (st.df, 4);
+%!test
+%! x = [11, 3, 8; 2, 9, 14; 12, 13, 28];
+%! [~, ~, st] = chi2test (x);
+%! assert_equal (st.O, x);
+%!assert_equal (chi2test ([11, 3, 8; 2, 9, 14; 12, 13, 28]), 1)
+%!assert_equal (chi2test ([11, 3, 8; 2, 9, 14; 12, 13, 28], 'Alpha', 0.01), 0)
+%!test
+%! ## Effect sizes corrected for bias; the intervals are R's inversion of
+%! ## pchisq with ncp by uniroot
+%! x = [11, 3, 8; 2, 9, 14; 12, 13, 28];
+%! [~, ~, st] = chi2test (x);
+%! assert_equal (st.CohensW, sqrt ((st.chi2stat - 4) / 100), -1e-14);
+%!test
+%! [~, ~, st] = chi2test ([11, 3, 8; 2, 9, 14; 12, 13, 28]);
+%! assert_equal (st.CohensWCI, [0.054364192439641336, 0.50550722873705722], ...
+%!               -1e-10);
+%!test
+%! [~, ~, st] = chi2test ([11, 3, 8; 2, 9, 14; 12, 13, 28]);
+%! assert_equal (st.CramersV, 0.19927484317340177, -1e-12);
+%!test
+%! [~, ~, st] = chi2test ([11, 3, 8; 2, 9, 14; 12, 13, 28]);
+%! assert_equal (st.CramersVCI, ...
+%!               [0.054364192439641336, 0.50550722873705722] / sqrt (2), ...
+%!               -1e-10);
+%!test
+%! ## A higher confidence level widens the interval on both sides
+%! x = [11, 3, 8; 2, 9, 14; 12, 13, 28];
+%! [~, ~, s95] = chi2test (x);
+%! [~, ~, s99] = chi2test (x, 'Alpha', 0.01);
+%! assert_equal ([s99.CohensWCI(1) < s95.CohensWCI(1), ...
+%!                s99.CohensWCI(2) > s95.CohensWCI(2)], [true, true]);
 %!test
 %!shared x
 %! x(:,:,1) = [59, 32; 9,16];
 %! x(:,:,2) = [55, 24;12,33];
-%! x(:,:,3) = [107,80;17,56];%!
-%!assert_equal (chi2test (x), 2.282063427117009e-11, 1e-14);
-%!assert_equal (chi2test (x, 'mutual', []), 2.282063427117009e-11, 1e-14);
-%!assert_equal (chi2test (x, 'joint', 1), 1.164834895206468e-11, 1e-14);
-%!assert_equal (chi2test (x, 'joint', 2), 7.771350230001417e-11, 1e-14);
-%!assert_equal (chi2test (x, 'joint', 3), 0.07151361728026107, 1e-14);
-%!assert_equal (chi2test (x, 'marginal', 1), 0.12455768155123595, -1e-12);
-%!assert_equal (chi2test (x, 'marginal', 2), 0.039793350279010681, -1e-12);
-%!assert_equal (chi2test (x, 'marginal', 3), 9.0141038839122684e-13, -1e-12);
-%!assert_equal (chi2test (x, 'conditional', 1), 0.2303114201312508, 1e-14);
-%!assert_equal (chi2test (x, 'conditional', 2), 0.0958810684407079, 1e-14);
-%!assert_equal (chi2test (x, 'conditional', 3), 2.648037344954446e-11, 1e-14);
-%!assert_equal (chi2test (x, 'homogeneous', []), 0.57357539370887889, -1e-10);
-%!assert_equal (chi2test (x, 'homogeneous'), chi2test (x, 'homogeneous', []));
-%!assert_equal (chi2test (x, 'mutual'), chi2test (x));
+%! x(:,:,3) = [107,80;17,56];
+%!assert_equal (chi2p (x), 2.282063427117009e-11, 1e-14);
+%!assert_equal (chi2p (x, 'mutual', []), 2.282063427117009e-11, 1e-14);
+%!assert_equal (chi2p (x, 'joint', 1), 1.164834895206468e-11, 1e-14);
+%!assert_equal (chi2p (x, 'joint', 2), 7.771350230001417e-11, 1e-14);
+%!assert_equal (chi2p (x, 'joint', 3), 0.07151361728026107, 1e-14);
+%!assert_equal (chi2p (x, 'marginal', 1), 0.12455768155123595, -1e-12);
+%!assert_equal (chi2p (x, 'marginal', 2), 0.039793350279010681, -1e-12);
+%!assert_equal (chi2p (x, 'marginal', 3), 9.0141038839122684e-13, -1e-12);
+%!assert_equal (chi2p (x, 'conditional', 1), 0.2303114201312508, 1e-14);
+%!assert_equal (chi2p (x, 'conditional', 2), 0.0958810684407079, 1e-14);
+%!assert_equal (chi2p (x, 'conditional', 3), 2.648037344954446e-11, 1e-14);
+%!assert_equal (chi2p (x, 'homogeneous', []), 0.57357539370887889, -1e-10);
+%!assert_equal (chi2p (x, 'homogeneous'), chi2p (x, 'homogeneous', []));
+%!assert_equal (chi2p (x, 'mutual'), chi2p (x));
+%!assert_equal (chi2p (x, 'joint', 3, 'Alpha', 0.01), chi2p (x, 'joint', 3));
 %!test
-%! [pval, chisq, df, E] = chi2test (x);
-%! assert_equal (chisq, 64.0982, 1e-4);
-%! assert_equal (df, 7);
-%! assert_equal (E(:,:,1), [42.903, 39.921; 17.185, 15.991], ones (2, 2) * 1e-3);
+%! [~, ~, st] = chi2test (x);
+%! assert_equal (st.chi2stat, 64.0982, 1e-4);
+%! assert_equal (st.df, 7);
+%! assert_equal (st.E(:,:,1), [42.903, 39.921; 17.185, 15.991], 1e-3);
 %!test
-%! [pval, chisq, df, E] = chi2test (x, 'joint', 2);
-%! assert_equal (chisq, 56.0943, 1e-4);
-%! assert_equal (df, 5);
-%! assert_equal (E(:,:,2), [40.922, 38.078; 23.310, 21.690], ones (2, 2) * 1e-3);
+%! [~, ~, st] = chi2test (x, 'joint', 2);
+%! assert_equal (st.chi2stat, 56.0943, 1e-4);
+%! assert_equal (st.df, 5);
+%! assert_equal (st.E(:,:,2), [40.922, 38.078; 23.310, 21.690], 1e-3);
 %!test
-%! [pval, chisq, df, E] = chi2test (x, 'marginal', 3);
-%! assert_equal (chisq, 51.0479, 1e-4);
-%! assert_equal (df, 1);
-%! assert_equal (E, [184.926, 172.074; 74.074, 68.926], ones (2, 2) * 1e-3);
+%! [~, ~, st] = chi2test (x, 'marginal', 3);
+%! assert_equal (st.chi2stat, 51.0479, 1e-4);
+%! assert_equal (st.df, 1);
+%! assert_equal (st.O, sum (x, 3));
+%! assert_equal (st.E, [184.926, 172.074; 74.074, 68.926], 1e-3);
 %!test
-%! [pval, chisq, df, E] = chi2test (x, 'conditional', 3);
-%! assert_equal (chisq, 52.2509, 1e-4);
-%! assert_equal (df, 3);
-%! assert_equal (E(:,:,1), [53.345, 37.655; 14.655, 10.345], ones (2, 2) * 1e-3);
+%! [~, ~, st] = chi2test (x, 'conditional', 3);
+%! assert_equal (st.chi2stat, 52.2509, 1e-4);
+%! assert_equal (st.df, 3);
+%! assert_equal (st.E(:,:,1), [53.345, 37.655; 14.655, 10.345], 1e-3);
 %!test
-%! [pval, chisq, df, E] = chi2test (x, 'homogeneous', []);
-%! assert_equal (chisq, 1.1117, 1e-4);
-%! assert_equal (df, 2);
-%! assert_equal (E(:,:,1), [60.469, 30.531; 7.531, 17.469], ones (2, 2) * 1e-3);
+%! [~, ~, st] = chi2test (x, 'homogeneous', []);
+%! assert_equal (st.chi2stat, 1.1117, 1e-4);
+%! assert_equal (st.df, 2);
+%! assert_equal (st.E(:,:,1), [60.469, 30.531; 7.531, 17.469], 1e-3);
 %!test
 %! ## The homogeneous model reproduces every two-way margin
-%! [~, ~, ~, E] = chi2test (x, 'homogeneous');
+%! [~, ~, st] = chi2test (x, 'homogeneous');
+%! E = st.E;
 %! assert_equal ([sum(E, 1)(:); sum(E, 2)(:); sum(E, 3)(:)], ...
 %!               [sum(x, 1)(:); sum(x, 2)(:); sum(x, 3)(:)], -1e-10);
 %!test
+%! ## 'joint' measures V on the table flattened to its variable against the
+%! ## other two; bounds from R as above
+%! [h, ~, st] = chi2test (x, 'joint', 3, 'Alpha', 0.01);
+%! assert_equal (st.CohensWCI, [0, 0.24137302257386881], -1e-10);
+%!test
+%! [~, ~, st] = chi2test (x, 'marginal', 3);
+%! assert_equal (st.CramersV, 0.31637908166758733, -1e-12);
+%!test
+%! [~, ~, st] = chi2test (x, 'marginal', 3);
+%! assert_equal (st.CohensWCI, [0.23187195991809992, 0.40717646803341606], ...
+%!               -1e-10);
+%!test
+%! ## No two-way table, no Cramer's V
+%! [~, ~, st] = chi2test (x, 'conditional', 3);
+%! assert_equal (isfield (st, 'CramersV'), false);
+%!test
+%! [~, ~, st] = chi2test (x);
+%! assert_equal (isfield (st, 'CramersV'), false);
+%!test
 %! ## E keeps the layout of a table whose dimensions differ
 %! y = reshape ([12 7 3 9 15 4 6 8 11 5 14 2 9 10 3 7 6 13], [3, 2, 3]);
-%! [~, ~, ~, E] = chi2test (y, 'joint', 2);
-%! assert_equal (sum (E, 2), sum (y, 2), -1e-12);
+%! [~, ~, st] = chi2test (y, 'joint', 2);
+%! assert_equal (sum (st.E, 2), sum (y, 2), -1e-12);
 %!test
 %! y = reshape ([12 7 3 9 15 4 6 8 11 5 14 2 9 10 3 7 6 13], [3, 2, 3]);
-%! [~, ~, ~, E] = chi2test (y, 'conditional', 2);
-%! assert_equal (size (E), [3, 2, 3]);
+%! [~, ~, st] = chi2test (y, 'conditional', 2);
+%! assert_equal (size (st.E), [3, 2, 3]);
 %!test
 %! ## Chi-squares of R's loglin on a 3-by-2-by-3 table
 %! y = reshape ([12 7 3 9 15 4 6 8 11 5 14 2 9 10 3 7 6 13], [3, 2, 3]);
-%! [~, c] = chi2test (y, 'homogeneous');
-%! assert_equal (c, 15.05772742, -1e-9);
+%! [~, ~, st] = chi2test (y, 'homogeneous');
+%! assert_equal (st.chi2stat, 15.05772742, -1e-9);
 %!test
 %! ## Marginal independence is tested in the collapsed table, as R's
 %! ## chisq.test does it
 %! y = reshape ([12 7 3 9 15 4 6 8 11 5 14 2 9 10 3 7 6 13], [3, 2, 3]);
-%! [~, c, df] = chi2test (y, 'marginal', 2);
-%! assert_equal ([c, df], [7.584460, 4], -1e-6);
+%! [~, ~, st] = chi2test (y, 'marginal', 2);
+%! assert_equal ([st.chi2stat, st.df], [7.584460, 4], -1e-6);
+
+## Check warnings
+%!warning<chi2test: Expected values less than 5.> chi2test (ones (2));
+%!warning<chi2test: Expected values less than 5.> chi2test (ones (3, 2));
+%!warning<chi2test: Expected values less than 1.> chi2test (0.4 * ones (3));
+
+## Test input validation
+%!error chi2test ();
+%!error<chi2test: X must be a matrix.> chi2test ([1, 2, 3, 4, 5]);
+%!error<chi2test: values in X must be real numbers.> ...
+%! chi2test ([1, 2; 2, 1+3i]);
+%!error<chi2test: X must not have missing values \(NaN\).> ...
+%! chi2test ([NaN, 6; 34, 12]);
+%!error<chi2test: a model applies only to 3-way tables.> ...
+%! chi2test (ones (3, 3), 'mutual', []);
+%!error<chi2test: a model applies only to 3-way tables.> ...
+%! chi2test (ones (3, 3, 3, 4), 'mutual');
+%!error<chi2test: invalid model name for testing a 3-way table.> ...
+%! chi2test (ones (3, 3, 3), 'testtype', 2);
+%!error<chi2test: invalid optional argument.> ...
+%! chi2test (ones (3, 3), 'testtype', 2);
+%!error<chi2test: optional arguments must be in pairs.> ...
+%! chi2test (ones (3, 3, 3), 'joint');
+%!error<chi2test: optional arguments must be in pairs.> ...
+%! chi2test (ones (3, 3), 'Alpha');
+%!error<chi2test: value must be numeric in optional argument name/value pair, for 3-way tables.> ...
+%! chi2test (ones (3, 3, 3), 'joint', 'a');
+%!error<chi2test: value must be empty or scalar in optional argument name/value pair, for 3-way tables.> ...
+%! chi2test (ones (3, 3, 3), 'joint', [2, 3]);
+%!error<chi2test: the dimension must be 1, 2, or 3.> ...
+%! chi2test (ones (3, 3, 3), 'joint', 4);
+%!error<chi2test: the dimension must be 1, 2, or 3.> ...
+%! chi2test (ones (3, 3, 3), 'marginal', []);
+%!error<chi2test: invalid value for alpha.> chi2test (ones (3, 3), 'Alpha', 0);
+%!error<chi2test: invalid value for alpha.> chi2test (ones (3, 3), 'Alpha', 1.5);
+%!error<chi2test: invalid value for alpha.> ...
+%! chi2test (ones (3, 3), 'Alpha', [0.1, 0.2]);
