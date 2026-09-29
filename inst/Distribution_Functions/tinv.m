@@ -88,23 +88,36 @@ function x = tinv (p, df)
   if (isscalar (df))
     k = (p > 0) & (p < 1);
     if ((df > 0) && (df < 10000))
-      x(k) = (sign (p(k) - 1/2)
-                .* sqrt (df * (1 ./ betainv (2*min (p(k), 1 - p(k)),
-                                            df/2, 1/2) - 1)));
+      x(k) = tQuantile (p(k), repmat (df, size (p(k))));
     elseif (df >= 10000)
       ## For large df, use the quantiles of the standard normal
       x(k) = -sqrt (2) * erfcinv (2 * p(k));
     endif
   else
     k = (p > 0) & (p < 1) & (df > 0) & (df < 10000);
-    x(k) = (sign (p(k) - 1/2)
-              .* sqrt (df(k) .* (1 ./ betainv (2*min (p(k), 1 - p(k)),
-                                              df(k)/2, 1/2) - 1)));
+    x(k) = tQuantile (p(k), df(k));
 
     ## For large df, use the quantiles of the standard normal
     k = (p > 0) & (p < 1) & (df >= 10000);
     x(k) = -sqrt (2) * erfcinv (2 * p(k));
   endif
+
+endfunction
+
+## DF / (DF + T^2) is Beta (DF/2, 1/2) with lower tail Q, the probability of
+## both tails beyond T; where Q is above one half, T^2 / (DF + T^2) is solved
+## instead as Beta (1/2, DF/2) at the exact 1 - Q, which would otherwise
+## cancel as T nears 0
+function x = tQuantile (p, df)
+
+  q = 2 * min (p, 1 - p);
+  c = q > 0.5;
+  t2 = zeros (size (p), class (p));
+  z = betainv (q(! c), df(! c) / 2, 1/2);
+  t2(! c) = df(! c) .* (1 - z) ./ z;
+  w = betainv (abs (1 - 2 * p(c)), 1/2, df(c) / 2);
+  t2(c) = df(c) .* w ./ (1 - w);
+  x = sign (p - 1/2) .* sqrt (t2);
 
 endfunction
 
@@ -137,6 +150,9 @@ endfunction
 %! ## Deep in the tail, -cot (pi p); MATLAB gives -3183097229.936, the value
 %! ## of tan (pi (p - 0.5)), whose p - 0.5 loses the digits that matter
 %! assert_equal (tinv (1e-10, 1), -cot (pi * 1e-10), -1e-14);
+%!assert_equal (tinv (0.5 + 2^-30, 1), tan (pi * 2^-30), -1e-14)
+%!assert_equal (tinv (0.5 - 2^-30, 2), ...
+%!              -2^-29 / sqrt (2 * (0.5 - 2^-30) * (0.5 + 2^-30)), -1e-14)
 
 ## Test class of input preserved
 %!assert_equal (tinv ([p, NaN], 1), [NaN -Inf 0 Inf NaN NaN], eps)

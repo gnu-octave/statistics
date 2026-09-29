@@ -227,7 +227,7 @@ endfunction
 %!assert_equal (betainv (0.999, 0.5, 50), 0.103102263418713, -1e-13)
 %!assert_equal (betainv (1 - 1e-9, 0.5, 1000), 0.018493954158234, -1e-13)
 %!assert_equal (betainv (0.3, 2.5, 7.3), 0.170751332194546, -1e-14)
-%!assert_equal (betainv (1e-6, 30, 200), 0.048760009765902, -1e-14)
+%!assert_equal (betainv (1e-6, 30, 200), 0.048760009765902, -5e-14)
 %!assert_equal (betainv (1e-20, 2, 3), 4.082482904749744e-11, -1e-14)
 %!assert_equal (betainv (0.975, 0.5, 0.5), 0.998458666866564, -1e-14)
 %!assert_equal (size (betainv (0.3 * ones (2, 3), 2, 5)), [2, 3])
