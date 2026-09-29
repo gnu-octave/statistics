@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 88
+# columns: 86
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -1241,73 +1241,6 @@ ranksum
 # elements: 1
 # length: 53
 Ansari-Bradley two-sample test for equal dispersions.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 13
-bartlett_test
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1868
-statistics: h = bartlett_test (x)
-statistics: h = bartlett_test (x, group)
-statistics: h = bartlett_test (x, alpha)
-statistics: h = bartlett_test (x, group, alpha)
-statistics: [h, pval] = bartlett_test (...)
-statistics: [h, pval, chisq] = bartlett_test (...)
-statistics: [h, pval, chisq, df] = bartlett_test (...)
-Perform a Bartlett test for the homogeneity of variances.
-
-Under the null hypothesis of equal variances, the test statistic chisq
-approximately follows a chi-square distribution with df degrees of
-freedom.
-
-The p-value (1 minus the CDF of this distribution at chisq) is
-returned in pval. h = 1 if the null hypothesis is rejected at
-the significance level of alpha. Otherwise h = 0.
-
-Input Arguments:
-
-x contains the data and it can either be a vector or matrix.
-If x is a matrix, then each column is treated as a separate group.
-If x is a vector, it is a single group whichever way it lies, unless
-group is given; with one group there is nothing to compare, so
-pval is NaN.
-NaN values are omitted.
-
-group contains the names for each group. If x is a vector, then
-group must be a vector of the same length, or a string array or cell
-array of strings with one row for each element of x. x values
-corresponding to the same value of group are placed in the same group.
-If x is a matrix, then group can either be a cell array of
-strings of a character array, with one row per column of x in the same
-way it is used in anova1 function. If x is a matrix, then
-group can be omitted either by entering an empty array ([]) or by
-parsing only alpha as a second argument (if required to change its
-default value).
-
-alpha is the statistical significance value at which the null
-hypothesis is rejected. Its default value is 0.05 and it can be parsed
-either as a second argument (when group is omitted) or as a third
-argument.
-
-See also:
-levene_test,
-vartest2,
-vartestn
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 57
-Perform a Bartlett test for the homogeneity of variances.
 
 
 
@@ -2564,83 +2497,6 @@ cdfplot
 # elements: 1
 # length: 62
 Two-sample Kolmogorov-Smirnov goodness-of-fit hypothesis test.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 11
-levene_test
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 2417
-statistics: h = levene_test (x)
-statistics: h = levene_test (x, group)
-statistics: h = levene_test (x, alpha)
-statistics: h = levene_test (x, testtype)
-statistics: h = levene_test (x, group, alpha)
-statistics: h = levene_test (x, group, testtype)
-statistics: h = levene_test (x, group, alpha, testtype)
-statistics: [h, pval] = levene_test (...)
-statistics: [h, pval, W] = levene_test (...)
-statistics: [h, pval, W, df] = levene_test (...)
-Perform a Levene's test for the homogeneity of variances.
-
-Under the null hypothesis of equal variances, the test statistic W
-approximately follows an F distribution with df degrees of
-freedom being a vector ([k-1, N-k]).
-
-The p-value (1 minus the CDF of this distribution at W) is returned in
-pval. h = 1 if the null hypothesis is rejected at the
-significance level of alpha. Otherwise h = 0.
-
-Input Arguments:
-
-x contains the data and it can either be a vector or matrix.
-If x is a matrix, then each column is treated as a separate group.
-If x is a vector, it is a single group whichever way it lies, unless
-group is given; with one group there is nothing to compare, so
-pval is NaN.
-NaN values are omitted.
-
-group contains the names for each group. If x is a vector, then
-group must be a vector of the same length, or a string array or cell
-array of strings with one row for each element of x. x values
-corresponding to the same value of group are placed in the same group.
-If x is a matrix, then group can either be a cell array of
-strings of a character array, with one row per column of x in the same
-way it is used in anova1 function. If x is a matrix, then
-group can be omitted either by entering an empty array ([]) or by
-parsing only alpha as a second argument (if required to change its
-default value).
-
-alpha is the statistical significance value at which the null
-hypothesis is rejected. Its default value is 0.05 and it can be parsed
-either as a second argument (when group is omitted) or as a third
-argument.
-
-testtype is a string determining the type of Levene's test. By default
-it is set to "absolute", but the user can also parse "quadratic" in order to
-perform Levene's Quadratic test for equal variances or "median" in order to
-to perform the Brown-Forsythe's test. These options determine how the Z_ij
-values are computed. If an invalid name is parsed for testtype, then
-the Levene's Absolute test is performed.
-
-See also:
-bartlett_test,
-vartest2,
-vartestn
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 57
-Perform a Levene's test for the homogeneity of variances.
 
 
 
@@ -4600,7 +4456,7 @@ vartest2
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1990
+# length: 1972
 statistics: h = vartest2 (x, y)
 statistics: h = vartest2 (x, y, name, value)
 statistics: [h, pval] = vartest2 (...)
@@ -4656,8 +4512,7 @@ array.
 See also:
 ttest2,
 kstest2,
-bartlett_test,
-levene_test
+vartestn
 
 
 # name: <cell-element>
@@ -4678,7 +4533,7 @@ vartestn
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2768
+# length: 2740
 statistics: vartestn (x)
 statistics: vartestn (x, group)
 statistics: vartestn (..., name, value)
@@ -4745,9 +4600,7 @@ elements, the numerator and the denominator degrees of freedom.
 See also:
 vartest,
 vartest2,
-anova1,
-bartlett_test,
-levene_test
+anova1
 
 
 # name: <cell-element>

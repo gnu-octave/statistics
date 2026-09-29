@@ -77,7 +77,7 @@
 ## (right-tailed)
 ## @end multitable
 ##
-## @seealso{ttest2, kstest2, bartlett_test, levene_test}
+## @seealso{ttest2, kstest2, vartestn}
 ## @end deftypefn
 
 function [h, pval, ci, stats] = vartest2 (x, y, varargin)

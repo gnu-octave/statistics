@@ -45,7 +45,6 @@ Hypothesis Testing
  anova2
  anovan
  ansaribradley
- bartlett_test
  barttest
  binotest
  chi2gof
@@ -62,7 +61,6 @@ Hypothesis Testing
  kruskalwallis
  kstest
  kstest2
- levene_test
  lillietest
  manova1
  mcnemar_test
