@@ -2685,11 +2685,11 @@ mcnemar_test
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1622
-statistics: [h, pval, chisq] = mcnemar_test (x)
-statistics: [h, pval, chisq] = mcnemar_test (x, alpha)
-statistics: [h, pval, chisq] = mcnemar_test (x, testtype)
-statistics: [h, pval, chisq] = mcnemar_test (x, alpha, testtype)
+# length: 2280
+statistics: h = mcnemar_test (x)
+statistics: h = mcnemar_test (x, testtype)
+statistics: h = mcnemar_test (..., 'Alpha', alpha)
+statistics: [h, p, stats] = mcnemar_test (...)
 Perform a McNemar's test on paired nominal data.
 
 McNemar's test is applied to a 2x2 contingency table x
@@ -2697,12 +2697,13 @@ with a dichotomous trait, with matched pairs of subjects, of data
 cross-classified on the row and column variables to testing the null
 hypothesis of symmetry of the classification probabilities. More formally,
 the null hypothesis of marginal homogeneity states that the two marginal
-probabilities for each outcome are the same.
+probabilities for each outcome are the same. The test rests on the two
+discordant counts, b = x(1,2) and c = x(2,1).
 
 Under the null, with a sufficiently large number of discordants
-(x(1,2) + x(2,1) >= 25), the test statistic, chisq,
-follows a chi-squared distribution with 1 degree of freedom. When the number
-of discordants is less than 25, then the mid-P exact McNemar test is used.
+(b + c >= 25), the test statistic follows a chi-squared distribution
+with 1 degree of freedom. When the number of discordants is less than 25,
+then the mid-P exact McNemar test is used.
 
 testtype will force mcnemar_test to apply a particular method
 for testing the null hypothesis independently of the number of discordants.
@@ -2714,8 +2715,24 @@ Valid options for testtype:
 'mid-p' The mid-P McNemar test (mid-p binomial test)
 
 The test decision is returned in h, which is 1 when the null hypothesis
-is rejected (pval < alpha) or 0 otherwise. alpha
-defines the critical value of statistical significance for the test.
+is rejected at the significance level alpha and 0 otherwise, and the
+p-value in p. 'Alpha' sets alpha, 0.05 by default, and
+the level 100 (1 - alpha)% of the confidence intervals. stats
+is a structure with the following fields:
+
+chi2stat the chi-squared statistic, for the
+'asymptotic' and 'corrected' tests only.
+df its degrees of freedom, 1, for those tests only.
+OddsRatio the odds ratio of the discordant pairs,
+b / c.
+OddsRatioCI its confidence interval.
+CohensG Cohen's g, b / (b + c) - 0.5, the
+departure of the discordant split from one half.
+CohensGCI its confidence interval.
+
+Both intervals come from the exact Clopper-Pearson interval of the
+proportion b / (b + c), as does the exact test. With no discordant
+pairs both effect sizes and their intervals are NaN.
 
 Further information about the McNemar's test can be found at
 https://en.wikipedia.org/wiki/McNemar%27s_test
