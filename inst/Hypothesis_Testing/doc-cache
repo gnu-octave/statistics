@@ -1567,10 +1567,10 @@ correlation_test
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1648
+# length: 2293
 statistics: h = correlation_test (x, y)
-statistics: [h, pval] = correlation_test (y, x)
-statistics: [h, pval, stats] = correlation_test (y, x)
+statistics: [h, p] = correlation_test (y, x)
+statistics: [h, p, stats] = correlation_test (y, x)
 statistics: [...] = correlation_test (y, x, Name, Value)
 Perform a correlation coefficient test to determine whether two samples
 x and y come from uncorrelated populations.
@@ -1578,27 +1578,41 @@ x and y come from uncorrelated populations.
 h = correlation_test (y, x) tests the null
 hypothesis that the two samples x and y come from uncorrelated
 populations. The result is h = 0 if the null hypothesis cannot be
-rejected at the 5% significance level, or h = 1 if the null hypothesis
-can be rejected at the 5% level. y and x must be vectors of
-equal length with finite real numbers.
+rejected at the significance level alpha, or h = 1 if it can.
+y and x must be vectors of equal length with finite real
+numbers.
 
-The p-value of the test is returned in pval. stats is a
+The p-value of the test is returned in p. stats is a
 structure with the following fields:
 
 Field Value
 method the type of correlation coefficient used
 for the test
-df the degrees of freedom (where applicable)
-corrcoef the correlation coefficient
-stat the test's statistic
+tstat the t statistic, for Pearson's and Spearman's
+coefficients
+df its degrees of freedom, n - 2
+zval the z statistic, for Kendall's coefficient
 dist the respective distribution for the test
 alt the alternative hypothesis for the test
+CorrCoef the correlation coefficient, the effect size
+CorrCoefCI its 100 (1 - alpha)% confidence
+interval, one-sided for a one-sided test
+
+Pearson's and Spearman's coefficients are tested with
+t = r sqrt ((n - 2) / (1 - r^2)) on n - 2 degrees of freedom,
+as R's cor.test does without an exact test; Kendall's with its
+normal approximation, whose variance allows for ties. The confidence
+interval is Fisher's z transform of the coefficient, with standard
+error 1 / sqrt (n - 3) for Pearson's,
+sqrt ((1 + r^2 / 2) / (n - 3)) for Spearman's and
+sqrt (0.437 / (n - 4)) for Kendall's, after Bonett and Wright (2000).
 
 [...] = correlation_test (..., name, value)
 specifies one or more of the following name/value pairs:
 
 Name Value
-'alpha' the significance level. Default is 0.05.
+'alpha' the significance level of h and the level
+of the confidence interval. Default is 0.05.
 'tail' a string specifying the alternative hypothesis
 
 'both' corrcoef is not 0 (two-tailed, default)
