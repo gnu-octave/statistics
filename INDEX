@@ -246,6 +246,8 @@ Nearest Neighbors
  KDTreeSearcher
  knnsearch
  mahal
+ nomdist
+ nomdist2
  pdist
  pdist2
  rangesearch

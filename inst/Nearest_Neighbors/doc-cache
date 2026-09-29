@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 30
+# columns: 32
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -1203,6 +1203,227 @@ The data x and y must have the same number of components
 # elements: 1
 # length: 31
 Mahalanobis' D-square distance.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+nomdist
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5087
+statistics: D = nomdist (X)
+statistics: D = nomdist (X, measure)
+statistics: D = nomdist (..., Name, Value)
+Dissimilarity between every pair of rows of nominal data.
+
+D = nomdist (X) returns the Goodall 3 dissimilarity
+between each pair of rows of X, whose columns are nominal variables
+and whose values are their levels. D is a row vector in the order
+pdist returns, pairs (1,2), (1,3), ...,
+(2,3), ..., so squareform turns it into a matrix and
+linkage takes it as it stands. An X of one row gives a
+1x0 D.
+
+X is a numeric, logical, categorical, string or cellstr matrix, each
+distinct value being a level, or a table whose every variable is one column
+of these. A missing value, NaN, an empty character vector, a
+missing string or an undefined category, is refused.
+
+The measures weigh a match or a mismatch by how often the levels involved
+occur, counted over the rows of X unless 'Reference' names
+another sample.
+
+D = nomdist (X, measure) uses the measure named,
+in any case, from those of Boriah, Chandola and Kumar (2008) and of Sulc and
+Rezankova (2019), as the R package nomclust 2.8.1 implements them.
+In the table, N is the number of rows the frequencies are counted
+over, f the count of a level, p = f/N its frequency,
+p2 = f(f-1)/(N(N-1)) the chance of drawing it twice, and n
+the number of levels the variable holds. A subscript names the level of
+either row, and a variable scores 0 wherever its entry names no score.
+
+measure Score of one variable
+'anderberg' The similarity is
+\(\frac{\sum_{x = y} c/p_x^2}
+{\sum_{x = y} c/p_x^2 + \sum_{x \ne y} c/(2 p_x p_y)},\)
+with
+\(c = 2/(n(n+1)).\)
+'burnaby' 1 on a match; on a mismatch
+\(\frac{B}{\log \frac{p_x p_y}{(1-p_x)(1-p_y)} + B},\)
+with
+\(B = \sum_q 2 \log (1 - p_q).\)
+'eskin' 1 on a match,
+\(\frac{n^2}{n^2 + 2}\)
+on a mismatch.
+'gambaryan' \(-\left(p_x \log_2 p_x + (1-p_x) \log_2 (1-p_x)\right)\)
+on a match, which peaks where p is 0.5.
+'goodall1' On a match
+\(1 - \sum_{q:\, p_q \le p_x} \mathit{p2}_q.\)
+'goodall2' On a match
+\(1 - \sum_{q:\, p_q \ge p_x} \mathit{p2}_q.\)
+'goodall3' \(1 - \mathit{p2}_x\)
+on a match.
+'goodall4' \(\mathit{p2}_x\)
+on a match.
+'iof' 1 on a match,
+\(\frac{1}{1 + \log f_x \log f_y}\)
+on a mismatch.
+'lin' \(2 \log p_x\)
+on a match,
+\(2 \log (p_x + p_y)\)
+on a mismatch, over the sum of
+\(\log p_x + \log p_y.\)
+'lin1' On a match
+\(\log \sum_{q:\, p_q = p_x} p_q;\)
+on a mismatch
+\(2 \log \sum_{q:\, \min (p_x, p_y) \le p_q \le \max (p_x, p_y)} p_q;\)
+over the same sum as 'lin'.
+'of' 1 on a match,
+\(\frac{1}{1 + \log (N/f_x) \log (N/f_y)}\)
+on a mismatch.
+'sm' 1 on a match, the simple matching coefficient.
+'smirnov' On a match
+\(2 + \frac{N - f_x}{f_x} + \sum_{q \ne x} \frac{f_q}{N - f_q};\)
+on a mismatch
+\(\sum_{q \ne x, y} \frac{f_q}{N - f_q}.\)
+'ve' On a match the entropy of the variable,
+\(-\frac{1}{\log n} \sum_q p_q \log p_q.\)
+'vm' On a match the Gini index of the variable,
+\(\frac{n}{n-1} \left(1 - \sum_q p_q^2\right).\)
+
+The scores of a pair are summed over the variables, each times its weight,
+and divided by the sum of the weights, except where the table names another
+divisor, and 'gambaryan' and 'smirnov' divide by the number
+of levels over every variable. With S that similarity,
+'eskin', 'iof', 'lin', 'lin1' and
+'of' return 1/S - 1, 'smirnov' returns
+1/(1+S), and every other measure 1 - S. Several measures,
+the four Goodall ones among them, place two identical rows at a nonzero
+dissimilarity, a match on a common level saying less than one on a rare
+level. 'lin' and 'lin1' return Inf for a pair of
+similarity 0, such as two rows differing in every variable where each
+variable holds two levels.
+
+D = nomdist (..., Name, Value) takes the
+following options.
+
+Name Value
+'Weights' One weight per variable, each from 0 to
+1 and at least one positive; a variable of weight 0 is left out. Not taken
+by 'anderberg', 'gambaryan' and 'smirnov'.
+'Reference' A sample to count level frequencies
+over in place of X, of the same kind: a matrix with as many columns,
+the same type in each, or a table holding every variable of X, read
+by name. It must hold every level X holds. Given the whole data,
+it measures a subsample by how rare its levels are in the whole.
+
+Where nomclust answers otherwise, the answer here is the limit of
+the measure's formula. 'lin' and 'lin1' sum the counts
+of levels, so a sum over every level is exactly 1 and a similarity of 0 is
+exactly 0, where nomclust rounds it to about 1e16 or
+replaces it with one more than the largest finite dissimilarity.
+'gambaryan' scores a level every row holds as 0, where
+nomclust returns NaN. Where every variable holds one level,
+'lin' returns 0 and 'lin1' 1, where nomclust
+returns NaN.
+
+References:
+
+Boriah, S., Chandola, V. and Kumar, V. (2008). Similarity measures
+for categorical data: a comparative evaluation. Proceedings of the 8th
+SIAM International Conference on Data Mining, 243-254.
+Sulc, Z. and Rezankova, H. (2019). Comparison of similarity
+measures for categorical data in hierarchical clustering. Journal of
+Classification, 36(1), 58-72.
+
+See also:
+nomdist2,
+pdist,
+squareform,
+linkage
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 57
+Dissimilarity between every pair of rows of nominal data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+nomdist2
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1981
+statistics: D = nomdist2 (X, Y)
+statistics: D = nomdist2 (X, Y, measure)
+statistics: D = nomdist2 (..., Name, Value)
+Dissimilarity between the rows of two samples of nominal data.
+
+D = nomdist2 (X, Y) returns the Goodall 3
+dissimilarity of each row of X to each row of Y, as the
+NxM matrix D, where X has N rows and Y
+M. Their columns are the same nominal variables and their values
+the levels, of any type nomdist takes; where X is a table,
+Y must be one holding every variable of X, read by name. A
+Y of no rows gives an Nx0 D.
+
+Level frequencies are counted over X, the sample the rows of Y
+are measured against, so D is not symmetric in the two:
+nomdist2 (X, Y) is not in general
+nomdist2 (Y, X)'. nomdist2 (X, X)
+equals squareform (nomdist (X)) off the diagonal; on it,
+several measures give two identical rows a nonzero dissimilarity.
+
+D = nomdist2 (X, Y, measure) uses the
+measure named, one of 'anderberg', 'burnaby',
+'eskin', 'gambaryan', 'goodall1',
+'goodall2', 'goodall3', 'goodall4', 'iof',
+'lin', 'lin1', 'of', 'sm',
+'smirnov', 've' or 'vm', in any case, each defined
+as in nomdist.
+
+D = nomdist2 (..., Name, Value) takes the
+options nomdist takes. 'Weights' gives one weight per
+variable. 'Reference' names a sample to count level frequencies
+over in place of X, which must hold every level X holds;
+[X; Y] counts them over both samples.
+
+Y may hold a level the reference sample does not. Each measure then
+answers with the limit of its formula as that level's count falls to 0.
+'sm', 'eskin', 'gambaryan', the four Goodall
+measures, 'smirnov', 've' and 'vm' never read that
+count and answer as usual. 'of' and 'burnaby' score the
+variable 0, 'anderberg' places the pair at 1, and 'lin' and
+'lin1' at Inf. Refused, where the limit does not exist:
+'iof', whose similarity rises as a level grows rarer, and
+'of' and 'burnaby' where the reference holds that variable
+at a single level. A variable of weight 0 is left out, and so never
+refused.
+
+See also:
+nomdist,
+pdist2
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+Dissimilarity between the rows of two samples of nominal data.
 
 
 

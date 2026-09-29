@@ -7,7 +7,7 @@ OCTFILES = editDistance.oct libsvmread.oct libsvmwrite.oct svmpredict.oct \
            gamboostpairs.oct gamboostinter.oct __lbfgs__.oct __bhtsne__.oct \
            __knnselect__.oct __knnbrute__.oct \
            treetrain.oct treepredict.oct __treeprune__.oct \
-           __shapleytree__.oct
+           __shapleytree__.oct __nomdist__.oct
 
 # Default target - depends on all oct files (enables parallel build)
 all: $(OCTFILES)
@@ -74,6 +74,10 @@ __knnselect__.oct: __knnselect__.cc
 # The exhaustive search that never forms the distance matrix.
 __knnbrute__.oct: __knnbrute__.cc
 	$(MKOCTFILE) __knnbrute__.cc
+
+# The nominal dissimilarity measures behind nomdist and nomdist2.
+__nomdist__.oct: __nomdist__.cc
+	$(MKOCTFILE) __nomdist__.cc
 
 # Clean target
 clean:
