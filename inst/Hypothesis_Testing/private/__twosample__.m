@@ -16,7 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} {[@var{Z}, @var{iscat}, @var{mx}, @var{my}, @var{errmsg}] =} __twosample__ (@var{X}, @var{Y}, @var{vnames}, @var{catvars})
+## @deftypefn  {Private Function} {[@var{Z}, @var{iscat}, @var{mx}, @var{my}, @var{errmsg}, @var{names}, @var{labels}] =} __twosample__ (@var{X}, @var{Y}, @var{vnames}, @var{catvars})
+## @deftypefnx {Private Function} {[@dots{}] =} __twosample__ (@dots{}, @var{argnames})
 ##
 ## Read the two samples of @code{knntest} and @code{mmdtest}.
 ##
@@ -28,15 +29,33 @@
 ## one holding levels as codes @code{1}, @code{2}, @dots{} shared across the
 ## samples.  A row holding a missing value is left out.  @var{iscat} says
 ## which columns hold levels.  @var{errmsg} is empty, or the body of the
-## message the caller raises under its own name.
+## message the caller raises under its own name.  @var{names} holds the
+## variable names of two tables and is empty for matrices, and @var{labels}
+## holds, for each variable holding levels, the name of each code in turn.
+## @var{argnames}, @code{@{'X', 'Y'@}} by default, names the two samples in
+## @var{errmsg}.
 ##
 ## @end deftypefn
 
-function [Z, iscat, mx, my, errmsg] = __twosample__ (X, Y, vnames, catvars)
+function [Z, iscat, mx, my, errmsg, names, labels] = __twosample__ (X, Y, ...
+                                                  vnames, catvars, argnames)
+
+  [Z, iscat, mx, my, errmsg, names, labels] = tsRead (X, Y, vnames, catvars);
+  if (! isempty (errmsg) && nargin > 4)
+    errmsg = regexprep (errmsg, '(?<![A-Za-z])X(?![A-Za-z])', argnames{1});
+    errmsg = regexprep (errmsg, '(?<![A-Za-z])Y(?![A-Za-z])', argnames{2});
+  endif
+
+endfunction
+
+## The samples read with the messages naming them X and Y.
+function [Z, iscat, mx, my, errmsg, names, labels] = tsRead (X, Y, ...
+                                                             vnames, catvars)
 
   Z = [];
   mx = 0;
   my = 0;
+  labels = {};
   [xc, yc, names, iscat, errmsg] = tsVariables (X, Y, vnames);
   if (! isempty (errmsg))
     return;
@@ -54,9 +73,13 @@ function [Z, iscat, mx, my, errmsg] = __twosample__ (X, Y, vnames, catvars)
   endif
   K = numel (xc);
   Z = zeros (mx + my, K);
+  labels = cell (1, K);
   for j = 1:K
     if (iscat(j))
-      Z(:,j) = grp2idx (vertcat (xc{j}, yc{j}));
+      ## Codes 1, 2, ... over the levels present, each with its name
+      [g, gn] = grp2idx (vertcat (xc{j}, yc{j}));
+      [u, ~, Z(:,j)] = unique (g);
+      labels{j} = gn(u);
     else
       Z(:,j) = double (vertcat (xc{j}, yc{j}));
     endif

@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 62
+# columns: 88
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -1656,6 +1656,132 @@ regression_ttest
 # elements: 1
 # length: 115
 Perform a correlation coefficient test to determine whether two samples x and y come from uncorrelated populations.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+detectdrift
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4460
+statistics: DDiagnostics = detectdrift (Baseline, Target)
+statistics: DDiagnostics = detectdrift (Baseline, Target, Name, Value)
+Detect drift between two data sets, one variable at a time.
+
+DDiagnostics = detectdrift (Baseline, Target)
+measures, for each variable, how far the distribution in Target has
+moved from the one in Baseline, tests the change by permutation, and
+returns the results as a stats.drift.DriftDiagnostics object.
+Baseline and Target are both numeric matrices with the same
+number of columns, both categorical arrays, or both tables, read
+over the variables they share, which must be all the variables of one of
+them. An observation holding a missing value in a variable used is left
+out.
+
+Each variable is measured by a metric: a continuous one by
+'ContinuousMetric', one holding levels by
+'CategoricalMetric'. With F and G the empirical
+distribution functions of the two samples and H that of the two
+pooled, the metrics are:
+
+Metric Definition
+'wasserstein' The area between F and
+G, the default for a continuous variable.
+'ks' The largest difference between F
+and G.
+'ad' The Anderson-Darling statistic, the sum over
+the distinct pooled values but the largest of
+(F - G)^2 / (H (1 - H)), divided by the number of pooled
+observations.
+'energy' The energy distance,
+sqrt (2 E|x - y| - E|x - x'| - E|y - y'|).
+'hellinger' sqrt (1 - sum (sqrt (p q))),
+the default for a variable holding levels.
+'bhattacharyya' -log (sum (sqrt (p q))).
+'tv' The total variation distance,
+sum (abs (p - q)) / 2.
+'psi' The population stability index,
+sum ((p - q) log (p / q)).
+'chi2' sum ((p - q)^2 / p).
+
+For a variable holding levels, p and q are the shares of each
+level in Baseline and Target, over the levels either holds,
+each count increased by 0.5 first so that a level one sample lacks leaves
+every metric finite.
+
+The p-value of a variable is the share of permutations whose metric is at
+least the observed one, the observed arrangement counted as the first
+permutation, so it is never below one over their number. Its 95%
+confidence interval is the Clopper-Pearson interval. The drift status is
+"Drift" where the interval lies below 'DriftThreshold',
+"Stable" where it lies above 'WarningThreshold', and
+"Warning" otherwise. Permutations are drawn in stages, 1000 or
+'MaxNumPermutations' if fewer, then four times as many at each
+stage, until the interval lies within a single one of the three regions or
+the next stage would pass 'MaxNumPermutations'. They are drawn with
+randperm, so the state of rand decides them.
+
+The drift status of the data as a whole comes from the p-values corrected
+for testing every variable: by Bonferroni, the smallest p-value times the
+number of variables, or by the false discovery rate, the smallest
+Benjamini-Hochberg adjusted p-value. It is "Drift" below
+'DriftThreshold', "Warning" below
+'WarningThreshold', and "Stable" otherwise.
+
+DDiagnostics = detectdrift (..., Name, Value)
+takes the following options.
+
+Name Value
+'VariableNames' The variables to use, among those
+the two tables share. All of them by default.
+'CategoricalVariables' The variables holding
+levels: 'all', their indices, a logical vector over the variables,
+or, for tables, their names. A table variable holding logical values, an
+unordered categorical array, a string array or a cell array of
+character vectors, and every column of a categorical array, holds
+levels whether named here or not.
+'ContinuousMetric' 'wasserstein', the
+default, 'ks', 'ad' or 'energy'.
+'CategoricalMetric' 'hellinger', the
+default, 'bhattacharyya', 'tv', 'psi' or
+'chi2'.
+'DriftThreshold' 0.05 by default.
+'WarningThreshold' 0.1 by default, and above
+'DriftThreshold'.
+'MultipleTestCorrection' 'bonferroni', the
+default, or 'fdr'.
+'MaxNumPermutations' The most permutations drawn
+for a variable, 1000 by default.
+'EstimatePValues' true by default; with
+false only the metrics are computed.
+'Options' A structure as statset returns.
+Parallel computing and random streams are not implemented, and are refused
+where asked for.
+
+MATLAB draws at least 1000 permutations whatever
+'MaxNumPermutations' says, and finishes a stage that passes it, so
+that a maximum of 3000 can end at 4001; here no variable is given more
+permutations than 'MaxNumPermutations'. MATLAB's stages are
+otherwise its own, so the number of permutations and the p-values differ
+from MATLAB's, as they would between any two random draws.
+
+See also:
+stats.drift.DriftDiagnostics,
+knntest,
+mmdtest
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 59
+Detect drift between two data sets, one variable at a time.
 
 
 
@@ -3447,6 +3573,702 @@ runstest
 # elements: 1
 # length: 23
 Signed test for median.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+stats.drift.DriftDiagnostics
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 715
+statistics: stats.drift.DriftDiagnostics
+The drift found between two data sets, as detectdrift returns it.
+
+A stats.drift.DriftDiagnostics object holds, for each variable
+compared, the metric measuring how far the target data has moved from the
+baseline data, the p-value of the permutation test of that change with its
+confidence interval, and the drift status the interval gives, together with
+the drift status of the data as a whole. Every property is read-only.
+detectdrift is the documented way to create one.
+
+summary tabulates the results, ecdf and histcounts
+return the distributions compared, and plotDriftStatus,
+plotEmpiricalCDF, plotHistogram and
+plotPermutationResults draw them.
+
+See also:
+detectdrift
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 65
+The drift found between two data sets, as detectdrift returns it.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+stats.drift.DriftDiagnostics.Baseline
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 91
+stats.drift.DriftDiagnostics: property Baseline
+The baseline data, as given to detectdrift.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+The baseline data, as given to detectdrift.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+stats.drift.DriftDiagnostics.CategoricalVariables
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 126
+stats.drift.DriftDiagnostics: property CategoricalVariables
+The indices of the variables holding levels, among those compared.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 66
+The indices of the variables holding levels, among those compared.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 48
+stats.drift.DriftDiagnostics.ConfidenceIntervals
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 241
+stats.drift.DriftDiagnostics: property ConfidenceIntervals
+The 95% Clopper-Pearson confidence interval of each p-value, a two-row
+matrix holding the lower bounds over the upper, one column per
+variable, NaN where p-values were not estimated.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 182
+The 95% Clopper-Pearson confidence interval of each p-value, a two-row matrix holding the lower bounds over the upper, one column per variable, NaN where p-values were not estimated.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.drift.DriftDiagnostics.DriftDiagnostics
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 298
+stats.drift.DriftDiagnostics: obj = stats.drift.DriftDiagnostics (S)
+Create a stats.drift.DriftDiagnostics object from the structure
+S detectdrift fills, holding every property and the pooled
+data the methods read. The documented way to reach this constructor
+is detectdrift.
+
+See also:
+detectdrift
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 145
+Create a stats.drift.DriftDiagnostics object from the structure S detectdrift fills, holding every property and the pooled data the methods read.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+stats.drift.DriftDiagnostics.DriftStatus
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 183
+stats.drift.DriftDiagnostics: property DriftStatus
+The drift status of each variable, a string array holding
+"Drift", "Warning" or "Stable", missing where
+p-values were not estimated.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 132
+The drift status of each variable, a string array holding "Drift", "Warning" or "Stable", missing where p-values were not estimated.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.drift.DriftDiagnostics.DriftThreshold
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 102
+stats.drift.DriftDiagnostics: property DriftThreshold
+The threshold below which a p-value means drift.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 48
+The threshold below which a p-value means drift.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.drift.DriftDiagnostics.MetricValues
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 135
+stats.drift.DriftDiagnostics: property MetricValues
+The metric of each variable between the baseline and the target data,
+a row vector.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 83
+The metric of each variable between the baseline and the target data, a row vector.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+stats.drift.DriftDiagnostics.Metrics
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 104
+stats.drift.DriftDiagnostics: property Metrics
+The metric each variable was measured by, a string array.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 57
+The metric each variable was measured by, a string array.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+stats.drift.DriftDiagnostics.MultipleTestCorrection
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 142
+stats.drift.DriftDiagnostics: property MultipleTestCorrection
+The correction for testing every variable, "Bonferroni" or
+"FalseDiscoveryRate".
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+The correction for testing every variable, "Bonferroni" or "FalseDiscoveryRate".
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 52
+stats.drift.DriftDiagnostics.MultipleTestDriftStatus
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 175
+stats.drift.DriftDiagnostics: property MultipleTestDriftStatus
+The drift status of the data as a whole, from the corrected p-values,
+missing where p-values were not estimated.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 112
+The drift status of the data as a whole, from the corrected p-values, missing where p-values were not estimated.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+stats.drift.DriftDiagnostics.NumPermutations
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 157
+stats.drift.DriftDiagnostics: property NumPermutations
+The number of permutations drawn for each variable, a row vector, 1
+where p-values were not estimated.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 102
+The number of permutations drawn for each variable, a row vector, 1 where p-values were not estimated.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.drift.DriftDiagnostics.NumVariables
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 85
+stats.drift.DriftDiagnostics: property NumVariables
+The number of variables compared.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+The number of variables compared.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+stats.drift.DriftDiagnostics.PValues
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 129
+stats.drift.DriftDiagnostics: property PValues
+The p-value of each variable, a row vector, NaN where p-values
+were not estimated.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 82
+The p-value of each variable, a row vector, NaN where p-values were not estimated.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+stats.drift.DriftDiagnostics.PermutationResults
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 231
+stats.drift.DriftDiagnostics: property PermutationResults
+A table with one row per variable, named by it, holding in its one
+variable PermutationResults a cell with the metric over every
+permutation, the observed arrangement first.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 173
+A table with one row per variable, named by it, holding in its one variable PermutationResults a cell with the metric over every permutation, the observed arrangement first.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+stats.drift.DriftDiagnostics.Target
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 87
+stats.drift.DriftDiagnostics: property Target
+The target data, as given to detectdrift.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+The target data, as given to detectdrift.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+stats.drift.DriftDiagnostics.VariableNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 152
+stats.drift.DriftDiagnostics: property VariableNames
+The names of the variables compared, a string array, "x1",
+"x2", ... where the data came as arrays.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 95
+The names of the variables compared, a string array, "x1", "x2", where the data came as arrays.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.drift.DriftDiagnostics.WarningThreshold
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 108
+stats.drift.DriftDiagnostics: property WarningThreshold
+The threshold below which a p-value means a warning.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 52
+The threshold below which a p-value means a warning.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+stats.drift.DriftDiagnostics.ecdf
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 675
+stats.drift.DriftDiagnostics: tbl = ecdf (obj)
+stats.drift.DriftDiagnostics: tbl = ecdf (obj, 'Variable', var)
+The empirical distribution functions of the baseline and the target.
+
+tbl holds one row per variable, named by it, and three variables
+of cells: x, the pooled values sorted with the first repeated,
+and F_Baseline and F_Target, the two distribution
+functions there, starting from 0. Where values tie, only the last copy
+takes the full value, so that the points draw the two functions as
+steps. A variable holding levels has NaN in each cell.
+var names the variables, by name or index, all of them by
+default.
+
+See also:
+stats.drift.DriftDiagnostics.plotEmpiricalCDF
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 68
+The empirical distribution functions of the baseline and the target.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.drift.DriftDiagnostics.histcounts
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 737
+stats.drift.DriftDiagnostics: tbl = histcounts (obj)
+stats.drift.DriftDiagnostics: tbl = histcounts (obj, 'Variable', var)
+The histograms of the baseline and the target, in percent.
+
+tbl holds one row per variable, named by it, and three variables
+of cells: Bins, and Counts_Baseline and
+Counts_Target, each the percentage of its sample in each bin.
+For a continuous variable Bins holds the bin edges
+histcounts chooses for the two samples pooled. For a variable
+holding levels it holds the levels as a categorical array, and
+each count is increased by 0.5 before the percentages are taken, as the
+metrics take them. var names the variables, by name or index,
+all of them by default.
+
+See also:
+stats.drift.DriftDiagnostics.plotHistogram
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 58
+The histograms of the baseline and the target, in percent.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+stats.drift.DriftDiagnostics.plotDriftStatus
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 720
+stats.drift.DriftDiagnostics: plotDriftStatus (obj)
+stats.drift.DriftDiagnostics: h = plotDriftStatus (obj)
+Plot the p-value and confidence interval of every variable.
+
+Each variable is drawn as its p-value with its confidence interval as
+horizontal error bars, one set of bars for each drift status, the
+variables in alphabetical order up the vertical axis, with a line at
+each threshold. h holds the three sets of bars, for
+"Stable", "Warning" and "Drift" in turn, each
+spanning every variable with NaN where a variable has another
+status. MATLAB draws on a categorical axis, which Octave does not have,
+so the variables sit at 1, 2, ... with their names as tick labels.
+
+See also:
+stats.drift.DriftDiagnostics.summary
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 59
+Plot the p-value and confidence interval of every variable.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.drift.DriftDiagnostics.plotEmpiricalCDF
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 554
+stats.drift.DriftDiagnostics: plotEmpiricalCDF (obj)
+stats.drift.DriftDiagnostics: plotEmpiricalCDF (obj, 'Variable', var)
+stats.drift.DriftDiagnostics: h = plotEmpiricalCDF (...)
+Plot the empirical distribution functions of one continuous variable.
+
+The baseline and the target are drawn as steps, from the points
+ecdf returns. var names the variable, by name or index;
+by default it is the one with the smallest p-value, or the first where
+p-values were not estimated. h holds the two lines, baseline
+first.
+
+See also:
+stats.drift.DriftDiagnostics.ecdf
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 69
+Plot the empirical distribution functions of one continuous variable.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+stats.drift.DriftDiagnostics.plotHistogram
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 621
+stats.drift.DriftDiagnostics: plotHistogram (obj)
+stats.drift.DriftDiagnostics: plotHistogram (obj, 'Variable', var)
+stats.drift.DriftDiagnostics: h = plotHistogram (...)
+Plot the histograms of one variable in the baseline and the target.
+
+The percentages histcounts returns are drawn as bars side by
+side, over the bins of a continuous variable or the levels of one
+holding levels. var names the variable, by name or index; by
+default it is the one with the smallest p-value, or the first where
+p-values were not estimated. h holds the two sets of bars,
+baseline first.
+
+See also:
+stats.drift.DriftDiagnostics.histcounts
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 67
+Plot the histograms of one variable in the baseline and the target.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+stats.drift.DriftDiagnostics.plotPermutationResults
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 677
+stats.drift.DriftDiagnostics: plotPermutationResults (obj)
+stats.drift.DriftDiagnostics: plotPermutationResults (obj, 'Variable', var)
+stats.drift.DriftDiagnostics: h = plotPermutationResults (...)
+Plot the metric of one variable over its permutations.
+
+The percentage of permutations in each bin is drawn as bars, split at
+the observed metric, which is marked by a line: the bars below it and
+those at or above it, whose share is the p-value. var names the
+variable, by name or index; by default it is the one with the smallest
+p-value. h holds the two sets of bars, those below first.
+MATLAB draws them as histogram objects, which Octave does not
+have.
+
+See also:
+detectdrift
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+Plot the metric of one variable over its permutations.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+stats.drift.DriftDiagnostics.summary
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 509
+stats.drift.DriftDiagnostics: summary (obj)
+stats.drift.DriftDiagnostics: tbl = summary (obj)
+Tabulate the drift found.
+
+Where p-values were estimated, summary prints the drift status
+of the data as a whole and a table with one row per variable holding
+DriftStatus, PValue and ConfidenceInterval.
+tbl is that table with a last row, MultipleTest, holding
+the status of the data as a whole and NaN for its p-value and
+interval. Where they were not, the table holds MetricValue and
+Metric.
+
+See also:
+detectdrift
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+Tabulate the drift found.
 
 
 

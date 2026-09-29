@@ -51,6 +51,7 @@ Hypothesis Testing
  chi2gof
  chi2test
  correlation_test
+ detectdrift
  dwtest
  fishertest
  friedman
@@ -73,6 +74,7 @@ Hypothesis Testing
  runstest
  signrank
  signtest
+ stats.drift.DriftDiagnostics
  swtest
  ttest
  ttest2
