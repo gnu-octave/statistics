@@ -1992,7 +1992,7 @@ hotelling_t2test
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1684
+# length: 2255
 statistics: [h, pval, stats] = hotelling_t2test (x)
 statistics: [...] = hotelling_t2test (x, m)
 statistics: [...] = hotelling_t2test (x, y)
@@ -2014,7 +2014,7 @@ corresponding rows.
 
 Name-Value pair arguments can be used to set statistical significance.
 'alpha' can be used to specify the significance level of the test
-(the default value is 0.05).
+and the level of the confidence interval (the default value is 0.05).
 
 If h is 1 the null hypothesis is rejected, meaning that the tested
 sample does not come from a multivariate distribution with mean m, or
@@ -2025,11 +2025,22 @@ be rejected and it can be assumed that it holds true.
 The p-value of the test is returned in pval.
 
 stats is a structure containing the value of the Hotelling's T^2
-test statistic in the field "Tsq", and the degrees of freedom of the F
-distribution in the fields "df1" and "df2". Under the null hypothesis,
-(n-p) T^2 / (p(n-1)) has an F distribution with p and
-n-p degrees of freedom, where n and p are the
-numbers of samples and variables, respectively.
+test statistic in the field "t2stat", its F transform in "fstat", and the
+degrees of freedom of the F distribution in the fields "df1" and "df2".
+Under the null hypothesis, (n-p) T^2 / (p(n-1)) has an F
+distribution with p and n-p degrees of freedom, where
+n and p are the numbers of samples and variables,
+respectively.
+
+The effect size is the Mahalanobis distance D between the mean and
+m, in the field "MahalanobisD", with its 100 (1 - alpha)%
+confidence interval in "MahalanobisDCI". The noncentrality of the F
+statistic is n D^2; the distance is estimated from
+max (F df1 (df2 - 2) / df2 - df1, 0), unbiased for the
+noncentrality before its truncation at zero, and the interval inverts
+the noncentral F distribution. Where the interval would need a
+noncentrality above 10^5, where ncfcdf loses accuracy, it
+is NaN.
 
 See also:
 hotelling_t2test2
@@ -2053,7 +2064,7 @@ hotelling_t2test2
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1406
+# length: 1996
 statistics: [h, pval, stats] = hotelling_t2test2 (x, y)
 statistics: [...] = hotelling_t2test2 (x, y, Name, Value)
 Compute Hotelling's T^2 ("T-squared") test for two independent samples.
@@ -2068,7 +2079,7 @@ corresponding rows for each sample independently.
 
 Name-Value pair arguments can be used to set statistical significance.
 'alpha' can be used to specify the significance level of the test
-(the default value is 0.05).
+and the level of the confidence interval (the default value is 0.05).
 
 If h is 1 the null hypothesis is rejected, meaning that the tested
 samples do not come from the same multivariate distribution. If h is
@@ -2078,14 +2089,25 @@ both samples come from the same multivariate distribution.
 The p-value of the test is returned in pval.
 
 stats is a structure containing the value of the Hotelling's T^2
-test statistic in the field "Tsq", and the degrees of freedom of the F
-distribution in the fields "df1" and "df2". Under the null hypothesis,
+test statistic in the field "t2stat", its F transform in "fstat", and the
+degrees of freedom of the F distribution in the fields "df1" and "df2".
+Under the null hypothesis,
 $$
 {(n_x+n_y-p-1) T^2 \over p(n_x+n_y-2)}
 $$
 has an F distribution with p and n_x+n_y-p-1 degrees of
 freedom, where n_x and n_y are the sample sizes and
 p is the number of variables.
+
+The effect size is the Mahalanobis distance D between the two means,
+in the field "MahalanobisD", with its 100 (1 - alpha)% confidence
+interval in "MahalanobisDCI". The noncentrality of the F statistic is
+n_x n_y / (n_x + n_y) D^2; the distance is estimated from
+max (F df1 (df2 - 2) / df2 - df1, 0), unbiased for the
+noncentrality before its truncation at zero, and the interval inverts
+the noncentral F distribution. Where the interval would need a
+noncentrality above 10^5, where ncfcdf loses accuracy, it
+is NaN.
 
 See also:
 hotelling_t2test

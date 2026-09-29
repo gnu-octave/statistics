@@ -32,7 +32,7 @@
 ##
 ## Name-Value pair arguments can be used to set statistical significance.
 ## @qcode{'alpha'} can be used to specify the significance level of the test
-## (the default value is 0.05).
+## and the level of the confidence interval (the default value is 0.05).
 ##
 ## If @var{h} is 1 the null hypothesis is rejected, meaning that the tested
 ## samples do not come from the same multivariate distribution.  If @var{h} is
@@ -42,8 +42,9 @@
 ## The p-value of the test is returned in @var{pval}.
 ##
 ## @var{stats} is a structure containing the value of the Hotelling's @math{T^2}
-## test statistic in the field "Tsq", and the degrees of freedom of the F
-## distribution in the fields "df1" and "df2".  Under the null hypothesis,
+## test statistic in the field "t2stat", its F transform in "fstat", and the
+## degrees of freedom of the F distribution in the fields "df1" and "df2".
+## Under the null hypothesis,
 ## @tex
 ## $$
 ## {(n_x+n_y-p-1) T^2 \over p(n_x+n_y-2)}
@@ -60,6 +61,16 @@
 ## has an F distribution with @math{p} and @math{n_x+n_y-p-1} degrees of
 ## freedom, where @math{n_x} and @math{n_y} are the sample sizes and
 ## @math{p} is the number of variables.
+##
+## The effect size is the Mahalanobis distance @math{D} between the two means,
+## in the field "MahalanobisD", with its @math{100 (1 - alpha)}% confidence
+## interval in "MahalanobisDCI".  The noncentrality of the F statistic is
+## @math{n_x n_y / (n_x + n_y) D^2}; the distance is estimated from
+## @math{max (F df1 (df2 - 2) / df2 - df1, 0)}, unbiased for the
+## noncentrality before its truncation at zero, and the interval inverts
+## the noncentral F distribution.  Where the interval would need a
+## noncentrality above @math{10^5}, where @code{ncfcdf} loses accuracy, it
+## is @qcode{NaN}.
 ##
 ## @seealso{hotelling_t2test}
 ## @end deftypefn
@@ -125,11 +136,20 @@ function [h, pval, stats] = hotelling_t2test2 (x, y, varargin)
   ## Calculate the necessary statistics
   d = mean (x) - mean (y);
   S = ((n_x - 1) * cov (x) + (n_y - 1) * cov (y)) / (n_x + n_y - 2);
-  stats.Tsq  = (n_x * n_y / (n_x + n_y)) * d * (S \ d');
+  stats.t2stat = (n_x * n_y / (n_x + n_y)) * d * (S \ d');
+  stats.fstat = (n_x + n_y - p - 1) * stats.t2stat / (p * (n_x + n_y - 2));
   stats.df1 = p;
   stats.df2 = n_x + n_y - p - 1;
-  pval = fcdf ((n_x + n_y - p - 1) * stats.Tsq / (p * (n_x + n_y - 2)), ...
-               stats.df1, stats.df2, 'upper');
+  pval = fcdf (stats.fstat, stats.df1, stats.df2, 'upper');
+
+  ## Mahalanobis distance between the two means: the noncentrality of F is
+  ## n_x n_y / (n_x + n_y) D^2, estimated without bias and bounded by
+  ## inverting its distribution
+  m = n_x * n_y / (n_x + n_y);
+  [lambda, lambdahat] = __ncfbounds__ (stats.fstat, stats.df1, stats.df2, ...
+                                       alpha);
+  stats.MahalanobisD = sqrt (lambdahat / m);
+  stats.MahalanobisDCI = sqrt (lambda / m);
 
   ## Determine the test outcome
   ## MATLAB returns this a double instead of a logical array
@@ -141,10 +161,22 @@ endfunction
 %! ## Below the resolution of 1 - fcdf
 %! u = (1:30)';
 %! [~, p, st] = hotelling_t2test2 ([u, sin(u)], [u + 100, sin(u)]);
-%! F = (30 + 30 - 2 - 1) * st.Tsq / (2 * (30 + 30 - 2));
+%! F = (30 + 30 - 2 - 1) * st.t2stat / (2 * (30 + 30 - 2));
 %! d1 = st.df1;
 %! d2 = st.df2;
 %! assert_equal (p, betainc (d2 / (d2 + d1 * F), d2 / 2, d1 / 2), -1e-12);
+%!test
+%! u = (1:30)';
+%! [~, ~, st] = hotelling_t2test2 ([u / 30, sin(u)], ...
+%!                                 [u / 30 + 0.2, sin(u) + 0.3]);
+%! assert_equal (st.MahalanobisD, 0.73996501021719263, -1e-12);
+%!test
+%! ## The bounds are those of R's pf with ncp, inverted by uniroot
+%! u = (1:30)';
+%! [~, ~, st] = hotelling_t2test2 ([u / 30, sin(u)], ...
+%!                                 [u / 30 + 0.2, sin(u) + 0.3]);
+%! assert_equal (st.MahalanobisDCI, ...
+%!               [0.22898023040240645, 1.3346946250293135], -1e-8);
 
 ## Test input validation
 %!error<Invalid call to hotelling_t2test2.  Correct usage> hotelling_t2test2 ();
