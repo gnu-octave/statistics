@@ -575,15 +575,24 @@ endfunction
 %! assert_equal (issparse (designMatrix (glme, "Random")), true);
 %! assert_equal (glme.ModelCriterion.Deviance, -2 * glme.LogLikelihood, 1e-10);
 %!test
-%! ## Below the resolution of 1 - tcdf
+%! ## A normal response with a dispersion far from one, and p-values below
+%! ## the resolution of 1 - tcdf; values from MATLAB R2024a
 %! x = (1:30)';
 %! g = repmat ((1:5)', 6, 1);
 %! T = table (x, g, 2 * x + g + 0.01 * sin (x), ...
 %!            'VariableNames', {'x', 'g', 'y'});
 %! m = fitglme (T, 'y ~ x + (1|g)');
-%! C = m.Coefficients;
-%! assert_equal (C.pValue, betainc (C.DF ./ (C.DF + C.tStat .^ 2), ...
-%!                                  C.DF / 2, 1/2), -1e-12);
+%! assert_equal (m.Coefficients.pValue, ...
+%!               [5.4976892695175e-05; 1.12635133546576e-95], -1e-3);
+%!test
+%! ## The Laplace approximation is exact for a normal response
+%! x = (1:30)';
+%! g = repmat ((1:5)', 6, 1);
+%! T = table (x, g, 2 * x + g + 0.01 * sin (x), ...
+%!            'VariableNames', {'x', 'g', 'y'});
+%! m = fitglme (T, 'y ~ x + (1|g)', 'FitMethod', 'Laplace');
+%! assert_equal (m.LogLikelihood, fitlme (T, 'y ~ x + (1|g)').LogLikelihood, ...
+%!               -1e-8);
 
 ## Error handling
 %!error <unknown ResidualType> residuals (glme, "ResidualType", "xxx")
