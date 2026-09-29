@@ -2008,7 +2008,7 @@ finv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 779
+# length: 1257
 statistics: x = finv (p, df1, df2)
 Inverse of the F-cumulative distribution function (iCDF).
 
@@ -2020,6 +2020,15 @@ inputs.
 
 Further information about the F-distribution can be found at
 https://en.wikipedia.org/wiki/F-distribution
+
+Where one degree of freedom is so large against the other that the
+F-distribution cannot be told from its limit in double precision,
+the quantile is taken from the limit, chi2inv (p, df1) /
+df1 as df2 grows and df2 / chi2inv (1 - p,
+df2) as df1 grows. Once one degree of freedom reaches
+10^8 and the other is small, MATLAB returns quantiles whose
+probability is off by about 3%: its finv (0.025, 10, 1e8) is
+0.32227, whose probability is 0.0243, where the quantile is 0.32470.
 
 Input arguments must be double or single; integer, logical,
 and character arrays are rejected. MATLAB accepts a character array and
@@ -4023,7 +4032,7 @@ jsucdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 803
+# length: 920
 statistics: p = jsucdf (x)
 statistics: p = jsucdf (x, alpha1)
 statistics: p = jsucdf (x, alpha1, alpha2)
@@ -4031,11 +4040,14 @@ Johnson SU cumulative distribution function (CDF).
 
 For each element of x, return the cumulative distribution functions
 (CDF) at x of the Johnson SU distribution with shape parameters
-alpha1 and alpha2. The size of p is the common size of the
-input arguments x, alpha1, and alpha2. A scalar input
-functions as a constant matrix of the same size as the other
+alpha1 and alpha2, which is
+normcdf (alpha1 + alpha2 * asinh (x)). The size of
+p is the common size of the input arguments x, alpha1, and
+alpha2. A scalar input functions as a constant matrix of the same size
+as the other inputs.
 
-Default values are alpha1 = 1, alpha2 = 1.
+Default values are alpha1 = 1, alpha2 = 1. alpha2 must be
+positive; where it is not, the result is NaN.
 
 Input arguments must be double or single; integer, logical,
 and character arrays are rejected. MATLAB accepts a character array and
@@ -4064,7 +4076,7 @@ jsupdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 795
+# length: 938
 statistics: y = jsupdf (x)
 statistics: y = jsupdf (x, alpha1)
 statistics: y = jsupdf (x, alpha1, alpha2)
@@ -4072,11 +4084,14 @@ Johnson SU probability density function (PDF).
 
 For each element of x, compute the probability density function (PDF)
 at x of the Johnson SU distribution with shape parameters alpha1
-and alpha2. The size of p is the common size of the input
+and alpha2, which is
+alpha2 * normpdf (alpha1 + alpha2 * asinh (x))
+/ sqrt (x^2 + 1). The size of y is the common size of the input
 arguments x, alpha1, and alpha2. A scalar input functions
-as a constant matrix of the same size as the other
+as a constant matrix of the same size as the other inputs.
 
-Default values are alpha1 = 1, alpha2 = 1.
+Default values are alpha1 = 1, alpha2 = 1. alpha2 must be
+positive; where it is not, the result is NaN.
 
 Input arguments must be double or single; integer, logical,
 and character arrays are rejected. MATLAB accepts a character array and

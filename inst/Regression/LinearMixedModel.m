@@ -380,7 +380,7 @@ classdef LinearMixedModel < PredictiveModel
       se = sqrt (diag (info.covbeta));
       tstat = info.beta ./ se;
       dfe = n - p;
-      pval = 2 * (1 - tcdf (abs (tstat), dfe));
+      pval = 2 * tcdf (-abs (tstat), dfe);
       tcrit = tinv (0.975, dfe);
       lower = info.beta - tcrit * se;
       upper = info.beta + tcrit * se;
@@ -841,6 +841,14 @@ endclassdef
 %! assert_equal (lme.Rsquared.Adjusted, 0.8694885, 1e-6);
 %! assert_equal (lme.SST, lme.SSE + lme.SSR, 1e-10);
 %! assert_equal (lme.ModelCriterion.Deviance, -2 * lme.LogLikelihood, 1e-10);
+%!test
+%! ## Below the resolution of 1 - tcdf, value from MATLAB R2024a
+%! x = (1:30)';
+%! g = repmat ((1:5)', 6, 1);
+%! T = table (x, g, 2 * x + g + 0.01 * sin (x), ...
+%!            'VariableNames', {'x', 'g', 'y'});
+%! m = fitlme (T, 'y ~ x + (1|g)');
+%! assert_equal (m.Coefficients.pValue(2), 1.12646802753448e-95, -1e-3);
 
 ## Error handling
 %!error <unknown ResidualType> residuals (lme, "ResidualType", "xxx")

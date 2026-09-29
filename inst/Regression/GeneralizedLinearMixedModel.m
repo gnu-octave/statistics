@@ -318,7 +318,7 @@ classdef GeneralizedLinearMixedModel < PredictiveModel
       se = sqrt (diag (info.covbeta));
       tstat = info.beta ./ se;
       dfe = n - p;
-      pval = 2 * (1 - tcdf (abs (tstat), dfe));
+      pval = 2 * tcdf (-abs (tstat), dfe);
       tcrit = tinv (0.975, dfe);
       this.Coefficients = table (info.beta(:), se(:), tstat(:), ...
         repmat (dfe, p, 1), pval(:), info.beta(:) - tcrit*se(:), ...
@@ -574,6 +574,16 @@ endfunction
 %! assert_equal (issparse (designMatrix (glme, "Fixed")), false);
 %! assert_equal (issparse (designMatrix (glme, "Random")), true);
 %! assert_equal (glme.ModelCriterion.Deviance, -2 * glme.LogLikelihood, 1e-10);
+%!test
+%! ## Below the resolution of 1 - tcdf
+%! x = (1:30)';
+%! g = repmat ((1:5)', 6, 1);
+%! T = table (x, g, 2 * x + g + 0.01 * sin (x), ...
+%!            'VariableNames', {'x', 'g', 'y'});
+%! m = fitglme (T, 'y ~ x + (1|g)');
+%! C = m.Coefficients;
+%! assert_equal (C.pValue, betainc (C.DF ./ (C.DF + C.tStat .^ 2), ...
+%!                                  C.DF / 2, 1/2), -1e-12);
 
 ## Error handling
 %!error <unknown ResidualType> residuals (glme, "ResidualType", "xxx")

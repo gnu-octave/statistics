@@ -854,7 +854,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     t_crit = tinv (1 - ALPHA / 2, dfe);
     se = sqrt (diag (ucov) * mse);
     t =  b ./ se;
-    p = 2 * (1 - (tcdf (abs (t), dfe)));
+    p = 2 * tcdf (-abs (t), dfe);
     coeff_stats = zeros (1 + sum (df_coef), 6);
     coeff_stats(:,1) = b;                                # coefficients
     coeff_stats(:,2) = se;                               # standard errors
@@ -2369,6 +2369,14 @@ endfunction
 %! assert_equal (p_upper, p_lower);
 %! assert_equal (tbl_upper, tbl_lower);
 
+%!test
+%! ## Below the resolution of 1 - tcdf
+%! [~, ~, stats] = anovan ([1:10, 101:110, 201:210]', ...
+%!                         kron ((1:3)', ones (10, 1)), 'display', 'off');
+%! t = stats.coeffs(:,5);
+%! dfe = stats.dfe;
+%! assert_equal (stats.coeffs(:,6), ...
+%!               betainc (dfe ./ (dfe + t .^ 2), dfe / 2, 1/2), -1e-12);
 %!error <categorical factors cannot have exponent> ...
 %! anovan ((1:4)', {[1; 1; 2; 2], [1; 2; 1; 2]}, ...
 %!         'model', [2, 0], 'display', 'off')

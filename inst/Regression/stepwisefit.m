@@ -328,7 +328,7 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
         endif
 
         tstat = btry(end) / se_try;
-        p_candidate = 2 * (1 - tcdf (abs (tstat), df_try));
+        p_candidate = 2 * tcdf (-abs (tstat), df_try);
 
         ## Deterministic tie-break: first encountered when nearly equal
         if (p_candidate < best_p - eps)
@@ -369,7 +369,7 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
           se_i = (bintfull(ii+1,2) - bfull(ii+1)) / tinv (0.975, df_full);
           if (se_i > 0 && isfinite (se_i))
             t_i = bfull(ii+1) / se_i;
-            pvals_included(ii) = 2 * (1 - tcdf (abs (t_i), df_full));
+            pvals_included(ii) = 2 * tcdf (-abs (t_i), df_full);
           else
             pvals_included(ii) = Inf;
           endif
@@ -420,7 +420,7 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   ## Included predictors
   b(X_use) = B(2:end);
   se(X_use) = (BINT(2:end,2) - B(2:end)) ./ tinv (0.975, df);
-  pval(X_use) = 2 * (1 - tcdf (abs (B(2:end) ./ se(X_use)), df));
+  pval(X_use) = 2 * tcdf (-abs (B(2:end) ./ se(X_use)), df);
 
   ## Excluded predictors: conditional refit
   excluded = setdiff (1:p, X_use);
@@ -434,7 +434,7 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
 
     b(j) = bj;
     se(j) = sej;
-    pval(j) = 2 * (1 - tcdf (abs (bj / sej), n - columns (Xj)));
+    pval(j) = 2 * tcdf (-abs (bj / sej), n - columns (Xj));
   endfor
 
   ## Final model indicator
@@ -696,6 +696,14 @@ endfunction
 %! y = [1.2 2.1 3.9 4.2 5.8 6.1 8.2 7.9];
 %! assert_equal (stepwisefit (X, y, 'Display', 'off'), ...
 %!               stepwisefit (X, y', 'Display', 'off'));
+%!test
+%! ## Below the resolution of 1 - tcdf, value from MATLAB R2024a
+%! x1 = (1:30)';
+%! x2 = x1 + 0.1 * sin (1:30)';
+%! [~, ~, pval] = stepwisefit ([x1, x2], x2 + 0.001 * cos (1:30)', ...
+%!                             'Display', 'off');
+%! assert_equal (pval(2), 3.00226579216343e-116, -1e-9);
+
 %!error <stepwisefit: Keep length must match number of predictors> ...
 %!       stepwisefit (randn (20,4), randn (20,1), 'Keep', [true false])
 

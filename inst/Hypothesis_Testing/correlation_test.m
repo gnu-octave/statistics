@@ -143,6 +143,7 @@ function [h, pval, stats] = correlation_test (x, y, varargin)
     stats.stat = sqrt (stats.df) .* r / sqrt (1 - r.^2);
     stats.dist = 'Student''s t';
     cdf = tcdf (stats.stat, stats.df);
+    ccdf = tcdf (stats.stat, stats.df, 'upper');
   elseif (strcmpi (method, 'kendall'))
     tau = kendall (x, y);
     stats.method = 'Kendall''s rank correlation tau';
@@ -150,7 +151,8 @@ function [h, pval, stats] = correlation_test (x, y, varargin)
     stats.corrcoef = tau;
     stats.stat = tau / sqrt ((2 * (2*n+5)) / (9*n*(n-1)));
     stats.dist = 'standard normal';
-    cdf = stdnormal_cdf (stats.stat);
+    cdf = normcdf (stats.stat);
+    ccdf = normcdf (-stats.stat);
   else  # spearman
     rho = spearman (x, y);
     stats.method = 'Spearman''s rank correlation rho';
@@ -158,15 +160,16 @@ function [h, pval, stats] = correlation_test (x, y, varargin)
     stats.corrcoef = rho;
     stats.stat = sqrt (n-1) * (rho - 6/(n^3-n));
     stats.dist = 'standard normal';
-    cdf = stdnormal_cdf (stats.stat);
+    cdf = normcdf (stats.stat);
+    ccdf = normcdf (-stats.stat);
   endif
 
   ## Based on the "tail" argument determine the P-value
   switch lower (tail)
     case 'both'
-      pval = 2 * min (cdf, 1 - cdf);
+      pval = 2 * min (cdf, ccdf);
     case 'right'
-      pval = 1 - cdf;
+      pval = ccdf;
     case 'left'
       pval = cdf;
   endswitch
@@ -226,3 +229,17 @@ endfunction
 %! [h, pval, stats] = correlation_test (x, y);
 %! assert_equal (stats.corrcoef, corr (x, y), 1e-14);
 %! assert_equal (pval, 0.0223, 1e-4);
+%!test
+%! ## Below the resolution of 1 - tcdf, the p-value of corr in MATLAB R2024a
+%! x = (1:30)';
+%! [~, pval] = correlation_test (x, x + 0.01 * sin (x));
+%! assert_equal (pval, 6.68262089195668e-88, -1e-7);
+%!test
+%! x = (1:30)';
+%! [~, pval, stats] = correlation_test (x, x + sin (x), 'method', 'kendall');
+%! assert_equal (pval, erfc (stats.stat / sqrt (2)), -1e-12);
+%!test
+%! x = (1:30)';
+%! [~, pval, stats] = correlation_test (x, x + sin (x), ...
+%!                                      'method', 'spearman', 'tail', 'right');
+%! assert_equal (pval, erfc (stats.stat / sqrt (2)) / 2, -1e-12);
