@@ -49636,7 +49636,7 @@ lime.fit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1306
+# length: 2492
 lime: obj = fit (obj, queryPoint, numImportantPredictors)
 lime: obj = fit (..., name, value)
 Fit the simple model around one query point.
@@ -49653,9 +49653,13 @@ measured. Where the predictors hold numbers it is one of
 'euclidean', the default, 'squaredeuclidean',
 'seuclidean', 'mahalanobis', 'cityblock',
 'minkowski', 'chebychev', 'cosine',
-'correlation' and 'spearman'; where they hold levels
-it is 'goodall3', the default, or 'ofd'. A function
-handle is also taken, which MATLAB does not; see below.
+'correlation' and 'spearman'; where some hold levels
+it is 'goodall3', the default, or 'ofd'. Both count
+level frequencies over the drawn observations and the query point
+together. 'goodall3' is the 'goodall3' measure of
+nomdist; 'ofd' is one less the mean similarity of its
+'of' measure, D / (1 + D) of the D it returns.
+A function handle is also taken, which MATLAB does not; see below.
 'KernelWidth' How sharply the weight falls
 away with distance, from just above 0 to 1. The default is 0.75.
 'SimpleModelType' 'linear', the
@@ -49666,8 +49670,27 @@ simple model is fitted to, 10^{-4} by default.
 the distance that takes them, as pdist2 takes them.
 
 The weight of a drawn observation is
-exp (-0.5 (d / max (d) / w)^2), with d its distance
-from the query point and w the kernel width.
+exp (-0.5 (d / D / w)^2), with d its distance from the
+query point and w the kernel width. D is the square
+root of the number of predictors for 'goodall3' and
+'ofd', and otherwise the largest distance between two drawn
+observations.
+
+A predictor holding levels enters a linear simple model as one column
+for each level other than the query point's, saying whether an
+observation holds that level, so each coefficient is read against the
+query point's level.
+
+Where the predictors mix numbers and levels, 'goodall3' and
+'ofd' score a predictor holding numbers by one less its
+absolute difference over its range, the query point included, and
+average that with the similarities of the predictors holding levels.
+MATLAB does so by a rule it does not document, which none of the
+constructions tried here reproduces, so on such data the explanation
+differs from MATLAB's. On levels alone 'goodall3' agrees with
+MATLAB; MATLAB does not document 'ofd' beyond scoring a match
+0, and its coefficients differ from those here by up to 0.006
+on the fixture measured.
 
 See also:
 lime,
