@@ -10820,7 +10820,7 @@ glmfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4084
+# length: 4649
 statistics: b = glmfit (X, y, distribution)
 statistics: b = glmfit (X, y, distribution, Name, Value)
 statistics: [b, dev] = glmfit (...)
@@ -10891,6 +10891,16 @@ it is ones (n, 1).
 the fit as a numeric value in dev. Deviance is a generalization of the
 residual sum of squares. It measures the goodness of fit compared to a
 saturated model.
+
+The model is fitted by iteratively reweighted least squares. A step that
+takes the linear predictor outside the domain of the inverse link, as the
+power link of the 'inverse gaussian' distribution does at or below
+zero, is halved back until the fitted means are valid. MATLAB stops at
+such a step with a warning that the weights are ill-conditioned and can
+return coefficients whose fitted means are not valid: with
+u = (1:30)', for glmfit (u, exp (0.1 * u) .* (1 + 0.2 * sin
+(u)), 'inverse gaussian') it reports a deviance of 2.2064 where the fit
+reaches 1.9353.
 
 [b, dev, stats] = glmfit (...) also returns the
 structure stats, which contains the model statistics in the following
