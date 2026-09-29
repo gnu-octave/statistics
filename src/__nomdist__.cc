@@ -636,10 +636,62 @@ validCodes (const Matrix& A)
   return true;
 }
 
+// The measure named, over the pairs pairs () visits.
+static void
+score (const Stats& S, int measure, const std::vector<octave_idx_type>& xc,
+       const std::vector<octave_idx_type>& yc, octave_idx_type n,
+       octave_idx_type m, octave_idx_type K, bool within,
+       const std::vector<octave_idx_type>& act, double *out)
+{
+  switch (measure)
+  {
+    case M_SM:
+      pairs (SM {S}, xc, yc, n, m, K, within, act, out);
+      break;
+    case M_ESKIN:
+      pairs (Eskin {S}, xc, yc, n, m, K, within, act, out);
+      break;
+    case M_ANDERBERG:
+      pairs (Anderberg {S}, xc, yc, n, m, K, within, act, out);
+      break;
+    case M_BURNABY:
+      pairs (Burnaby {S}, xc, yc, n, m, K, within, act, out);
+      break;
+    case M_GAMBARYAN:
+      pairs (MatchOnly {S, S.sumlev, false}, xc, yc, n, m, K, within, act,
+             out);
+      break;
+    case M_GOODALL1:
+    case M_GOODALL2:
+    case M_GOODALL3:
+    case M_GOODALL4:
+    case M_VE:
+    case M_VM:
+      pairs (MatchOnly {S, S.W, true}, xc, yc, n, m, K, within, act, out);
+      break;
+    case M_IOF:
+      pairs (IOF {S}, xc, yc, n, m, K, within, act, out);
+      break;
+    case M_LIN:
+      pairs (Lin {S}, xc, yc, n, m, K, within, act, out);
+      break;
+    case M_LIN1:
+      pairs (Lin1 {S}, xc, yc, n, m, K, within, act, out);
+      break;
+    case M_OF:
+      pairs (OF {S}, xc, yc, n, m, K, within, act, out);
+      break;
+    case M_SMIRNOV:
+      pairs (Smirnov {S}, xc, yc, n, m, K, within, act, out);
+      break;
+  }
+}
+
 DEFUN_DLD(__nomdist__, args, ,
 "-*- texinfo -*-\n\
 @deftypefn  {statistics} {@var{D} =} __nomdist__ (@var{X}, [], @var{R}, @var{measure}, @var{w})\n\
 @deftypefnx {statistics} {@var{D} =} __nomdist__ (@var{X}, @var{Y}, @var{R}, @var{measure}, @var{w})\n\
+@deftypefnx {statistics} {@var{D} =} __nomdist__ (@var{X}, @var{Y}, @var{R}, @var{measure}, @var{w}, @var{addq})\n\
 \n\
 Dissimilarity measures for nominal data.  Internal; called by @code{nomdist}\n\
 and @code{nomdist2} and not meant to be used directly.\n\
@@ -659,10 +711,12 @@ read by every measure but @qcode{'anderberg'}, @qcode{'gambaryan'} and\n\
 With @var{Y} empty, @var{D} is a row vector over every pair of rows of\n\
 @var{X}, in the order @code{pdist} returns them.  Otherwise @var{D} is\n\
 the @math{N*M} matrix of each row of @var{X} against each row of @var{Y}.\n\
+Where @var{addq} is true, each row of @var{Y} is counted into @var{R}\n\
+while it is measured, so no level of @var{Y} is ever absent from it.\n\
 \n\
 @end deftypefn")
 {
-  if (args.length () != 5)
+  if (args.length () < 5 || args.length () > 6)
   {
     print_usage ();
   }
@@ -695,6 +749,20 @@ the @math{N*M} matrix of each row of @var{X} against each row of @var{Y}.\n\
   if (! args(4).isnumeric () || args(4).numel () != K)
   {
     error ("__nomdist__: W must hold one weight per variable.");
+  }
+  bool addq = false;
+  if (args.length () == 6)
+  {
+    if (! (args(5).islogical () || args(5).isnumeric ())
+        || ! args(5).is_scalar_type ())
+    {
+      error ("__nomdist__: ADDQ must be a logical scalar.");
+    }
+    addq = args(5).bool_value ();
+  }
+  if (addq && within)
+  {
+    error ("__nomdist__: ADDQ needs a nonempty Y.");
   }
 
   static const char *names[] = {"sm", "eskin", "anderberg", "burnaby",
@@ -800,7 +868,6 @@ the @math{N*M} matrix of each row of @var{X} against each row of @var{Y}.\n\
     S.last.assign (S.off[K], 0);
     S.P.assign (K, std::vector<double> ());
   }
-  prepare (S, measure);
 
   const octave_idx_type n = X.rows ();
   const octave_idx_type m = Y.rows ();
@@ -815,56 +882,45 @@ the @math{N*M} matrix of each row of @var{X} against each row of @var{Y}.\n\
   }
   double *out = D.fortran_vec ();
 
-  switch (measure)
+  if (! addq)
   {
-    case M_SM:
-      pairs (SM {S}, xc, yc, n, m, K, within, act, out);
-      break;
-    case M_ESKIN:
-      pairs (Eskin {S}, xc, yc, n, m, K, within, act, out);
-      break;
-    case M_ANDERBERG:
-      pairs (Anderberg {S}, xc, yc, n, m, K, within, act, out);
-      break;
-    case M_BURNABY:
-      pairs (Burnaby {S}, xc, yc, n, m, K, within, act, out);
-      break;
-    case M_GAMBARYAN:
-      pairs (MatchOnly {S, S.sumlev, false}, xc, yc, n, m, K, within, act,
-             out);
-      break;
-    case M_GOODALL1:
-    case M_GOODALL2:
-    case M_GOODALL3:
-    case M_GOODALL4:
-    case M_VE:
-    case M_VM:
-      pairs (MatchOnly {S, S.W, true}, xc, yc, n, m, K, within, act, out);
-      break;
-    case M_IOF:
-      pairs (IOF {S}, xc, yc, n, m, K, within, act, out);
-      break;
-    case M_LIN:
-      pairs (Lin {S}, xc, yc, n, m, K, within, act, out);
-      break;
-    case M_LIN1:
-      pairs (Lin1 {S}, xc, yc, n, m, K, within, act, out);
-      break;
-    case M_OF:
-      pairs (OF {S}, xc, yc, n, m, K, within, act, out);
-      break;
-    case M_SMIRNOV:
-      pairs (Smirnov {S}, xc, yc, n, m, K, within, act, out);
-      break;
+    prepare (S, measure);
+    score (S, measure, xc, yc, n, m, K, within, act, out);
+    return ovl (D);
+  }
+
+  // Each row of Y counted into the reference while it is measured: its
+  // levels gain a count, R a row, and every per-level quantity is taken
+  // again, since each depends on all the counts
+  for (octave_idx_type j = 0; j < m; j++)
+  {
+    octave_quit ();
+    Stats T = S;
+    const std::size_t at = (std::size_t) j * K;
+    const std::vector<octave_idx_type> yj (yc.begin () + at,
+                                           yc.begin () + at + K);
+    for (octave_idx_type k = 0; k < K; k++)
+    {
+      if (T.f[yj[k]] == 0)
+      {
+        T.nlev[k] += 1.0;
+        T.sumlev += 1.0;
+      }
+      T.f[yj[k]] += 1.0;
+    }
+    T.r += 1.0;
+    prepare (T, measure);
+    score (T, measure, xc, yj, n, 1, K, false, act, out + (std::size_t) j * n);
   }
 
   return ovl (D);
 }
 
 /*
-%!shared X, W
+%!shared X, W, Q
 %! X = [1, 1, 1; 1, 2, 1; 1, 1, 2; 2, 2, 2; 2, 1, 1; 3, 2, 2; 4, 1, 3];
 %! W = [0.7, 1, 0.4];
+%! Q = [1, 2, 2; 5, 1, 3];
 
 ## Expectations from nomclust 2.8.1 on the same data
 %!test
@@ -1170,6 +1226,78 @@ the @math{N*M} matrix of each row of @var{X} against each row of @var{Y}.\n\
 %! assert_equal (D, [1, 1 - h / 3, 1], -1e-14);
 %!assert_equal (__nomdist__ (1, 1, 1, 'goodall3', 1), 0)
 %!assert_equal (__nomdist__ (1, 1, 1, 'goodall4', 1), 1)
+## Each row of Y counted into R equals R with that row appended
+%!test
+%! E = [__nomdist__(X, Q(1,:), [X; Q(1,:)], 'sm', W), ...
+%!      __nomdist__(X, Q(2,:), [X; Q(2,:)], 'sm', W)];
+%! assert_equal (__nomdist__ (X, Q, [], 'sm', W, true), E);
+%!test
+%! E = [__nomdist__(X, Q(1,:), [X; Q(1,:)], 'eskin', W), ...
+%!      __nomdist__(X, Q(2,:), [X; Q(2,:)], 'eskin', W)];
+%! assert_equal (__nomdist__ (X, Q, [], 'eskin', W, true), E);
+%!test
+%! E = [__nomdist__(X, Q(1,:), [X; Q(1,:)], 'anderberg', ones (1, 3)), ...
+%!      __nomdist__(X, Q(2,:), [X; Q(2,:)], 'anderberg', ones (1, 3))];
+%! assert_equal (__nomdist__ (X, Q, [], 'anderberg', ones (1, 3), true), E);
+%!test
+%! E = [__nomdist__(X, Q(1,:), [X; Q(1,:)], 'burnaby', W), ...
+%!      __nomdist__(X, Q(2,:), [X; Q(2,:)], 'burnaby', W)];
+%! assert_equal (__nomdist__ (X, Q, [], 'burnaby', W, true), E);
+%!test
+%! E = [__nomdist__(X, Q(1,:), [X; Q(1,:)], 'gambaryan', ones (1, 3)), ...
+%!      __nomdist__(X, Q(2,:), [X; Q(2,:)], 'gambaryan', ones (1, 3))];
+%! assert_equal (__nomdist__ (X, Q, [], 'gambaryan', ones (1, 3), true), E);
+%!test
+%! E = [__nomdist__(X, Q(1,:), [X; Q(1,:)], 'goodall1', W), ...
+%!      __nomdist__(X, Q(2,:), [X; Q(2,:)], 'goodall1', W)];
+%! assert_equal (__nomdist__ (X, Q, [], 'goodall1', W, true), E);
+%!test
+%! E = [__nomdist__(X, Q(1,:), [X; Q(1,:)], 'goodall2', W), ...
+%!      __nomdist__(X, Q(2,:), [X; Q(2,:)], 'goodall2', W)];
+%! assert_equal (__nomdist__ (X, Q, [], 'goodall2', W, true), E);
+%!test
+%! E = [__nomdist__(X, Q(1,:), [X; Q(1,:)], 'goodall3', W), ...
+%!      __nomdist__(X, Q(2,:), [X; Q(2,:)], 'goodall3', W)];
+%! assert_equal (__nomdist__ (X, Q, [], 'goodall3', W, true), E);
+%!test
+%! E = [__nomdist__(X, Q(1,:), [X; Q(1,:)], 'goodall4', W), ...
+%!      __nomdist__(X, Q(2,:), [X; Q(2,:)], 'goodall4', W)];
+%! assert_equal (__nomdist__ (X, Q, [], 'goodall4', W, true), E);
+%!test
+%! E = [__nomdist__(X, Q(1,:), [X; Q(1,:)], 'iof', W), ...
+%!      __nomdist__(X, Q(2,:), [X; Q(2,:)], 'iof', W)];
+%! assert_equal (__nomdist__ (X, Q, [], 'iof', W, true), E);
+%!test
+%! E = [__nomdist__(X, Q(1,:), [X; Q(1,:)], 'lin', W), ...
+%!      __nomdist__(X, Q(2,:), [X; Q(2,:)], 'lin', W)];
+%! assert_equal (__nomdist__ (X, Q, [], 'lin', W, true), E);
+%!test
+%! E = [__nomdist__(X, Q(1,:), [X; Q(1,:)], 'lin1', W), ...
+%!      __nomdist__(X, Q(2,:), [X; Q(2,:)], 'lin1', W)];
+%! assert_equal (__nomdist__ (X, Q, [], 'lin1', W, true), E);
+%!test
+%! E = [__nomdist__(X, Q(1,:), [X; Q(1,:)], 'of', W), ...
+%!      __nomdist__(X, Q(2,:), [X; Q(2,:)], 'of', W)];
+%! assert_equal (__nomdist__ (X, Q, [], 'of', W, true), E);
+%!test
+%! E = [__nomdist__(X, Q(1,:), [X; Q(1,:)], 'smirnov', ones (1, 3)), ...
+%!      __nomdist__(X, Q(2,:), [X; Q(2,:)], 'smirnov', ones (1, 3))];
+%! assert_equal (__nomdist__ (X, Q, [], 'smirnov', ones (1, 3), true), E);
+%!test
+%! E = [__nomdist__(X, Q(1,:), [X; Q(1,:)], 've', W), ...
+%!      __nomdist__(X, Q(2,:), [X; Q(2,:)], 've', W)];
+%! assert_equal (__nomdist__ (X, Q, [], 've', W, true), E);
+%!test
+%! E = [__nomdist__(X, Q(1,:), [X; Q(1,:)], 'vm', W), ...
+%!      __nomdist__(X, Q(2,:), [X; Q(2,:)], 'vm', W)];
+%! assert_equal (__nomdist__ (X, Q, [], 'vm', W, true), E);
+%!test
+%! R = [X; 2, 2, 1; 1, 1, 1];
+%! E = [__nomdist__(X, Q(1,:), [R; Q(1,:)], 'lin1', W), ...
+%!      __nomdist__(X, Q(2,:), [R; Q(2,:)], 'lin1', W)];
+%! assert_equal (__nomdist__ (X, Q, R, 'lin1', W, true), E);
+%!assert_equal (__nomdist__ (X, X, [], 'of', W, false), ...
+%!              __nomdist__ (X, X, [], 'of', W))
 
 %!error<Invalid call to __nomdist__> __nomdist__ (1, [], 1, 'sm')
 %!error<__nomdist__: X, Y and R must be real numeric matrices.> ...
@@ -1186,4 +1314,8 @@ the @math{N*M} matrix of each row of @var{X} against each row of @var{Y}.\n\
 %! __nomdist__ (1, [], 1, 'morlini', 1)
 %!error<__nomdist__: R must hold every level X holds.> ...
 %! __nomdist__ (2, [], 1, 'sm', 1)
+%!error<__nomdist__: ADDQ must be a logical scalar.> ...
+%! __nomdist__ (1, 1, [], 'sm', 1, [true, true])
+%!error<__nomdist__: ADDQ needs a nonempty Y.> ...
+%! __nomdist__ (1, [], [], 'sm', 1, true)
 */

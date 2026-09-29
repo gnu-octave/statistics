@@ -1367,7 +1367,7 @@ nomdist2
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1981
+# length: 2225
 statistics: D = nomdist2 (X, Y)
 statistics: D = nomdist2 (X, Y, measure)
 statistics: D = nomdist2 (..., Name, Value)
@@ -1401,9 +1401,14 @@ options nomdist takes. 'Weights' gives one weight per
 variable. 'Reference' names a sample to count level frequencies
 over in place of X, which must hold every level X holds;
 [X; Y] counts them over both samples.
+'CountQuery', false by default, counts each row of Y
+into the reference while it is measured, so that its column of D
+takes level frequencies over the reference with that row appended.
 
-Y may hold a level the reference sample does not. Each measure then
-answers with the limit of its formula as that level's count falls to 0.
+Y may hold a level the reference sample does not, unless
+'CountQuery' is true, which counts that level once. Each measure
+then answers with the limit of its formula as that level's count falls
+to 0.
 'sm', 'eskin', 'gambaryan', the four Goodall
 measures, 'smirnov', 've' and 'vm' never read that
 count and answer as usual. 'of' and 'burnaby' score the

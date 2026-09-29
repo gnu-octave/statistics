@@ -50,9 +50,14 @@
 ## variable.  @qcode{'Reference'} names a sample to count level frequencies
 ## over in place of @var{X}, which must hold every level @var{X} holds;
 ## @code{[@var{X}; @var{Y}]} counts them over both samples.
+## @qcode{'CountQuery'}, @code{false} by default, counts each row of @var{Y}
+## into the reference while it is measured, so that its column of @var{D}
+## takes level frequencies over the reference with that row appended.
 ##
-## @var{Y} may hold a level the reference sample does not.  Each measure then
-## answers with the limit of its formula as that level's count falls to 0.
+## @var{Y} may hold a level the reference sample does not, unless
+## @qcode{'CountQuery'} is true, which counts that level once.  Each measure
+## then answers with the limit of its formula as that level's count falls
+## to 0.
 ## @qcode{'sm'}, @qcode{'eskin'}, @qcode{'gambaryan'}, the four Goodall
 ## measures, @qcode{'smirnov'}, @qcode{'ve'} and @qcode{'vm'} never read that
 ## count and answer as usual.  @qcode{'of'} and @qcode{'burnaby'} score the
@@ -72,7 +77,13 @@ function D = nomdist2 (X, Y, varargin)
   if (nargin < 2)
     error ("nomdist2: too few input arguments.");
   endif
-  [C, measure, w, errmsg] = __nomprep__ (X, Y, true, varargin);
+  [cq, args] = parsePairedArguments ({'CountQuery'}, {false}, varargin(:));
+  if (! ((islogical (cq) || isnumeric (cq)) && isscalar (cq)
+         && (cq == 0 || cq == 1)))
+    error ("nomdist2: 'CountQuery' must be a logical scalar.");
+  endif
+  cq = logical (cq);
+  [C, measure, w, errmsg] = __nomprep__ (X, Y, true, args(:)');
   if (! isempty (errmsg))
     error ("nomdist2: %s", errmsg);
   endif
@@ -82,8 +93,9 @@ function D = nomdist2 (X, Y, varargin)
     return;
   endif
 
-  ## A level of Y the reference does not hold, where no limit exists
-  if (any (strcmp (measure, {'iof', 'of', 'burnaby'})))
+  ## A level of Y the reference does not hold, where no limit exists; a
+  ## counted query is never absent from its own reference
+  if (! cq && any (strcmp (measure, {'iof', 'of', 'burnaby'})))
     if (isempty (Rc))
       Rc = Xc;
     endif
@@ -103,7 +115,7 @@ function D = nomdist2 (X, Y, varargin)
     endfor
   endif
 
-  D = __nomdist__ (Xc, Yc, C{3}, measure, w);
+  D = __nomdist__ (Xc, Yc, C{3}, measure, w, cq);
 
 endfunction
 
@@ -155,6 +167,24 @@ endfunction
 %!assert_equal (nomdist2 ([1; 2], [3; 1], 'iof', 'Reference', ...
 %!                        [1; 1; 2; 2; 3; 3]), [1, 0; 1, 1] * log (2) ^ 2, ...
 %!              -1e-14)
+%!test
+%! A = [1; 1; 2; 2];
+%! E = [nomdist2(A, 3, 'iof', 'Reference', [A; 3]), ...
+%!      nomdist2(A, 1, 'iof', 'Reference', [A; 1])];
+%! assert_equal (nomdist2 (A, [3; 1], 'iof', 'CountQuery', true), E);
+%!test
+%! Y = X([2, 6],:);
+%! E = [nomdist2(X, Y(1,:), 'Reference', [X; Y(1,:)]), ...
+%!      nomdist2(X, Y(2,:), 'Reference', [X; Y(2,:)])];
+%! assert_equal (nomdist2 (X, Y, 'CountQuery', true), E);
+%!test
+%! R = [X; 2, 2, 1];
+%! Y = [1, 1, 3; 4, 2, 2];
+%! E = [nomdist2(X, Y(1,:), 'lin', 'Reference', [R; Y(1,:)]), ...
+%!      nomdist2(X, Y(2,:), 'lin', 'Reference', [R; Y(2,:)])];
+%! assert_equal (nomdist2 (X, Y, 'lin', 'Reference', R, 'CountQuery', 1), E);
+%!assert_equal (nomdist2 (X, X, 'of', 'CountQuery', false), ...
+%!              nomdist2 (X, X, 'of'))
 
 %!error<nomdist2: too few input arguments.> nomdist2 ([1; 2])
 %!error<nomdist2: Y must be a numeric, logical, categorical, string or cellstr matrix, or a table.> ...
@@ -180,3 +210,7 @@ endfunction
 %! nomdist2 ([1; 1], 2, 'of')
 %!error<nomdist2: 'burnaby' cannot score a level of Y that the reference sample does not hold, where that sample holds the variable at one level.> ...
 %! nomdist2 ([1; 1], 2, 'burnaby')
+%!error<nomdist2: 'CountQuery' must be a logical scalar.> ...
+%! nomdist2 ([1; 2], 1, 'CountQuery', 'yes')
+%!error<nomdist2: 'CountQuery' must be a logical scalar.> ...
+%! nomdist2 ([1; 2], 1, 'CountQuery', 2)
