@@ -1439,7 +1439,7 @@ chi2test
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3561
+# length: 3754
 statistics: pval = chi2test (x)
 statistics: [pval, chisq] = chi2test (x)
 statistics: [pval, chisq, dF] = chi2test (x)
@@ -1470,32 +1470,36 @@ freedom. Otherwise it can return the following output arguments:
 pval the p-value of the relevant test.
 chisq the chi^2 statistic of the relevant test.
 dF the degrees of freedom of the relevant test.
-E the EXPECTED values of the original contingency
-table.
+E the expected values under the tested model, in the
+layout of x; for "marginal", of the two-way table left after
+collapsing x.
 
 Unlike MATLAB, in GNU Octave chi2test also supports 3-way tables,
 which involve three categorical variables (each in a different dimension of
 x. In its simplest form, [...] = chi2test (x) will
-will test for mutual independence among the three variables. Alternatively,
+test for mutual independence among the three variables. Alternatively,
 when called in the form [...] = chi2test (x, name,
 value), it can perform the following tests:
 
 name value Description
 "mutual" [] Mutual independence. All variables are
-independent from each other, (A, B, C). Value must be an empty matrix.
+independent from each other, (A, B, C). It takes no value; an empty
+matrix is accepted.
 "joint" scalar Joint independence. Two variables are jointly
 independent of the third, (AB, C). The scalar value corresponds to the
 dimension of the independent variable (i.e. 3 for C).
 "marginal" scalar Marginal independence. Two variables are
 independent if you ignore the third, (A, C). The scalar value corresponds
-to the dimension of the variable to be ignored (i.e. 2 for B).
+to the dimension of the variable to be ignored (i.e. 2 for B); the table is
+collapsed over it and independence is tested in the two-way table that
+remains.
 "conditional" scalar Conditional independence. Two variables
 are independent given the third, (AC, BC). The scalar value corresponds to
 the dimension of the variable that forms the conditional dependence
 (i.e. 3 for C).
 "homogeneous" [] Homogeneous associations. Conditional
 (partial) odds-ratios are not related on the value of the third,
-(AB, AC, BC). Value must be an empty matrix.
+(AB, AC, BC). It takes no value; an empty matrix is accepted.
 
 When testing for homogeneous associations in 3-way tables, the iterative
 proportional fitting procedure is used. For small samples it is better to

@@ -48,34 +48,38 @@
 ## @item @var{pval} @tab the p-value of the relevant test.
 ## @item @var{chisq} @tab the chi^2 statistic of the relevant test.
 ## @item @var{dF} @tab the degrees of freedom of the relevant test.
-## @item @var{E} @tab the EXPECTED values of the original contingency
-## table.
+## @item @var{E} @tab the expected values under the tested model, in the
+## layout of @var{x}; for @qcode{"marginal"}, of the two-way table left after
+## collapsing @var{x}.
 ## @end multitable
 ##
 ## Unlike MATLAB, in GNU Octave @code{chi2test} also supports 3-way tables,
 ## which involve three categorical variables (each in a different dimension of
 ## @var{x}.  In its simplest form, @code{[@dots{}] = chi2test (@var{x})} will
-## will test for mutual independence among the three variables.  Alternatively,
+## test for mutual independence among the three variables.  Alternatively,
 ## when called in the form @code{[@dots{}] = chi2test (@var{x}, @var{name},
 ## @var{value})}, it can perform the following tests:
 ##
 ## @multitable @columnfractions 0.2 0.1 0.7
 ## @headitem @var{name} @tab @var{value} @tab Description
 ## @item "mutual" @tab [] @tab Mutual independence.  All variables are
-## independent from each other, (A, B, C).  Value must be an empty matrix.
+## independent from each other, (A, B, C).  It takes no value; an empty
+## matrix is accepted.
 ## @item "joint" @tab scalar @tab Joint independence.  Two variables are jointly
 ## independent of the third, (AB, C). The scalar value corresponds to the
 ## dimension of the independent variable (i.e. 3 for C).
 ## @item "marginal" @tab scalar @tab Marginal independence.  Two variables are
 ## independent if you ignore the third, (A, C).  The scalar value corresponds
-## to the dimension of the variable to be ignored (i.e. 2 for B).
+## to the dimension of the variable to be ignored (i.e. 2 for B); the table is
+## collapsed over it and independence is tested in the two-way table that
+## remains.
 ## @item "conditional" @tab scalar @tab Conditional independence.  Two variables
 ## are independent given the third, (AC, BC).  The scalar value corresponds to
 ## the dimension of the variable that forms the conditional dependence
 ## (i.e. 3 for C).
 ## @item "homogeneous" @tab [] @tab Homogeneous associations.  Conditional
 ## (partial) odds-ratios are not related on the value of the third,
-## (AB, AC, BC).  Value must be an empty matrix.
+## (AB, AC, BC).  It takes no value; an empty matrix is accepted.
 ## @end multitable
 ##
 ## When testing for homogeneous associations in 3-way tables, the iterative
@@ -112,6 +116,11 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
   ## Check optional arguments
   if (dim == 2 && nargin > 1)
     error ("chi2test: optional arguments are not supported for 2-way tables.");
+  endif
+  ## 'mutual' and 'homogeneous' take no value, though an empty one is accepted
+  if (dim == 3 && numel (varargin) == 1 && ischar (varargin{1}) ...
+      && any (strcmpi (varargin{1}, {'mutual', 'homogeneous'})))
+    varargin{2} = [];
   endif
   if (dim == 3 && mod (numel (varargin(:)), 2) != 0)
     error ("chi2test: optional arguments must be in pairs.");
@@ -176,36 +185,17 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
         endfor
       endfor
       ## Rearrange OBSERVED and EXPECTED matrices in original dimensions
-      x = permute (x, [c_dim, dm]);
-      x = permute (x, [c_dim, dm]);
-      E = permute (E, [c_dim, dm]);
-      E = permute (E, [c_dim, dm]);
+      x = ipermute (x, [c_dim, dm]);
+      E = ipermute (E, [c_dim, dm]);
     elseif (strcmpi (varargin{1}, 'marginal'))
-      ## Get dimension of marginal variable (dim)
+      ## Collapse over the ignored variable and test independence in the
+      ## two-way table that remains
       c_dim = varargin{2};
-      ## Calculate degrees of freedom
-      c_sz = sz;
-      c_sz(c_dim) = [];
-      df = prod (sz) - sum (c_sz) + 1;
-      ## Rearrange dimensions so that marginal variable goes in dim 1
-      dm = [1, 2, 3];
-      dm(c_dim) = [];
-      x = permute (x, [c_dim, dm]);
-      ## Calculate partial table sums
-      q1 = sum (sum (x, 1), 3);
-      q2 = sum (sum (x, 1), 2);
-      n2 = sz(c_dim) * sum (x(:));
-      ## Calculate expected values
-      for d1 = 1:size (x, 1)
-        for d2 = 1:size (x, 2)
-          for d3 = 1:size (x, 3)
-            E(d1,d2,d3) = q1(:,d2) * q2(:,:,d3) / n2;
-          endfor
-        endfor
-      endfor
-      ## Rearrange OBSERVED and EXPECTED matrices in original dimensions
-      x = permute (x, [c_dim, dm]);
-      E = permute (E, [c_dim, dm]);
+      x = reshape (sum (x, c_dim), sz(setdiff (1:3, c_dim)));
+      sz = size (x);
+      dim = 2;
+      df = prod (sz - 1);
+      E = sum (x, 2) * sum (x, 1) / n;
     elseif (strcmpi (varargin{1}, 'conditional'))
       ## Get dimension of conditional variable (dim)
       c_dim = varargin{2};
@@ -230,68 +220,30 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
         endfor
       endfor
       ## Rearrange OBSERVED and EXPECTED matrices in original dimensions
-      x = permute (x, [c_dim, dm]);
-      x = permute (x, [c_dim, dm]);
-      E = permute (E, [c_dim, dm]);
-      E = permute (E, [c_dim, dm]);
+      x = ipermute (x, [c_dim, dm]);
+      E = ipermute (E, [c_dim, dm]);
     elseif (strcmpi (varargin{1}, 'homogeneous'))
       ## Calculate degrees of freedom
       df = prod (sz - 1);
-      ## Compute observed marginal totals for any two dimensions
-      omt12 = sum (sum (x, 3), 3);
-      omt13 = sum (sum (x, 2), 2);
-      omt23 = sum (sum (x, 1), 1);
-      ## Produce initial seed 3-way table
-      S = ones (sz);
-      ## Calculate initial expected marginal totals
-      emt12 = sum (sum (S, 3), 3);
-      emt13 = sum (sum (S, 2), 2);
-      emt23 = sum (sum (S, 1), 1);
-      ## Compute difference to converge within certain tolerance or iterations
-      OEdiff = sum (omt12(:) - emt12(:)) + sum (omt13(:) - emt13(:)) + ...
-               sum (omt23(:) - emt23(:));
-      iter = 1;
-      tol = 1e-6;
-      ## Start Iterative Proportional Fitting Procedure
-      while (OEdiff > tol || iter > 50)
-        ## Rows x Columns
-        for d1 = 1:size (x, 1)
-          for d2 = 1:size (x, 2)
-            for d3 = 1:size (x, 3)
-              E(d1,d2,d3) = S(d1,d2,d3) * omt12(d1,d2) / emt12(d1,d2);
-            endfor
-          endfor
-        endfor
-        ## Update seed and recalculate Rows x Layers expected marginal totals
-        S = E;
-        emt13 = sum (sum (S, 2), 2);
-        ## Rows x Layers
-        for d1 = 1:size (x, 1)
-          for d2 = 1:size (x, 2)
-            for d3 = 1:size (x, 3)
-              E(d1,d2,d3) = S(d1,d2,d3) * omt13(d1,:,d3) / emt13(d1,:,d3);
-            endfor
-          endfor
-        endfor
-        ## Update seed and recalculate Columns x Layers expected marginal totals
-        S = E;
-        emt23 = sum (sum (S, 1), 1);
-        ## Columns x Layers
-        for d1 = 1:size (x, 1)
-          for d2 = 1:size (x, 2)
-            for d3 = 1:size (x, 3)
-              E(d1,d2,d3) = S(d1,d2,d3) * omt23(:,d2,d3) / emt23(:,d2,d3);
-            endfor
-          endfor
-        endfor
-        ## Update seed and recalculate Rows x Layers expected marginal totals
-        S = E;
-        emt12 = sum (sum (S, 3), 3);
-        ## Update difference between OBSERVED and EXPECTED tables
-        OEdiff = sum (omt12(:) - emt12(:)) + sum (omt13(:) - emt13(:)) + ...
-                 sum (omt23(:) - emt23(:));
-        iter += 1;
-      endwhile
+      ## Fit the three two-way margins by iterative proportional fitting,
+      ## until those it last left behind match to within rounding
+      ratio = @(a, b) a ./ (b + (b == 0));
+      E = ones (sz);
+      converged = false;
+      for iter = 1:1000
+        E = E .* ratio (sum (x, 3), sum (E, 3));
+        E = E .* ratio (sum (x, 2), sum (E, 2));
+        E = E .* ratio (sum (x, 1), sum (E, 1));
+        gap = max ([abs(sum (E, 3) - sum (x, 3))(:); ...
+                    abs(sum (E, 2) - sum (x, 2))(:)]);
+        if (gap <= 1e-12 * n)
+          converged = true;
+          break;
+        endif
+      endfor
+      if (! converged)
+        warning ("chi2test: the homogeneous model did not converge.");
+      endif
     else
       error ("chi2test: invalid model name for testing a 3-way table.");
     endif
@@ -368,7 +320,7 @@ endfunction
 %!error<chi2test: invalid model name for testing a 3-way table.> ...
 %! p = chi2test (ones (3, 3, 3), 'testtype', 2);
 %!error<chi2test: optional arguments must be in pairs.> ...
-%! p = chi2test (ones (3, 3, 3), 'mutual');
+%! p = chi2test (ones (3, 3, 3), 'joint');
 %!error<chi2test: value must be numeric in optional argument> ...
 %! p = chi2test (ones (3, 3, 3), 'joint', ['a']);
 %!error<chi2test: value must be empty or scalar in optional argument> ...
@@ -403,13 +355,15 @@ endfunction
 %!assert_equal (chi2test (x, 'joint', 1), 1.164834895206468e-11, 1e-14);
 %!assert_equal (chi2test (x, 'joint', 2), 7.771350230001417e-11, 1e-14);
 %!assert_equal (chi2test (x, 'joint', 3), 0.07151361728026107, 1e-14);
-%!assert_equal (chi2test (x, 'marginal', 1), 0, 1e-14);
-%!assert_equal (chi2test (x, 'marginal', 2), 6.347555814301131e-11, 1e-14);
-%!assert_equal (chi2test (x, 'marginal', 3), 0, 1e-14);
+%!assert_equal (chi2test (x, 'marginal', 1), 0.12455768155123595, -1e-12);
+%!assert_equal (chi2test (x, 'marginal', 2), 0.039793350279010681, -1e-12);
+%!assert_equal (chi2test (x, 'marginal', 3), 9.0141038839122684e-13, -1e-12);
 %!assert_equal (chi2test (x, 'conditional', 1), 0.2303114201312508, 1e-14);
 %!assert_equal (chi2test (x, 'conditional', 2), 0.0958810684407079, 1e-14);
 %!assert_equal (chi2test (x, 'conditional', 3), 2.648037344954446e-11, 1e-14);
-%!assert_equal (chi2test (x, 'homogeneous', []), 0.4485579470993741, 1e-14);
+%!assert_equal (chi2test (x, 'homogeneous', []), 0.57357539370887889, -1e-10);
+%!assert_equal (chi2test (x, 'homogeneous'), chi2test (x, 'homogeneous', []));
+%!assert_equal (chi2test (x, 'mutual'), chi2test (x));
 %!test
 %! [pval, chisq, df, E] = chi2test (x);
 %! assert_equal (chisq, 64.0982, 1e-4);
@@ -419,12 +373,12 @@ endfunction
 %! [pval, chisq, df, E] = chi2test (x, 'joint', 2);
 %! assert_equal (chisq, 56.0943, 1e-4);
 %! assert_equal (df, 5);
-%! assert_equal (E(:,:,2), [40.922, 23.310; 38.078, 21.690], ones (2, 2) * 1e-3);
+%! assert_equal (E(:,:,2), [40.922, 38.078; 23.310, 21.690], ones (2, 2) * 1e-3);
 %!test
 %! [pval, chisq, df, E] = chi2test (x, 'marginal', 3);
-%! assert_equal (chisq, 146.6058, 1e-4);
-%! assert_equal (df, 9);
-%! assert_equal (E(:,1,1), [61.642; 57.358], ones (2, 1) * 1e-3);
+%! assert_equal (chisq, 51.0479, 1e-4);
+%! assert_equal (df, 1);
+%! assert_equal (E, [184.926, 172.074; 74.074, 68.926], ones (2, 2) * 1e-3);
 %!test
 %! [pval, chisq, df, E] = chi2test (x, 'conditional', 3);
 %! assert_equal (chisq, 52.2509, 1e-4);
@@ -432,6 +386,31 @@ endfunction
 %! assert_equal (E(:,:,1), [53.345, 37.655; 14.655, 10.345], ones (2, 2) * 1e-3);
 %!test
 %! [pval, chisq, df, E] = chi2test (x, 'homogeneous', []);
-%! assert_equal (chisq, 1.6034, 1e-4);
+%! assert_equal (chisq, 1.1117, 1e-4);
 %! assert_equal (df, 2);
-%! assert_equal (E(:,:,1), [60.827, 31.382; 7.173, 16.618], ones (2, 2) * 1e-3);
+%! assert_equal (E(:,:,1), [60.469, 30.531; 7.531, 17.469], ones (2, 2) * 1e-3);
+%!test
+%! ## The homogeneous model reproduces every two-way margin
+%! [~, ~, ~, E] = chi2test (x, 'homogeneous');
+%! assert_equal ([sum(E, 1)(:); sum(E, 2)(:); sum(E, 3)(:)], ...
+%!               [sum(x, 1)(:); sum(x, 2)(:); sum(x, 3)(:)], -1e-10);
+%!test
+%! ## E keeps the layout of a table whose dimensions differ
+%! y = reshape ([12 7 3 9 15 4 6 8 11 5 14 2 9 10 3 7 6 13], [3, 2, 3]);
+%! [~, ~, ~, E] = chi2test (y, 'joint', 2);
+%! assert_equal (sum (E, 2), sum (y, 2), -1e-12);
+%!test
+%! y = reshape ([12 7 3 9 15 4 6 8 11 5 14 2 9 10 3 7 6 13], [3, 2, 3]);
+%! [~, ~, ~, E] = chi2test (y, 'conditional', 2);
+%! assert_equal (size (E), [3, 2, 3]);
+%!test
+%! ## Chi-squares of R's loglin on a 3-by-2-by-3 table
+%! y = reshape ([12 7 3 9 15 4 6 8 11 5 14 2 9 10 3 7 6 13], [3, 2, 3]);
+%! [~, c] = chi2test (y, 'homogeneous');
+%! assert_equal (c, 15.05772742, -1e-9);
+%!test
+%! ## Marginal independence is tested in the collapsed table, as R's
+%! ## chisq.test does it
+%! y = reshape ([12 7 3 9 15 4 6 8 11 5 14 2 9 10 3 7 6 13], [3, 2, 3]);
+%! [~, c, df] = chi2test (y, 'marginal', 2);
+%! assert_equal ([c, df], [7.584460, 4], -1e-6);
