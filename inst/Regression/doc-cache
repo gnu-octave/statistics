@@ -3991,13 +3991,17 @@ GeneralizedLinearModel.devianceTest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 362
+# length: 574
 GeneralizedLinearModel: tbl = devianceTest (mdl)
 Likelihood-ratio (deviance) test of the fitted model against the
 intercept-only model. Returns a table with the deviance, degrees of
-freedom, and p-value of each model, the last row giving the chi-square
-statistic (the drop in deviance) and its p-value. Each row is named by
-the formula of the model it describes.
+freedom, and p-value of each model, the last row giving the test
+statistic and its p-value. Where the dispersion is fixed, the statistic
+is the drop in deviance, chi2Stat, referred to the chi-square
+distribution; where it is estimated, it is the drop per degree of
+freedom over the dispersion, FStat, referred to the
+F-distribution. Each row is named by the formula of the model it
+describes.
 
 
 # name: <cell-element>
