@@ -1139,7 +1139,7 @@
   <a href="nbinstat.html">nbinstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Distribution_Classes/+prob/NegativeBinomialDistribution.m">prob.NegativeBinomialDistribution</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/fa9aceb/inst/Distribution_Classes/+prob/NegativeBinomialDistribution.m">prob.NegativeBinomialDistribution</a>
 </p>
 </div>
         <p class="lead my-3">The <code>prob.NegativeBinomialDistribution</code> class contains the following properties:</p>
@@ -3086,30 +3086,26 @@ Truncate a probability distribution.
           </div>
           <div class="collapse" id="prob_NegativeBinomialDistribution_truncate-example1">
             <div class="card-body">
-                <p>Generate a deterministic data set mimicking 10000 samples from a truncated Negative Binomial distribution with parameters R = 5 and P = 0.5, truncated at [2, 10].  Fit a Negative Binomial distribution to this data and plot a PDF of the truncated fitted distribution superimposed on a histogram of the data.</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x_vals = 2:10;
- probs = nbinpdf (x_vals, 5, 0.5);
- total_prob = nbincdf (10, 5, 0.5) - nbincdf (1, 5, 0.5);
- probs = probs / total_prob;
- N = 10000;
- freq = round (probs * N);
- data = [];
- data = repelem (x_vals, freq);
- warning ("off", "all");
- pd = fitdist (data, "NegativeBinomial");
- t = truncate (pd, 2, 10);</pre>
-                <p>Plot histogram and truncated PDF</p>
-                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (t)
+                <p>Plot the PMF of a Negative Binomial distribution, with parameters R = 5 and P = 0.5, truncated at [2, 10].  Generate 10000 random samples from this truncated distribution and superimpose a histogram of their relative frequencies.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ randg ('state', 42);
+ randp ('state', 42);
+ pd = makedist ("NegativeBinomial", "R", 5, "P", 0.5);
+ t = truncate (pd, 2, 10);
+ data = random (t, 10000, 1);</pre>
+                <p>Relative frequency of each value from 2 to 10</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> centers = 2:10;
+ probs = histc (data, centers) / numel (data);
+ bar (centers, probs, 0.5, "facecolor", [0.6 0.6 1]);
  hold on
- [counts, centers] = hist (data, 50);
- bar (centers, counts / trapz (centers, counts), 'hist');
+ plot (centers, pdf (t, centers), 'r-', "linewidth", 2);
  hold off
- title ("Negative Binomial distribution (R=5, P=0.5) truncated at [2, 10]")
- legend ("Truncated PDF", "Histogram")</pre>
+ title ("Negative Binomial distribution (R = 5, P = 0.5) truncated at [2, 10]")
+ legend ("Histogram", "Truncated PMF")</pre>
                 <div class="text-center">
                   <img src="assets/prob.NegativeBinomialDistribution.truncate-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
                 </div><p></p>
-                <p>This demonstrates truncating a Negative Binomial distribution to a specific range and visualizing the resulting distribution with random samples.</p>
+                <p>This demonstrates truncating a Negative Binomial distribution to a specific range and checking the result against random samples.</p>
 
             </div>
           </div>
