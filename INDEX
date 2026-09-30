@@ -477,6 +477,7 @@ Plotting
  glyphplot
  gplotmatrix
  gscatter
+ heatmap
  hist3
  histfit
  manovacluster
@@ -488,6 +489,7 @@ Plotting
  scatterhist
  silhouette
  stats.chart.BoxChart
+ stats.chart.HeatmapChart
  swarmchart
  violin
  wblplot

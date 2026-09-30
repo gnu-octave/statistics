@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 57
+# columns: 103
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -1067,6 +1067,75 @@ scatter
 # elements: 1
 # length: 38
 Draw a scatter plot with grouped data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+heatmap
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1851
+statistics: heatmap (cdata)
+statistics: heatmap (xvalues, yvalues, cdata)
+statistics: heatmap (tbl, xvar, yvar)
+statistics: heatmap (parent, ...)
+statistics: heatmap (..., Name, Value)
+statistics: h = heatmap (...)
+Heatmap of a matrix, or of the rows of a table counted or aggregated over
+two of its variables.
+
+heatmap (cdata) draws the matrix cdata as a grid of
+coloured cells, each carrying its value, with a colour bar beside them.
+The columns are named '1', '2', ..., and so are the
+rows.
+
+heatmap (xvalues, yvalues, cdata) names the columns
+with xvalues and the rows with yvalues, vectors of distinct
+numbers, text or categories with one element for each column and each row
+of cdata.
+
+heatmap (tbl, xvar, yvar) makes a column of each
+distinct value of the table variable xvar and a row of each distinct
+value of yvar, and colours each cell by the number of rows of
+tbl falling in it. With 'ColorVariable' naming a numeric
+variable, each cell holds the mean of that variable over its rows instead,
+or what 'ColorMethod' asks for: 'count', 'mean',
+'median', 'sum', 'min', 'max', or
+'none' where each cell holds at most one row. The categories of a
+categorical variable are taken in their order, those no row uses
+included; numbers, text and logical values are sorted. A row whose
+xvar or yvar is missing is left out.
+
+heatmap (parent, ...) places the heatmap in the figure or
+panel parent rather than the current figure. The heatmap takes the
+place of the current axes of its parent, and is refused where
+hold is on for them.
+
+heatmap (..., Name, Value) sets properties of the
+heatmap; see stats.chart.HeatmapChart for all of them.
+
+h = heatmap (...) returns the heatmap, a
+stats.chart.HeatmapChart object, whose methods sortx,
+sorty, xlim and ylim reorder and restrict its columns
+and rows.
+
+See also:
+stats.chart.HeatmapChart,
+imagesc,
+crosstab
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 95
+Heatmap of a matrix, or of the rows of a table counted or aggregated over two of its variables.
 
 
 
@@ -2459,6 +2528,1164 @@ is refused while the data came from vectors.
 # elements: 1
 # length: 51
 The column of SourceTable holding the observations.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+stats.chart.HeatmapChart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1609
+statistics: stats.chart.HeatmapChart
+A heatmap, as heatmap draws it.
+
+A stats.chart.HeatmapChart holds a matrix of values, the labels of
+its columns and rows, and the choices it is drawn with, and redraws itself
+whenever one of them is set. It is what heatmap returns, and the
+documented way to reach it.
+
+The values come either from a matrix or from a table, never from both.
+From a table, each distinct value of XVariable is a column and each
+distinct value of YVariable a row, and each cell holds the number of
+rows of the table falling in it, or the mean, median, sum, minimum or
+maximum of ColorVariable over them, as ColorMethod says.
+Missing values of ColorVariable are left out of the mean, median,
+sum, minimum and maximum, and counted by 'count'.
+
+XData and YData name the columns and rows of ColorData.
+XDisplayData and YDisplayData say which of them are shown and
+in what order, and XDisplayLabels and YDisplayLabels what they
+are called on the chart. ColorDisplayData is the matrix as shown.
+
+A heatmap takes the place of the current axes of its parent, as MATLAB's
+does, keeping their outer position, and refuses axes on which
+hold is on. A later plot into the figure takes the place of the
+heatmap in turn.
+
+MATLAB's chart is a graphics object of its own. This one is a handle class
+that draws into axes of its own, which become the current axes and are
+deleted with it; when a later plot clears those axes the chart lets go of
+them, and Parent and the drawing are gone. GridVisible,
+ColorbarVisible and Visible hold 'on' or
+'off' where MATLAB holds an on-off state.
+
+See also:
+heatmap,
+imagesc
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+A heatmap, as heatmap draws it.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.chart.HeatmapChart.CellLabelColor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 220
+stats.chart.HeatmapChart: property CellLabelColor
+The colour of the cell labels, as an RGB triplet or a colour name;
+'auto', the default, writes black on a light cell and white on
+a dark one, and 'none' writes no labels.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 170
+The colour of the cell labels, as an RGB triplet or a colour name; 'auto', the default, writes black on a light cell and white on a dark one, and 'none' writes no labels.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+stats.chart.HeatmapChart.CellLabelFormat
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 144
+stats.chart.HeatmapChart: property CellLabelFormat
+The format each value is written into its cell with, as
+sprintf takes it. '%0.4g' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 73
+The format each value is written into its cell with, as sprintf takes it.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+stats.chart.HeatmapChart.ColorData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 238
+stats.chart.HeatmapChart: property ColorData
+The matrix of values, one row for each element of YData and one
+column for each element of XData. Where the chart was drawn
+from a table it is computed from the table and setting it is refused.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 97
+The matrix of values, one row for each element of YData and one column for each element of XData.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.HeatmapChart.ColorDisplayData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 225
+stats.chart.HeatmapChart: property ColorDisplayData
+ColorData as it is shown: its rows and columns in the order of
+YDisplayData and XDisplayData, missing where a displayed
+value is not in the data. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 145
+ColorData as it is shown: its rows and columns in the order of YDisplayData and XDisplayData, missing where a displayed value is not in the data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+stats.chart.HeatmapChart.ColorLimits
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 323
+stats.chart.HeatmapChart: property ColorLimits
+The values mapped to the first and the last colour of Colormap,
+as a 1-by-2 increasing vector. Until it is set it follows the values
+shown: their smallest and largest, v - 1 and v + 1 where
+they are all v, [0, 1] where none is finite or where the
+columns or rows are rescaled.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 94
+The values mapped to the first and the last colour of Colormap, as a 1-by-2 increasing vector.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+stats.chart.HeatmapChart.ColorMethod
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 343
+stats.chart.HeatmapChart: property ColorMethod
+How the rows of SourceTable falling in a cell make its value:
+'count', 'mean', 'median', 'sum',
+'min', 'max' or 'none', which takes the one
+value there is and is refused where a cell holds more than one. It
+is 'count' where no ColorVariable is named,
+'mean' where one is, and 'none' for a matrix.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 203
+How the rows of SourceTable falling in a cell make its value: 'count', 'mean', 'median', 'sum', 'min', 'max' or 'none', which takes the one value there is and is refused where a cell holds more than one.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+stats.chart.HeatmapChart.ColorScaling
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 390
+stats.chart.HeatmapChart: property ColorScaling
+How the values are turned into colours: 'scaled', the default,
+maps them to the colormap as they are; 'scaledcolumns' and
+'scaledrows' rescale each column or row to run from 0 to 1;
+'log' maps their natural logarithm, a negative value then
+being left uncoloured with a warning. The cell labels show the values
+themselves whatever the scaling.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 277
+How the values are turned into colours: 'scaled', the default, maps them to the colormap as they are; 'scaledcolumns' and 'scaledrows' rescale each column or row to run from 0 to 1; 'log' maps their natural logarithm, a negative value then being left uncoloured with a warning.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+stats.chart.HeatmapChart.ColorVariable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 139
+stats.chart.HeatmapChart: property ColorVariable
+The numeric variable of SourceTable aggregated into each cell,
+or empty to count the rows.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 90
+The numeric variable of SourceTable aggregated into each cell, or empty to count the rows.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+stats.chart.HeatmapChart.ColorbarVisible
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 109
+stats.chart.HeatmapChart: property ColorbarVisible
+Whether the colour bar is drawn, 'on' by default or
+'off'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 58
+Whether the colour bar is drawn, 'on' by default or 'off'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+stats.chart.HeatmapChart.Colormap
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 173
+stats.chart.HeatmapChart: property Colormap
+The colours, as an M-by-3 matrix of values between 0 and 1. By default
+256 colours running from a pale blue to [0, 0.447, 0.741].
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 59
+The colours, as an M-by-3 matrix of values between 0 and 1.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+stats.chart.HeatmapChart.FontColor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 137
+stats.chart.HeatmapChart: property FontColor
+The colour of the title, the axis labels and the tick labels.
+[0.15, 0.15, 0.15] by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 61
+The colour of the title, the axis labels and the tick labels.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+stats.chart.HeatmapChart.FontName
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 104
+stats.chart.HeatmapChart: property FontName
+The font of every text on the chart, 'Helvetica' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 60
+The font of every text on the chart, 'Helvetica' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+stats.chart.HeatmapChart.FontSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 106
+stats.chart.HeatmapChart: property FontSize
+The size of every text on the chart, in points, 10 by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+The size of every text on the chart, in points, 10 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+stats.chart.HeatmapChart.GridVisible
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 115
+stats.chart.HeatmapChart: property GridVisible
+Whether lines are drawn between the cells, 'on' by default or
+'off'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 68
+Whether lines are drawn between the cells, 'on' by default or 'off'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+stats.chart.HeatmapChart.HeatmapChart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 540
+stats.chart.HeatmapChart: obj = stats.chart.HeatmapChart (parent, spec, args)
+Create a stats.chart.HeatmapChart object.
+
+parent is the figure or panel to place the chart in, or empty for
+the current figure, which is resolved only once every value has been
+accepted. spec is a structure carrying the data as
+heatmap resolved it, with the fields ColorData,
+XData, YData, SourceTable, XVariable,
+YVariable and ColorVariable, and args the
+name-value pairs left to set. The documented way to reach this
+constructor is heatmap.
+
+See also:
+heatmap
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+Create a stats.chart.HeatmapChart object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+stats.chart.HeatmapChart.InnerPosition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 70
+stats.chart.HeatmapChart: property InnerPosition
+The same as Position.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+The same as Position.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+stats.chart.HeatmapChart.Interpreter
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 116
+stats.chart.HeatmapChart: property Interpreter
+How the texts are interpreted: 'tex', the default,
+'latex' or 'none'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 69
+How the texts are interpreted: 'tex', the default, 'latex' or 'none'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.HeatmapChart.MissingDataColor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 164
+stats.chart.HeatmapChart: property MissingDataColor
+The colour of a cell holding a missing value, as an RGB triplet or a
+colour name. [0.15, 0.15, 0.15] by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 81
+The colour of a cell holding a missing value, as an RGB triplet or a colour name.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.HeatmapChart.MissingDataLabel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 114
+stats.chart.HeatmapChart: property MissingDataLabel
+The label of a cell holding a missing value, 'NaN' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+The label of a cell holding a missing value, 'NaN' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+stats.chart.HeatmapChart.OuterPosition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 249
+stats.chart.HeatmapChart: property OuterPosition
+The position of the whole chart in its parent, labels included,
+[0, 0, 1, 1] by default, or the outer position of the axes it
+took the place of. Setting it turns PositionConstraint to
+'outerposition'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 144
+The position of the whole chart in its parent, labels included, [0, 0, 1, 1] by default, or the outer position of the axes it took the place of.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+stats.chart.HeatmapChart.Parent
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 113
+stats.chart.HeatmapChart: property Parent
+The figure or panel the chart is placed in. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+The figure or panel the chart is placed in.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+stats.chart.HeatmapChart.Position
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 444
+stats.chart.HeatmapChart: property Position
+The position of the grid of cells in its parent, as
+[left, bottom, width, height] in Units. While
+PositionConstraint is 'outerposition' the chart places
+the cells within OuterPosition itself, leaving room for the
+labels and the colour bar, [0.13, 0.11, 0.732143, 0.815] of it
+at least; setting Position fixes the cells there and turns
+PositionConstraint to 'innerposition'.
+InnerPosition is the same.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 91
+The position of the grid of cells in its parent, as [left, bottom, width, height] in Units.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.chart.HeatmapChart.PositionConstraint
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 158
+stats.chart.HeatmapChart: property PositionConstraint
+Which position the chart keeps when its labels change:
+'outerposition', the default, or 'innerposition'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 104
+Which position the chart keeps when its labels change: 'outerposition', the default, or 'innerposition'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+stats.chart.HeatmapChart.SourceTable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 101
+stats.chart.HeatmapChart: property SourceTable
+The table the chart was drawn from, or an empty table.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+The table the chart was drawn from, or an empty table.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+stats.chart.HeatmapChart.Title
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 216
+stats.chart.HeatmapChart: property Title
+The title, a character vector or a cell array of them, one for each
+line. From a table it says what the cells hold, such as
+'Count of Y vs. X' or 'Mean of V', until it is set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 73
+The title, a character vector or a cell array of them, one for each line.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+stats.chart.HeatmapChart.Units
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 93
+stats.chart.HeatmapChart: property Units
+The units of the positions, 'normalized' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 52
+The units of the positions, 'normalized' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+stats.chart.HeatmapChart.Visible
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 96
+stats.chart.HeatmapChart: property Visible
+Whether the chart is shown, 'on' by default or 'off'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Whether the chart is shown, 'on' by default or 'off'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+stats.chart.HeatmapChart.XData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 223
+stats.chart.HeatmapChart: property XData
+The names of the columns of ColorData, a column cell array of
+distinct character vectors. By default they are '1',
+'2', ..., and they follow the size of ColorData until
+they are set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 89
+The names of the columns of ColorData, a column cell array of distinct character vectors.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+stats.chart.HeatmapChart.XDisplayData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 190
+stats.chart.HeatmapChart: property XDisplayData
+The columns shown and their order, as elements of XData; a value
+not in XData is shown as a column of missing values. All of
+XData by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 117
+The columns shown and their order, as elements of XData; a value not in XData is shown as a column of missing values.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.chart.HeatmapChart.XDisplayLabels
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 213
+stats.chart.HeatmapChart: property XDisplayLabels
+The labels of the columns shown, one for each element of
+XDisplayData, which they are by default. A label set stays with
+its column when XDisplayData is reordered.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 97
+The labels of the columns shown, one for each element of XDisplayData, which they are by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+stats.chart.HeatmapChart.XLabel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 128
+stats.chart.HeatmapChart: property XLabel
+The label of the horizontal axis; from a table the name of
+XVariable, until it is set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 86
+The label of the horizontal axis; from a table the name of XVariable, until it is set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+stats.chart.HeatmapChart.XLimits
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 221
+stats.chart.HeatmapChart: property XLimits
+The first and the last column shown, as a 1-by-2 cell array of elements
+of XDisplayData; the columns between them in
+XDisplayData are shown. The whole of XDisplayData by
+default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 140
+The first and the last column shown, as a 1-by-2 cell array of elements of XDisplayData; the columns between them in XDisplayData are shown.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+stats.chart.HeatmapChart.XVariable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 102
+stats.chart.HeatmapChart: property XVariable
+The variable of SourceTable whose values are the columns.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 57
+The variable of SourceTable whose values are the columns.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+stats.chart.HeatmapChart.YData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 104
+stats.chart.HeatmapChart: property YData
+The names of the rows of ColorData, as XData names its
+columns.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 63
+The names of the rows of ColorData, as XData names its columns.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+stats.chart.HeatmapChart.YDisplayData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 114
+stats.chart.HeatmapChart: property YDisplayData
+The rows shown and their order, as XDisplayData gives the
+columns.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 66
+The rows shown and their order, as XDisplayData gives the columns.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.chart.HeatmapChart.YDisplayLabels
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 117
+stats.chart.HeatmapChart: property YDisplayLabels
+The labels of the rows shown, as XDisplayLabels labels the
+columns.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 67
+The labels of the rows shown, as XDisplayLabels labels the columns.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+stats.chart.HeatmapChart.YLabel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 126
+stats.chart.HeatmapChart: property YLabel
+The label of the vertical axis; from a table the name of
+YVariable, until it is set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 84
+The label of the vertical axis; from a table the name of YVariable, until it is set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+stats.chart.HeatmapChart.YLimits
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 106
+stats.chart.HeatmapChart: property YLimits
+The first and the last row shown, as XLimits gives the columns.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 63
+The first and the last row shown, as XLimits gives the columns.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+stats.chart.HeatmapChart.YVariable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 99
+stats.chart.HeatmapChart: property YVariable
+The variable of SourceTable whose values are the rows.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+The variable of SourceTable whose values are the rows.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+stats.chart.HeatmapChart.delete
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 84
+stats.chart.HeatmapChart: delete (h)
+Delete the heatmap and the axes it is drawn in.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+Delete the heatmap and the axes it is drawn in.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+stats.chart.HeatmapChart.sortx
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 665
+stats.chart.HeatmapChart: sortx (h)
+stats.chart.HeatmapChart: sortx (h, row)
+stats.chart.HeatmapChart: sortx (h, row, direction)
+stats.chart.HeatmapChart: sortx (..., 'MissingPlacement', mp)
+Reorder the columns of a heatmap.
+
+sortx (h) puts the columns in the order of their names.
+sortx (h, row) puts them in the order of their values
+in the row named row, an element of YData; a cell array of
+rows sorts by the first, then by the next where the first ties.
+direction is 'ascend', the default, or 'descend'.
+Missing values go last when ascending and first when descending,
+unless mp, 'first', 'last' or 'auto', says
+otherwise. The new order is set as XDisplayData.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+Reorder the columns of a heatmap.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+stats.chart.HeatmapChart.sorty
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 300
+stats.chart.HeatmapChart: sorty (h)
+stats.chart.HeatmapChart: sorty (h, column)
+stats.chart.HeatmapChart: sorty (h, column, direction)
+stats.chart.HeatmapChart: sorty (..., 'MissingPlacement', mp)
+Reorder the rows of a heatmap, as sortx reorders its columns, by
+the values in the column named column.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 103
+Reorder the rows of a heatmap, as sortx reorders its columns, by the values in the column named column.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+stats.chart.HeatmapChart.xlim
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 166
+stats.chart.HeatmapChart: limits = xlim (h)
+stats.chart.HeatmapChart: xlim (h, limits)
+The first and last column shown, as XLimits holds them; given
+limits, set them.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 79
+The first and last column shown, as XLimits holds them; given limits, set them.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+stats.chart.HeatmapChart.ylim
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 163
+stats.chart.HeatmapChart: limits = ylim (h)
+stats.chart.HeatmapChart: ylim (h, limits)
+The first and last row shown, as YLimits holds them; given
+limits, set them.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 76
+The first and last row shown, as YLimits holds them; given limits, set them.
 
 
 
