@@ -362,7 +362,7 @@ function [h, p, stats] = chi2test (x, varargin)
   if (isfinite (chisq))
     n = sum (x(:));
     stats.CohensW = sqrt (max (chisq - df, 0) / n);
-    stats.CohensWCI = sqrt (ncx2bounds (chisq, df, alpha) / n);
+    stats.CohensWCI = sqrt (__ncx2bounds__ (chisq, df, alpha) / n);
   else
     stats.CohensW = NaN;
     stats.CohensWCI = [NaN, NaN];
@@ -377,25 +377,6 @@ function [h, p, stats] = chi2test (x, varargin)
     printf ("p-val = %f with chi^2 statistic = %f and d.f. = %d.\n", ...
             p, chisq, df);
   endif
-
-endfunction
-
-## The noncentralities at which the observed statistic falls at the upper and
-## at the lower ALPHA/2 point of the noncentral chi^2 distribution; zero
-## where the central distribution already puts it beyond that point.
-function lambda = ncx2bounds (chisq, df, alpha)
-
-  target = [1 - alpha / 2, alpha / 2];
-  lambda = [0, 0];
-  for j = 1:2
-    if (chi2cdf (chisq, df) > target(j))
-      hi = max (chisq, 1);
-      while (ncx2cdf (chisq, df, hi) > target(j))
-        hi *= 2;
-      endwhile
-      lambda(j) = fzero (@(l) ncx2cdf (chisq, df, l) - target(j), [0, hi]);
-    endif
-  endfor
 
 endfunction
 

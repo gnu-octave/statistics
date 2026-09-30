@@ -19,6 +19,7 @@
 ## @deftypefn  {statistics} {@var{p} =} kruskalwallis (@var{x})
 ## @deftypefnx {statistics} {@var{p} =} kruskalwallis (@var{x}, @var{group})
 ## @deftypefnx {statistics} {@var{p} =} kruskalwallis (@var{x}, @var{group}, @var{displayopt})
+## @deftypefnx {statistics} {@var{p} =} kruskalwallis (@var{x}, @var{group}, @var{displayopt}, @var{Name}, @var{Value})
 ## @deftypefnx {statistics} {[@var{p}, @var{tbl}] =} kruskalwallis (@var{x}, @dots{})
 ## @deftypefnx {statistics} {[@var{p}, @var{tbl}, @var{stats}] =} kruskalwallis (@var{x}, @dots{})
 ##
@@ -63,6 +64,29 @@
 ## a multiple comparison of means with the MULTCOMPARE function.
 ## @end itemize
 ##
+## @var{stats} also holds the effect size of the test, an Octave extension:
+## @qcode{EtaSquared}, the rank eta squared
+## @math{max (0, (H - k + 1) / (n - k))} for the statistic @math{H} over
+## @math{k} groups and @math{n} observations, which is the share of the
+## variance of the ranks the groups account for, corrected for bias, and
+## @qcode{EtaSquaredCI}, its two-sided confidence interval at the level
+## @math{100 (1 - alpha)} percent.  By default the interval inverts the
+## noncentral chi-square distribution of @math{H} on @math{k - 1} degrees of
+## freedom, taken as @math{H}'s distribution under the alternative, which it
+## is for large samples.  Three options after @var{displayopt}, also an
+## Octave extension, set it:
+##
+## @multitable @columnfractions 0.32 0.66
+## @headitem @var{Name} @tab @var{Value}
+## @item @qcode{'Alpha'} @tab The significance level of the interval, a
+## scalar between 0 and 1, 0.05 by default.
+## @item @qcode{'ConfidenceIntervalType'} @tab @qcode{'exact'}, the default,
+## or @qcode{'bootstrap'} for the bias-corrected and accelerated bootstrap
+## interval, resampling within each group.
+## @item @qcode{'NumBootstraps'} @tab The number of bootstrap replicates, a
+## positive integer, 1000 by default.
+## @end multitable
+##
 ## If kruskalwallis is called without any output arguments, then it prints the
 ## results in a one-way ANOVA table to the standard output.  It is also printed
 ## when @var{displayopt} is 'on'.
@@ -83,18 +107,39 @@
 ## kruskalwallis (x, group);
 ## @end example
 ##
+## @seealso{anova1, friedman, ranksum, multcompare}
 ## @end deftypefn
 
-function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
+function [p, tbl, stats] = kruskalwallis (x, group, displayopt, varargin)
 
   ## check for valid number of input arguments
-  narginchk (1, 3);
+  if (nargin < 1)
+    print_usage ();
+  endif
   ## add defaults
   if (nargin < 2)
     group = [];
   endif
   if (nargin < 3)
     displayopt = 'on';
+  endif
+  [alpha, citype, nboot, args] = parsePairedArguments ...
+               ({'Alpha', 'ConfidenceIntervalType', 'NumBootstraps'}, ...
+                {0.05, 'exact', 1000}, varargin(:));
+  if (! isempty (args))
+    error ("kruskalwallis: invalid optional paired argument.");
+  endif
+  if (! (isnumeric (alpha) && isreal (alpha) && isscalar (alpha)
+         && alpha > 0 && alpha < 1))
+    error ("kruskalwallis: 'Alpha' must be a scalar between 0 and 1.");
+  endif
+  if (! (ischar (citype) && any (strcmpi (citype, {'exact', 'bootstrap'}))))
+    error (strcat ("kruskalwallis: 'ConfidenceIntervalType' must be", ...
+                   " 'exact' or 'bootstrap'."));
+  endif
+  if (! (isnumeric (nboot) && isreal (nboot) && isscalar (nboot)
+         && isfinite (nboot) && nboot >= 1 && nboot == fix (nboot)))
+    error ("kruskalwallis: 'NumBootstraps' must be a positive integer.");
   endif
   plotdata = ! (strcmp (displayopt, 'off'));
 
@@ -207,6 +252,20 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
     stats.source = 'kruskalwallis';
     stats.meanranks = xm;
     stats.sumt = 2 * tieadj;
+    ## The rank eta squared, corrected for bias as H - df estimates the
+    ## noncentrality, and its interval
+    stats.EtaSquared = NaN;
+    stats.EtaSquaredCI = [NaN, NaN];
+    if (dfm > 0 && dfe > 0)
+      stats.EtaSquared = max (0, (ChiSq - dfm) / dfe);
+      if (strcmpi (citype, 'exact'))
+        stats.EtaSquaredCI = min (__ncx2bounds__ (ChiSq, dfm, alpha) / dfe, 1);
+      else
+        S = arrayfun (@(g) x(group_id == g), 1:groups, 'UniformOutput', false);
+        stats.EtaSquaredCI = __bootci__ (@etaSquared, S, alpha, nboot, ...
+                                         'strata');
+      endif
+    endif
   endif
   ## Print results table on screen if no output argument was requested
   if (nargout == 0 || plotdata)
@@ -222,6 +281,29 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
   if (plotdata)
     boxplot (x, group_id, 'Notch', 'on', 'Labels', group_names);
   endif
+endfunction
+
+## The rank eta squared of groups whose columns are resampled copies of each
+## sample, one value per column
+function e = etaSquared (varargin)
+  k = numel (varargin);
+  ns = cellfun (@rows, varargin);
+  n = sum (ns);
+  g = repelem ((1:k)', ns(:));
+  X = vertcat (varargin{:});
+  e = NaN (1, columns (X));
+  if (n <= k)
+    return;
+  endif
+  for j = 1:columns (X)
+    [r, tieadj] = tiedrank (X(:,j));
+    m = accumarray (g, r) ./ ns(:);
+    H = 12 * sum (ns(:) .* (m - (n + 1) / 2) .^ 2) / (n * (n + 1));
+    if (tieadj > 0)
+      H /= 1 - 2 * tieadj / (n ^ 3 - n);
+    endif
+    e(j) = max (0, (H - k + 1) / (n - k));
+  endfor
 endfunction
 
 ## local function for computing tied ranks on column vectors
@@ -332,3 +414,47 @@ endfunction
 %! ## Below the resolution of 1 - chi2cdf, values from MATLAB R2024a
 %! p = kruskalwallis ((1:200)', [ones(100, 1); 2 * ones(100, 1)], 'off');
 %! assert_equal (p, 2.5239394239903e-34, -1e-10);
+%!shared kw, kwg
+%! kw = [2.1, 3.4, 1.9, 5.6, 4.4, 3.8, 2.7, 6.1, 3.3, 4.9, 1.2, 2.8, 0.9, ...
+%!       2.2, 3.1, 1.7, 2.5, 0.4, 1.9, 3.6, 2.0, 1.1, 1.8, 2.9, 2.2, 4.1, ...
+%!       4.9, 2.6, 3.0, 4.8]';
+%! kwg = [ones(10, 1); 2 * ones(12, 1); 3 * ones(8, 1)];
+## Effect size against the R package effectsize 1.0.3, rank_eta_squared
+%!test
+%! [~, tbl, stats] = kruskalwallis (kw, kwg, 'off');
+%! assert_equal (stats.EtaSquared, 0.29653567934214958, -1e-13);
+%! ## The bounds put H at the upper and lower 2.5% points of the noncentral
+%! ## chi-square distribution
+%! lambda = stats.EtaSquaredCI * tbl{3,3};
+%! assert_equal (ncx2cdf (tbl{2,5}, 2, lambda), [0.975, 0.025], -1e-10);
+%!test
+%! [~, tbl, stats] = kruskalwallis (kw, kwg, 'off', 'Alpha', 0.1);
+%! lambda = stats.EtaSquaredCI * tbl{3,3};
+%! assert_equal (ncx2cdf (tbl{2,5}, 2, lambda), [0.95, 0.05], -1e-10);
+%!test
+%! x = [1, 2, 2, 3, 3, 3, 4, 5, 2, 2, 3, 3, 4, 6, 5, 6, 6, 7]';
+%! g = [ones(8, 1); 2 * ones(6, 1); 3 * ones(4, 1)];
+%! [~, ~, stats] = kruskalwallis (x, g, 'off');
+%! assert_equal (stats.EtaSquared, 0.38833809693938293, -1e-13);
+%! assert_equal (stats.EtaSquaredCI(2), 1);
+%!test
+%! [~, ~, stats] = kruskalwallis ([1, 5, 2, 8, 4, 3, 7, 6, 2, 9, 1, 3]', ...
+%!                                [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]', 'off');
+%! assert_equal (stats.EtaSquared, 0);
+%! assert_equal (stats.EtaSquaredCI(1), 0);
+%!test
+%! rand ('state', 1);
+%! [~, ~, stats] = kruskalwallis (kw, kwg, 'off', 'ConfidenceIntervalType', ...
+%!                                'bootstrap', 'NumBootstraps', 200);
+%! ci = stats.EtaSquaredCI;
+%! assert_equal ([ci(1) <= ci(2), ci(1) >= 0, ci(2) <= 1], true (1, 3));
+
+%!error<kruskalwallis: invalid optional paired argument.> ...
+%! kruskalwallis ([1, 2, 3, 4], [1, 1, 2, 2], 'off', 'Foo', 1)
+%!error<kruskalwallis: 'Alpha' must be a scalar between 0 and 1.> ...
+%! kruskalwallis ([1, 2, 3, 4], [1, 1, 2, 2], 'off', 'Alpha', 1)
+%!error<kruskalwallis: 'ConfidenceIntervalType' must be 'exact' or 'bootstrap'.> ...
+%! kruskalwallis ([1, 2, 3, 4], [1, 1, 2, 2], 'off', ...
+%!                'ConfidenceIntervalType', 'none')
+%!error<kruskalwallis: 'NumBootstraps' must be a positive integer.> ...
+%! kruskalwallis ([1, 2, 3, 4], [1, 1, 2, 2], 'off', 'NumBootstraps', 0)

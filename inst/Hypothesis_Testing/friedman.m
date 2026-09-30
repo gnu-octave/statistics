@@ -20,6 +20,7 @@
 ## @deftypefn  {statistics} {@var{p} =} friedman (@var{x})
 ## @deftypefnx {statistics} {@var{p} =} friedman (@var{x}, @var{reps})
 ## @deftypefnx {statistics} {@var{p} =} friedman (@var{x}, @var{reps}, @var{displayopt})
+## @deftypefnx {statistics} {@var{p} =} friedman (@var{x}, @var{reps}, @var{displayopt}, @var{Name}, @var{Value})
 ## @deftypefnx {statistics} {[@var{p}, @var{tbl}] =} friedman (@dots{})
 ## @deftypefnx {statistics} {[@var{p}, @var{tbl}, @var{stats}] =} friedman (@dots{})
 ##
@@ -60,6 +61,34 @@
 ## multiple comparison of medians with the MULTCOMPARE function.
 ## @end itemize
 ##
+## @var{stats} also holds the effect size of the test, an Octave extension:
+## @qcode{KendallsW}, Kendall's coefficient of concordance, and
+## @qcode{KendallsWCI}, its two-sided confidence interval at the level
+## @math{100 (1 - alpha)} percent.  With @math{b} blocks of @math{r}
+## replicates over @math{c} columns, @math{W = Q / Q_max}, where @math{Q} is
+## the test statistic, corrected for ties, and
+## @math{Q_max = b r^2 (c^2 - 1) / (r c + 1)} the value it takes when every
+## block ranks the columns in the same order; without replicates this is the
+## usual @math{W = Q / (b (c - 1))}.  By default the interval inverts the
+## noncentral chi-square distribution of @math{Q} on @math{c - 1} degrees of
+## freedom, taken as @math{Q}'s distribution under the alternative, which it
+## is for many blocks, and bounds the expected value of @math{W},
+## @math{(c - 1 + lambda) / Q_max} for the noncentrality @math{lambda}; the
+## lower bound is therefore above zero, @math{W} itself averaging @math{1/b}
+## where the columns do not differ.  Three options after @var{displayopt},
+## also an Octave extension, set it:
+##
+## @multitable @columnfractions 0.32 0.66
+## @headitem @var{Name} @tab @var{Value}
+## @item @qcode{'Alpha'} @tab The significance level of the interval, a
+## scalar between 0 and 1, 0.05 by default.
+## @item @qcode{'ConfidenceIntervalType'} @tab @qcode{'exact'}, the default,
+## or @qcode{'bootstrap'} for the bias-corrected and accelerated bootstrap
+## interval, resampling the blocks.
+## @item @qcode{'NumBootstraps'} @tab The number of bootstrap replicates, a
+## positive integer, 1000 by default.
+## @end multitable
+##
 ## If friedman is called without any output arguments, then it prints the
 ## results in a Friedman's ANOVA table to the standard output.
 ##
@@ -79,10 +108,30 @@
 ## @seealso{anova2, kruskalwallis, multcompare}
 ## @end deftypefn
 
-function [p, tbl, stats] = friedman (x, reps, displayopt)
+function [p, tbl, stats] = friedman (x, reps, displayopt, varargin)
 
   ## Check for valid number of input arguments
-  narginchk (1, 3);
+  if (nargin < 1)
+    print_usage ();
+  endif
+  [alpha, citype, nboot, args] = parsePairedArguments ...
+               ({'Alpha', 'ConfidenceIntervalType', 'NumBootstraps'}, ...
+                {0.05, 'exact', 1000}, varargin(:));
+  if (! isempty (args))
+    error ("friedman: invalid optional paired argument.");
+  endif
+  if (! (isnumeric (alpha) && isreal (alpha) && isscalar (alpha)
+         && alpha > 0 && alpha < 1))
+    error ("friedman: 'Alpha' must be a scalar between 0 and 1.");
+  endif
+  if (! (ischar (citype) && any (strcmpi (citype, {'exact', 'bootstrap'}))))
+    error (strcat ("friedman: 'ConfidenceIntervalType' must be 'exact'", ...
+                   " or 'bootstrap'."));
+  endif
+  if (! (isnumeric (nboot) && isreal (nboot) && isscalar (nboot)
+         && isfinite (nboot) && nboot >= 1 && nboot == fix (nboot)))
+    error ("friedman: 'NumBootstraps' must be a positive integer.");
+  endif
   ## Check for NaN values in X
   if (any (isnan (x(:))))
     error ("friedman: NaN values in input are not allowed.");
@@ -108,7 +157,7 @@ function [p, tbl, stats] = friedman (x, reps, displayopt)
   ## Check for displayopt.  It is 'on' by default, as it is in MATLAB and in
   ## ANOVA1 and ANOVA2.
   disp_table = true;
-  if (nargin == 3)
+  if (nargin >= 3)
     if (! any (strcmp (displayopt, {'on', 'off'})))
       error ("friedman: displayopt must be either 'on' or 'off'.");
     endif
@@ -178,6 +227,23 @@ function [p, tbl, stats] = friedman (x, reps, displayopt)
     stats.n = r;
     stats.meanranks = mean (m);
     stats.sigma = sqrt (sigmasq);
+    ## Kendall's W, Q over the value it takes under complete concordance,
+    ## and its interval, which bounds the expected value of W
+    qmax = r * reps ^ 2 * (c ^ 2 - 1) / (reps * c + 1);
+    stats.KendallsW = chi_r / qmax;
+    if (strcmpi (citype, 'exact'))
+      stats.KendallsWCI = min ((__ncx2bounds__ (chi_r, c - 1, alpha) ...
+                                + c - 1) / qmax, 1);
+    else
+      ## Each block as one row, its replicates of a column side by side
+      B = zeros (r, reps * c);
+      for j = 1:r
+        B(j,:) = reshape (x(reps * (j - 1) + (1:reps),:), 1, []);
+      endfor
+      stats.KendallsWCI = __bootci__ (@(varargin) kendallsW (c, reps, ...
+                                      varargin{:}), num2cell (B, 1), ...
+                                      alpha, nboot, 'rows');
+    endif
   endif
 
   ## Display ANOVA table if opted or no output argument is requested.  MATLAB
@@ -186,6 +252,36 @@ function [p, tbl, stats] = friedman (x, reps, displayopt)
     print_friedman_table (tbl);
   endif
 
+endfunction
+
+## Kendall's W of blocks resampled as rows: argument k holds position k of
+## every block, a column's replicates side by side, and each of its columns
+## is one replicate of the blocks
+function w = kendallsW (c, reps, varargin)
+  [b, R] = size (varargin{1});
+  q = c * reps;
+  qmax = b * reps ^ 2 * (c ^ 2 - 1) / (reps * c + 1);
+  col = ceil ((1:q) / reps);
+  w = zeros (1, R);
+  for k = 1:R
+    M = cell2mat (cellfun (@(v) v(:,k), varargin, 'UniformOutput', false));
+    ## Midranks within each block, and the number tied with each value
+    A = permute (M, [1, 3, 2]);
+    E = squeeze (sum (M == A, 2));
+    rk = squeeze (sum (M < A, 2)) + (E + 1) / 2;
+    if (b == 1)
+      E = E';
+      rk = rk';
+    endif
+    ties = sum (E(:) .^ 2 - 1);
+    sigmasq = q * (q + 1) / 12;
+    if (ties > 0)
+      sigmasq -= ties / (12 * b * (q - 1));
+    endif
+    m = accumarray (col', mean (rk, 1)') / reps;
+    Q = b * reps * sum ((m - (q + 1) / 2) .^ 2) / sigmasq;
+    w(k) = Q / qmax;
+  endfor
 endfunction
 
 ## Print the ANOVA table the way ANOVA2 prints its own: one header line, then
@@ -313,6 +409,33 @@ endfunction
 %! q = (1:60)';
 %! p = friedman ([q, q + 100, q + 200], 1, 'off');
 %! assert_equal (p, 8.75651076269649e-27, -1e-10);
+## Effect size against the R package effectsize 1.0.3, kendalls_w
+%!test
+%! x = [1, 2, 3, 4; 2, 2, 3, 1; 4, 3, 2, 1; 1, 3, 3, 4; 2, 1, 4, 3; 3, 3, 1, 2];
+%! [~, ~, stats] = friedman (x, 1, 'off');
+%! assert_equal (stats.KendallsW, 0.02046783625730994, -1e-13);
+%! ## Q falls below the upper 2.5% point of the central distribution, so the
+%! ## lower bound is the expected W of no effect, (c - 1) / (b (c - 1))
+%! assert_equal (stats.KendallsWCI(1), 1 / 6, -1e-14);
+%!test
+%! x = [1, 2, 3, 4; 1, 3, 2, 4; 2, 1, 3, 4; 1, 2, 4, 3; 1, 2, 3, 4];
+%! [~, tbl, stats] = friedman (x, 1, 'off');
+%! assert_equal (stats.KendallsW, 0.776, -1e-14);
+%! lambda = stats.KendallsWCI(1) * 15 - 3;
+%! assert_equal (ncx2cdf (tbl{2,5}, 3, lambda), 0.975, -1e-10);
+%! assert_equal (stats.KendallsWCI(2), 1);
+%!test
+%! load popcorn;
+%! [~, tbl, stats] = friedman (popcorn, 3, 'off');
+%! assert_equal (stats.KendallsW, tbl{2,5} / (2 * 9 * 8 / 10), -1e-14);
+%!test
+%! rand ('state', 1);
+%! x = [1, 2, 3, 4; 1, 3, 2, 4; 2, 1, 3, 4; 1, 2, 4, 3; 1, 2, 3, 4; ...
+%!      2, 1, 3, 4; 1, 2, 3, 4; 1, 3, 2, 4];
+%! [~, ~, stats] = friedman (x, 1, 'off', 'ConfidenceIntervalType', ...
+%!                          'bootstrap', 'NumBootstraps', 200);
+%! ci = stats.KendallsWCI;
+%! assert_equal ([ci(1) <= ci(2), ci(1) >= 0, ci(2) <= 1], true (1, 3));
 
 %!error<friedman: displayopt must be either 'on' or 'off'.> ...
 %! friedman ([5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; 6.5, 5.0, 4.0; ...
@@ -321,3 +444,11 @@ endfunction
 %! friedman ([1, 2; NaN, 4]);
 %!error<friedman: repetitions and observations do not match.> ...
 %! friedman ([1,2; 3,4; 5,6], 2);
+%!error<friedman: invalid optional paired argument.> ...
+%! friedman ([1, 2; 3, 4; 5, 6], 1, 'off', 'Foo', 1)
+%!error<friedman: 'Alpha' must be a scalar between 0 and 1.> ...
+%! friedman ([1, 2; 3, 4; 5, 6], 1, 'off', 'Alpha', 0)
+%!error<friedman: 'ConfidenceIntervalType' must be 'exact' or 'bootstrap'.> ...
+%! friedman ([1, 2; 3, 4; 5, 6], 1, 'off', 'ConfidenceIntervalType', 'none')
+%!error<friedman: 'NumBootstraps' must be a positive integer.> ...
+%! friedman ([1, 2; 3, 4; 5, 6], 1, 'off', 'NumBootstraps', -1)

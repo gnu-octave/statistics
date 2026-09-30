@@ -1920,10 +1920,11 @@ friedman
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1805
+# length: 3127
 statistics: p = friedman (x)
 statistics: p = friedman (x, reps)
 statistics: p = friedman (x, reps, displayopt)
+statistics: p = friedman (x, reps, displayopt, Name, Value)
 statistics: [p, tbl] = friedman (...)
 statistics: [p, tbl, stats] = friedman (...)
 Performs the nonparametric Friedman's test to compare column effects in a
@@ -1956,6 +1957,32 @@ as the chi-square statistic of the Error row, is empty.
 
 stats is a structure containing statistics useful for performing a
 multiple comparison of medians with the MULTCOMPARE function.
+
+stats also holds the effect size of the test, an Octave extension:
+KendallsW, Kendall's coefficient of concordance, and
+KendallsWCI, its two-sided confidence interval at the level
+100 (1 - alpha) percent. With b blocks of r
+replicates over c columns, W = Q / Q_max, where Q is
+the test statistic, corrected for ties, and
+Q_max = b r^2 (c^2 - 1) / (r c + 1) the value it takes when every
+block ranks the columns in the same order; without replicates this is the
+usual W = Q / (b (c - 1)). By default the interval inverts the
+noncentral chi-square distribution of Q on c - 1 degrees of
+freedom, taken as Q's distribution under the alternative, which it
+is for many blocks, and bounds the expected value of W,
+(c - 1 + lambda) / Q_max for the noncentrality lambda; the
+lower bound is therefore above zero, W itself averaging 1/b
+where the columns do not differ. Three options after displayopt,
+also an Octave extension, set it:
+
+Name Value
+'Alpha' The significance level of the interval, a
+scalar between 0 and 1, 0.05 by default.
+'ConfidenceIntervalType' 'exact', the default,
+or 'bootstrap' for the bias-corrected and accelerated bootstrap
+interval, resampling the blocks.
+'NumBootstraps' The number of bootstrap replicates, a
+positive integer, 1000 by default.
 
 If friedman is called without any output arguments, then it prints the
 results in a Friedman's ANOVA table to the standard output.
@@ -2337,10 +2364,11 @@ kruskalwallis
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2255
+# length: 3333
 statistics: p = kruskalwallis (x)
 statistics: p = kruskalwallis (x, group)
 statistics: p = kruskalwallis (x, group, displayopt)
+statistics: p = kruskalwallis (x, group, displayopt, Name, Value)
 statistics: [p, tbl] = kruskalwallis (x, ...)
 statistics: [p, tbl, stats] = kruskalwallis (x, ...)
 Perform a Kruskal-Wallis test, the non-parametric alternative of a one-way
@@ -2378,6 +2406,27 @@ tbl is a cell array containing the results in a standard ANOVA table.
 stats is a structure containing statistics useful for performing
 a multiple comparison of means with the MULTCOMPARE function.
 
+stats also holds the effect size of the test, an Octave extension:
+EtaSquared, the rank eta squared
+max (0, (H - k + 1) / (n - k)) for the statistic H over
+k groups and n observations, which is the share of the
+variance of the ranks the groups account for, corrected for bias, and
+EtaSquaredCI, its two-sided confidence interval at the level
+100 (1 - alpha) percent. By default the interval inverts the
+noncentral chi-square distribution of H on k - 1 degrees of
+freedom, taken as H's distribution under the alternative, which it
+is for large samples. Three options after displayopt, also an
+Octave extension, set it:
+
+Name Value
+'Alpha' The significance level of the interval, a
+scalar between 0 and 1, 0.05 by default.
+'ConfidenceIntervalType' 'exact', the default,
+or 'bootstrap' for the bias-corrected and accelerated bootstrap
+interval, resampling within each group.
+'NumBootstraps' The number of bootstrap replicates, a
+positive integer, 1000 by default.
+
 If kruskalwallis is called without any output arguments, then it prints the
 results in a one-way ANOVA table to the standard output. It is also printed
 when displayopt is 'on'.
@@ -2392,6 +2441,12 @@ x = ones (50, 4) .* [-2, 0, 1, 5];
 x = x + normrnd (0, 2, 50, 4);
 group = {"A", "B", "C", "D"};
 kruskalwallis (x, group);
+
+See also:
+anova1,
+friedman,
+ranksum,
+multcompare
 
 
 # name: <cell-element>
@@ -3257,7 +3312,7 @@ ranksum
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2728
+# length: 3344
 statistics: p = ranksum (x, y)
 statistics: p = ranksum (x, y, alpha)
 statistics: p = ranksum (x, y, alpha, Name, Value)
@@ -3289,7 +3344,16 @@ returns the structure stats with information about the test statistic.
 It contains the field ranksum with the value of the rank sum test
 statistic, and the field zval with the value of the z-statistic when
 computed with the "approximate" method, and empty otherwise. The field is
-always there.
+always there. Two further fields, an Octave extension, hold the effect
+size: RankBiserial, the rank-biserial correlation, which is Cliff's
+delta, the share of pairs (x_i, y_j) with x_i > y_j less the
+share with x_i < y_j, and RankBiserialCI, its two-sided
+confidence interval at the level 100 (1 - alpha) percent, whatever
+the tail. Both are those of meanEffectSize (x, y,
+"Effect", "cliff"): by default the interval is Cliff's, and the options
+"ConfidenceIntervalType", "bootstrap" for a BCa bootstrap
+interval, "NumBootstraps" and "Resampling" are passed on to
+meanEffectSize.
 
 [...] = ranksum (x, y, alpha) or alternatively
 [...] = ranksum (x, y, "alpha", alpha) returns
@@ -3323,6 +3387,11 @@ single string.
 
 Note: the rank sum statistic is based on the smaller sample of vectors
 x and y.
+
+See also:
+signrank,
+kruskalwallis,
+meanEffectSize
 
 
 # name: <cell-element>
@@ -3552,7 +3621,7 @@ signrank
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2840
+# length: 3953
 statistics: pval = signrank (x)
 statistics: pval = signrank (x, my)
 statistics: pval = signrank (x, my, Name, Value)
@@ -3622,11 +3691,34 @@ signedrank Value of the sign rank test statistic.
 zval Value of the z-statistic, computed only
 when the 'method' is 'approximate' and empty otherwise.
 The field is always there.
+RankBiserial The matched-pairs rank-biserial
+correlation, the effect size of the test: the sum of the signed ranks of the
+positive differences less that of the negative ones, divided by the sum of
+all the ranks, over the nonzero differences. It lies in [-1, 1].
+RankBiserialCI Its two-sided confidence interval at the
+level 100 (1 - alpha) percent, whatever the 'tail'.
+
+The last two fields are an Octave extension. By default the interval is
+the normal interval of the Fisher transformed correlation, with standard
+error sqrt(n (n + 1) (2n + 1) / 6) / (n (n + 1) / 2) over the
+n nonzero differences. The R package effectsize computes the same
+interval but counts n over the elements of x that differ from
+the hypothesised median, so where some differences are zero its interval
+is narrower than this one. Two further options choose otherwise:
+
+Name Value
+'ConfidenceIntervalType' 'exact', the default,
+or 'bootstrap' for the bias-corrected and accelerated bootstrap
+interval, resampling the pairs.
+'NumBootstraps' The number of bootstrap replicates, a
+positive integer, 1000 by default.
 
 See also:
 tiedrank,
 signtest,
-runstest
+runstest,
+ranksum,
+meanEffectSize
 
 
 # name: <cell-element>

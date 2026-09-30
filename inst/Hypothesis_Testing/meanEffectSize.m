@@ -350,7 +350,18 @@ function Effect = meanEffectSize (X, varargin)
                            " effect '%s' is NaN, since %s."), name, why);
         endif
       case 'bootstrap'
-        CI(ii,:) = bootInterval (stat, x, y, mode, alpha, nboot, resampling);
+        switch (mode)
+          case 'one'
+            CI(ii,:) = __bootci__ (@(a) stat (a, y), {x}, alpha, nboot, 'rows');
+          case 'paired'
+            CI(ii,:) = __bootci__ (stat, {x, y}, alpha, nboot, 'rows');
+          otherwise
+            if (strcmp (resampling, 'pooled'))
+              CI(ii,:) = __bootci__ (stat, {x, y}, alpha, nboot, 'pooled');
+            else
+              CI(ii,:) = __bootci__ (stat, {x, y}, alpha, nboot, 'strata');
+            endif
+        endswitch
     endswitch
   endfor
 
@@ -819,113 +830,6 @@ function [ci, why] = exactInterval (name, x, y, mode, vartype, mu, alpha)
         endif
       endif
   endswitch
-endfunction
-
-## The BCa bootstrap interval of the statistic STAT, a function of two
-## matrices whose columns are samples, returning one value for each column;
-## the second is ignored for one sample
-function ci = bootInterval (stat, x, y, mode, alpha, B, resampling)
-  n1 = numel (x);
-  n2 = numel (y);
-  t0 = stat (x, y);
-  bs = NaN (B, 1);
-  ## Replicates in blocks of about a million values
-  step = max (1, floor (1e6 / (n1 + n2)));
-  switch (mode)
-    case 'one'
-      for b1 = 1:step:B
-        b = b1:min (b1 + step - 1, B);
-        bs(b) = stat (pick (x, randi (n1, n1, numel (b))), y);
-      endfor
-      u = {jackInfluence(@(i) stat (pick (x, i), y), n1)};
-    case 'paired'
-      for b1 = 1:step:B
-        b = b1:min (b1 + step - 1, B);
-        I = randi (n1, n1, numel (b));
-        bs(b) = stat (pick (x, I), pick (y, I));
-      endfor
-      u = {jackInfluence(@(i) stat (pick (x, i), pick (y, i)), n1)};
-    otherwise
-      if (strcmp (resampling, 'pooled'))
-        ## Observations resampled together, each keeping its sample, so the
-        ## sizes of the samples differ between replicates, one at a time
-        v = [x; y];
-        g = [true(n1, 1); false(n2, 1)];
-        n = n1 + n2;
-        for b1 = 1:step:B
-          b = b1:min (b1 + step - 1, B);
-          I = randi (n, n, numel (b));
-          for k = 1:numel (b)
-            ib = I(:,k);
-            gb = g(ib);
-            if (any (gb) && ! all (gb))
-              bs(b(k)) = stat (v(ib(gb)), v(ib(! gb)));
-            endif
-          endfor
-        endfor
-        jk = NaN (n, 1);
-        for i = 1:n
-          k = [1:i-1, i+1:n]';
-          jk(i) = stat (v(k(g(k))), v(k(! g(k))));
-        endfor
-        jk = jk(! isnan (jk));
-        u = {mean(jk) - jk};
-      else
-        ## Each sample resampled on its own
-        for b1 = 1:step:B
-          b = b1:min (b1 + step - 1, B);
-          bs(b) = stat (pick (x, randi (n1, n1, numel (b))), ...
-                        pick (y, randi (n2, n2, numel (b))));
-        endfor
-        ## Jackknife influence values of each sample, weighted by its size
-        u1 = jackInfluence (@(i) stat (pick (x, i), ...
-                                       repmat (y, 1, columns (i))), n1);
-        u2 = jackInfluence (@(i) stat (repmat (x, 1, columns (i)), ...
-                                       pick (y, i)), n2);
-        u = {(n1 - 1) * u1 / n1, (n2 - 1) * u2 / n2};
-      endif
-  endswitch
-  bs = bs(! isnan (bs));
-  if (isempty (bs) || isnan (t0))
-    ci = [NaN, NaN];
-    return;
-  endif
-
-  ## Bias correction and acceleration
-  z0 = norminv (mean (bs < t0) + mean (bs == t0) / 2);
-  u = vertcat (u{:});
-  u = u(isfinite (u));
-  den = sum (u .^ 2);
-  if (den > 0)
-    a = sum (u .^ 3) / (6 * den ^ 1.5);
-  else
-    a = 0;
-  endif
-  zq = norminv ([alpha / 2, 1 - alpha / 2]);
-  p = normcdf (z0 + (z0 + zq) ./ (1 - a * (z0 + zq)));
-  ci = quantile (bs, p(:), 1, 5)';
-endfunction
-
-## The elements of the vector V at the indices I, in the shape of I
-function out = pick (v, I)
-  out = reshape (v(I), size (I));
-endfunction
-
-## The jackknife deviations mean (jk) - jk of a statistic over N
-## observations, FCN taking a matrix of indices whose columns each leave one
-## observation out, in blocks
-function u = jackInfluence (fcn, n)
-  jk = zeros (n, 1);
-  step = max (1, floor (1e6 / n));
-  for i1 = 1:step:n
-    i = i1:min (i1 + step - 1, n);
-    ## Column k holds 1:n without i(k)
-    K = repmat ((1:n)', 1, numel (i));
-    K(sub2ind (size (K), i, 1:numel (i))) = 0;
-    K = reshape (K(K > 0), n - 1, numel (i));
-    jk(i) = fcn (K);
-  endfor
-  u = mean (jk) - jk;
 endfunction
 
 %!shared x, y, yp

@@ -104,9 +104,34 @@
 ## @item @qcode{zval} @tab Value of the @math{z}-statistic, computed only
 ## when the @qcode{'method'} is @qcode{'approximate'} and empty otherwise.
 ## The field is always there.
+##
+## @item @qcode{RankBiserial} @tab The matched-pairs rank-biserial
+## correlation, the effect size of the test: the sum of the signed ranks of the
+## positive differences less that of the negative ones, divided by the sum of
+## all the ranks, over the nonzero differences.  It lies in @math{[-1, 1]}.
+##
+## @item @qcode{RankBiserialCI} @tab Its two-sided confidence interval at the
+## level @math{100 (1 - alpha)} percent, whatever the @qcode{'tail'}.
 ## @end multitable
 ##
-## @seealso{tiedrank, signtest, runstest}
+## The last two fields are an Octave extension.  By default the interval is
+## the normal interval of the Fisher transformed correlation, with standard
+## error @math{sqrt(n (n + 1) (2n + 1) / 6) / (n (n + 1) / 2)} over the
+## @math{n} nonzero differences.  The R package effectsize computes the same
+## interval but counts @math{n} over the elements of @var{x} that differ from
+## the hypothesised median, so where some differences are zero its interval
+## is narrower than this one.  Two further options choose otherwise:
+##
+## @multitable @columnfractions 0.32 0.66
+## @headitem @var{Name} @tab @var{Value}
+## @item @qcode{'ConfidenceIntervalType'} @tab @qcode{'exact'}, the default,
+## or @qcode{'bootstrap'} for the bias-corrected and accelerated bootstrap
+## interval, resampling the pairs.
+## @item @qcode{'NumBootstraps'} @tab The number of bootstrap replicates, a
+## positive integer, 1000 by default.
+## @end multitable
+##
+## @seealso{tiedrank, signtest, runstest, ranksum, meanEffectSize}
 ## @end deftypefn
 
 function [p, h, stats] = signrank (x, my, varargin)
@@ -125,6 +150,8 @@ function [p, h, stats] = signrank (x, my, varargin)
     method = 'approximate';
   endif
   method_present = false;
+  citype = 'exact';
+  nboot = 1000;
 
   ## When called with a single input argument of second argument is empty
   if (nargin == 1 || isempty (my))
@@ -154,6 +181,10 @@ function [p, h, stats] = signrank (x, my, varargin)
       case 'method'
         method = varargin{2};
         method_present = true;
+      case 'confidenceintervaltype'
+        citype = varargin{2};
+      case 'numbootstraps'
+        nboot = varargin{2};
       otherwise
         error ("signrank: invalid Name argument.");
     endswitch
@@ -175,6 +206,14 @@ function [p, h, stats] = signrank (x, my, varargin)
   elseif (sum (strcmpi (method, {'exact', 'approximate'})) != 1)
     error ("signrank: 'method' value must be either 'exact' or 'approximate'.");
   endif
+  if (! (ischar (citype) && any (strcmpi (citype, {'exact', 'bootstrap'}))))
+    error (strcat ("signrank: 'ConfidenceIntervalType' must be 'exact'", ...
+                   " or 'bootstrap'."));
+  endif
+  if (! (isnumeric (nboot) && isreal (nboot) && isscalar (nboot)
+         && isfinite (nboot) && nboot >= 1 && nboot == fix (nboot)))
+    error ("signrank: 'NumBootstraps' must be a positive integer.");
+  endif
 
   ## Calculate differences between X and Y vectors: remove equal values of NaNs.
   ## A difference smaller than the combined resolution of the two values it came
@@ -188,6 +227,9 @@ function [p, h, stats] = signrank (x, my, varargin)
     epsdiff = zeros (size (XY_diff));
   endif
   drop = abs (XY_diff) < epsdiff | XY_diff == 0 | isnan (XY_diff);
+  ## Every pair with a difference, zeros included, for the bootstrap
+  all_diff = XY_diff(! isnan (XY_diff));
+  all_diff(abs (all_diff) < epsdiff(! isnan (XY_diff))) = 0;
   XY_diff(drop) = [];
   epsdiff(drop) = [];
 
@@ -200,6 +242,8 @@ function [p, h, stats] = signrank (x, my, varargin)
     h = 0;
     stats.signedrank = 0;
     stats.zval = [];
+    stats.RankBiserial = NaN;
+    stats.RankBiserialCI = [NaN, NaN];
     return;
   endif
 
@@ -216,6 +260,10 @@ function [p, h, stats] = signrank (x, my, varargin)
   [tie_rank, tieadj] = tiedrank (abs (XY_diff), 0, 0, epsdiff);
   w = sum (tie_rank(XY_diff > 0));
   stats.signedrank = w;
+  ## The rank sums of both signs, for the effect size, before the exact
+  ## method below reorders the ranks
+  tp = w;
+  tm = sum (tie_rank(XY_diff < 0));
 
   ## Calculate stats according to selected method and tail
   switch (lower (method))
@@ -290,16 +338,49 @@ function [p, h, stats] = signrank (x, my, varargin)
 
   endswitch
   h = p <= alpha;
+
+  ## The matched-pairs rank-biserial correlation and its interval
+  if (nargout > 2)
+    r = (tp - tm) / (tp + tm);
+    stats.RankBiserial = r;
+    if (strcmpi (citype, 'exact'))
+      ## Fisher's z, with the standard error the R package effectsize uses,
+      ## over the nonzero differences, which are the ones ranked; effectsize
+      ## 1.0.3 counts the elements of X that differ from the hypothesised
+      ## median instead, so its interval differs where a difference is zero
+      se = sqrt ((2 * n ^ 3 + 3 * n ^ 2 + n) / 6) / ((n ^ 2 + n) / 2);
+      stats.RankBiserialCI = tanh (atanh (r) ...
+                                   + norminv ([alpha / 2, 1 - alpha / 2]) * se);
+    else
+      stats.RankBiserialCI = __bootci__ (@rankBiserial, {all_diff}, alpha, ...
+                                         nboot, 'rows');
+    endif
+  endif
+endfunction
+
+## The matched-pairs rank-biserial correlation of each column of differences
+## D, over its nonzero differences
+function r = rankBiserial (D)
+  r = NaN (1, columns (D));
+  for k = 1:columns (D)
+    d = D(D(:,k) != 0, k);
+    if (! isempty (d))
+      rk = tiedrank (abs (d));
+      r(k) = (sum (rk(d > 0)) - sum (rk(d < 0))) / sum (rk);
+    endif
+  endfor
 endfunction
 
 ## Test output
-## Field layouts below are R2024a's, measured 2026-08-17.
+## Field layouts below are R2024a's, measured 2026-08-17, followed by the
+## two effect size fields, which are ours.
 %!test
 %! ## the exact test has no z-statistic, so no ZVAL field is created at all
 %! x = [1.83 0.50 1.62 2.48 1.68 1.88 1.55 3.06 1.30];
 %! y = [0.878 0.647 0.598 2.05 1.06 1.29 1.06 3.14 1.29];
 %! [p, h, stats] = signrank (x, y, 'method', 'exact');
-%! assert_equal (fieldnames (stats), {'signedrank'; 'zval'});
+%! assert_equal (fieldnames (stats), {'signedrank'; 'zval'; 'RankBiserial'; ...
+%!                                    'RankBiserialCI'});
 %! assert_equal (stats.signedrank, 40);
 %! assert_equal (isempty (stats.zval), true);
 %! assert_equal (p, 0.039062500000000, 1e-14);
@@ -307,14 +388,16 @@ endfunction
 %! ## the default method for a small sample is the exact one
 %! x = [1.83 0.50 1.62 2.48 1.68 1.88 1.55 3.06 1.30];
 %! [~, ~, stats] = signrank (x, 1);
-%! assert_equal (fieldnames (stats), {'signedrank'; 'zval'});
+%! assert_equal (fieldnames (stats), {'signedrank'; 'zval'; 'RankBiserial'; ...
+%!                                    'RankBiserialCI'});
 %! assert_equal (stats.signedrank, 43);
 %! assert_equal (isempty (stats.zval), true);
 %!test
 %! ## identical inputs give a zero statistic and no z-value
 %! [p, h, stats] = signrank ([1 2 3], [1 2 3]);
 %! assert_equal (p, 1);
-%! assert_equal (fieldnames (stats), {'signedrank'; 'zval'});
+%! assert_equal (fieldnames (stats), {'signedrank'; 'zval'; 'RankBiserial'; ...
+%!                                    'RankBiserialCI'});
 %! assert_equal (stats.signedrank, 0);
 %! assert_equal (isempty (stats.zval), true);
 
@@ -384,6 +467,48 @@ endfunction
 %! [p2, h2, stats2] = signrank (x, y, 'method', 'approximate');
 %! assert_equal (p2, p, 1e-15);
 %! assert_equal (stats2.zval, stats.zval, 1e-15);
+## Effect size against the R package effectsize 1.0.3, rank_biserial
+%!test
+%! x = [1.83 0.50 1.62 2.48 1.68 1.88 1.55 3.06 1.30];
+%! y = [0.878 0.647 0.598 2.05 1.06 1.29 1.06 3.14 1.29];
+%! [~, ~, stats] = signrank (x, y);
+%! assert_equal (stats.RankBiserial, 0.77777777777777768, -1e-14);
+%! assert_equal (stats.RankBiserialCI, ...
+%!               [0.29536312933624187, 0.94415590192008148], -1e-13);
+%!test
+%! x = [1.83 0.50 1.62 2.48 1.68 1.88 1.55 3.06 1.30];
+%! y = [0.878 0.647 0.598 2.05 1.06 1.29 1.06 3.14 1.29];
+%! [~, ~, stats] = signrank (x, y, 'alpha', 0.1, 'method', 'approximate');
+%! assert_equal (stats.RankBiserial, 0.77777777777777768, -1e-14);
+%! assert_equal (stats.RankBiserialCI, ...
+%!               [0.39915793850732861, 0.92978414736490256], -1e-13);
+%!test
+%! x = [1.83 0.50 1.62 2.48 1.68 1.88 1.55 3.06 1.30];
+%! [~, ~, stats] = signrank (x, 1);
+%! assert_equal (stats.RankBiserial, 0.9111111111111112, -1e-14);
+%! assert_equal (stats.RankBiserialCI, ...
+%!               [0.66333041160415562, 0.9788499892207112], -1e-12);
+%!test
+%! ## Three differences are zero, so the interval runs over six, where
+%! ## effectsize counts nine and gives [-0.4148, 0.7736]
+%! x = [1, 2, 2, 3, 5, 5, 4, 7, 6];
+%! y = [1, 1, 3, 2, 4, 5, 6, 3, 6];
+%! [~, ~, stats] = signrank (x, y);
+%! assert_equal (stats.RankBiserial, 0.28571428571428575, -1e-14);
+%! se = sqrt ((2 * 6 ^ 3 + 3 * 6 ^ 2 + 6) / 6) / 21;
+%! assert_equal (stats.RankBiserialCI, ...
+%!               tanh (atanh (2 / 7) + [-1, 1] * norminv (0.975) * se), -1e-14);
+%!test
+%! [~, ~, stats] = signrank ([1, 2, 3], [1, 2, 3]);
+%! assert_equal (stats.RankBiserial, NaN);
+%! assert_equal (stats.RankBiserialCI, [NaN, NaN]);
+%!test
+%! rand ('state', 1);
+%! [~, ~, stats] = signrank ([1.2, 3.4, 2.2, 5.1, 0.3, 4.4, 2.8, 3.9], 2, ...
+%!                           'ConfidenceIntervalType', 'bootstrap', ...
+%!                           'NumBootstraps', 200);
+%! ci = stats.RankBiserialCI;
+%! assert_equal ([ci(1) <= ci(2), ci(1) >= -1, ci(2) <= 1], true (1, 3));
 
 ## Test input validation
 %!error <signrank: X must be a vector.> signrank (ones (2))
@@ -419,3 +544,7 @@ endfunction
 %! signrank ([1, 2, 3, 4], [], 'method', 'some')
 %!error <signrank: 'method' value must be either 'exact' or 'approximate'.> ...
 %! signrank ([1, 2, 3, 4], [], 'tail', 'both', 'method', 'some')
+%!error <signrank: 'ConfidenceIntervalType' must be 'exact' or 'bootstrap'.> ...
+%! signrank ([1, 2, 3], 0, 'ConfidenceIntervalType', 'none')
+%!error <signrank: 'NumBootstraps' must be a positive integer.> ...
+%! signrank ([1, 2, 3], 0, 'NumBootstraps', 2.5)
