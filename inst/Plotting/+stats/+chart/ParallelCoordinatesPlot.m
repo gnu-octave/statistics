@@ -1361,7 +1361,8 @@ endfunction
 %!   assert_equal (rows (h.Color), 2);
 %!   assert_equal (h.LegendVisible, 'on');
 %!   lg = findall (hf, 'type', 'axes', 'tag', 'legend');
-%!   assert_equal (get (lg, 'string'), {'p'; 'q'});
+%!   s = get (lg, 'string');   # a row under gnuplot, a column otherwise
+%!   assert_equal (s(:), {'p'; 'q'});
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

@@ -514,16 +514,26 @@ classdef HeatmapChart < handle
     function set.XDisplayData (this, val)
       this.XDisplayData = hmCheckNames (val, 'XDisplayData');
       this.XDisplayAuto_ = false;
-      this.XLimits = hmFitLimits (this.XLimits, this.XDisplayData, ...
-                                  this.XLimitsAuto_, 'XLimits');
+      this.Internal_ = true;
+      unwind_protect
+        this.XLimits = hmFitLimits (this.XLimits, this.XDisplayData, ...
+                                    this.XLimitsAuto_, 'XLimits');
+      unwind_protect_cleanup
+        this.Internal_ = false;
+      end_unwind_protect
       redraw (this);
     endfunction
 
     function set.YDisplayData (this, val)
       this.YDisplayData = hmCheckNames (val, 'YDisplayData');
       this.YDisplayAuto_ = false;
-      this.YLimits = hmFitLimits (this.YLimits, this.YDisplayData, ...
-                                  this.YLimitsAuto_, 'YLimits');
+      this.Internal_ = true;
+      unwind_protect
+        this.YLimits = hmFitLimits (this.YLimits, this.YDisplayData, ...
+                                    this.YLimitsAuto_, 'YLimits');
+      unwind_protect_cleanup
+        this.Internal_ = false;
+      end_unwind_protect
       redraw (this);
     endfunction
 
@@ -549,18 +559,22 @@ classdef HeatmapChart < handle
 
     function set.XLimits (this, val)
       this.XLimits = hmCheckLimits (val, this.XDisplayData, 'XLimits');
-      if (this.Drawn_)
-        this.XLimitsAuto_ = false;
+      if (! this.Internal_)
+        if (this.Drawn_)
+          this.XLimitsAuto_ = false;
+        endif
+        redraw (this);
       endif
-      redraw (this);
     endfunction
 
     function set.YLimits (this, val)
       this.YLimits = hmCheckLimits (val, this.YDisplayData, 'YLimits');
-      if (this.Drawn_)
-        this.YLimitsAuto_ = false;
+      if (! this.Internal_)
+        if (this.Drawn_)
+          this.YLimitsAuto_ = false;
+        endif
+        redraw (this);
       endif
-      redraw (this);
     endfunction
 
     function set.SourceTable (this, val)
@@ -2010,6 +2024,21 @@ endfunction
 %!   xlim (h, {'a', 'b'});
 %!   h.XDisplayData = {'b'; 'c'; 'a'};
 %!   assert_equal (h.XLimits, {'b', 'a'});
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = heatmap ({'c', 'a', 'b'}, {'y', 'x'}, [3, 1, 2; 6, 4, 5]);
+%!   sortx (h);
+%!   sorty (h);
+%!   lastwarn ('');
+%!   sortx (h, 'x', 'descend');
+%!   sorty (h, 'a');
+%!   assert_equal (isempty (strfind (lastwarn (), 'HeatmapChart')), true);
+%!   assert_equal (h.XLimits, {'c', 'a'});
+%!   assert_equal (h.YLimits, {'y', 'x'});
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

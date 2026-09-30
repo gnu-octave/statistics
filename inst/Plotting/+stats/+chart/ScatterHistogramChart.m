@@ -1048,8 +1048,12 @@ classdef ScatterHistogramChart < handle
         else
           hs(k) = scatter (ax(1), x(take), y(take), sz, c, m);
         endif
-        set (hs(k), 'markerfacealpha', this.MarkerAlpha, 'markeredgealpha', ...
-             this.MarkerAlpha, 'visible', vis);
+        ## Under gnuplot a scatter is an hggroup with no marker alpha
+        if (isprop (hs(k), 'markerfacealpha'))
+          set (hs(k), 'markerfacealpha', this.MarkerAlpha, ...
+               'markeredgealpha', this.MarkerAlpha);
+        endif
+        set (hs(k), 'visible', vis);
         if (! isempty (names))
           set (hs(k), 'displayname', names{k});
         endif
@@ -1505,7 +1509,8 @@ endfunction
 %!   assert_equal (h.BinWidths, [2, 3, 5; 2, 2, 3]);
 %!   tag = 'stats.chart.ScatterHistogramChart';
 %!   lg = findall (hf, 'type', 'axes', 'tag', 'legend');
-%!   assert_equal (get (lg, 'string'), {'a'; 'b'; 'c'});
+%!   s = get (lg, 'string');   # a row under gnuplot, a column otherwise
+%!   assert_equal (s(:), {'a'; 'b'; 'c'});
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -1516,7 +1521,8 @@ endfunction
 %!                                            'q';'p';'q';'p';'q';'p'});
 %!   assert_equal (rows (h.Color), 2);
 %!   lg = findall (hf, 'type', 'axes', 'tag', 'legend');
-%!   assert_equal (get (lg, 'string'), {'q'; 'p'});
+%!   s = get (lg, 'string');   # a row under gnuplot, a column otherwise
+%!   assert_equal (s(:), {'q'; 'p'});
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
