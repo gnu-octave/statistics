@@ -202,6 +202,10 @@
     the exact and mid-p tests returned p-values above 1 when the larger
     discordant count came first.
 
+ ** nancov:
+    two empty inputs return a 2-by-2 matrix of NaN, as in MATLAB, where they
+    returned a scalar NaN.
+
  ** ranksum:
     an unknown option name is refused, so a misspelt 'tail' no longer runs a
     two-sided test without notice.

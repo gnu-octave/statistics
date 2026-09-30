@@ -24,8 +24,8 @@
 ## Compute the covariance matrix while handling NaN values.
 ##
 ## @code{@var{c} = nancov (@var{x})} returns the covariance matrix of the
-## columns of @var{x}, treating each row as an observation. Rows containing
-## @qcode{NaN} values are removed before computing the covariance. If @var{x}
+## columns of @var{x}, treating each row as an observation.  Rows containing
+## @qcode{NaN} values are removed before computing the covariance.  If @var{x}
 ## is a vector, the scalar variance of its non-@qcode{NaN} elements is returned.
 ##
 ## @code{@var{c} = nancov (@var{x}, @var{y})}, where @var{x} and @var{y} are of
