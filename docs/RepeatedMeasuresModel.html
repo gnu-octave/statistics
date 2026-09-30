@@ -1,0 +1,2491 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: RepeatedMeasuresModel</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <script type="text/javascript">
+      window.addEventListener("load", () => {
+        for (let i of document.querySelectorAll(".collapse ul")) {
+          let tog = document.createElement("div");
+          tog.innerHTML = i.previousSibling.textContent;
+          tog.className = "toggle";
+          tog.onclick = () => tog.classList.toggle("show");
+          i.parentElement.removeChild(i.previousSibling);
+          i.parentElement.insertBefore(tog, i);
+        }
+      });
+      // Open the collapsible demo an "#example" link points to, then scroll to
+      // it.  getElementById (not querySelector) matches ids that contain a dot,
+      // e.g. "Class.method-example1".
+      function openHashTarget () {
+        if (! window.location.hash) { return; }
+        let el = document.getElementById (
+          decodeURIComponent (window.location.hash.slice (1)));
+        if (! el) { return; }
+        if (el.classList.contains ("collapse") &&
+            ! el.classList.contains ("show")) {
+          bootstrap.Collapse.getOrCreateInstance (el).show ();
+        }
+        el.scrollIntoView ();
+      }
+      window.addEventListener ("DOMContentLoaded", openHashTarget);
+      window.addEventListener ("hashchange", openHashTarget);
+      // When the collapsible named by the current URL fragment is collapsed,
+      // drop the fragment (replaceState: no scroll, no history entry).  Otherwise
+      // the fragment would still equal this id, so clicking the same #example
+      // link again fires no "hashchange" and the example would not re-expand.
+      document.addEventListener ("hide.bs.collapse", (e) => {
+        if (e.target.id && window.location.hash === "#" + e.target.id) {
+          history.replaceState (null, "",
+            window.location.pathname + window.location.search);
+        }
+      });
+      // Let the browser's find-in-page reach the text inside a collapsed
+      // panel.  The attribute "hidden=until-found" is what makes content
+      // searchable and revealable; the style block below clears the
+      // "display: none" that would otherwise stop the attribute meaning
+      // anything, a box that is not generated having nothing to reveal.  Set
+      // it only where it is understood, which "content-visibility" is no test
+      // for, Firefox having shipped the two apart.  Where it is not, the panel
+      // keeps the user agent's plain [hidden] and the page behaves as before.
+      window.addEventListener ("DOMContentLoaded", () => {
+        if (! ("onbeforematch" in document.body)) { return; }
+        document.documentElement.classList.add ("until-found");
+        let panels = document.querySelectorAll (
+          ".collapse:not(.show):not(.navbar-collapse)");
+        for (let el of panels) {
+          el.setAttribute ("hidden", "until-found");
+          // Fired on a find-in-page hit, before the browser drops the
+          // attribute and scrolls to it.  Bootstrap keeps a panel's state in
+          // its class list, so adding the class here opens the panel in the
+          // same frame and leaves the button shutting it correctly afterwards.
+          // Bootstrap's own show () would animate against that scroll, and the
+          // attribute once dropped, "display: none" would take the panel back
+          // part way through.
+          el.addEventListener ("beforematch", () => {
+            el.classList.add ("show");
+            for (let b of document.querySelectorAll ("[data-bs-target]")) {
+              if (b.getAttribute ("data-bs-target") === "#" + el.id) {
+                b.setAttribute ("aria-expanded", "true");
+              }
+            }
+          });
+        }
+        // Drop the attribute before Bootstrap measures the panel it is opening,
+        // which it does after firing this; a revealable one measures nothing.
+        document.addEventListener ("show.bs.collapse", (e) => {
+          e.target.removeAttribute ("hidden");
+        });
+        // Restore it once the panel is shut, rather than while it is shutting.
+        document.addEventListener ("hidden.bs.collapse", (e) => {
+          if (! e.target.classList.contains ("navbar-collapse")) {
+            e.target.setAttribute ("hidden", "until-found");
+          }
+        });
+      });
+    </script>
+    <style>
+    .fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
+    }
+    h6:hover {
+      color: gray;
+    }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
+    code.description {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: normal;
+    font-size:1.2em;
+    color: gray;
+    }
+    var {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
+    }
+    td {
+      vertical-align: top;
+    }
+    [id^="togList"],                        /* HIDE CHECKBOX */
+    [id^="togList"] ~ .list,                /* HIDE LIST */
+    [id^="togList"] + label  span + span,   /* HIDE "Collapse" */
+    [id^="togList"]:checked + label span{   /* HIDE "Expand" (IF CHECKED) */
+      display:none;
+    }
+    [id^="togList"]:checked + label span + span{
+      display:inline-block;                 /* SHOW "Collapse" (IF CHECKED) */
+    }
+    [id^="togList"]:checked ~ .list{
+      display:block;                        /* SHOW LIST (IF CHECKED) */
+    }
+    /* Bootstrap hides a collapsed panel with "display: none", which generates
+       no box, so the "content-visibility: hidden" the user agent gives
+       "hidden=until-found" could never apply and the text would stay beyond
+       find-in-page.  Clear that one declaration, and only where the script
+       above has found the attribute to be understood: an attribute selector
+       matches a value the browser does not understand, so an ungated rule
+       would leave every panel of an older browser standing open.  The
+       "!important" is required rather than decoration: the reboot carries
+       "[hidden] {display: none !important}", which the attribute itself brings
+       into play, and only another "!important" can outrank it. */
+    html.until-found .collapse[hidden="until-found"]:not(.show) {
+      display: block !important;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Regression">
+                    <i class="fas fa-list-alt"></i>
+                    Regression
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="row flex-nowrap" style="min-height:0">
+        <div class="col-md-2 bg-light" style="overflow-y: scroll; width: 250px;">
+          <div class="p-2" style="text-align: center;">
+            <h3>Categories &</h3>
+            <h4 style="color: blue">Functions List</h4>
+          </div>
+			<div class="row">
+				<input id="togList1" type="checkbox">
+				<label for="togList1">
+					<span><h6>Descriptive Statistics</h6></span>
+					<span><h6>Descriptive Statistics</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
+					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
+					<li><a href="corr.html" class="text-decoration-none font-monospace"><small>corr</small></a></li>
+					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
+					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
+					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
+					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
+					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
+					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
+					<li><a href="ksdensity.html" class="text-decoration-none font-monospace"><small>ksdensity</small></a></li>
+					<li><a href="mvksdensity.html" class="text-decoration-none font-monospace"><small>mvksdensity</small></a></li>
+					<li><a href="nancov.html" class="text-decoration-none font-monospace"><small>nancov</small></a></li>
+					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
+					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
+					<li><a href="nanmedian.html" class="text-decoration-none font-monospace"><small>nanmedian</small></a></li>
+					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
+					<li><a href="nanstd.html" class="text-decoration-none font-monospace"><small>nanstd</small></a></li>
+					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
+					<li><a href="nanvar.html" class="text-decoration-none font-monospace"><small>nanvar</small></a></li>
+					<li><a href="partialcorr.html" class="text-decoration-none font-monospace"><small>partialcorr</small></a></li>
+					<li><a href="partialcorri.html" class="text-decoration-none font-monospace"><small>partialcorri</small></a></li>
+					<li><a href="tabulate.html" class="text-decoration-none font-monospace"><small>tabulate</small></a></li>
+					<li><a href="trimmean.html" class="text-decoration-none font-monospace"><small>trimmean</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList2" type="checkbox">
+				<label for="togList2">
+					<span><h6>Data Manipulation</h6></span>
+					<span><h6>Data Manipulation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="combnk.html" class="text-decoration-none font-monospace"><small>combnk</small></a></li>
+					<li><a href="crosstab.html" class="text-decoration-none font-monospace"><small>crosstab</small></a></li>
+					<li><a href="datasample.html" class="text-decoration-none font-monospace"><small>datasample</small></a></li>
+					<li><a href="dummyvar.html" class="text-decoration-none font-monospace"><small>dummyvar</small></a></li>
+					<li><a href="fillmissing.html" class="text-decoration-none font-monospace"><small>fillmissing</small></a></li>
+					<li><a href="grp2idx.html" class="text-decoration-none font-monospace"><small>grp2idx</small></a></li>
+					<li><a href="ismissing.html" class="text-decoration-none font-monospace"><small>ismissing</small></a></li>
+					<li><a href="isoutlier.html" class="text-decoration-none font-monospace"><small>isoutlier</small></a></li>
+					<li><a href="multiway.html" class="text-decoration-none font-monospace"><small>multiway</small></a></li>
+					<li><a href="normalise_distribution.html" class="text-decoration-none font-monospace"><small>normalise_distribution</small></a></li>
+					<li><a href="randsample.html" class="text-decoration-none font-monospace"><small>randsample</small></a></li>
+					<li><a href="rmmissing.html" class="text-decoration-none font-monospace"><small>rmmissing</small></a></li>
+					<li><a href="standardizeMissing.html" class="text-decoration-none font-monospace"><small>standardizeMissing</small></a></li>
+					<li><a href="tiedrank.html" class="text-decoration-none font-monospace"><small>tiedrank</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList3" type="checkbox">
+				<label for="togList3">
+					<span><h6>Hypothesis Testing</h6></span>
+					<span><h6>Hypothesis Testing</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
+					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
+					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
+					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
+					<li><a href="ansaribradley.html" class="text-decoration-none font-monospace"><small>ansaribradley</small></a></li>
+					<li><a href="barttest.html" class="text-decoration-none font-monospace"><small>barttest</small></a></li>
+					<li><a href="binotest.html" class="text-decoration-none font-monospace"><small>binotest</small></a></li>
+					<li><a href="chi2gof.html" class="text-decoration-none font-monospace"><small>chi2gof</small></a></li>
+					<li><a href="chi2test.html" class="text-decoration-none font-monospace"><small>chi2test</small></a></li>
+					<li><a href="correlation_test.html" class="text-decoration-none font-monospace"><small>correlation_test</small></a></li>
+					<li><a href="detectdrift.html" class="text-decoration-none font-monospace"><small>detectdrift</small></a></li>
+					<li><a href="dwtest.html" class="text-decoration-none font-monospace"><small>dwtest</small></a></li>
+					<li><a href="fishertest.html" class="text-decoration-none font-monospace"><small>fishertest</small></a></li>
+					<li><a href="friedman.html" class="text-decoration-none font-monospace"><small>friedman</small></a></li>
+					<li><a href="hotelling_t2test.html" class="text-decoration-none font-monospace"><small>hotelling_t2test</small></a></li>
+					<li><a href="hotelling_t2test2.html" class="text-decoration-none font-monospace"><small>hotelling_t2test2</small></a></li>
+					<li><a href="jbtest.html" class="text-decoration-none font-monospace"><small>jbtest</small></a></li>
+					<li><a href="knntest.html" class="text-decoration-none font-monospace"><small>knntest</small></a></li>
+					<li><a href="kruskalwallis.html" class="text-decoration-none font-monospace"><small>kruskalwallis</small></a></li>
+					<li><a href="kstest.html" class="text-decoration-none font-monospace"><small>kstest</small></a></li>
+					<li><a href="kstest2.html" class="text-decoration-none font-monospace"><small>kstest2</small></a></li>
+					<li><a href="lillietest.html" class="text-decoration-none font-monospace"><small>lillietest</small></a></li>
+					<li><a href="manova1.html" class="text-decoration-none font-monospace"><small>manova1</small></a></li>
+					<li><a href="mcnemar_test.html" class="text-decoration-none font-monospace"><small>mcnemar_test</small></a></li>
+					<li><a href="meanEffectSize.html" class="text-decoration-none font-monospace"><small>meanEffectSize</small></a></li>
+					<li><a href="mmdtest.html" class="text-decoration-none font-monospace"><small>mmdtest</small></a></li>
+					<li><a href="multcompare.html" class="text-decoration-none font-monospace"><small>multcompare</small></a></li>
+					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
+					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
+					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
+					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
+					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
+					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
+					<li><a href="stats.drift.DriftDiagnostics.html" class="text-decoration-none font-monospace"><small>stats.drift.DriftDiagnostics</small></a></li>
+					<li><a href="swtest.html" class="text-decoration-none font-monospace"><small>swtest</small></a></li>
+					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
+					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
+					<li><a href="vartest.html" class="text-decoration-none font-monospace"><small>vartest</small></a></li>
+					<li><a href="vartest2.html" class="text-decoration-none font-monospace"><small>vartest2</small></a></li>
+					<li><a href="vartestn.html" class="text-decoration-none font-monospace"><small>vartestn</small></a></li>
+					<li><a href="ztest.html" class="text-decoration-none font-monospace"><small>ztest</small></a></li>
+					<li><a href="ztest2.html" class="text-decoration-none font-monospace"><small>ztest2</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList4" type="checkbox">
+				<label for="togList4">
+					<span><h6>Experimental Design</h6></span>
+					<span><h6>Experimental Design</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
+					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
+					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
+					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList5" type="checkbox" checked>
+				<label for="togList5">
+					<span><h6>Regression</h6></span>
+					<span><h6>Regression</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="CompactLinearModel.html" class="text-decoration-none font-monospace"><small>CompactLinearModel</small></a></li>
+					<li><a href="CoxModel.html" class="text-decoration-none font-monospace"><small>CoxModel</small></a></li>
+					<li><a href="coxphfit.html" class="text-decoration-none font-monospace"><small>coxphfit</small></a></li>
+					<li><a href="fitcox.html" class="text-decoration-none font-monospace"><small>fitcox</small></a></li>
+					<li><a href="fitglm.html" class="text-decoration-none font-monospace"><small>fitglm</small></a></li>
+					<li><a href="fitglme.html" class="text-decoration-none font-monospace"><small>fitglme</small></a></li>
+					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
+					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
+					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
+					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
+					<li><a href="fitrm.html" class="text-decoration-none font-monospace"><small>fitrm</small></a></li>
+					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
+					<li><a href="GeneralizedLinearModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearModel</small></a></li>
+					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
+					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
+					<li><a href="invpred.html" class="text-decoration-none font-monospace"><small>invpred</small></a></li>
+					<li><a href="lasso.html" class="text-decoration-none font-monospace"><small>lasso</small></a></li>
+					<li><a href="lassoglm.html" class="text-decoration-none font-monospace"><small>lassoglm</small></a></li>
+					<li><a href="LinearFormula.html" class="text-decoration-none font-monospace"><small>LinearFormula</small></a></li>
+					<li><a href="LinearMixedModel.html" class="text-decoration-none font-monospace"><small>LinearMixedModel</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
+					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
+					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
+					<li><a href="mnrval.html" class="text-decoration-none font-monospace"><small>mnrval</small></a></li>
+					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
+					<li><a href="mvregress.html" class="text-decoration-none font-monospace"><small>mvregress</small></a></li>
+					<li><a href="mvregresslike.html" class="text-decoration-none font-monospace"><small>mvregresslike</small></a></li>
+					<li><a href="nlinfit.html" class="text-decoration-none font-monospace"><small>nlinfit</small></a></li>
+					<li><a href="nlparci.html" class="text-decoration-none font-monospace"><small>nlparci</small></a></li>
+					<li><a href="nlpredci.html" class="text-decoration-none font-monospace"><small>nlpredci</small></a></li>
+					<li><a href="NonLinearModel.html" class="text-decoration-none font-monospace"><small>NonLinearModel</small></a></li>
+					<li><a href="plsregress.html" class="text-decoration-none font-monospace"><small>plsregress</small></a></li>
+					<li><a href="regress.html" class="text-decoration-none font-monospace"><small>regress</small></a></li>
+					<li><a href="regress_gp.html" class="text-decoration-none font-monospace"><small>regress_gp</small></a></li>
+					<li><a href="RepeatedMeasuresModel.html" class="text-decoration-none font-monospace fw-bolder"><small>RepeatedMeasuresModel</small></a></li>
+					<li><a href="ridge.html" class="text-decoration-none font-monospace"><small>ridge</small></a></li>
+					<li><a href="robustfit.html" class="text-decoration-none font-monospace"><small>robustfit</small></a></li>
+					<li><a href="stepwisefit.html" class="text-decoration-none font-monospace"><small>stepwisefit</small></a></li>
+					<li><a href="stepwiseglm.html" class="text-decoration-none font-monospace"><small>stepwiseglm</small></a></li>
+					<li><a href="stepwiselm.html" class="text-decoration-none font-monospace"><small>stepwiselm</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList6" type="checkbox">
+				<label for="togList6">
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ClassificationBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationBaggedEnsemble</small></a></li>
+					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
+					<li><a href="ClassificationECOC.html" class="text-decoration-none font-monospace"><small>ClassificationECOC</small></a></li>
+					<li><a href="ClassificationEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationEnsemble</small></a></li>
+					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace"><small>ClassificationGAM</small></a></li>
+					<li><a href="ClassificationKernel.html" class="text-decoration-none font-monospace"><small>ClassificationKernel</small></a></li>
+					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
+					<li><a href="ClassificationLinear.html" class="text-decoration-none font-monospace"><small>ClassificationLinear</small></a></li>
+					<li><a href="ClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>ClassificationNaiveBayes</small></a></li>
+					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
+					<li><a href="ClassificationPartitionedECOC.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedECOC</small></a></li>
+					<li><a href="ClassificationPartitionedEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedEnsemble</small></a></li>
+					<li><a href="ClassificationPartitionedKernel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedKernel</small></a></li>
+					<li><a href="ClassificationPartitionedLinear.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedLinear</small></a></li>
+					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
+					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
+					<li><a href="ClassificationTree.html" class="text-decoration-none font-monospace"><small>ClassificationTree</small></a></li>
+					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
+					<li><a href="CompactClassificationECOC.html" class="text-decoration-none font-monospace"><small>CompactClassificationECOC</small></a></li>
+					<li><a href="CompactClassificationEnsemble.html" class="text-decoration-none font-monospace"><small>CompactClassificationEnsemble</small></a></li>
+					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
+					<li><a href="CompactClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>CompactClassificationNaiveBayes</small></a></li>
+					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
+					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
+					<li><a href="CompactClassificationTree.html" class="text-decoration-none font-monospace"><small>CompactClassificationTree</small></a></li>
+					<li><a href="CompactRegressionGAM.html" class="text-decoration-none font-monospace"><small>CompactRegressionGAM</small></a></li>
+					<li><a href="CompactRegressionEnsemble.html" class="text-decoration-none font-monospace"><small>CompactRegressionEnsemble</small></a></li>
+					<li><a href="CompactRegressionGP.html" class="text-decoration-none font-monospace"><small>CompactRegressionGP</small></a></li>
+					<li><a href="CompactRegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactRegressionNeuralNetwork</small></a></li>
+					<li><a href="CompactRegressionSVM.html" class="text-decoration-none font-monospace"><small>CompactRegressionSVM</small></a></li>
+					<li><a href="CompactRegressionTree.html" class="text-decoration-none font-monospace"><small>CompactRegressionTree</small></a></li>
+					<li><a href="CompactTreeBagger.html" class="text-decoration-none font-monospace"><small>CompactTreeBagger</small></a></li>
+					<li><a href="designecoc.html" class="text-decoration-none font-monospace"><small>designecoc</small></a></li>
+					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
+					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
+					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
+					<li><a href="fitcecoc.html" class="text-decoration-none font-monospace"><small>fitcecoc</small></a></li>
+					<li><a href="fitcensemble.html" class="text-decoration-none font-monospace"><small>fitcensemble</small></a></li>
+					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
+					<li><a href="fitckernel.html" class="text-decoration-none font-monospace"><small>fitckernel</small></a></li>
+					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
+					<li><a href="fitclinear.html" class="text-decoration-none font-monospace"><small>fitclinear</small></a></li>
+					<li><a href="fitcnb.html" class="text-decoration-none font-monospace"><small>fitcnb</small></a></li>
+					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
+					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
+					<li><a href="fitctree.html" class="text-decoration-none font-monospace"><small>fitctree</small></a></li>
+					<li><a href="fitrensemble.html" class="text-decoration-none font-monospace"><small>fitrensemble</small></a></li>
+					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="fitrgp.html" class="text-decoration-none font-monospace"><small>fitrgp</small></a></li>
+					<li><a href="fitrkernel.html" class="text-decoration-none font-monospace"><small>fitrkernel</small></a></li>
+					<li><a href="fitrlinear.html" class="text-decoration-none font-monospace"><small>fitrlinear</small></a></li>
+					<li><a href="fitrnet.html" class="text-decoration-none font-monospace"><small>fitrnet</small></a></li>
+					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
+					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
+					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
+					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
+					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
+					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
+					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
+					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
+					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
+					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
+					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
+					<li><a href="RegressionGP.html" class="text-decoration-none font-monospace"><small>RegressionGP</small></a></li>
+					<li><a href="RegressionKernel.html" class="text-decoration-none font-monospace"><small>RegressionKernel</small></a></li>
+					<li><a href="RegressionLinear.html" class="text-decoration-none font-monospace"><small>RegressionLinear</small></a></li>
+					<li><a href="RegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>RegressionNeuralNetwork</small></a></li>
+					<li><a href="RegressionPartitionedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedEnsemble</small></a></li>
+					<li><a href="RegressionPartitionedKernel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedKernel</small></a></li>
+					<li><a href="RegressionPartitionedLinear.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedLinear</small></a></li>
+					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
+					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
+					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
+					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
+					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
+					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
+					<li><a href="templateEnsemble.html" class="text-decoration-none font-monospace"><small>templateEnsemble</small></a></li>
+					<li><a href="templateKernel.html" class="text-decoration-none font-monospace"><small>templateKernel</small></a></li>
+					<li><a href="templateKNN.html" class="text-decoration-none font-monospace"><small>templateKNN</small></a></li>
+					<li><a href="templateLinear.html" class="text-decoration-none font-monospace"><small>templateLinear</small></a></li>
+					<li><a href="templateNaiveBayes.html" class="text-decoration-none font-monospace"><small>templateNaiveBayes</small></a></li>
+					<li><a href="templateSVM.html" class="text-decoration-none font-monospace"><small>templateSVM</small></a></li>
+					<li><a href="templateTree.html" class="text-decoration-none font-monospace"><small>templateTree</small></a></li>
+					<li><a href="TreeBagger.html" class="text-decoration-none font-monospace"><small>TreeBagger</small></a></li>
+					<li><a href="treepredict.html" class="text-decoration-none font-monospace"><small>treepredict</small></a></li>
+					<li><a href="treetrain.html" class="text-decoration-none font-monospace"><small>treetrain</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList7" type="checkbox">
+				<label for="togList7">
+					<span><h6>Clustering</h6></span>
+					<span><h6>Clustering</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="CalinskiHarabaszEvaluation.html" class="text-decoration-none font-monospace"><small>CalinskiHarabaszEvaluation</small></a></li>
+					<li><a href="cluster.html" class="text-decoration-none font-monospace"><small>cluster</small></a></li>
+					<li><a href="ClusterCriterion.html" class="text-decoration-none font-monospace"><small>ClusterCriterion</small></a></li>
+					<li><a href="clusterdata.html" class="text-decoration-none font-monospace"><small>clusterdata</small></a></li>
+					<li><a href="cophenet.html" class="text-decoration-none font-monospace"><small>cophenet</small></a></li>
+					<li><a href="DaviesBouldinEvaluation.html" class="text-decoration-none font-monospace"><small>DaviesBouldinEvaluation</small></a></li>
+					<li><a href="dbscan.html" class="text-decoration-none font-monospace"><small>dbscan</small></a></li>
+					<li><a href="evalclusters.html" class="text-decoration-none font-monospace"><small>evalclusters</small></a></li>
+					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
+					<li><a href="GapEvaluation.html" class="text-decoration-none font-monospace"><small>GapEvaluation</small></a></li>
+					<li><a href="gmdistribution.html" class="text-decoration-none font-monospace"><small>gmdistribution</small></a></li>
+					<li><a href="inconsistent.html" class="text-decoration-none font-monospace"><small>inconsistent</small></a></li>
+					<li><a href="kmeans.html" class="text-decoration-none font-monospace"><small>kmeans</small></a></li>
+					<li><a href="kmedoids.html" class="text-decoration-none font-monospace"><small>kmedoids</small></a></li>
+					<li><a href="linkage.html" class="text-decoration-none font-monospace"><small>linkage</small></a></li>
+					<li><a href="optimalleaforder.html" class="text-decoration-none font-monospace"><small>optimalleaforder</small></a></li>
+					<li><a href="SilhouetteEvaluation.html" class="text-decoration-none font-monospace"><small>SilhouetteEvaluation</small></a></li>
+					<li><a href="spectralcluster.html" class="text-decoration-none font-monospace"><small>spectralcluster</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList8" type="checkbox">
+				<label for="togList8">
+					<span><h6>Nearest Neighbors</h6></span>
+					<span><h6>Nearest Neighbors</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="createns.html" class="text-decoration-none font-monospace"><small>createns</small></a></li>
+					<li><a href="editDistance.html" class="text-decoration-none font-monospace"><small>editDistance</small></a></li>
+					<li><a href="ExhaustiveSearcher.html" class="text-decoration-none font-monospace"><small>ExhaustiveSearcher</small></a></li>
+					<li><a href="hnswSearcher.html" class="text-decoration-none font-monospace"><small>hnswSearcher</small></a></li>
+					<li><a href="KDTreeSearcher.html" class="text-decoration-none font-monospace"><small>KDTreeSearcher</small></a></li>
+					<li><a href="knnsearch.html" class="text-decoration-none font-monospace"><small>knnsearch</small></a></li>
+					<li><a href="mahal.html" class="text-decoration-none font-monospace"><small>mahal</small></a></li>
+					<li><a href="nomdist.html" class="text-decoration-none font-monospace"><small>nomdist</small></a></li>
+					<li><a href="nomdist2.html" class="text-decoration-none font-monospace"><small>nomdist2</small></a></li>
+					<li><a href="pdist.html" class="text-decoration-none font-monospace"><small>pdist</small></a></li>
+					<li><a href="pdist2.html" class="text-decoration-none font-monospace"><small>pdist2</small></a></li>
+					<li><a href="rangesearch.html" class="text-decoration-none font-monospace"><small>rangesearch</small></a></li>
+					<li><a href="squareform.html" class="text-decoration-none font-monospace"><small>squareform</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList9" type="checkbox">
+				<label for="togList9">
+					<span><h6>Anomaly Detection</h6></span>
+					<span><h6>Anomaly Detection</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="iforest.html" class="text-decoration-none font-monospace"><small>iforest</small></a></li>
+					<li><a href="IsolationForest.html" class="text-decoration-none font-monospace"><small>IsolationForest</small></a></li>
+					<li><a href="LocalOutlierFactor.html" class="text-decoration-none font-monospace"><small>LocalOutlierFactor</small></a></li>
+					<li><a href="lof.html" class="text-decoration-none font-monospace"><small>lof</small></a></li>
+					<li><a href="ocsvm.html" class="text-decoration-none font-monospace"><small>ocsvm</small></a></li>
+					<li><a href="OneClassSVM.html" class="text-decoration-none font-monospace"><small>OneClassSVM</small></a></li>
+					<li><a href="robustcov.html" class="text-decoration-none font-monospace"><small>robustcov</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList10" type="checkbox">
+				<label for="togList10">
+					<span><h6>Dimensionality Reduction</h6></span>
+					<span><h6>Dimensionality Reduction</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
+					<li><a href="cmdscale.html" class="text-decoration-none font-monospace"><small>cmdscale</small></a></li>
+					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
+					<li><a href="mdscale.html" class="text-decoration-none font-monospace"><small>mdscale</small></a></li>
+					<li><a href="nnmf.html" class="text-decoration-none font-monospace"><small>nnmf</small></a></li>
+					<li><a href="pca.html" class="text-decoration-none font-monospace"><small>pca</small></a></li>
+					<li><a href="pcacov.html" class="text-decoration-none font-monospace"><small>pcacov</small></a></li>
+					<li><a href="pcares.html" class="text-decoration-none font-monospace"><small>pcares</small></a></li>
+					<li><a href="ppca.html" class="text-decoration-none font-monospace"><small>ppca</small></a></li>
+					<li><a href="princomp.html" class="text-decoration-none font-monospace"><small>princomp</small></a></li>
+					<li><a href="procrustes.html" class="text-decoration-none font-monospace"><small>procrustes</small></a></li>
+					<li><a href="ReconstructionICA.html" class="text-decoration-none font-monospace"><small>ReconstructionICA</small></a></li>
+					<li><a href="rica.html" class="text-decoration-none font-monospace"><small>rica</small></a></li>
+					<li><a href="rotatefactors.html" class="text-decoration-none font-monospace"><small>rotatefactors</small></a></li>
+					<li><a href="sparsefilt.html" class="text-decoration-none font-monospace"><small>sparsefilt</small></a></li>
+					<li><a href="SparseFiltering.html" class="text-decoration-none font-monospace"><small>SparseFiltering</small></a></li>
+					<li><a href="tsne.html" class="text-decoration-none font-monospace"><small>tsne</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList11" type="checkbox">
+				<label for="togList11">
+					<span><h6>Model Evaluation</h6></span>
+					<span><h6>Model Evaluation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="confusionchart.html" class="text-decoration-none font-monospace"><small>confusionchart</small></a></li>
+					<li><a href="confusionmat.html" class="text-decoration-none font-monospace"><small>confusionmat</small></a></li>
+					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
+					<li><a href="crossval.html" class="text-decoration-none font-monospace"><small>crossval</small></a></li>
+					<li><a href="cvpartition.html" class="text-decoration-none font-monospace"><small>cvpartition</small></a></li>
+					<li><a href="perfcurve.html" class="text-decoration-none font-monospace"><small>perfcurve</small></a></li>
+					<li><a href="rocmetrics.html" class="text-decoration-none font-monospace"><small>rocmetrics</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList12" type="checkbox">
+				<label for="togList12">
+					<span><h6>Markov Models</h6></span>
+					<span><h6>Markov Models</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="hmmdecode.html" class="text-decoration-none font-monospace"><small>hmmdecode</small></a></li>
+					<li><a href="hmmestimate.html" class="text-decoration-none font-monospace"><small>hmmestimate</small></a></li>
+					<li><a href="hmmgenerate.html" class="text-decoration-none font-monospace"><small>hmmgenerate</small></a></li>
+					<li><a href="hmmtrain.html" class="text-decoration-none font-monospace"><small>hmmtrain</small></a></li>
+					<li><a href="hmmviterbi.html" class="text-decoration-none font-monospace"><small>hmmviterbi</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList13" type="checkbox">
+				<label for="togList13">
+					<span><h6>Random Sampling</h6></span>
+					<span><h6>Random Sampling</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="johnsrnd.html" class="text-decoration-none font-monospace"><small>johnsrnd</small></a></li>
+					<li><a href="mhsample.html" class="text-decoration-none font-monospace"><small>mhsample</small></a></li>
+					<li><a href="pearsrnd.html" class="text-decoration-none font-monospace"><small>pearsrnd</small></a></li>
+					<li><a href="qrandn.html" class="text-decoration-none font-monospace"><small>qrandn</small></a></li>
+					<li><a href="slicesample.html" class="text-decoration-none font-monospace"><small>slicesample</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList14" type="checkbox">
+				<label for="togList14">
+					<span><h6>Distribution Classes</h6></span>
+					<span><h6>Distribution Classes</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="paretotails.html" class="text-decoration-none font-monospace"><small>paretotails</small></a></li>
+					<li><a href="prob.ProbabilityDistribution.html" class="text-decoration-none font-monospace"><small>prob.ProbabilityDistribution</small></a></li>
+					<li><a href="prob.BetaDistribution.html" class="text-decoration-none font-monospace"><small>prob.BetaDistribution</small></a></li>
+					<li><a href="prob.BinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.BinomialDistribution</small></a></li>
+					<li><a href="prob.BirnbaumSaundersDistribution.html" class="text-decoration-none font-monospace"><small>prob.BirnbaumSaundersDistribution</small></a></li>
+					<li><a href="prob.BurrDistribution.html" class="text-decoration-none font-monospace"><small>prob.BurrDistribution</small></a></li>
+					<li><a href="prob.ExponentialDistribution.html" class="text-decoration-none font-monospace"><small>prob.ExponentialDistribution</small></a></li>
+					<li><a href="prob.ExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>prob.ExtremeValueDistribution</small></a></li>
+					<li><a href="prob.GammaDistribution.html" class="text-decoration-none font-monospace"><small>prob.GammaDistribution</small></a></li>
+					<li><a href="prob.GeneralizedExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>prob.GeneralizedExtremeValueDistribution</small></a></li>
+					<li><a href="prob.GeneralizedParetoDistribution.html" class="text-decoration-none font-monospace"><small>prob.GeneralizedParetoDistribution</small></a></li>
+					<li><a href="prob.HalfNormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.HalfNormalDistribution</small></a></li>
+					<li><a href="prob.InverseGaussianDistribution.html" class="text-decoration-none font-monospace"><small>prob.InverseGaussianDistribution</small></a></li>
+					<li><a href="prob.KernelDistribution.html" class="text-decoration-none font-monospace"><small>prob.KernelDistribution</small></a></li>
+					<li><a href="prob.LogisticDistribution.html" class="text-decoration-none font-monospace"><small>prob.LogisticDistribution</small></a></li>
+					<li><a href="prob.LoglogisticDistribution.html" class="text-decoration-none font-monospace"><small>prob.LoglogisticDistribution</small></a></li>
+					<li><a href="prob.LognormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.LognormalDistribution</small></a></li>
+					<li><a href="prob.LoguniformDistribution.html" class="text-decoration-none font-monospace"><small>prob.LoguniformDistribution</small></a></li>
+					<li><a href="prob.MultinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.MultinomialDistribution</small></a></li>
+					<li><a href="prob.NakagamiDistribution.html" class="text-decoration-none font-monospace"><small>prob.NakagamiDistribution</small></a></li>
+					<li><a href="prob.NegativeBinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.NegativeBinomialDistribution</small></a></li>
+					<li><a href="prob.NormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.NormalDistribution</small></a></li>
+					<li><a href="prob.PiecewiseLinearDistribution.html" class="text-decoration-none font-monospace"><small>prob.PiecewiseLinearDistribution</small></a></li>
+					<li><a href="prob.PoissonDistribution.html" class="text-decoration-none font-monospace"><small>prob.PoissonDistribution</small></a></li>
+					<li><a href="prob.RayleighDistribution.html" class="text-decoration-none font-monospace"><small>prob.RayleighDistribution</small></a></li>
+					<li><a href="prob.RicianDistribution.html" class="text-decoration-none font-monospace"><small>prob.RicianDistribution</small></a></li>
+					<li><a href="prob.StableDistribution.html" class="text-decoration-none font-monospace"><small>prob.StableDistribution</small></a></li>
+					<li><a href="prob.tLocationScaleDistribution.html" class="text-decoration-none font-monospace"><small>prob.tLocationScaleDistribution</small></a></li>
+					<li><a href="prob.TriangularDistribution.html" class="text-decoration-none font-monospace"><small>prob.TriangularDistribution</small></a></li>
+					<li><a href="prob.UniformDistribution.html" class="text-decoration-none font-monospace"><small>prob.UniformDistribution</small></a></li>
+					<li><a href="prob.WeibullDistribution.html" class="text-decoration-none font-monospace"><small>prob.WeibullDistribution</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList15" type="checkbox">
+				<label for="togList15">
+					<span><h6>Distribution Fitting</h6></span>
+					<span><h6>Distribution Fitting</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="betafit.html" class="text-decoration-none font-monospace"><small>betafit</small></a></li>
+					<li><a href="betalike.html" class="text-decoration-none font-monospace"><small>betalike</small></a></li>
+					<li><a href="binofit.html" class="text-decoration-none font-monospace"><small>binofit</small></a></li>
+					<li><a href="binolike.html" class="text-decoration-none font-monospace"><small>binolike</small></a></li>
+					<li><a href="bisafit.html" class="text-decoration-none font-monospace"><small>bisafit</small></a></li>
+					<li><a href="bisalike.html" class="text-decoration-none font-monospace"><small>bisalike</small></a></li>
+					<li><a href="burrfit.html" class="text-decoration-none font-monospace"><small>burrfit</small></a></li>
+					<li><a href="burrlike.html" class="text-decoration-none font-monospace"><small>burrlike</small></a></li>
+					<li><a href="copulafit.html" class="text-decoration-none font-monospace"><small>copulafit</small></a></li>
+					<li><a href="evfit.html" class="text-decoration-none font-monospace"><small>evfit</small></a></li>
+					<li><a href="evlike.html" class="text-decoration-none font-monospace"><small>evlike</small></a></li>
+					<li><a href="expfit.html" class="text-decoration-none font-monospace"><small>expfit</small></a></li>
+					<li><a href="explike.html" class="text-decoration-none font-monospace"><small>explike</small></a></li>
+					<li><a href="gamfit.html" class="text-decoration-none font-monospace"><small>gamfit</small></a></li>
+					<li><a href="gamlike.html" class="text-decoration-none font-monospace"><small>gamlike</small></a></li>
+					<li><a href="geofit.html" class="text-decoration-none font-monospace"><small>geofit</small></a></li>
+					<li><a href="gevfit.html" class="text-decoration-none font-monospace"><small>gevfit</small></a></li>
+					<li><a href="gevlike.html" class="text-decoration-none font-monospace"><small>gevlike</small></a></li>
+					<li><a href="gevfit_lmom.html" class="text-decoration-none font-monospace"><small>gevfit_lmom</small></a></li>
+					<li><a href="gpfit.html" class="text-decoration-none font-monospace"><small>gpfit</small></a></li>
+					<li><a href="gplike.html" class="text-decoration-none font-monospace"><small>gplike</small></a></li>
+					<li><a href="gumbelfit.html" class="text-decoration-none font-monospace"><small>gumbelfit</small></a></li>
+					<li><a href="gumbellike.html" class="text-decoration-none font-monospace"><small>gumbellike</small></a></li>
+					<li><a href="hnfit.html" class="text-decoration-none font-monospace"><small>hnfit</small></a></li>
+					<li><a href="hnlike.html" class="text-decoration-none font-monospace"><small>hnlike</small></a></li>
+					<li><a href="invgfit.html" class="text-decoration-none font-monospace"><small>invgfit</small></a></li>
+					<li><a href="invglike.html" class="text-decoration-none font-monospace"><small>invglike</small></a></li>
+					<li><a href="logifit.html" class="text-decoration-none font-monospace"><small>logifit</small></a></li>
+					<li><a href="logilike.html" class="text-decoration-none font-monospace"><small>logilike</small></a></li>
+					<li><a href="loglfit.html" class="text-decoration-none font-monospace"><small>loglfit</small></a></li>
+					<li><a href="logllike.html" class="text-decoration-none font-monospace"><small>logllike</small></a></li>
+					<li><a href="lognfit.html" class="text-decoration-none font-monospace"><small>lognfit</small></a></li>
+					<li><a href="lognlike.html" class="text-decoration-none font-monospace"><small>lognlike</small></a></li>
+					<li><a href="nakafit.html" class="text-decoration-none font-monospace"><small>nakafit</small></a></li>
+					<li><a href="nakalike.html" class="text-decoration-none font-monospace"><small>nakalike</small></a></li>
+					<li><a href="nbinfit.html" class="text-decoration-none font-monospace"><small>nbinfit</small></a></li>
+					<li><a href="nbinlike.html" class="text-decoration-none font-monospace"><small>nbinlike</small></a></li>
+					<li><a href="normfit.html" class="text-decoration-none font-monospace"><small>normfit</small></a></li>
+					<li><a href="normlike.html" class="text-decoration-none font-monospace"><small>normlike</small></a></li>
+					<li><a href="poissfit.html" class="text-decoration-none font-monospace"><small>poissfit</small></a></li>
+					<li><a href="poisslike.html" class="text-decoration-none font-monospace"><small>poisslike</small></a></li>
+					<li><a href="raylfit.html" class="text-decoration-none font-monospace"><small>raylfit</small></a></li>
+					<li><a href="rayllike.html" class="text-decoration-none font-monospace"><small>rayllike</small></a></li>
+					<li><a href="ricefit.html" class="text-decoration-none font-monospace"><small>ricefit</small></a></li>
+					<li><a href="ricelike.html" class="text-decoration-none font-monospace"><small>ricelike</small></a></li>
+					<li><a href="stblfit.html" class="text-decoration-none font-monospace"><small>stblfit</small></a></li>
+					<li><a href="stbllike.html" class="text-decoration-none font-monospace"><small>stbllike</small></a></li>
+					<li><a href="tlsfit.html" class="text-decoration-none font-monospace"><small>tlsfit</small></a></li>
+					<li><a href="tlslike.html" class="text-decoration-none font-monospace"><small>tlslike</small></a></li>
+					<li><a href="unidfit.html" class="text-decoration-none font-monospace"><small>unidfit</small></a></li>
+					<li><a href="unifit.html" class="text-decoration-none font-monospace"><small>unifit</small></a></li>
+					<li><a href="wblfit.html" class="text-decoration-none font-monospace"><small>wblfit</small></a></li>
+					<li><a href="wbllike.html" class="text-decoration-none font-monospace"><small>wbllike</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList16" type="checkbox">
+				<label for="togList16">
+					<span><h6>Distribution Functions</h6></span>
+					<span><h6>Distribution Functions</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="betacdf.html" class="text-decoration-none font-monospace"><small>betacdf</small></a></li>
+					<li><a href="betainv.html" class="text-decoration-none font-monospace"><small>betainv</small></a></li>
+					<li><a href="betapdf.html" class="text-decoration-none font-monospace"><small>betapdf</small></a></li>
+					<li><a href="betarnd.html" class="text-decoration-none font-monospace"><small>betarnd</small></a></li>
+					<li><a href="binocdf.html" class="text-decoration-none font-monospace"><small>binocdf</small></a></li>
+					<li><a href="binoinv.html" class="text-decoration-none font-monospace"><small>binoinv</small></a></li>
+					<li><a href="binopdf.html" class="text-decoration-none font-monospace"><small>binopdf</small></a></li>
+					<li><a href="binornd.html" class="text-decoration-none font-monospace"><small>binornd</small></a></li>
+					<li><a href="bisacdf.html" class="text-decoration-none font-monospace"><small>bisacdf</small></a></li>
+					<li><a href="bisainv.html" class="text-decoration-none font-monospace"><small>bisainv</small></a></li>
+					<li><a href="bisapdf.html" class="text-decoration-none font-monospace"><small>bisapdf</small></a></li>
+					<li><a href="bisarnd.html" class="text-decoration-none font-monospace"><small>bisarnd</small></a></li>
+					<li><a href="burrcdf.html" class="text-decoration-none font-monospace"><small>burrcdf</small></a></li>
+					<li><a href="burrinv.html" class="text-decoration-none font-monospace"><small>burrinv</small></a></li>
+					<li><a href="burrpdf.html" class="text-decoration-none font-monospace"><small>burrpdf</small></a></li>
+					<li><a href="burrrnd.html" class="text-decoration-none font-monospace"><small>burrrnd</small></a></li>
+					<li><a href="bvncdf.html" class="text-decoration-none font-monospace"><small>bvncdf</small></a></li>
+					<li><a href="bvtcdf.html" class="text-decoration-none font-monospace"><small>bvtcdf</small></a></li>
+					<li><a href="cauchycdf.html" class="text-decoration-none font-monospace"><small>cauchycdf</small></a></li>
+					<li><a href="cauchyinv.html" class="text-decoration-none font-monospace"><small>cauchyinv</small></a></li>
+					<li><a href="cauchypdf.html" class="text-decoration-none font-monospace"><small>cauchypdf</small></a></li>
+					<li><a href="cauchyrnd.html" class="text-decoration-none font-monospace"><small>cauchyrnd</small></a></li>
+					<li><a href="chi2cdf.html" class="text-decoration-none font-monospace"><small>chi2cdf</small></a></li>
+					<li><a href="chi2inv.html" class="text-decoration-none font-monospace"><small>chi2inv</small></a></li>
+					<li><a href="chi2pdf.html" class="text-decoration-none font-monospace"><small>chi2pdf</small></a></li>
+					<li><a href="chi2rnd.html" class="text-decoration-none font-monospace"><small>chi2rnd</small></a></li>
+					<li><a href="copulacdf.html" class="text-decoration-none font-monospace"><small>copulacdf</small></a></li>
+					<li><a href="copulapdf.html" class="text-decoration-none font-monospace"><small>copulapdf</small></a></li>
+					<li><a href="copularnd.html" class="text-decoration-none font-monospace"><small>copularnd</small></a></li>
+					<li><a href="evcdf.html" class="text-decoration-none font-monospace"><small>evcdf</small></a></li>
+					<li><a href="evinv.html" class="text-decoration-none font-monospace"><small>evinv</small></a></li>
+					<li><a href="evpdf.html" class="text-decoration-none font-monospace"><small>evpdf</small></a></li>
+					<li><a href="evrnd.html" class="text-decoration-none font-monospace"><small>evrnd</small></a></li>
+					<li><a href="expcdf.html" class="text-decoration-none font-monospace"><small>expcdf</small></a></li>
+					<li><a href="expinv.html" class="text-decoration-none font-monospace"><small>expinv</small></a></li>
+					<li><a href="exppdf.html" class="text-decoration-none font-monospace"><small>exppdf</small></a></li>
+					<li><a href="exprnd.html" class="text-decoration-none font-monospace"><small>exprnd</small></a></li>
+					<li><a href="fcdf.html" class="text-decoration-none font-monospace"><small>fcdf</small></a></li>
+					<li><a href="finv.html" class="text-decoration-none font-monospace"><small>finv</small></a></li>
+					<li><a href="fpdf.html" class="text-decoration-none font-monospace"><small>fpdf</small></a></li>
+					<li><a href="frnd.html" class="text-decoration-none font-monospace"><small>frnd</small></a></li>
+					<li><a href="gamcdf.html" class="text-decoration-none font-monospace"><small>gamcdf</small></a></li>
+					<li><a href="gaminv.html" class="text-decoration-none font-monospace"><small>gaminv</small></a></li>
+					<li><a href="gampdf.html" class="text-decoration-none font-monospace"><small>gampdf</small></a></li>
+					<li><a href="gamrnd.html" class="text-decoration-none font-monospace"><small>gamrnd</small></a></li>
+					<li><a href="geocdf.html" class="text-decoration-none font-monospace"><small>geocdf</small></a></li>
+					<li><a href="geoinv.html" class="text-decoration-none font-monospace"><small>geoinv</small></a></li>
+					<li><a href="geopdf.html" class="text-decoration-none font-monospace"><small>geopdf</small></a></li>
+					<li><a href="geornd.html" class="text-decoration-none font-monospace"><small>geornd</small></a></li>
+					<li><a href="gevcdf.html" class="text-decoration-none font-monospace"><small>gevcdf</small></a></li>
+					<li><a href="gevinv.html" class="text-decoration-none font-monospace"><small>gevinv</small></a></li>
+					<li><a href="gevpdf.html" class="text-decoration-none font-monospace"><small>gevpdf</small></a></li>
+					<li><a href="gevrnd.html" class="text-decoration-none font-monospace"><small>gevrnd</small></a></li>
+					<li><a href="gpcdf.html" class="text-decoration-none font-monospace"><small>gpcdf</small></a></li>
+					<li><a href="gpinv.html" class="text-decoration-none font-monospace"><small>gpinv</small></a></li>
+					<li><a href="gppdf.html" class="text-decoration-none font-monospace"><small>gppdf</small></a></li>
+					<li><a href="gprnd.html" class="text-decoration-none font-monospace"><small>gprnd</small></a></li>
+					<li><a href="gumbelcdf.html" class="text-decoration-none font-monospace"><small>gumbelcdf</small></a></li>
+					<li><a href="gumbelinv.html" class="text-decoration-none font-monospace"><small>gumbelinv</small></a></li>
+					<li><a href="gumbelpdf.html" class="text-decoration-none font-monospace"><small>gumbelpdf</small></a></li>
+					<li><a href="gumbelrnd.html" class="text-decoration-none font-monospace"><small>gumbelrnd</small></a></li>
+					<li><a href="hncdf.html" class="text-decoration-none font-monospace"><small>hncdf</small></a></li>
+					<li><a href="hninv.html" class="text-decoration-none font-monospace"><small>hninv</small></a></li>
+					<li><a href="hnpdf.html" class="text-decoration-none font-monospace"><small>hnpdf</small></a></li>
+					<li><a href="hnrnd.html" class="text-decoration-none font-monospace"><small>hnrnd</small></a></li>
+					<li><a href="hygecdf.html" class="text-decoration-none font-monospace"><small>hygecdf</small></a></li>
+					<li><a href="hygeinv.html" class="text-decoration-none font-monospace"><small>hygeinv</small></a></li>
+					<li><a href="hygepdf.html" class="text-decoration-none font-monospace"><small>hygepdf</small></a></li>
+					<li><a href="hygernd.html" class="text-decoration-none font-monospace"><small>hygernd</small></a></li>
+					<li><a href="invgcdf.html" class="text-decoration-none font-monospace"><small>invgcdf</small></a></li>
+					<li><a href="invginv.html" class="text-decoration-none font-monospace"><small>invginv</small></a></li>
+					<li><a href="invgpdf.html" class="text-decoration-none font-monospace"><small>invgpdf</small></a></li>
+					<li><a href="invgrnd.html" class="text-decoration-none font-monospace"><small>invgrnd</small></a></li>
+					<li><a href="iwishpdf.html" class="text-decoration-none font-monospace"><small>iwishpdf</small></a></li>
+					<li><a href="iwishrnd.html" class="text-decoration-none font-monospace"><small>iwishrnd</small></a></li>
+					<li><a href="jsucdf.html" class="text-decoration-none font-monospace"><small>jsucdf</small></a></li>
+					<li><a href="jsupdf.html" class="text-decoration-none font-monospace"><small>jsupdf</small></a></li>
+					<li><a href="laplacecdf.html" class="text-decoration-none font-monospace"><small>laplacecdf</small></a></li>
+					<li><a href="laplaceinv.html" class="text-decoration-none font-monospace"><small>laplaceinv</small></a></li>
+					<li><a href="laplacepdf.html" class="text-decoration-none font-monospace"><small>laplacepdf</small></a></li>
+					<li><a href="laplacernd.html" class="text-decoration-none font-monospace"><small>laplacernd</small></a></li>
+					<li><a href="logicdf.html" class="text-decoration-none font-monospace"><small>logicdf</small></a></li>
+					<li><a href="logiinv.html" class="text-decoration-none font-monospace"><small>logiinv</small></a></li>
+					<li><a href="logipdf.html" class="text-decoration-none font-monospace"><small>logipdf</small></a></li>
+					<li><a href="logirnd.html" class="text-decoration-none font-monospace"><small>logirnd</small></a></li>
+					<li><a href="loglcdf.html" class="text-decoration-none font-monospace"><small>loglcdf</small></a></li>
+					<li><a href="loglinv.html" class="text-decoration-none font-monospace"><small>loglinv</small></a></li>
+					<li><a href="loglpdf.html" class="text-decoration-none font-monospace"><small>loglpdf</small></a></li>
+					<li><a href="loglrnd.html" class="text-decoration-none font-monospace"><small>loglrnd</small></a></li>
+					<li><a href="logncdf.html" class="text-decoration-none font-monospace"><small>logncdf</small></a></li>
+					<li><a href="logninv.html" class="text-decoration-none font-monospace"><small>logninv</small></a></li>
+					<li><a href="lognpdf.html" class="text-decoration-none font-monospace"><small>lognpdf</small></a></li>
+					<li><a href="lognrnd.html" class="text-decoration-none font-monospace"><small>lognrnd</small></a></li>
+					<li><a href="mnpdf.html" class="text-decoration-none font-monospace"><small>mnpdf</small></a></li>
+					<li><a href="mnrnd.html" class="text-decoration-none font-monospace"><small>mnrnd</small></a></li>
+					<li><a href="mvncdf.html" class="text-decoration-none font-monospace"><small>mvncdf</small></a></li>
+					<li><a href="mvnpdf.html" class="text-decoration-none font-monospace"><small>mvnpdf</small></a></li>
+					<li><a href="mvnrnd.html" class="text-decoration-none font-monospace"><small>mvnrnd</small></a></li>
+					<li><a href="mvtcdf.html" class="text-decoration-none font-monospace"><small>mvtcdf</small></a></li>
+					<li><a href="mvtpdf.html" class="text-decoration-none font-monospace"><small>mvtpdf</small></a></li>
+					<li><a href="mvtrnd.html" class="text-decoration-none font-monospace"><small>mvtrnd</small></a></li>
+					<li><a href="nakacdf.html" class="text-decoration-none font-monospace"><small>nakacdf</small></a></li>
+					<li><a href="nakainv.html" class="text-decoration-none font-monospace"><small>nakainv</small></a></li>
+					<li><a href="nakapdf.html" class="text-decoration-none font-monospace"><small>nakapdf</small></a></li>
+					<li><a href="nakarnd.html" class="text-decoration-none font-monospace"><small>nakarnd</small></a></li>
+					<li><a href="nbincdf.html" class="text-decoration-none font-monospace"><small>nbincdf</small></a></li>
+					<li><a href="nbininv.html" class="text-decoration-none font-monospace"><small>nbininv</small></a></li>
+					<li><a href="nbinpdf.html" class="text-decoration-none font-monospace"><small>nbinpdf</small></a></li>
+					<li><a href="nbinrnd.html" class="text-decoration-none font-monospace"><small>nbinrnd</small></a></li>
+					<li><a href="ncfcdf.html" class="text-decoration-none font-monospace"><small>ncfcdf</small></a></li>
+					<li><a href="ncfinv.html" class="text-decoration-none font-monospace"><small>ncfinv</small></a></li>
+					<li><a href="ncfpdf.html" class="text-decoration-none font-monospace"><small>ncfpdf</small></a></li>
+					<li><a href="ncfrnd.html" class="text-decoration-none font-monospace"><small>ncfrnd</small></a></li>
+					<li><a href="nctcdf.html" class="text-decoration-none font-monospace"><small>nctcdf</small></a></li>
+					<li><a href="nctinv.html" class="text-decoration-none font-monospace"><small>nctinv</small></a></li>
+					<li><a href="nctpdf.html" class="text-decoration-none font-monospace"><small>nctpdf</small></a></li>
+					<li><a href="nctrnd.html" class="text-decoration-none font-monospace"><small>nctrnd</small></a></li>
+					<li><a href="ncx2cdf.html" class="text-decoration-none font-monospace"><small>ncx2cdf</small></a></li>
+					<li><a href="ncx2inv.html" class="text-decoration-none font-monospace"><small>ncx2inv</small></a></li>
+					<li><a href="ncx2pdf.html" class="text-decoration-none font-monospace"><small>ncx2pdf</small></a></li>
+					<li><a href="ncx2rnd.html" class="text-decoration-none font-monospace"><small>ncx2rnd</small></a></li>
+					<li><a href="normcdf.html" class="text-decoration-none font-monospace"><small>normcdf</small></a></li>
+					<li><a href="norminv.html" class="text-decoration-none font-monospace"><small>norminv</small></a></li>
+					<li><a href="normpdf.html" class="text-decoration-none font-monospace"><small>normpdf</small></a></li>
+					<li><a href="normrnd.html" class="text-decoration-none font-monospace"><small>normrnd</small></a></li>
+					<li><a href="plcdf.html" class="text-decoration-none font-monospace"><small>plcdf</small></a></li>
+					<li><a href="plinv.html" class="text-decoration-none font-monospace"><small>plinv</small></a></li>
+					<li><a href="plpdf.html" class="text-decoration-none font-monospace"><small>plpdf</small></a></li>
+					<li><a href="plrnd.html" class="text-decoration-none font-monospace"><small>plrnd</small></a></li>
+					<li><a href="poisscdf.html" class="text-decoration-none font-monospace"><small>poisscdf</small></a></li>
+					<li><a href="poissinv.html" class="text-decoration-none font-monospace"><small>poissinv</small></a></li>
+					<li><a href="poisspdf.html" class="text-decoration-none font-monospace"><small>poisspdf</small></a></li>
+					<li><a href="poissrnd.html" class="text-decoration-none font-monospace"><small>poissrnd</small></a></li>
+					<li><a href="raylcdf.html" class="text-decoration-none font-monospace"><small>raylcdf</small></a></li>
+					<li><a href="raylinv.html" class="text-decoration-none font-monospace"><small>raylinv</small></a></li>
+					<li><a href="raylpdf.html" class="text-decoration-none font-monospace"><small>raylpdf</small></a></li>
+					<li><a href="raylrnd.html" class="text-decoration-none font-monospace"><small>raylrnd</small></a></li>
+					<li><a href="ricecdf.html" class="text-decoration-none font-monospace"><small>ricecdf</small></a></li>
+					<li><a href="riceinv.html" class="text-decoration-none font-monospace"><small>riceinv</small></a></li>
+					<li><a href="ricepdf.html" class="text-decoration-none font-monospace"><small>ricepdf</small></a></li>
+					<li><a href="ricernd.html" class="text-decoration-none font-monospace"><small>ricernd</small></a></li>
+					<li><a href="stblcdf.html" class="text-decoration-none font-monospace"><small>stblcdf</small></a></li>
+					<li><a href="stblinv.html" class="text-decoration-none font-monospace"><small>stblinv</small></a></li>
+					<li><a href="stblpdf.html" class="text-decoration-none font-monospace"><small>stblpdf</small></a></li>
+					<li><a href="stblrnd.html" class="text-decoration-none font-monospace"><small>stblrnd</small></a></li>
+					<li><a href="stdrcdf.html" class="text-decoration-none font-monospace"><small>stdrcdf</small></a></li>
+					<li><a href="stdrinv.html" class="text-decoration-none font-monospace"><small>stdrinv</small></a></li>
+					<li><a href="stdrpdf.html" class="text-decoration-none font-monospace"><small>stdrpdf</small></a></li>
+					<li><a href="stdrrnd.html" class="text-decoration-none font-monospace"><small>stdrrnd</small></a></li>
+					<li><a href="tcdf.html" class="text-decoration-none font-monospace"><small>tcdf</small></a></li>
+					<li><a href="tinv.html" class="text-decoration-none font-monospace"><small>tinv</small></a></li>
+					<li><a href="tpdf.html" class="text-decoration-none font-monospace"><small>tpdf</small></a></li>
+					<li><a href="trnd.html" class="text-decoration-none font-monospace"><small>trnd</small></a></li>
+					<li><a href="tlscdf.html" class="text-decoration-none font-monospace"><small>tlscdf</small></a></li>
+					<li><a href="tlsinv.html" class="text-decoration-none font-monospace"><small>tlsinv</small></a></li>
+					<li><a href="tlspdf.html" class="text-decoration-none font-monospace"><small>tlspdf</small></a></li>
+					<li><a href="tlsrnd.html" class="text-decoration-none font-monospace"><small>tlsrnd</small></a></li>
+					<li><a href="tricdf.html" class="text-decoration-none font-monospace"><small>tricdf</small></a></li>
+					<li><a href="triinv.html" class="text-decoration-none font-monospace"><small>triinv</small></a></li>
+					<li><a href="tripdf.html" class="text-decoration-none font-monospace"><small>tripdf</small></a></li>
+					<li><a href="trirnd.html" class="text-decoration-none font-monospace"><small>trirnd</small></a></li>
+					<li><a href="unidcdf.html" class="text-decoration-none font-monospace"><small>unidcdf</small></a></li>
+					<li><a href="unidinv.html" class="text-decoration-none font-monospace"><small>unidinv</small></a></li>
+					<li><a href="unidpdf.html" class="text-decoration-none font-monospace"><small>unidpdf</small></a></li>
+					<li><a href="unidrnd.html" class="text-decoration-none font-monospace"><small>unidrnd</small></a></li>
+					<li><a href="unifcdf.html" class="text-decoration-none font-monospace"><small>unifcdf</small></a></li>
+					<li><a href="unifinv.html" class="text-decoration-none font-monospace"><small>unifinv</small></a></li>
+					<li><a href="unifpdf.html" class="text-decoration-none font-monospace"><small>unifpdf</small></a></li>
+					<li><a href="unifrnd.html" class="text-decoration-none font-monospace"><small>unifrnd</small></a></li>
+					<li><a href="vmcdf.html" class="text-decoration-none font-monospace"><small>vmcdf</small></a></li>
+					<li><a href="vminv.html" class="text-decoration-none font-monospace"><small>vminv</small></a></li>
+					<li><a href="vmpdf.html" class="text-decoration-none font-monospace"><small>vmpdf</small></a></li>
+					<li><a href="vmrnd.html" class="text-decoration-none font-monospace"><small>vmrnd</small></a></li>
+					<li><a href="wblcdf.html" class="text-decoration-none font-monospace"><small>wblcdf</small></a></li>
+					<li><a href="wblinv.html" class="text-decoration-none font-monospace"><small>wblinv</small></a></li>
+					<li><a href="wblpdf.html" class="text-decoration-none font-monospace"><small>wblpdf</small></a></li>
+					<li><a href="wblrnd.html" class="text-decoration-none font-monospace"><small>wblrnd</small></a></li>
+					<li><a href="wienrnd.html" class="text-decoration-none font-monospace"><small>wienrnd</small></a></li>
+					<li><a href="wishpdf.html" class="text-decoration-none font-monospace"><small>wishpdf</small></a></li>
+					<li><a href="wishrnd.html" class="text-decoration-none font-monospace"><small>wishrnd</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList17" type="checkbox">
+				<label for="togList17">
+					<span><h6>Distribution Statistics</h6></span>
+					<span><h6>Distribution Statistics</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="betastat.html" class="text-decoration-none font-monospace"><small>betastat</small></a></li>
+					<li><a href="binostat.html" class="text-decoration-none font-monospace"><small>binostat</small></a></li>
+					<li><a href="bisastat.html" class="text-decoration-none font-monospace"><small>bisastat</small></a></li>
+					<li><a href="burrstat.html" class="text-decoration-none font-monospace"><small>burrstat</small></a></li>
+					<li><a href="chi2stat.html" class="text-decoration-none font-monospace"><small>chi2stat</small></a></li>
+					<li><a href="copulaparam.html" class="text-decoration-none font-monospace"><small>copulaparam</small></a></li>
+					<li><a href="copulastat.html" class="text-decoration-none font-monospace"><small>copulastat</small></a></li>
+					<li><a href="evstat.html" class="text-decoration-none font-monospace"><small>evstat</small></a></li>
+					<li><a href="expstat.html" class="text-decoration-none font-monospace"><small>expstat</small></a></li>
+					<li><a href="fstat.html" class="text-decoration-none font-monospace"><small>fstat</small></a></li>
+					<li><a href="gamstat.html" class="text-decoration-none font-monospace"><small>gamstat</small></a></li>
+					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
+					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
+					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
+					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
+					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
+					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
+					<li><a href="logistat.html" class="text-decoration-none font-monospace"><small>logistat</small></a></li>
+					<li><a href="loglstat.html" class="text-decoration-none font-monospace"><small>loglstat</small></a></li>
+					<li><a href="lognstat.html" class="text-decoration-none font-monospace"><small>lognstat</small></a></li>
+					<li><a href="nakastat.html" class="text-decoration-none font-monospace"><small>nakastat</small></a></li>
+					<li><a href="nbinstat.html" class="text-decoration-none font-monospace"><small>nbinstat</small></a></li>
+					<li><a href="ncfstat.html" class="text-decoration-none font-monospace"><small>ncfstat</small></a></li>
+					<li><a href="nctstat.html" class="text-decoration-none font-monospace"><small>nctstat</small></a></li>
+					<li><a href="ncx2stat.html" class="text-decoration-none font-monospace"><small>ncx2stat</small></a></li>
+					<li><a href="normstat.html" class="text-decoration-none font-monospace"><small>normstat</small></a></li>
+					<li><a href="plstat.html" class="text-decoration-none font-monospace"><small>plstat</small></a></li>
+					<li><a href="poisstat.html" class="text-decoration-none font-monospace"><small>poisstat</small></a></li>
+					<li><a href="raylstat.html" class="text-decoration-none font-monospace"><small>raylstat</small></a></li>
+					<li><a href="ricestat.html" class="text-decoration-none font-monospace"><small>ricestat</small></a></li>
+					<li><a href="stdrstat.html" class="text-decoration-none font-monospace"><small>stdrstat</small></a></li>
+					<li><a href="tlsstat.html" class="text-decoration-none font-monospace"><small>tlsstat</small></a></li>
+					<li><a href="tristat.html" class="text-decoration-none font-monospace"><small>tristat</small></a></li>
+					<li><a href="tstat.html" class="text-decoration-none font-monospace"><small>tstat</small></a></li>
+					<li><a href="unidstat.html" class="text-decoration-none font-monospace"><small>unidstat</small></a></li>
+					<li><a href="unifstat.html" class="text-decoration-none font-monospace"><small>unifstat</small></a></li>
+					<li><a href="wblstat.html" class="text-decoration-none font-monospace"><small>wblstat</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList18" type="checkbox">
+				<label for="togList18">
+					<span><h6>Distribution Wrappers</h6></span>
+					<span><h6>Distribution Wrappers</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="cdf.html" class="text-decoration-none font-monospace"><small>cdf</small></a></li>
+					<li><a href="fitdist.html" class="text-decoration-none font-monospace"><small>fitdist</small></a></li>
+					<li><a href="icdf.html" class="text-decoration-none font-monospace"><small>icdf</small></a></li>
+					<li><a href="makedist.html" class="text-decoration-none font-monospace"><small>makedist</small></a></li>
+					<li><a href="mle.html" class="text-decoration-none font-monospace"><small>mle</small></a></li>
+					<li><a href="mlecov.html" class="text-decoration-none font-monospace"><small>mlecov</small></a></li>
+					<li><a href="pdf.html" class="text-decoration-none font-monospace"><small>pdf</small></a></li>
+					<li><a href="random.html" class="text-decoration-none font-monospace"><small>random</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList19" type="checkbox">
+				<label for="togList19">
+					<span><h6>Plotting</h6></span>
+					<span><h6>Plotting</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="andrewsplot.html" class="text-decoration-none font-monospace"><small>andrewsplot</small></a></li>
+					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
+					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
+					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
+					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
+					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
+					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
+					<li><a href="ecdfhist.html" class="text-decoration-none font-monospace"><small>ecdfhist</small></a></li>
+					<li><a href="einstein.html" class="text-decoration-none font-monospace"><small>einstein</small></a></li>
+					<li><a href="gardnerAltmanPlot.html" class="text-decoration-none font-monospace"><small>gardnerAltmanPlot</small></a></li>
+					<li><a href="glyphplot.html" class="text-decoration-none font-monospace"><small>glyphplot</small></a></li>
+					<li><a href="gplotmatrix.html" class="text-decoration-none font-monospace"><small>gplotmatrix</small></a></li>
+					<li><a href="gscatter.html" class="text-decoration-none font-monospace"><small>gscatter</small></a></li>
+					<li><a href="heatmap.html" class="text-decoration-none font-monospace"><small>heatmap</small></a></li>
+					<li><a href="hist3.html" class="text-decoration-none font-monospace"><small>hist3</small></a></li>
+					<li><a href="histfit.html" class="text-decoration-none font-monospace"><small>histfit</small></a></li>
+					<li><a href="manovacluster.html" class="text-decoration-none font-monospace"><small>manovacluster</small></a></li>
+					<li><a href="normplot.html" class="text-decoration-none font-monospace"><small>normplot</small></a></li>
+					<li><a href="parallelcoords.html" class="text-decoration-none font-monospace"><small>parallelcoords</small></a></li>
+					<li><a href="parallelplot.html" class="text-decoration-none font-monospace"><small>parallelplot</small></a></li>
+					<li><a href="ppplot.html" class="text-decoration-none font-monospace"><small>ppplot</small></a></li>
+					<li><a href="probplot.html" class="text-decoration-none font-monospace"><small>probplot</small></a></li>
+					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
+					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
+					<li><a href="scatterhistogram.html" class="text-decoration-none font-monospace"><small>scatterhistogram</small></a></li>
+					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="stats.chart.HeatmapChart.html" class="text-decoration-none font-monospace"><small>stats.chart.HeatmapChart</small></a></li>
+					<li><a href="stats.chart.ParallelCoordinatesPlot.html" class="text-decoration-none font-monospace"><small>stats.chart.ParallelCoordinatesPlot</small></a></li>
+					<li><a href="stats.chart.ScatterHistogramChart.html" class="text-decoration-none font-monospace"><small>stats.chart.ScatterHistogramChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
+					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
+					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList20" type="checkbox">
+				<label for="togList20">
+					<span><h6>I/O</h6></span>
+					<span><h6>I/O</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="libsvmread.html" class="text-decoration-none font-monospace"><small>libsvmread</small></a></li>
+					<li><a href="libsvmwrite.html" class="text-decoration-none font-monospace"><small>libsvmwrite</small></a></li>
+					<li><a href="loadmodel.html" class="text-decoration-none font-monospace"><small>loadmodel</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList21" type="checkbox">
+				<label for="togList21">
+					<span><h6>Utilities</h6></span>
+					<span><h6>Utilities</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="cholcov.html" class="text-decoration-none font-monospace"><small>cholcov</small></a></li>
+					<li><a href="logit.html" class="text-decoration-none font-monospace"><small>logit</small></a></li>
+					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
+					<li><a href="probit.html" class="text-decoration-none font-monospace"><small>probit</small></a></li>
+					<li><a href="statget.html" class="text-decoration-none font-monospace"><small>statget</small></a></li>
+					<li><a href="statset.html" class="text-decoration-none font-monospace"><small>statset</small></a></li>
+				</ul>
+				</div>
+			</div>
+
+			  </div>
+			  <div class="col-md-10">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <h3 class="d-inline-block mr-2">
+                Class&nbsp;Definition: <b><code>RepeatedMeasuresModel</code></b>
+                </h3>
+              </div>
+            </div>
+            <div class="card-body">
+<p class="h5 description mb-3"><code>statistics: RepeatedMeasuresModel</code></p>
+<p> Repeated measures model.
+</p>
+<div class="ms-5">
+<p> A <code>RepeatedMeasuresModel</code> object holds a multivariate linear model
+ of several responses measured on the same subjects, the repeated
+ measures, on between-subject predictors.  Each row of the data is a
+ subject and each response a measurement taken on it; the between-subject
+ model describes how the mean of every response depends on the
+ predictors, and the within-subject design describes how the responses
+ relate to one another, as the levels of one or more within-subject
+ factors.
+</p>
+<p> The between-subject coefficients are estimated by least squares, one
+ column per response, with categorical predictors in effects coding: a
+ predictor of <em class="math">L</em> levels contributes <em class="math">L - 1</em> columns named
+ <code><var>name</var>_<var>level</var></code>, the last level coded -1 in all of them.
+ <code>ranova</code> tests the within-subject effects, reporting the p-values
+ corrected for departures from sphericity beside the uncorrected ones,
+ <code>epsilon</code> gives those corrections and <code>mauchly</code> tests
+ sphericity itself.
+</p>
+<p> Create a <code>RepeatedMeasuresModel</code> object with <code>fitrm</code>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitrm.html">fitrm</a>, 
+  <a href="anova2.html">anova2</a>, 
+  <a href="manova1.html">manova1</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Regression/RepeatedMeasuresModel.m">RepeatedMeasuresModel</a>
+</p>
+</div>
+        <p class="lead my-3">The <code>RepeatedMeasuresModel</code> class contains the following properties:</p>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_BetweenDesign"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_BetweenDesign">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>BetweenDesign</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Design of the between-subject predictors
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_BetweenDesign">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> The table the model was fitted to, one row per subject, responses
+ included.  A subject missing a response or a predictor is kept here,
+ although the fit leaves it out.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_BetweenModel"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_BetweenModel">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>BetweenModel</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Between-subject model
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_BetweenModel">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A character vector holding the right side of the model formula, with
+ its intercept, as in <code>'1 + species'</code>.  This property is
+ read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_BetweenFactorNames"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_BetweenFactorNames">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>BetweenFactorNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Names of the between-subject predictors
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_BetweenFactorNames">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A cell row of character vectors naming the variables the
+ between-subject model draws on, empty for a model with an intercept
+ alone.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_ResponseNames"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_ResponseNames">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ResponseNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Names of the responses
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_ResponseNames">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A cell row of character vectors naming the repeated measures, in the
+ order of the columns of <code>Coefficients</code>.  This property is
+ read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_WithinDesign"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_WithinDesign">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>WithinDesign</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Design of the within-subject factors
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_WithinDesign">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A table with one row per response, named by the responses, and one
+ variable per within-subject factor.  Without a design given at fitting
+ it holds a single factor <code>Time</code> of the values 1 to <em class="math">k</em> for
+ <em class="math">k</em> responses.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_WithinModel"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_WithinModel">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>WithinModel</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Within-subject model
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_WithinModel">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> <code>'separatemeans'</code>, <code>'orthogonalcontrasts'</code>, a formula over
+ the within-subject factors or a contrast matrix, as given at fitting.
+ This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_WithinFactorNames"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_WithinFactorNames">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>WithinFactorNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Names of the within-subject factors
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_WithinFactorNames">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A cell row of character vectors, the variable names of
+ <code>WithinDesign</code>.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_Coefficients"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_Coefficients">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Coefficients</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Estimated between-subject coefficients
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_Coefficients">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A table with one row per coefficient, named after the terms of the
+ between-subject model, and one variable per response.  This property is
+ read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_Covariance"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_Covariance">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Covariance</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Estimated covariance of the responses
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_Covariance">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A table holding the covariance of the residuals of the responses,
+ their cross products over <code>DFE</code>, with rows and variables named by
+ the responses.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_DFE"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_DFE">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>DFE</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Error degrees of freedom
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_DFE">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> The number of subjects the fit used less the number of between-subject
+ coefficients.  This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <p class="lead my-3">The <code>RepeatedMeasuresModel</code> class offers the following public methods:</p>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_RepeatedMeasuresModel"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_RepeatedMeasuresModel">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>RepeatedMeasuresModel</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Fit a repeated measures model.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_RepeatedMeasuresModel">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>rm</var> = <b>RepeatedMeasuresModel</b> (<var>t</var>, <var>modelspec</var>)</code></p>
+<p class="h5 fs fs-last"><code>RepeatedMeasuresModel: <var>rm</var> = <b>RepeatedMeasuresModel</b> (<var>t</var>, <var>modelspec</var>, <var>name</var>, <var>value</var>)</code></p>
+<p> </p>
+<p> <code><var>rm</var> = RepeatedMeasuresModel (<var>t</var>, <var>modelspec</var>)</code> fits
+ the repeated measures in the table <var>t</var> on the between-subject
+ model given by the formula <var>modelspec</var>, a character vector or a
+ string scalar of the form <code>'<var>responses</var> ~ <var>terms</var>'</code>.
+ The responses are a range of the table&rsquo;s variables, as in
+ <code>'y1-y6'</code>, which takes every variable from <code>y1</code> to
+ <code>y6</code> in the table&rsquo;s order, a comma list, as in
+ <code>'y1,y2,y3'</code>, or both.  The terms are a Wilkinson formula over the
+ other variables, as in <code>'species'</code> or <code>'g*x'</code>, or
+ <code>'1'</code> for an intercept alone.  A <code>categorical</code>, logical,
+ text or string variable is a categorical predictor and any other a
+ continuous one.
+</p>
+<p> A subject missing a response or a predictor is left out of the fit.
+</p>
+<p> The following name-value arguments are accepted.
+</p>
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="25%">Name</th><th width="75%">Value</th></tr></thead>
+<tr><td width="25%"><code>'WithinDesign'</code></td><td width="75%">The design of the within-subject
+ factors: a table with one row per response and one variable per factor,
+ or a numeric vector with one element per response, which becomes a
+ single factor <code>Time</code>.  The default is <code>Time</code> holding the
+ values 1 to <em class="math">k</em> for <em class="math">k</em> responses.</td></tr>
+<tr><td width="25%"><code>'WithinModel'</code></td><td width="75%">The within-subject model:
+ <code>'separatemeans'</code>, the default, which compares the means of the
+ responses; <code>'orthogonalcontrasts'</code>, which tests the orthogonal
+ polynomial trends over a single numeric within-subject factor; a
+ formula over the within-subject factors, as in <code>'A*B'</code>; or a
+ contrast matrix with one row per response.</td></tr>
+</table>
+</div>
+
+<p> <code>'orthogonalcontrasts'</code> is refused at fitting unless the
+ within-subject design holds a single numeric factor.  MATLAB accepts
+ the fit and refuses the model only when a test is asked of it.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitrm.html">fitrm</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_ranova"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_ranova">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ranova</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Repeated measures analysis of variance.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_ranova">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>ranova</b> (<var>rm</var>)</code></p>
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>ranova</b> (<var>rm</var>, <code>'WithinModel'</code>, <var>WM</var>)</code></p>
+<p class="h5 fs fs-last"><code>RepeatedMeasuresModel: [<var>tbl</var>, <var>A</var>, <var>C</var>, <var>D</var>] = <b>ranova</b> (&hellip;)</code></p>
+<p> </p>
+<p> <code><var>tbl</var> = ranova (<var>rm</var>)</code> tests the within-subject effects of
+ the repeated measures model <var>rm</var>: whether the means of the
+ responses differ, and whether each between-subject term changes that
+ difference.  <var>tbl</var> holds one row per test and one per error term,
+ with the variables <code>SumSq</code>, <code>DF</code>, <code>MeanSq</code>, <code>F</code>
+ and <code>pValue</code>, and beside them the p-values under the
+ Greenhouse-Geisser, Huynh-Feldt and lower bound corrections for
+ departures from sphericity, <code>pValueGG</code>, <code>pValueHF</code> and
+ <code>pValueLB</code>.  The corrections are reported and never applied.
+</p>
+<p> <code>ranova (<var>rm</var>, <code>'WithinModel'</code>, <var>WM</var>)</code> tests the
+ within-subject model <var>WM</var> instead, which takes the forms the
+ <code>'WithinModel'</code> argument of <code>fitrm</code> takes.  The default is
+ <code>'separatemeans'</code> whatever the model was fitted with, as in
+ MATLAB.  Under <code>'separatemeans'</code> or a contrast matrix the rows
+ are named after the within-subject factor, or <code>Time</code> when there
+ are several.  A formula or <code>'orthogonalcontrasts'</code> gives one
+ block of rows per within-subject term, the constant term first, whose
+ tests are the between-subject tests of the mean of the responses.
+</p>
+<p> <code>[<var>tbl</var>, <var>A</var>, <var>C</var>, <var>D</var>] = ranova (&hellip;)</code> also
+ returns the hypothesis of each test as <em class="math">A B C = D</em>: <var>A</var> a cell
+ column holding the between-subject hypothesis matrix of each term,
+ <var>C</var> the within-subject contrast, a cell row of one per term when
+ there are several, and <var>D</var> zero.
+</p>
+<p> <code>'orthogonalcontrasts'</code> works here where MATLAB R2024a and R2026a
+ both fail inside <code>ranova</code>; its results agree with those of
+ MATLAB&rsquo;s <code>anova</code> for the same contrasts.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitrm.html">fitrm</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_epsilon">RepeatedMeasuresModel.epsilon</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_mauchly">RepeatedMeasuresModel.mauchly</a>
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#RepeatedMeasuresModel_ranova-example1" aria-expanded="false"
+                  aria-controls="RepeatedMeasuresModel_ranova-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="RepeatedMeasuresModel_ranova-example1">
+            <div class="card-body">
+                <ol>
+                  <li>Whether the measurements differ, and whether species changes that</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ t = table (species, meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+            'VariableNames', {'species', 'meas1', 'meas2', 'meas3', 'meas4'});
+ Meas = table ([1, 2, 3, 4]', 'VariableNames', {'Measurements'});
+ rm = fitrm (t, 'meas1-meas4 ~ species', 'WithinDesign', Meas);</pre>
+                <p>The corrected p-values sit beside the uncorrected ones; <code>mauchly</code> says whether the correction is needed and <code>epsilon</code> how large it is</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> ranova (rm)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+  3x8 table
+
+                                 SumSq     DF      MeanSq         F          pValue         pValueGG        pValueHF        pValueLB      
+                                _______    ___    _________    _______    ____________    ____________    ____________    ____________    
+
+    (Intercept):Measurements    1656.26      3      552.088    6873.29               0    9.44912e-279     2.9213e-283    2.58715e-125    
+    species:Measurements        282.466      6      47.0777      586.1    1.42714e-206    4.93131e-156    1.54056e-158     9.01515e-71    
+    Error(Measurements)         35.4227    441    0.0803237        NaN             NaN             NaN             NaN             NaN</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mauchly (rm)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+  1x4 table
+
+       W        ChiStat    DF      pValue       
+    ________    _______    __    ___________    
+
+    0.558144    84.9762     5    7.61488e-17</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> epsilon (rm)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+  1x4 table
+
+    Uncorrected    GreenhouseGeisser    HuynhFeldt    LowerBound    
+    ___________    _________________    __________    __________    
+
+              1              0.75179      0.764092      0.333333</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#RepeatedMeasuresModel_ranova-example2" aria-expanded="false"
+                  aria-controls="RepeatedMeasuresModel_ranova-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="RepeatedMeasuresModel_ranova-example2">
+            <div class="card-body">
+                <ol>
+                  <li>Linear, quadratic and cubic trends over a numeric factor</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ t = table (species, meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+            'VariableNames', {'species', 'meas1', 'meas2', 'meas3', 'meas4'});
+ Meas = table ([1, 2, 3, 4]', 'VariableNames', {'Measurements'});
+ rm = fitrm (t, 'meas1-meas4 ~ species', 'WithinDesign', Meas);</pre>
+                <p>One block of rows per polynomial degree, the between-subject tests of the mean first</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> ranova (rm, 'WithinModel', 'orthogonalcontrasts')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+  12x8 table
+
+                                   SumSq      DF      MeanSq         F          pValue         pValueGG        pValueHF        pValueLB      
+                                  ________    ___    _________    _______    ____________    ____________    ____________    ____________    
+
+    (Intercept)                    7201.66      1      7201.66    19650.1    2.07354e-158    2.07354e-158    2.07354e-158    2.07354e-158    
+    species                        309.607      2      154.803     422.39     1.15165e-61     1.15165e-61     1.15165e-61     1.15165e-61    
+    Error                          53.8746    147     0.366494        NaN             NaN             NaN             NaN             NaN    
+    (Intercept):Measurements       1313.01      1      1313.01    14029.1    9.51133e-148    9.51133e-148    9.51133e-148    9.51133e-148    
+    species:Measurements           35.9781      2       17.989    192.207     9.51777e-42     9.51777e-42     9.51777e-42     9.51777e-42    
+    Error(Measurements)             13.758    147    0.0935922        NaN             NaN             NaN             NaN             NaN    
+    (Intercept):Measurements^2     1.93802      1      1.93802    62.7528     5.31247e-13     5.31247e-13     5.31247e-13     5.31247e-13    
+    species:Measurements^2        0.469633      2     0.234817    7.60335     0.000720725     0.000720725     0.000720725     0.000720725    
+    Error(Measurements^2)          4.53985    147    0.0308833        NaN             NaN             NaN             NaN             NaN    
+    (Intercept):Measurements^3     341.314      1      341.314    2929.84     5.62469e-99     5.62469e-99     5.62469e-99     5.62469e-99    
+    species:Measurements^3         246.019      2      123.009    1055.91     6.12904e-88     6.12904e-88     6.12904e-88     6.12904e-88    
+    Error(Measurements^3)          17.1248    147     0.116496        NaN             NaN             NaN             NaN             NaN</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_epsilon"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_epsilon">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>epsilon</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Epsilon adjustments for repeated measures analysis of variance.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_epsilon">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>epsilon</b> (<var>rm</var>)</code></p>
+<p class="h5 fs fs-last"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>epsilon</b> (<var>rm</var>, <var>C</var>)</code></p>
+<p> </p>
+<p> <code><var>tbl</var> = epsilon (<var>rm</var>)</code> returns the corrections for
+ departures from sphericity that <code>ranova</code> applies to its
+ p-values, over the contrasts between successive responses: the
+ variables <code>Uncorrected</code>, which is 1, <code>GreenhouseGeisser</code>,
+ <code>HuynhFeldt</code> and <code>LowerBound</code>.  The Huynh-Feldt value is
+ Lecoutre&rsquo;s corrected form, capped at 1, and the lower bound is
+ <em class="math">1 / p</em> for <em class="math">p</em> contrasts.
+</p>
+<p> <code><var>tbl</var> = epsilon (<var>rm</var>, <var>C</var>)</code> computes them over the
+ contrast matrix <var>C</var>, which must have one row per response.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitrm.html">fitrm</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_ranova">RepeatedMeasuresModel.ranova</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_mauchly">RepeatedMeasuresModel.mauchly</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_mauchly"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_mauchly">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>mauchly</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Mauchly&rsquo;s test of sphericity.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_mauchly">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>mauchly</b> (<var>rm</var>)</code></p>
+<p class="h5 fs fs-last"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>mauchly</b> (<var>rm</var>, <var>C</var>)</code></p>
+<p> </p>
+<p> <code><var>tbl</var> = mauchly (<var>rm</var>)</code> tests whether the covariance of
+ the contrasts between successive responses is a multiple of the
+ identity, the sphericity that the uncorrected p-values of
+ <code>ranova</code> assume.  <var>tbl</var> holds Mauchly&rsquo;s <code>W</code>, the
+ chi-square statistic <code>ChiStat</code> with Bartlett&rsquo;s factor, its
+ degrees of freedom <code>DF</code> and the <code>pValue</code>.  A singular
+ covariance gives <var>W</var> 0, <var>ChiStat</var> <code>Inf</code> and a p-value of
+ 0.
+</p>
+<p> <code><var>tbl</var> = mauchly (<var>rm</var>, <var>C</var>)</code> tests the contrasts of
+ the matrix <var>C</var>, which must have one row per response.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitrm.html">fitrm</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_ranova">RepeatedMeasuresModel.ranova</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_epsilon">RepeatedMeasuresModel.epsilon</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_anova"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_anova">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>anova</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Analysis of variance for between-subject effects.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_anova">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>anova</b> (<var>rm</var>)</code></p>
+<p class="h5 fs fs-last"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>anova</b> (<var>rm</var>, <code>'WithinModel'</code>, <var>WM</var>)</code></p>
+<p> </p>
+<p> <code><var>tbl</var> = anova (<var>rm</var>)</code> tests the between-subject terms of
+ the repeated measures model <var>rm</var> on the average of the repeated
+ measures, one univariate analysis of variance.  <var>tbl</var> has the
+ variables <code>Within</code>, the within-subject response analysed,
+ <code>Between</code>, the between-subject term tested or <code>Error</code>,
+ <code>SumSq</code>, <code>DF</code>, <code>MeanSq</code>, <code>F</code> and
+ <code>pValue</code>.  The intercept is named <code>constant</code>.
+</p>
+<p> <code>anova (<var>rm</var>, <code>'WithinModel'</code>, <var>WM</var>)</code> analyses
+ other responses built from the repeated measures, one block of rows
+ each:
+</p>
+<ul>
+<li> <code>'separatemeans'</code>, the default: the average, named
+ <code>Constant</code>.
+</li><li> <code>'orthogonalcontrasts'</code>: the average and the orthogonal
+ polynomial trends over a single numeric within-subject factor.
+</li><li> A formula over the within-subject factors: each column of its
+ effects-coded design, scaled to unit length and named after it.
+</li><li> A contrast matrix with one row per response: each column as
+ given, named <code>Contrast1</code>, <code>Contrast2</code>, &hellip;
+</li></ul>
+
+<p> MATLAB R2024a and R2026a fail on <code>'separatemeans'</code> given
+ explicitly, though it is their documented default; here it is the
+ default.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitrm.html">fitrm</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_ranova">RepeatedMeasuresModel.ranova</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_manova">RepeatedMeasuresModel.manova</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_manova"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_manova">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>manova</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Multivariate analysis of variance.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_manova">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>manova</b> (<var>rm</var>)</code></p>
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>manova</b> (<var>rm</var>, <var>name</var>, <var>value</var>)</code></p>
+<p class="h5 fs fs-last"><code>RepeatedMeasuresModel: [<var>tbl</var>, <var>A</var>, <var>C</var>, <var>D</var>] = <b>manova</b> (&hellip;)</code></p>
+<p> </p>
+<p> <code><var>tbl</var> = manova (<var>rm</var>)</code> tests every term of the
+ within-subject model of <var>rm</var>, as it was fitted, against every
+ between-subject term, by the four multivariate statistics.  <var>tbl</var>
+ has the variables <code>Within</code>, <code>Between</code>, <code>Statistic</code>,
+ one of <code>Pillai</code>, <code>Wilks</code>, <code>Hotelling</code> and
+ <code>Roy</code>, its <code>Value</code>, the <code>F</code> statistic that
+ approximates it, <code>RSquare</code>, the degrees of freedom <code>df1</code>
+ and <code>df2</code>, and the <code>pValue</code>.  Under
+ <code>'separatemeans'</code> the within-subject hypothesis is that of equal
+ means, named <code>Constant</code>, and a contrast matrix is named
+ <code>Specified contrast</code>.
+</p>
+<p> The name-value arguments are <code>'WithinModel'</code>, which takes the
+ forms <code>fitrm</code> takes but <code>'orthogonalcontrasts'</code>, and
+ <code>'By'</code>, the name of a between-subject factor, which tests the
+ within-subject hypotheses at each of its levels in place of the
+ between-subject terms.
+</p>
+<p> <code>[<var>tbl</var>, <var>A</var>, <var>C</var>, <var>D</var>] = manova (&hellip;)</code> also
+ returns the hypotheses as <em class="math">A B C = D</em>: <var>A</var> a cell column of
+ the between-subject hypothesis matrices, <var>C</var> the within-subject
+ contrast, a cell row of one per term when there are several, and
+ <var>D</var> zero.
+</p>
+<p> Pillai&rsquo;s trace, Wilks&rsquo; lambda and Roy&rsquo;s root are approximated by F as
+ in MATLAB.  The Hotelling-Lawley trace uses McKeon&rsquo;s F approximation
+ with its own second degrees of freedom, as SAS does, and the
+ Pillai-Samson one where McKeon&rsquo;s is undefined.  MATLAB R2024a computes
+ McKeon&rsquo;s F but refers it to the Pillai-Samson degrees of freedom,
+ which makes its p-values too small.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitrm.html">fitrm</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_coeftest">RepeatedMeasuresModel.coeftest</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_ranova">RepeatedMeasuresModel.ranova</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_coeftest"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_coeftest">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>coeftest</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Linear hypothesis test on the coefficients of a repeated measures
+ model.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_coeftest">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>coeftest</b> (<var>rm</var>, <var>A</var>, <var>C</var>)</code></p>
+<p class="h5 fs fs-last"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>coeftest</b> (<var>rm</var>, <var>A</var>, <var>C</var>, <var>D</var>)</code></p>
+<p> </p>
+<p> <code><var>tbl</var> = coeftest (<var>rm</var>, <var>A</var>, <var>C</var>)</code> tests the
+ hypothesis <em class="math">A B C = 0</em> on the coefficient matrix <em class="math">B</em> of
+ <var>rm</var>, <var>A</var> having one column per between-subject coefficient
+ and <var>C</var> one row per response.  <var>tbl</var> holds the four
+ multivariate statistics as <code>manova</code> reports them: the variables
+ <code>Statistic</code>, <code>Value</code>, <code>F</code>, <code>RSquare</code>,
+ <code>df1</code>, <code>df2</code> and <code>pValue</code>.
+</p>
+<p> <code><var>tbl</var> = coeftest (<var>rm</var>, <var>A</var>, <var>C</var>, <var>D</var>)</code> tests
+ <em class="math">A B C = D</em> instead, <var>D</var> a scalar or a matrix with as many
+ rows as <var>A</var> and as many columns as <var>C</var>.  The default is 0.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitrm.html">fitrm</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_manova">RepeatedMeasuresModel.manova</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_margmean"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_margmean">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>margmean</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Estimated marginal means.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_margmean">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>margmean</b> (<var>rm</var>, <var>vars</var>)</code></p>
+<p class="h5 fs fs-last"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>margmean</b> (<var>rm</var>, <var>vars</var>, <code>'Alpha'</code>, <var>alpha</var>)</code></p>
+<p> </p>
+<p> <code><var>tbl</var> = margmean (<var>rm</var>, <var>vars</var>)</code> estimates the mean
+ of the repeated measures at each combination of the levels of the
+ factors named by <var>vars</var>, a character vector or a cell array of
+ them, each a categorical between-subject factor or a within-subject
+ factor.  The other between-subject factors are averaged over their
+ levels with equal weights, a continuous predictor is held at its mean
+ over the subjects the fit used, and the responses are averaged over
+ the other within-subject factors.  <var>tbl</var> holds one variable per
+ factor, the first varying slowest, and <code>Mean</code>, <code>StdErr</code>,
+ <code>Lower</code> and <code>Upper</code>, the limits of a <em class="math">100 (1 -
+ alpha)</em> per cent confidence interval on <code>DFE</code> degrees of freedom.
+ The default <var>alpha</var> is 0.05.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitrm.html">fitrm</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_multcompare">RepeatedMeasuresModel.multcompare</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_grpstats">RepeatedMeasuresModel.grpstats</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_grpstats"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_grpstats">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>grpstats</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Descriptive statistics of the repeated measures by group.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_grpstats">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>grpstats</b> (<var>rm</var>, <var>g</var>)</code></p>
+<p class="h5 fs fs-last"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>grpstats</b> (<var>rm</var>, <var>g</var>, <var>stats</var>)</code></p>
+<p> </p>
+<p> <code><var>tbl</var> = grpstats (<var>rm</var>, <var>g</var>)</code> pools the repeated
+ measures of every subject and summarizes them at each combination of
+ the levels of the factors named by <var>g</var>, a character vector or a
+ cell array of them, each a categorical between-subject factor or a
+ within-subject factor.  <var>tbl</var> holds one variable per factor,
+ <code>GroupCount</code>, the number of values in the group, and their
+ <code>mean</code> and <code>std</code>.
+</p>
+<p> <code><var>tbl</var> = grpstats (<var>rm</var>, <var>g</var>, <var>stats</var>)</code> computes
+ the statistics named by <var>stats</var> instead, a character vector or a
+ cell array of them, each one of <code>'mean'</code>, <code>'median'</code>,
+ <code>'std'</code>, <code>'var'</code>, <code>'sem'</code>, <code>'min'</code>,
+ <code>'max'</code>, <code>'range'</code> and <code>'numel'</code>.  Missing values are
+ left out.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitrm.html">fitrm</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_margmean">RepeatedMeasuresModel.margmean</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_multcompare"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_multcompare">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>multcompare</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Multiple comparison of estimated marginal means.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_multcompare">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>multcompare</b> (<var>rm</var>, <var>var</var>)</code></p>
+<p class="h5 fs fs-last"><code>RepeatedMeasuresModel: <var>tbl</var> = <b>multcompare</b> (<var>rm</var>, <var>var</var>, <var>name</var>, <var>value</var>)</code></p>
+<p> </p>
+<p> <code><var>tbl</var> = multcompare (<var>rm</var>, <var>var</var>)</code> compares the
+ estimated marginal means of every pair of levels of the factor
+ <var>var</var>, a categorical between-subject factor or a within-subject
+ factor, as <code>margmean</code> estimates them.  <var>tbl</var> holds one row per
+ ordered pair, with the variables <code><var>var</var>_1</code> and
+ <code><var>var</var>_2</code>, <code>Difference</code>, <code>StdErr</code>, the adjusted
+ <code>pValue</code>, and <code>Lower</code> and <code>Upper</code>, the limits of the
+ simultaneous confidence interval.
+</p>
+<p> The name-value arguments are:
+</p>
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="25%">Name</th><th width="75%">Value</th></tr></thead>
+<tr><td width="25%"><code>'By'</code></td><td width="75%">The name of another factor; the comparisons are
+ made at each of its levels, which become the first variable of
+ <var>tbl</var>.</td></tr>
+<tr><td width="25%"><code>'ComparisonType'</code></td><td width="75%"><code>'tukey-kramer'</code>, the
+ default, <code>'bonferroni'</code>, <code>'dunn-sidak'</code>, <code>'lsd'</code> or
+ <code>'scheffe'</code>.</td></tr>
+<tr><td width="25%"><code>'Alpha'</code></td><td width="75%">The significance level of the intervals.
+ The default is 0.05.</td></tr>
+</table>
+</div>
+
+<p> The Tukey-Kramer p-values and limits come from the studentized range
+ distribution, <code>stdrcdf</code> and <code>stdrinv</code>.  MATLAB R2024a and
+ R2026a floor their Tukey-Kramer p-values, 9.56e-10 over three groups
+ whatever the difference, and R2024a&rsquo;s Dunn-Sidak p-values read 0 where
+ the Bonferroni ones are near 1e-36; both are computed here.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitrm.html">fitrm</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_margmean">RepeatedMeasuresModel.margmean</a>, 
+  <a href="stdrcdf.html">stdrcdf</a>
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#RepeatedMeasuresModel_multcompare-example1" aria-expanded="false"
+                  aria-controls="RepeatedMeasuresModel_multcompare-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="RepeatedMeasuresModel_multcompare-example1">
+            <div class="card-body">
+                <ol>
+                  <li>Which species differ</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ t = table (species, meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+            'VariableNames', {'species', 'meas1', 'meas2', 'meas3', 'meas4'});
+ rm = fitrm (t, 'meas1-meas4 ~ species');</pre>
+                <p>Every ordered pair of species, on the mean of the four measurements, with Tukey-Kramer p-values and simultaneous limits</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> multcompare (rm, 'species')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+  6x7 table
+
+      species_1         species_2       Difference     StdErr        pValue         Lower        Upper      
+    ______________    ______________    __________    _________    ___________    _________    _________    
+
+    {'setosa'    }    {'versicolor'}       -1.0375    0.0605388     2.1597e-36     -1.18084    -0.894163    
+    {'setosa'    }    {'virginica' }       -1.7495    0.0605388    5.03902e-62     -1.89284     -1.60616    
+    {'versicolor'}    {'setosa'    }        1.0375    0.0605388     2.1597e-36     0.894163      1.18084    
+    {'versicolor'}    {'virginica' }        -0.712    0.0605388    1.90312e-22    -0.855337    -0.568663    
+    {'virginica' }    {'setosa'    }        1.7495    0.0605388    5.03902e-62      1.60616      1.89284    
+    {'virginica' }    {'versicolor'}         0.712    0.0605388    1.90312e-22     0.568663     0.855337</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#RepeatedMeasuresModel_multcompare-example2" aria-expanded="false"
+                  aria-controls="RepeatedMeasuresModel_multcompare-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="RepeatedMeasuresModel_multcompare-example2">
+            <div class="card-body">
+                <ol>
+                  <li>Comparisons within each group</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ t = table (species, meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+            'VariableNames', {'species', 'meas1', 'meas2', 'meas3', 'meas4'});
+ Meas = table ([1, 2, 3, 4]', 'VariableNames', {'Measurements'});
+ rm = fitrm (t, 'meas1-meas4 ~ species', 'WithinDesign', Meas);</pre>
+                <p><code>By</code> repeats the comparison of the measurements for each species, here with Bonferroni's adjustment</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> multcompare (rm, 'Measurements', 'By', 'species', ...
+              'ComparisonType', 'bonferroni')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
+  36x8 table
+
+       species        Measurements_1    Measurements_2    Difference     StdErr         pValue        Lower        Upper      
+    ______________    ______________    ______________    __________    _________    ____________    ________    _________    
+
+    {'setosa'    }                 1                 2         1.578    0.0624426     1.37759e-54       1.411        1.745    
+    {'setosa'    }                 1                 3         3.544    0.0479932    2.55816e-117     3.41565      3.67235    
+    {'setosa'    }                 1                 4          4.76    0.0678361    3.77851e-114     4.57858      4.94142    
+    {'setosa'    }                 2                 1        -1.578    0.0624426     1.37759e-54      -1.745       -1.411    
+    {'setosa'    }                 2                 3         1.966    0.0616585      3.8357e-67      1.8011       2.1309    
+    {'setosa'    }                 2                 4         3.182      0.04286    1.18504e-117     3.06737      3.29663    
+    {'setosa'    }                 3                 1        -3.544    0.0479932    2.55816e-117    -3.67235     -3.41565    
+    {'setosa'    }                 3                 2        -1.966    0.0616585      3.8357e-67     -2.1309      -1.8011    
+    {'setosa'    }                 3                 4         1.216    0.0532426     1.97816e-49     1.07361      1.35839    
+    {'setosa'    }                 4                 1         -4.76    0.0678361    3.77851e-114    -4.94142     -4.57858    
+    {'setosa'    }                 4                 2        -3.182      0.04286    1.18504e-117    -3.29663     -3.06737    
+    {'setosa'    }                 4                 3        -1.216    0.0532426     1.97816e-49    -1.35839     -1.07361    
+    {'versicolor'}                 1                 2         3.166    0.0624426     3.09742e-94       2.999        3.333    
+    {'versicolor'}                 1                 3         1.676    0.0479932     2.81918e-72     1.54765      1.80435    
+    {'versicolor'}                 1                 4          4.61    0.0678361    3.63727e-112     4.42858      4.79142    
+    {'versicolor'}                 2                 1        -3.166    0.0624426     3.09742e-94      -3.333       -2.999    
+    {'versicolor'}                 2                 3         -1.49    0.0616585     2.78703e-52     -1.6549      -1.3251    
+    {'versicolor'}                 2                 4         1.444      0.04286      3.0732e-70     1.32937      1.55863    
+    {'versicolor'}                 3                 1        -1.676    0.0479932     2.81918e-72    -1.80435     -1.54765    
+    {'versicolor'}                 3                 2          1.49    0.0616585     2.78703e-52      1.3251       1.6549    
+    {'versicolor'}                 3                 4         2.934    0.0532426     2.74255e-99     2.79161      3.07639    
+    {'versicolor'}                 4                 1         -4.61    0.0678361    3.63727e-112    -4.79142     -4.42858    
+    {'versicolor'}                 4                 2        -1.444      0.04286      3.0732e-70    -1.55863     -1.32937    
+    {'versicolor'}                 4                 3        -2.934    0.0532426     2.74255e-99    -3.07639     -2.79161    
+    {'virginica' }                 1                 2         3.614    0.0624426    2.77463e-102       3.447        3.781    
+    {'virginica' }                 1                 3         1.036    0.0479932     1.18915e-46    0.907645      1.16435    
+    {'virginica' }                 1                 4         4.562    0.0678361    1.61548e-111     4.38058      4.74342    
+    {'virginica' }                 2                 1        -3.614    0.0624426    2.77463e-102      -3.781       -3.447    
+    {'virginica' }                 2                 3        -2.578    0.0616585     1.00903e-82     -2.7429      -2.4131    
+    {'virginica' }                 2                 4         0.948      0.04286     7.65772e-48    0.833374      1.06263    
+    {'virginica' }                 3                 1        -1.036    0.0479932     1.18915e-46    -1.16435    -0.907645    
+    {'virginica' }                 3                 2         2.578    0.0616585     1.00903e-82      2.4131       2.7429    
+    {'virginica' }                 3                 4         3.526    0.0532426    1.43828e-110     3.38361      3.66839    
+    {'virginica' }                 4                 1        -4.562    0.0678361    1.61548e-111    -4.74342     -4.38058    
+    {'virginica' }                 4                 2        -0.948      0.04286     7.65772e-48    -1.06263    -0.833374    
+    {'virginica' }                 4                 3        -3.526    0.0532426    1.43828e-110    -3.66839     -3.38361</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_predict"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_predict">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>predict</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Predict the repeated measures.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_predict">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>ypred</var> = <b>predict</b> (<var>rm</var>)</code></p>
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>ypred</var> = <b>predict</b> (<var>rm</var>, <var>tnew</var>)</code></p>
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>ypred</var> = <b>predict</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
+<p class="h5 fs fs-last"><code>RepeatedMeasuresModel: [<var>ypred</var>, <var>yci</var>] = <b>predict</b> (&hellip;)</code></p>
+<p> </p>
+<p> <code><var>ypred</var> = predict (<var>rm</var>, <var>tnew</var>)</code> returns the
+ predicted repeated measures of the subjects in the table <var>tnew</var>,
+ one row each, from their between-subject predictors.  <var>tnew</var>
+ defaults to <code>BetweenDesign</code>.  A subject missing a predictor, or
+ holding a level the model was not fitted on, is predicted as
+ <code>NaN</code>.
+</p>
+<p> Under <code>'separatemeans'</code> the prediction is one column per
+ response.  Under any other within-subject model the means are smoothed
+ through that model: projected onto the terms of a formula, or onto the
+ polynomial of <code>'orthogonalcontrasts'</code>, and evaluated at the
+ within-subject design, which may then be a new one.
+</p>
+<p> The name-value arguments are <code>'WithinDesign'</code>, the within-subject
+ design to predict at, as <code>fitrm</code> takes it; <code>'WithinModel'</code>,
+ the within-subject model, by default the one fitted; and
+ <code>'Alpha'</code>, the significance level of the intervals, 0.05 by
+ default.  Under <code>'separatemeans'</code> a new within-subject design is
+ ignored with a warning, as in MATLAB.
+</p>
+<p> <code>[<var>ypred</var>, <var>yci</var>] = predict (&hellip;)</code> also returns the
+ confidence limits of the predicted means as an array of the size of
+ <var>ypred</var> by 2, the lower limits first.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitrm.html">fitrm</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_random">RepeatedMeasuresModel.random</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_random"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_random">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>random</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Generate new random repeated measures.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_random">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>ysim</var> = <b>random</b> (<var>rm</var>)</code></p>
+<p class="h5 fs fs-last"><code>RepeatedMeasuresModel: <var>ysim</var> = <b>random</b> (<var>rm</var>, <var>tnew</var>)</code></p>
+<p> </p>
+<p> <code><var>ysim</var> = random (<var>rm</var>, <var>tnew</var>)</code> draws one set of
+ repeated measures for each subject of the table <var>tnew</var>, from a
+ normal distribution with the subject&rsquo;s predicted means and the
+ estimated covariance <code>Covariance</code>.  <var>tnew</var> defaults to
+ <code>BetweenDesign</code>.  A subject missing a predictor gets a row of
+ <code>NaN</code>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitrm.html">fitrm</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_predict">RepeatedMeasuresModel.predict</a>, 
+  <a href="mvnrnd.html">mvnrnd</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_plot"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_plot">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>plot</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Plot the repeated measures of every subject.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_plot">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>h</var> = <b>plot</b> (<var>rm</var>)</code></p>
+<p class="h5 fs fs-last"><code>RepeatedMeasuresModel: <var>h</var> = <b>plot</b> (<var>rm</var>, <var>name</var>, <var>value</var>)</code></p>
+<p> </p>
+<p> <code>plot (<var>rm</var>)</code> draws one line per subject of
+ <code>BetweenDesign</code> through its repeated measures, against the
+ positions 1 to <em class="math">k</em> of the <em class="math">k</em> responses, and returns the
+ column of line handles <var>h</var>.
+</p>
+<p> The name-value arguments are <code>'Group'</code>, the name of a
+ categorical between-subject factor or a cell array of them, which
+ colours the lines by group and adds a legend with one entry per group;
+ <code>'Marker'</code>, the marker, <code>'s'</code> by default; and
+ <code>'LineStyle'</code>, the line style, <code>'-'</code> by default.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitrm.html">fitrm</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_plotprofile">RepeatedMeasuresModel.plotprofile</a>
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#RepeatedMeasuresModel_plot-example1" aria-expanded="false"
+                  aria-controls="RepeatedMeasuresModel_plot-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="RepeatedMeasuresModel_plot-example1">
+            <div class="card-body">
+                <ol>
+                  <li>Every subject's measurements</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ t = table (species, meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+            'VariableNames', {'species', 'meas1', 'meas2', 'meas3', 'meas4'});
+ rm = fitrm (t, 'meas1-meas4 ~ species');</pre>
+                <p>One line per flower through its four measurements</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (rm);</pre>
+                <div class="text-center">
+                  <img src="assets/RepeatedMeasuresModel.plot-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#RepeatedMeasuresModel_plot-example2" aria-expanded="false"
+                  aria-controls="RepeatedMeasuresModel_plot-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="RepeatedMeasuresModel_plot-example2">
+            <div class="card-body">
+                <ol>
+                  <li>Lines coloured by group</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ t = table (species, meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+            'VariableNames', {'species', 'meas1', 'meas2', 'meas3', 'meas4'});
+ rm = fitrm (t, 'meas1-meas4 ~ species');</pre>
+                <p><code>Group</code> colours the lines by species, so a profile that one species follows and the others do not stands out</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (rm, 'Group', 'species', 'Marker', 'none');</pre>
+                <div class="text-center">
+                  <img src="assets/RepeatedMeasuresModel.plot-201.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#RepeatedMeasuresModel_plotprofile"
+              aria-expanded="false" aria-controls="RepeatedMeasuresModel_plotprofile">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>plotprofile</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Plot the estimated marginal means.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="RepeatedMeasuresModel_plotprofile">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>RepeatedMeasuresModel: <var>h</var> = <b>plotprofile</b> (<var>rm</var>, <var>X</var>)</code></p>
+<p class="h5 fs fs-last"><code>RepeatedMeasuresModel: <var>h</var> = <b>plotprofile</b> (<var>rm</var>, <var>X</var>, <var>name</var>, <var>value</var>)</code></p>
+<p> </p>
+<p> <code>plotprofile (<var>rm</var>, <var>X</var>)</code> draws the estimated marginal
+ means of <code>margmean</code> over the levels of the factor <var>X</var>, a
+ categorical between-subject factor or a within-subject factor, and
+ returns the line handles <var>h</var>.  A numeric within-subject factor is
+ drawn at its values; any other at the positions 1 to <em class="math">L</em> of its
+ <em class="math">L</em> levels, labelled with them.
+</p>
+<p> The name-value arguments are <code>'Group'</code>, the name of another
+ factor, which draws one line per level of it and adds a legend;
+ <code>'Marker'</code>, <code>'o'</code> by default; and <code>'LineStyle'</code>,
+ <code>'-'</code> by default.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitrm.html">fitrm</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_margmean">RepeatedMeasuresModel.margmean</a>, 
+  <a href="RepeatedMeasuresModel.html#RepeatedMeasuresModel_plot">RepeatedMeasuresModel.plot</a>
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#RepeatedMeasuresModel_plotprofile-example1" aria-expanded="false"
+                  aria-controls="RepeatedMeasuresModel_plotprofile-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="RepeatedMeasuresModel_plotprofile-example1">
+            <div class="card-body">
+                <ol>
+                  <li>The marginal means of a between-subject factor</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ t = table (species, meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+            'VariableNames', {'species', 'meas1', 'meas2', 'meas3', 'meas4'});
+ rm = fitrm (t, 'meas1-meas4 ~ species');</pre>
+                <p>The mean over the four measurements, one point per species</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plotprofile (rm, 'species');</pre>
+                <div class="text-center">
+                  <img src="assets/RepeatedMeasuresModel.plotprofile-101.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#RepeatedMeasuresModel_plotprofile-example2" aria-expanded="false"
+                  aria-controls="RepeatedMeasuresModel_plotprofile-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="RepeatedMeasuresModel_plotprofile-example2">
+            <div class="card-body">
+                <ol>
+                  <li>A profile over the measurements, one line per group</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ t = table (species, meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+            'VariableNames', {'species', 'meas1', 'meas2', 'meas3', 'meas4'});
+ Meas = table ([1, 2, 3, 4]', 'VariableNames', {'Measurements'});
+ rm = fitrm (t, 'meas1-meas4 ~ species', 'WithinDesign', Meas);</pre>
+                <p>Lines that are not parallel are what <code>ranova</code> reports as the interaction of species with the measurements</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plotprofile (rm, 'Measurements', 'Group', 'species');</pre>
+                <div class="text-center">
+                  <img src="assets/RepeatedMeasuresModel.plotprofile-201.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

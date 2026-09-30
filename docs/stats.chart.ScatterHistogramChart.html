@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: bartlett_test</title>
+    <title>Statistics: stats.chart.ScatterHistogramChart</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -173,9 +173,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Hypothesis Testing">
+                  <a class="nav-link" href="index.html#Plotting">
                     <i class="fas fa-list-alt"></i>
-                    Hypothesis Testing
+                    Plotting
                   </a>
                 </li>
                 <li class="nav-item">
@@ -263,7 +263,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList3" type="checkbox" checked>
+				<input id="togList3" type="checkbox">
 				<label for="togList3">
 					<span><h6>Hypothesis Testing</h6></span>
 					<span><h6>Hypothesis Testing</h6></span>
@@ -276,25 +276,27 @@
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
 					<li><a href="ansaribradley.html" class="text-decoration-none font-monospace"><small>ansaribradley</small></a></li>
-					<li><a href="bartlett_test.html" class="text-decoration-none font-monospace fw-bolder"><small>bartlett_test</small></a></li>
 					<li><a href="barttest.html" class="text-decoration-none font-monospace"><small>barttest</small></a></li>
 					<li><a href="binotest.html" class="text-decoration-none font-monospace"><small>binotest</small></a></li>
 					<li><a href="chi2gof.html" class="text-decoration-none font-monospace"><small>chi2gof</small></a></li>
 					<li><a href="chi2test.html" class="text-decoration-none font-monospace"><small>chi2test</small></a></li>
 					<li><a href="correlation_test.html" class="text-decoration-none font-monospace"><small>correlation_test</small></a></li>
+					<li><a href="detectdrift.html" class="text-decoration-none font-monospace"><small>detectdrift</small></a></li>
 					<li><a href="dwtest.html" class="text-decoration-none font-monospace"><small>dwtest</small></a></li>
 					<li><a href="fishertest.html" class="text-decoration-none font-monospace"><small>fishertest</small></a></li>
 					<li><a href="friedman.html" class="text-decoration-none font-monospace"><small>friedman</small></a></li>
 					<li><a href="hotelling_t2test.html" class="text-decoration-none font-monospace"><small>hotelling_t2test</small></a></li>
 					<li><a href="hotelling_t2test2.html" class="text-decoration-none font-monospace"><small>hotelling_t2test2</small></a></li>
 					<li><a href="jbtest.html" class="text-decoration-none font-monospace"><small>jbtest</small></a></li>
+					<li><a href="knntest.html" class="text-decoration-none font-monospace"><small>knntest</small></a></li>
 					<li><a href="kruskalwallis.html" class="text-decoration-none font-monospace"><small>kruskalwallis</small></a></li>
 					<li><a href="kstest.html" class="text-decoration-none font-monospace"><small>kstest</small></a></li>
 					<li><a href="kstest2.html" class="text-decoration-none font-monospace"><small>kstest2</small></a></li>
-					<li><a href="levene_test.html" class="text-decoration-none font-monospace"><small>levene_test</small></a></li>
 					<li><a href="lillietest.html" class="text-decoration-none font-monospace"><small>lillietest</small></a></li>
 					<li><a href="manova1.html" class="text-decoration-none font-monospace"><small>manova1</small></a></li>
 					<li><a href="mcnemar_test.html" class="text-decoration-none font-monospace"><small>mcnemar_test</small></a></li>
+					<li><a href="meanEffectSize.html" class="text-decoration-none font-monospace"><small>meanEffectSize</small></a></li>
+					<li><a href="mmdtest.html" class="text-decoration-none font-monospace"><small>mmdtest</small></a></li>
 					<li><a href="multcompare.html" class="text-decoration-none font-monospace"><small>multcompare</small></a></li>
 					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
 					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
@@ -302,6 +304,7 @@
 					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
 					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
 					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
+					<li><a href="stats.drift.DriftDiagnostics.html" class="text-decoration-none font-monospace"><small>stats.drift.DriftDiagnostics</small></a></li>
 					<li><a href="swtest.html" class="text-decoration-none font-monospace"><small>swtest</small></a></li>
 					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
 					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
@@ -348,6 +351,7 @@
 					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
 					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
 					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
+					<li><a href="fitrm.html" class="text-decoration-none font-monospace"><small>fitrm</small></a></li>
 					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
 					<li><a href="GeneralizedLinearModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearModel</small></a></li>
 					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
@@ -371,6 +375,7 @@
 					<li><a href="plsregress.html" class="text-decoration-none font-monospace"><small>plsregress</small></a></li>
 					<li><a href="regress.html" class="text-decoration-none font-monospace"><small>regress</small></a></li>
 					<li><a href="regress_gp.html" class="text-decoration-none font-monospace"><small>regress_gp</small></a></li>
+					<li><a href="RepeatedMeasuresModel.html" class="text-decoration-none font-monospace"><small>RepeatedMeasuresModel</small></a></li>
 					<li><a href="ridge.html" class="text-decoration-none font-monospace"><small>ridge</small></a></li>
 					<li><a href="robustfit.html" class="text-decoration-none font-monospace"><small>robustfit</small></a></li>
 					<li><a href="stepwisefit.html" class="text-decoration-none font-monospace"><small>stepwisefit</small></a></li>
@@ -525,6 +530,8 @@
 					<li><a href="KDTreeSearcher.html" class="text-decoration-none font-monospace"><small>KDTreeSearcher</small></a></li>
 					<li><a href="knnsearch.html" class="text-decoration-none font-monospace"><small>knnsearch</small></a></li>
 					<li><a href="mahal.html" class="text-decoration-none font-monospace"><small>mahal</small></a></li>
+					<li><a href="nomdist.html" class="text-decoration-none font-monospace"><small>nomdist</small></a></li>
+					<li><a href="nomdist2.html" class="text-decoration-none font-monospace"><small>nomdist2</small></a></li>
 					<li><a href="pdist.html" class="text-decoration-none font-monospace"><small>pdist</small></a></li>
 					<li><a href="pdist2.html" class="text-decoration-none font-monospace"><small>pdist2</small></a></li>
 					<li><a href="rangesearch.html" class="text-decoration-none font-monospace"><small>rangesearch</small></a></li>
@@ -887,6 +894,10 @@
 					<li><a href="stblinv.html" class="text-decoration-none font-monospace"><small>stblinv</small></a></li>
 					<li><a href="stblpdf.html" class="text-decoration-none font-monospace"><small>stblpdf</small></a></li>
 					<li><a href="stblrnd.html" class="text-decoration-none font-monospace"><small>stblrnd</small></a></li>
+					<li><a href="stdrcdf.html" class="text-decoration-none font-monospace"><small>stdrcdf</small></a></li>
+					<li><a href="stdrinv.html" class="text-decoration-none font-monospace"><small>stdrinv</small></a></li>
+					<li><a href="stdrpdf.html" class="text-decoration-none font-monospace"><small>stdrpdf</small></a></li>
+					<li><a href="stdrrnd.html" class="text-decoration-none font-monospace"><small>stdrrnd</small></a></li>
 					<li><a href="tcdf.html" class="text-decoration-none font-monospace"><small>tcdf</small></a></li>
 					<li><a href="tinv.html" class="text-decoration-none font-monospace"><small>tinv</small></a></li>
 					<li><a href="tpdf.html" class="text-decoration-none font-monospace"><small>tpdf</small></a></li>
@@ -960,6 +971,7 @@
 					<li><a href="poisstat.html" class="text-decoration-none font-monospace"><small>poisstat</small></a></li>
 					<li><a href="raylstat.html" class="text-decoration-none font-monospace"><small>raylstat</small></a></li>
 					<li><a href="ricestat.html" class="text-decoration-none font-monospace"><small>ricestat</small></a></li>
+					<li><a href="stdrstat.html" class="text-decoration-none font-monospace"><small>stdrstat</small></a></li>
 					<li><a href="tlsstat.html" class="text-decoration-none font-monospace"><small>tlsstat</small></a></li>
 					<li><a href="tristat.html" class="text-decoration-none font-monospace"><small>tristat</small></a></li>
 					<li><a href="tstat.html" class="text-decoration-none font-monospace"><small>tstat</small></a></li>
@@ -989,7 +1001,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList19" type="checkbox">
+				<input id="togList19" type="checkbox" checked>
 				<label for="togList19">
 					<span><h6>Plotting</h6></span>
 					<span><h6>Plotting</h6></span>
@@ -1006,20 +1018,27 @@
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
 					<li><a href="ecdfhist.html" class="text-decoration-none font-monospace"><small>ecdfhist</small></a></li>
 					<li><a href="einstein.html" class="text-decoration-none font-monospace"><small>einstein</small></a></li>
+					<li><a href="gardnerAltmanPlot.html" class="text-decoration-none font-monospace"><small>gardnerAltmanPlot</small></a></li>
 					<li><a href="glyphplot.html" class="text-decoration-none font-monospace"><small>glyphplot</small></a></li>
 					<li><a href="gplotmatrix.html" class="text-decoration-none font-monospace"><small>gplotmatrix</small></a></li>
 					<li><a href="gscatter.html" class="text-decoration-none font-monospace"><small>gscatter</small></a></li>
+					<li><a href="heatmap.html" class="text-decoration-none font-monospace"><small>heatmap</small></a></li>
 					<li><a href="hist3.html" class="text-decoration-none font-monospace"><small>hist3</small></a></li>
 					<li><a href="histfit.html" class="text-decoration-none font-monospace"><small>histfit</small></a></li>
 					<li><a href="manovacluster.html" class="text-decoration-none font-monospace"><small>manovacluster</small></a></li>
 					<li><a href="normplot.html" class="text-decoration-none font-monospace"><small>normplot</small></a></li>
 					<li><a href="parallelcoords.html" class="text-decoration-none font-monospace"><small>parallelcoords</small></a></li>
+					<li><a href="parallelplot.html" class="text-decoration-none font-monospace"><small>parallelplot</small></a></li>
 					<li><a href="ppplot.html" class="text-decoration-none font-monospace"><small>ppplot</small></a></li>
 					<li><a href="probplot.html" class="text-decoration-none font-monospace"><small>probplot</small></a></li>
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
+					<li><a href="scatterhistogram.html" class="text-decoration-none font-monospace"><small>scatterhistogram</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
 					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="stats.chart.HeatmapChart.html" class="text-decoration-none font-monospace"><small>stats.chart.HeatmapChart</small></a></li>
+					<li><a href="stats.chart.ParallelCoordinatesPlot.html" class="text-decoration-none font-monospace"><small>stats.chart.ParallelCoordinatesPlot</small></a></li>
+					<li><a href="stats.chart.ScatterHistogramChart.html" class="text-decoration-none font-monospace fw-bolder"><small>stats.chart.ScatterHistogramChart</small></a></li>
 					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
@@ -1064,66 +1083,1132 @@
             <div class="card-header card-header-mod">
               <div class="row d-flex flex-wrap align-items-center">
                 <h3 class="d-inline-block mr-2">
-                Function&nbsp;Reference: <b><code>bartlett_test</code></b>
+                Class&nbsp;Definition: <b><code>stats.chart.ScatterHistogramChart</code></b>
                 </h3>
               </div>
             </div>
             <div class="card-body">
-<p class="h5 fs"><code>statistics: <var>h</var> = <b>bartlett_test</b> (<var>x</var>)</code></p>
-<p class="h5 fs"><code>statistics: <var>h</var> = <b>bartlett_test</b> (<var>x</var>, <var>group</var>)</code></p>
-<p class="h5 fs"><code>statistics: <var>h</var> = <b>bartlett_test</b> (<var>x</var>, <var>alpha</var>)</code></p>
-<p class="h5 fs"><code>statistics: <var>h</var> = <b>bartlett_test</b> (<var>x</var>, <var>group</var>, <var>alpha</var>)</code></p>
-<p class="h5 fs"><code>statistics: [<var>h</var>, <var>pval</var>] = <b>bartlett_test</b> (&hellip;)</code></p>
-<p class="h5 fs"><code>statistics: [<var>h</var>, <var>pval</var>, <var>chisq</var>] = <b>bartlett_test</b> (&hellip;)</code></p>
-<p class="h5 fs fs-last"><code>statistics: [<var>h</var>, <var>pval</var>, <var>chisq</var>, <var>df</var>] = <b>bartlett_test</b> (&hellip;)</code></p>
-<p> Perform a Bartlett test for the homogeneity of variances.
+<p class="h5 description mb-3"><code>statistics: stats.chart.ScatterHistogramChart</code></p>
+<p> A scatter plot with a histogram of each variable along its sides, as
+ <code>scatterhistogram</code> draws it.
 </p>
 <div class="ms-5">
-<p> Under the null hypothesis of equal variances, the test statistic <var>chisq</var>
- approximately follows a chi-square distribution with <var>df</var> degrees of
- freedom.
+<p> A <code>stats.chart.ScatterHistogramChart</code> holds two samples, optionally
+ split into groups, and the choices they are drawn with, and redraws itself
+ whenever one of them is set.  It is what <code>scatterhistogram</code> returns,
+ and the documented way to reach it.
 </p>
-<p> The p-value (1 minus the CDF of this distribution at <var>chisq</var>) is
- returned in <var>pval</var>.  <var>h</var> = 1 if the null hypothesis is rejected at
- the significance level of <var>alpha</var>.  Otherwise <var>h</var> = 0.
+<p> The samples come either from vectors or from a table, never from both.
+ The histograms are normalized as probability densities, one for each group,
+ with the bins <code>histcounts</code> chooses for each group unless
+ <code>NumBins</code> or <code>BinWidths</code> say otherwise.  The groups take the
+ colours of the colour order and the line styles <code>'-'</code>, <code>':'</code>,
+ <code>'-.'</code> and <code>'--'</code> in turn, in the order in which each first
+ appears in <code>GroupData</code>.
 </p>
-<p> Input Arguments:
+<p> A chart takes the place of the current axes of its parent, keeping their
+ outer position, and refuses axes on which <code>hold</code> is on; a later plot
+ into the figure takes the place of the chart in turn.  MATLAB&rsquo;s chart is
+ a graphics object of its own; this one is a handle class drawing into
+ three axes of its own, the scatter plot&rsquo;s being made current, and it lets
+ go of them when a later plot clears them.  <code>LegendVisible</code>,
+ <code>MarkerFilled</code> and <code>Visible</code> hold <code>'on'</code> or <code>'off'</code>,
+ and <code>LineStyle</code> and <code>MarkerStyle</code> a character vector or a cell
+ array of them, where MATLAB holds an on-off state and a string array.
 </p>
-<ul>
-<li>
- <var>x</var> contains the data and it can either be a vector or matrix.
- If <var>x</var> is a matrix, then each column is treated as a separate group.
- If <var>x</var> is a vector, it is a single group whichever way it lies, unless
- <var>group</var> is given; with one group there is nothing to compare, so
- <var>pval</var> is <code>NaN</code>.
- NaN values are omitted.
-</li><li>
- <var>group</var> contains the names for each group.  If <var>x</var> is a vector, then
- <var>group</var> must be a vector of the same length, or a string array or cell
- array of strings with one row for each element of <var>x</var>.  <var>x</var> values
- corresponding to the same value of <var>group</var> are placed in the same group.
- If <var>x</var> is a matrix, then <var>group</var> can either be a cell array of
- strings of a character array, with one row per column of <var>x</var> in the same
- way it is used in <code>anova1</code> function.  If <var>x</var> is a matrix, then
- <var>group</var> can be omitted either by entering an empty array ([]) or by
- parsing only <var>alpha</var> as a second argument (if required to change its
- default value).
-</li><li>
- <var>alpha</var> is the statistical significance value at which the null
- hypothesis is rejected.  Its default value is 0.05 and it can be parsed
- either as a second argument (when <var>group</var> is omitted) or as a third
- argument.
-</li></ul>
-
 <p> <strong>See also: </strong>
-  <a href="levene_test.html">levene_test</a>, 
-  <a href="vartest2.html">vartest2</a>, 
-  <a href="vartestn.html">vartestn</a>
+  <a href="scatterhistogram.html">scatterhistogram</a>, 
+  <a href="scatterhist.html">scatterhist</a>, 
+histcounts, 
+  <a href="ksdensity.html">ksdensity</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/151f990/inst/Hypothesis_Testing/bartlett_test.m">bartlett_test</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Plotting/+stats/+chart/ScatterHistogramChart.m">stats.chart.ScatterHistogramChart</a>
 </p>
 </div>
+        <p class="lead my-3">The <code>stats.chart.ScatterHistogramChart</code> class contains the following properties:</p>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_XData"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_XData">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>XData</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The values along the horizontal axis, a numeric column vector.  Where
+ the chart was drawn from a table it is read from the table and setting
+ it is refused.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_XData">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_YData"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_YData">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>YData</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The values along the vertical axis, a numeric column vector as long as
+ <code>XData</code>.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_YData">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_GroupData"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_GroupData">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>GroupData</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The group of each observation: a vector as long as <code>XData</code> of
+ categories, text, numbers or logical values, or empty for no groups.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_GroupData">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_SourceTable"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_SourceTable">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>SourceTable</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The table the chart was drawn from, or empty.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_SourceTable">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_XVariable"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_XVariable">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>XVariable</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The variable of <code>SourceTable</code> holding <code>XData</code>.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_XVariable">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_YVariable"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_YVariable">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>YVariable</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The variable of <code>SourceTable</code> holding <code>YData</code>.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_YVariable">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_GroupVariable"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_GroupVariable">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>GroupVariable</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The variable of <code>SourceTable</code> holding <code>GroupData</code>, or empty.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_GroupVariable">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_HistogramDisplayStyle"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_HistogramDisplayStyle">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>HistogramDisplayStyle</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+How the histograms are drawn: <code>'stairs'</code>, the default, as their
+ outline; <code>'bar'</code> as bars; <code>'smooth'</code> as a kernel density
+ estimate, as <code>ksdensity</code> computes it.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_HistogramDisplayStyle">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_NumBins"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_NumBins">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>NumBins</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The number of bins of each histogram, a 2-by-1 vector for the
+ horizontal and the vertical variable, or a 2-by-N matrix with a column
+ for each of N groups.  Setting a scalar sets both.  Empty where
+ <code>HistogramDisplayStyle</code> is <code>'smooth'</code>.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_NumBins">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_BinWidths"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_BinWidths">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>BinWidths</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The width of the bins, shaped as <code>NumBins</code>.  Setting it takes
+ precedence over <code>NumBins</code>, which then follows from it.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_BinWidths">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_ScatterPlotLocation"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_ScatterPlotLocation">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ScatterPlotLocation</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Which corner the scatter plot takes, the histograms lining the two
+ sides away from it: <code>'SouthWest'</code>, the default,
+ <code>'SouthEast'</code>, <code>'NorthEast'</code> or <code>'NorthWest'</code>.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_ScatterPlotLocation">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_ScatterPlotProportion"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_ScatterPlotProportion">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ScatterPlotProportion</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The share of the width and of the height the scatter plot takes, a
+ number between 0 and 1, 0.75 by default.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_ScatterPlotProportion">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_XHistogramDirection"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_XHistogramDirection">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>XHistogramDirection</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Which way the bars of the histogram of <code>XData</code> rise:
+ <code>'up'</code>, the default, or <code>'down'</code>.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_XHistogramDirection">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_YHistogramDirection"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_YHistogramDirection">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>YHistogramDirection</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Which way the bars of the histogram of <code>YData</code> rise:
+ <code>'right'</code>, the default, or <code>'left'</code>.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_YHistogramDirection">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_XLimits"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_XLimits">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>XLimits</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The limits of the horizontal axis, the range of <code>XData</code> until
+ set.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_XLimits">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_YLimits"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_YLimits">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>YLimits</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The limits of the vertical axis, the range of <code>YData</code> until set.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_YLimits">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_Color"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_Color">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Color</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The colour of each group, one row of an RGB matrix for each; by
+ default the colours of the colour order.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_Color">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_LineStyle"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_LineStyle">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>LineStyle</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The line style of the histograms of each group, a character vector or
+ a cell array of them.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_LineStyle">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_LineWidth"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_LineWidth">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>LineWidth</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The width of the histogram lines, a scalar or one for each group, 0.5
+ by default.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_LineWidth">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_MarkerStyle"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_MarkerStyle">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>MarkerStyle</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The marker of each group, a character vector or a cell array of them,
+ <code>'o'</code> by default.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_MarkerStyle">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_MarkerSize"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_MarkerSize">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>MarkerSize</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The area of the markers in square points, a scalar or one for each
+ group, 36 by default.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_MarkerSize">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_MarkerFilled"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_MarkerFilled">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>MarkerFilled</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Whether the markers are filled, <code>'on'</code> by default or
+ <code>'off'</code>.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_MarkerFilled">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_MarkerAlpha"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_MarkerAlpha">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>MarkerAlpha</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+How opaque the markers are, from 0 to 1, 1 by default.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_MarkerAlpha">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_LegendVisible"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_LegendVisible">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>LegendVisible</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Whether the legend of the groups is shown, <code>'on'</code> or
+ <code>'off'</code>; on where there are groups, until set.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_LegendVisible">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_LegendTitle"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_LegendTitle">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>LegendTitle</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The title of the legend; from a table the name of
+ <code>GroupVariable</code>, until set.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_LegendTitle">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_Title"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_Title">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Title</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The title of the chart.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_Title">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_XLabel"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_XLabel">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>XLabel</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The label of the horizontal axis; from a table the name of
+ <code>XVariable</code>, until set.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_XLabel">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_YLabel"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_YLabel">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>YLabel</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The label of the vertical axis; from a table the name of
+ <code>YVariable</code>, until set.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_YLabel">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_FontName"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_FontName">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>FontName</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The font of every text on the chart, <code>'Helvetica'</code> by default.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_FontName">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_FontSize"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_FontSize">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>FontSize</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The size of every text on the chart, in points, 10 by default.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_FontSize">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_Position"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_Position">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Position</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The position of the scatter plot in its parent, as
+ <code>[left, bottom, width, height]</code> in <code>Units</code>.  While
+ <code>PositionConstraint</code> is <code>'outerposition'</code> the chart places
+ it within <code>OuterPosition</code> itself; setting it fixes the scatter
+ plot there and turns <code>PositionConstraint</code> to
+ <code>'innerposition'</code>.  <code>InnerPosition</code> is the same.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_Position">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_OuterPosition"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_OuterPosition">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>OuterPosition</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The position of the whole chart in its parent, labels included,
+ <code>[0, 0, 1, 1]</code> by default, or the outer position of the axes it
+ took the place of.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_OuterPosition">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_PositionConstraint"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_PositionConstraint">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>PositionConstraint</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Which position the chart keeps: <code>'outerposition'</code>, the default,
+ or <code>'innerposition'</code>.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_PositionConstraint">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_Units"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_Units">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Units</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The units of the positions, <code>'normalized'</code> by default.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_Units">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_Visible"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_Visible">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Visible</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Whether the chart is shown, <code>'on'</code> by default or <code>'off'</code>.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_Visible">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_Parent"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_Parent">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Parent</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The figure or panel the chart is placed in.  This property is
+ read-only.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_Parent">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_InnerPosition"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_InnerPosition">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>InnerPosition</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The same as <code>Position</code>.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_InnerPosition">
+            <div class="border-bottom py-2">
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <p class="lead my-3">The <code>stats.chart.ScatterHistogramChart</code> class offers the following public methods:</p>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_ScatterHistogramChart"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_ScatterHistogramChart">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>stats.chart.ScatterHistogramChart</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Create a <code>stats.chart.ScatterHistogramChart</code> object.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_ScatterHistogramChart">
+            <div class="border-bottom py-2">
+<p class="h5 fs fs-last"><code>stats.chart.ScatterHistogramChart: <var>obj</var> = <b>stats.chart.ScatterHistogramChart</b> (<var>parent</var>, <var>spec</var>, <var>args</var>)</code></p>
+<p> </p>
+<p> <var>parent</var> is the figure or panel to place the chart in, or empty for
+ the current figure, which is resolved only once every value has been
+ accepted.  <var>spec</var> is a structure carrying the data as
+ <code>scatterhistogram</code> resolved it, with the fields <code>XData</code>,
+ <code>YData</code>, <code>GroupData</code>, <code>SourceTable</code>,
+ <code>XVariable</code>, <code>YVariable</code> and <code>GroupVariable</code>, and
+ <var>args</var> the name-value pairs left to set.  The documented way to
+ reach this constructor is <code>scatterhistogram</code>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="scatterhistogram.html">scatterhistogram</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_xlim"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_xlim">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>xlim</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The limits of the horizontal axis, as <code>XLimits</code> holds them; given
+ <var>limits</var>, set them.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_xlim">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>stats.chart.ScatterHistogramChart: <var>limits</var> = <b>xlim</b> (<var>h</var>)</code></p>
+<p class="h5 fs fs-last"><code>stats.chart.ScatterHistogramChart: <b>xlim</b> (<var>h</var>, <var>limits</var>)</code></p>
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_ylim"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_ylim">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ylim</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+The limits of the vertical axis, as <code>YLimits</code> holds them; given
+ <var>limits</var>, set them.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_ylim">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>stats.chart.ScatterHistogramChart: <var>limits</var> = <b>ylim</b> (<var>h</var>)</code></p>
+<p class="h5 fs fs-last"><code>stats.chart.ScatterHistogramChart: <b>ylim</b> (<var>h</var>, <var>limits</var>)</code></p>
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#stats_chart_ScatterHistogramChart_delete"
+              aria-expanded="false" aria-controls="stats_chart_ScatterHistogramChart_delete">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>delete</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Delete the chart and the axes it is drawn in.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="stats_chart_ScatterHistogramChart_delete">
+            <div class="border-bottom py-2">
+<p class="h5 fs fs-last"><code>stats.chart.ScatterHistogramChart: <b>delete</b> (<var>h</var>)</code></p>
+<p> </p>
+
+
+            </div>
+          </div>
+        </div>
 
             </div>
           </div>
