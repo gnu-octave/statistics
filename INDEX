@@ -487,9 +487,11 @@ Plotting
  probplot
  qqplot
  scatterhist
+ scatterhistogram
  silhouette
  stats.chart.BoxChart
  stats.chart.HeatmapChart
+ stats.chart.ScatterHistogramChart
  swarmchart
  violin
  wblplot

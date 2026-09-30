@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 103
+# columns: 146
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -1694,6 +1694,71 @@ ksdensity
 # elements: 1
 # length: 58
 Create a scatter plot of x and y with marginal histograms.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 16
+scatterhistogram
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1694
+statistics: scatterhistogram (x, y)
+statistics: scatterhistogram (tbl, xvar, yvar)
+statistics: scatterhistogram (parent, ...)
+statistics: scatterhistogram (..., Name, Value)
+statistics: h = scatterhistogram (...)
+Scatter plot of two samples with the histogram of each along its sides.
+
+scatterhistogram (x, y) draws the points
+(x(i), y(i)) with a histogram of x above the
+scatter plot and a histogram of y to its right, each normalized as a
+probability density, with the bins histcounts chooses. x and
+y are numeric vectors of the same length; a missing value is left out
+of the drawing.
+
+scatterhistogram (tbl, xvar, yvar) takes the
+samples from the variables xvar and yvar of the table
+tbl, and labels the axes with their names.
+
+With 'GroupData', a vector of categories, text, numbers or logical
+values with one element for each observation, or 'GroupVariable',
+a variable of tbl holding them, each group is drawn in a colour of
+its own, with histograms of its own and a legend naming the groups in the
+order in which each first appears.
+
+scatterhistogram (parent, ...) places the chart in the
+figure or panel parent rather than the current figure. The chart
+takes the place of the current axes of its parent, and is refused where
+hold is on for them.
+
+scatterhistogram (..., Name, Value) sets
+properties of the chart; see stats.chart.ScatterHistogramChart for
+all of them, among which 'HistogramDisplayStyle',
+'stairs', 'bar' or 'smooth' for a kernel density
+estimate, 'NumBins', 'BinWidths' and
+'ScatterPlotLocation'.
+
+h = scatterhistogram (...) returns the chart, a
+stats.chart.ScatterHistogramChart object.
+
+See also:
+stats.chart.ScatterHistogramChart,
+scatterhist,
+histcounts,
+ksdensity
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 71
+Scatter plot of two samples with the histogram of each along its sides.
 
 
 
@@ -3686,6 +3751,1053 @@ limits, set them.
 # elements: 1
 # length: 76
 The first and last row shown, as YLimits holds them; given limits, set them.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+stats.chart.ScatterHistogramChart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1432
+statistics: stats.chart.ScatterHistogramChart
+A scatter plot with a histogram of each variable along its sides, as
+scatterhistogram draws it.
+
+A stats.chart.ScatterHistogramChart holds two samples, optionally
+split into groups, and the choices they are drawn with, and redraws itself
+whenever one of them is set. It is what scatterhistogram returns,
+and the documented way to reach it.
+
+The samples come either from vectors or from a table, never from both.
+The histograms are normalized as probability densities, one for each group,
+with the bins histcounts chooses for each group unless
+NumBins or BinWidths say otherwise. The groups take the
+colours of the colour order and the line styles '-', ':',
+'-.' and '--' in turn, in the order in which each first
+appears in GroupData.
+
+A chart takes the place of the current axes of its parent, keeping their
+outer position, and refuses axes on which hold is on; a later plot
+into the figure takes the place of the chart in turn. MATLAB's chart is
+a graphics object of its own; this one is a handle class drawing into
+three axes of its own, the scatter plot's being made current, and it lets
+go of them when a later plot clears them. LegendVisible,
+MarkerFilled and Visible hold 'on' or 'off',
+and LineStyle and MarkerStyle a character vector or a cell
+array of them, where MATLAB holds an on-off state and a string array.
+
+See also:
+scatterhistogram,
+scatterhist,
+histcounts,
+ksdensity
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 95
+A scatter plot with a histogram of each variable along its sides, as scatterhistogram draws it.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.chart.ScatterHistogramChart.BinWidths
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 165
+stats.chart.ScatterHistogramChart: property BinWidths
+The width of the bins, shaped as NumBins. Setting it takes
+precedence over NumBins, which then follows from it.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+The width of the bins, shaped as NumBins.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.chart.ScatterHistogramChart.Color
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 154
+stats.chart.ScatterHistogramChart: property Color
+The colour of each group, one row of an RGB matrix for each; by
+default the colours of the colour order.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 104
+The colour of each group, one row of an RGB matrix for each; by default the colours of the colour order.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+stats.chart.ScatterHistogramChart.FontName
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 113
+stats.chart.ScatterHistogramChart: property FontName
+The font of every text on the chart, 'Helvetica' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 60
+The font of every text on the chart, 'Helvetica' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+stats.chart.ScatterHistogramChart.FontSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 115
+stats.chart.ScatterHistogramChart: property FontSize
+The size of every text on the chart, in points, 10 by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+The size of every text on the chart, in points, 10 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.chart.ScatterHistogramChart.GroupData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 182
+stats.chart.ScatterHistogramChart: property GroupData
+The group of each observation: a vector as long as XData of
+categories, text, numbers or logical values, or empty for no groups.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 128
+The group of each observation: a vector as long as XData of categories, text, numbers or logical values, or empty for no groups.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+stats.chart.ScatterHistogramChart.GroupVariable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 114
+stats.chart.ScatterHistogramChart: property GroupVariable
+The variable of SourceTable holding GroupData, or empty.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 56
+The variable of SourceTable holding GroupData, or empty.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 55
+stats.chart.ScatterHistogramChart.HistogramDisplayStyle
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 216
+stats.chart.ScatterHistogramChart: property HistogramDisplayStyle
+How the histograms are drawn: 'stairs', the default, as their
+outline; 'bar' as bars; 'smooth' as a kernel density
+estimate, as ksdensity computes it.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 150
+How the histograms are drawn: 'stairs', the default, as their outline; 'bar' as bars; 'smooth' as a kernel density estimate, as ksdensity computes it.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+stats.chart.ScatterHistogramChart.InnerPosition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 79
+stats.chart.ScatterHistogramChart: property InnerPosition
+The same as Position.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+The same as Position.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ScatterHistogramChart.LegendTitle
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 131
+stats.chart.ScatterHistogramChart: property LegendTitle
+The title of the legend; from a table the name of
+GroupVariable, until set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 75
+The title of the legend; from a table the name of GroupVariable, until set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+stats.chart.ScatterHistogramChart.LegendVisible
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 153
+stats.chart.ScatterHistogramChart: property LegendVisible
+Whether the legend of the groups is shown, 'on' or
+'off'; on where there are groups, until set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 95
+Whether the legend of the groups is shown, 'on' or 'off'; on where there are groups, until set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.chart.ScatterHistogramChart.LineStyle
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 145
+stats.chart.ScatterHistogramChart: property LineStyle
+The line style of the histograms of each group, a character vector or
+a cell array of them.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 91
+The line style of the histograms of each group, a character vector or a cell array of them.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.chart.ScatterHistogramChart.LineWidth
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 135
+stats.chart.ScatterHistogramChart: property LineWidth
+The width of the histogram lines, a scalar or one for each group, 0.5
+by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 81
+The width of the histogram lines, a scalar or one for each group, 0.5 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ScatterHistogramChart.MarkerAlpha
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 110
+stats.chart.ScatterHistogramChart: property MarkerAlpha
+How opaque the markers are, from 0 to 1, 1 by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+How opaque the markers are, from 0 to 1, 1 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 46
+stats.chart.ScatterHistogramChart.MarkerFilled
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 114
+stats.chart.ScatterHistogramChart: property MarkerFilled
+Whether the markers are filled, 'on' by default or
+'off'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 57
+Whether the markers are filled, 'on' by default or 'off'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+stats.chart.ScatterHistogramChart.MarkerSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 143
+stats.chart.ScatterHistogramChart: property MarkerSize
+The area of the markers in square points, a scalar or one for each
+group, 36 by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 88
+The area of the markers in square points, a scalar or one for each group, 36 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ScatterHistogramChart.MarkerStyle
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 141
+stats.chart.ScatterHistogramChart: property MarkerStyle
+The marker of each group, a character vector or a cell array of them,
+'o' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 85
+The marker of each group, a character vector or a cell array of them, 'o' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.ScatterHistogramChart.NumBins
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 281
+stats.chart.ScatterHistogramChart: property NumBins
+The number of bins of each histogram, a 2-by-1 vector for the
+horizontal and the vertical variable, or a 2-by-N matrix with a column
+for each of N groups. Setting a scalar sets both. Empty where
+HistogramDisplayStyle is 'smooth'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 154
+The number of bins of each histogram, a 2-by-1 vector for the horizontal and the vertical variable, or a 2-by-N matrix with a column for each of N groups.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+stats.chart.ScatterHistogramChart.OuterPosition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 202
+stats.chart.ScatterHistogramChart: property OuterPosition
+The position of the whole chart in its parent, labels included,
+[0, 0, 1, 1] by default, or the outer position of the axes it
+took the place of.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 144
+The position of the whole chart in its parent, labels included, [0, 0, 1, 1] by default, or the outer position of the axes it took the place of.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+stats.chart.ScatterHistogramChart.Parent
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 122
+stats.chart.ScatterHistogramChart: property Parent
+The figure or panel the chart is placed in. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+The figure or panel the chart is placed in.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+stats.chart.ScatterHistogramChart.Position
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 352
+stats.chart.ScatterHistogramChart: property Position
+The position of the scatter plot in its parent, as
+[left, bottom, width, height] in Units. While
+PositionConstraint is 'outerposition' the chart places
+it within OuterPosition itself; setting it fixes the scatter
+plot there and turns PositionConstraint to
+'innerposition'. InnerPosition is the same.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 90
+The position of the scatter plot in its parent, as [left, bottom, width, height] in Units.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 52
+stats.chart.ScatterHistogramChart.PositionConstraint
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 144
+stats.chart.ScatterHistogramChart: property PositionConstraint
+Which position the chart keeps: 'outerposition', the default,
+or 'innerposition'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 81
+Which position the chart keeps: 'outerposition', the default, or 'innerposition'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 55
+stats.chart.ScatterHistogramChart.ScatterHistogramChart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 594
+stats.chart.ScatterHistogramChart: obj = stats.chart.ScatterHistogramChart (parent, spec, args)
+Create a stats.chart.ScatterHistogramChart object.
+
+parent is the figure or panel to place the chart in, or empty for
+the current figure, which is resolved only once every value has been
+accepted. spec is a structure carrying the data as
+scatterhistogram resolved it, with the fields XData,
+YData, GroupData, SourceTable,
+XVariable, YVariable and GroupVariable, and
+args the name-value pairs left to set. The documented way to
+reach this constructor is scatterhistogram.
+
+See also:
+scatterhistogram
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 50
+Create a stats.chart.ScatterHistogramChart object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+stats.chart.ScatterHistogramChart.ScatterPlotLocation
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 217
+stats.chart.ScatterHistogramChart: property ScatterPlotLocation
+Which corner the scatter plot takes, the histograms lining the two
+sides away from it: 'SouthWest', the default,
+'SouthEast', 'NorthEast' or 'NorthWest'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 153
+Which corner the scatter plot takes, the histograms lining the two sides away from it: 'SouthWest', the default, 'SouthEast', 'NorthEast' or 'NorthWest'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 55
+stats.chart.ScatterHistogramChart.ScatterPlotProportion
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 173
+stats.chart.ScatterHistogramChart: property ScatterPlotProportion
+The share of the width and of the height the scatter plot takes, a
+number between 0 and 1, 0.75 by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 107
+The share of the width and of the height the scatter plot takes, a number between 0 and 1, 0.75 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ScatterHistogramChart.SourceTable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 101
+stats.chart.ScatterHistogramChart: property SourceTable
+The table the chart was drawn from, or empty.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+The table the chart was drawn from, or empty.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.chart.ScatterHistogramChart.Title
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 73
+stats.chart.ScatterHistogramChart: property Title
+The title of the chart.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+The title of the chart.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.chart.ScatterHistogramChart.Units
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 102
+stats.chart.ScatterHistogramChart: property Units
+The units of the positions, 'normalized' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 52
+The units of the positions, 'normalized' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.ScatterHistogramChart.Visible
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 105
+stats.chart.ScatterHistogramChart: property Visible
+Whether the chart is shown, 'on' by default or 'off'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Whether the chart is shown, 'on' by default or 'off'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.chart.ScatterHistogramChart.XData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 204
+stats.chart.ScatterHistogramChart: property XData
+The values along the horizontal axis, a numeric column vector. Where
+the chart was drawn from a table it is read from the table and setting
+it is refused.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+The values along the horizontal axis, a numeric column vector.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+stats.chart.ScatterHistogramChart.XHistogramDirection
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 144
+stats.chart.ScatterHistogramChart: property XHistogramDirection
+Which way the bars of the histogram of XData rise:
+'up', the default, or 'down'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+Which way the bars of the histogram of XData rise: 'up', the default, or 'down'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+stats.chart.ScatterHistogramChart.XLabel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 131
+stats.chart.ScatterHistogramChart: property XLabel
+The label of the horizontal axis; from a table the name of
+XVariable, until set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+The label of the horizontal axis; from a table the name of XVariable, until set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.ScatterHistogramChart.XLimits
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 116
+stats.chart.ScatterHistogramChart: property XLimits
+The limits of the horizontal axis, the range of XData until
+set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 64
+The limits of the horizontal axis, the range of XData until set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.chart.ScatterHistogramChart.XVariable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 96
+stats.chart.ScatterHistogramChart: property XVariable
+The variable of SourceTable holding XData.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+The variable of SourceTable holding XData.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.chart.ScatterHistogramChart.YData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 127
+stats.chart.ScatterHistogramChart: property YData
+The values along the vertical axis, a numeric column vector as long as
+XData.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 77
+The values along the vertical axis, a numeric column vector as long as XData.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+stats.chart.ScatterHistogramChart.YHistogramDirection
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 147
+stats.chart.ScatterHistogramChart: property YHistogramDirection
+Which way the bars of the histogram of YData rise:
+'right', the default, or 'left'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 83
+Which way the bars of the histogram of YData rise: 'right', the default, or 'left'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+stats.chart.ScatterHistogramChart.YLabel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 129
+stats.chart.ScatterHistogramChart: property YLabel
+The label of the vertical axis; from a table the name of
+YVariable, until set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 78
+The label of the vertical axis; from a table the name of YVariable, until set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.ScatterHistogramChart.YLimits
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 114
+stats.chart.ScatterHistogramChart: property YLimits
+The limits of the vertical axis, the range of YData until set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+The limits of the vertical axis, the range of YData until set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.chart.ScatterHistogramChart.YVariable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 96
+stats.chart.ScatterHistogramChart: property YVariable
+The variable of SourceTable holding YData.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+The variable of SourceTable holding YData.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+stats.chart.ScatterHistogramChart.delete
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 91
+stats.chart.ScatterHistogramChart: delete (h)
+Delete the chart and the axes it is drawn in.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+Delete the chart and the axes it is drawn in.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+stats.chart.ScatterHistogramChart.xlim
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 186
+stats.chart.ScatterHistogramChart: limits = xlim (h)
+stats.chart.ScatterHistogramChart: xlim (h, limits)
+The limits of the horizontal axis, as XLimits holds them; given
+limits, set them.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 81
+The limits of the horizontal axis, as XLimits holds them; given limits, set them.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+stats.chart.ScatterHistogramChart.ylim
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 184
+stats.chart.ScatterHistogramChart: limits = ylim (h)
+stats.chart.ScatterHistogramChart: ylim (h, limits)
+The limits of the vertical axis, as YLimits holds them; given
+limits, set them.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 79
+The limits of the vertical axis, as YLimits holds them; given limits, set them.
 
 
 
