@@ -860,17 +860,17 @@ nancov
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1148
+# length: 1193
 statistics: c = nancov (x)
 statistics: c = nancov (x, y)
 statistics: c = nancov (..., normalization)
 statistics: c = nancov (..., method)
-Compute the covariance matrix while ignoring NaN values.
+Compute the covariance matrix while handling NaN values.
 
 c = nancov (x) returns the covariance matrix of the
-columns of x, treating each row as an observation, after removing
-NaN values. If x is a vector, the scalar variance of its
-non-NaN elements is returned.
+columns of x, treating each row as an observation. Rows containing
+NaN values are removed before computing the covariance. If x
+is a vector, the scalar variance of its non-NaN elements is returned.
 
 c = nancov (x, y), where x and y are of
 equal length, is equivalent to nancov ([x(:), y(:)]) and
@@ -899,7 +899,7 @@ nanmean
 # type: sq_string
 # elements: 1
 # length: 56
-Compute the covariance matrix while ignoring NaN values.
+Compute the covariance matrix while handling NaN values.
 
 
 
