@@ -21,12 +21,12 @@
 ## @deftypefnx {statistics} {@var{c} =} nancov (@dots{}, @var{normalization})
 ## @deftypefnx {statistics} {@var{c} =} nancov (@dots{}, @var{method})
 ##
-## Compute the covariance matrix while ignoring NaN values.
+## Compute the covariance matrix while handling NaN values.
 ##
 ## @code{@var{c} = nancov (@var{x})} returns the covariance matrix of the
-## columns of @var{x}, treating each row as an observation, after removing
-## @qcode{NaN} values.  If @var{x} is a vector, the scalar variance of its
-## non-@qcode{NaN} elements is returned.
+## columns of @var{x}, treating each row as an observation. Rows containing
+## @qcode{NaN} values are removed before computing the covariance. If @var{x}
+## is a vector, the scalar variance of its non-@qcode{NaN} elements is returned.
 ##
 ## @code{@var{c} = nancov (@var{x}, @var{y})}, where @var{x} and @var{y} are of
 ## equal length, is equivalent to @code{nancov ([@var{x}(:), @var{y}(:)])} and
@@ -102,10 +102,6 @@ function c = nancov (varargin)
 
   ## Assemble the data matrix (observations in rows, variables in columns)
   if (y_given)
-    if (isequal (size (x), [0, 0]) && isequal (size (y), [0, 0]))
-      c = NaN;
-      return;
-    endif
     if (! (isnumeric (y) || islogical (y)) || ! isreal (y))
       error ("nancov: Y must be a real numeric matrix or vector.");
     endif
@@ -195,6 +191,7 @@ endfunction
 %!assert_equal (nancov ([1 2 3 4 5]'), 2.5)
 %!assert_equal (nancov (5), 0)
 %!assert_equal (nancov (NaN (3, 2)), NaN (2, 2))
+%!assert_equal (nancov ([], []), NaN (2, 2))
 
 ## Test input validation
 %!error <Invalid call to nancov> nancov ()
