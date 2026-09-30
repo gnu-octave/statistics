@@ -105,16 +105,16 @@ function [p, h, stats] = ranksum(x, y, varargin)
 
   ## Check that x and y are vectors
   if ! isvector (x) || ! isvector (y)
-     error ("X and Y must be vectors");
+     error ("ranksum: X and Y must be vectors.");
   endif
   ## Remove missing data and make column vectors
   x = x(! isnan (x))(:);
   y = y(! isnan (y))(:);
   if isempty (x)
-    error ("Not enough data in X");
+    error ("ranksum: X holds no observation that is not missing.");
   endif
   if isempty (y)
-    error ("Not enough data in Y");
+    error ("ranksum: Y holds no observation that is not missing.");
   endif
 
   ## Check for extra input arguments
@@ -129,13 +129,13 @@ function [p, h, stats] = ranksum(x, y, varargin)
     alpha = varargin{1};
     varargin(1) = [];
     if isnan (alpha) || alpha <= 0 || alpha >= 1
-      error ("Alpha does not have a valid value");
+      error ("ranksum: ALPHA must be a scalar between 0 and 1.");
     endif
   endif
   ## Check for Name:Value pairs
   arg_pairs = length (varargin);
   if ! (int16 (arg_pairs / 2) == arg_pairs / 2)
-    error ("Extra arguments are not in Name:Value pairs");
+    error ("ranksum: optional arguments must be in Name, Value pairs.");
   endif
   num_pair = 1;
   while (arg_pairs)
@@ -144,19 +144,20 @@ function [p, h, stats] = ranksum(x, y, varargin)
     switch (lower (name))
       case 'alpha'
         alpha = value;
-        if (isnan (alpha) || alpha <= 0 || alpha >= 1 || ! isnumeric (alpha) ...
-            || ! isscalar (alpha))
-          error ("Alpha does not have a valid value");
+        if (! isnumeric (alpha) || ! isscalar (alpha) || isnan (alpha)
+            || alpha <= 0 || alpha >= 1)
+          error ("ranksum: 'alpha' must be a scalar between 0 and 1.");
         endif
       case 'method'
         method = value;
         if ! any (strcmpi (method, {'exact', 'approximate', 'oldexact'}))
-          error ("Wrong value for method option");
+          error (strcat ("ranksum: 'method' must be 'exact',", ...
+                         " 'approximate' or 'oldexact'."));
         endif
       case 'tail'
         tail = value;
         if ! any (strcmpi (tail, {'both', 'right', 'left'}))
-          error ("Wrong value for tail option");
+          error ("ranksum: 'tail' must be 'both', 'right' or 'left'.");
         endif
       case 'confidenceintervaltype'
         citype = value;
@@ -411,3 +412,20 @@ endfunction
 %! ranksum ([1, 2, 3], [4, 5, 6], 'NumBootstraps', 0)
 %!error<ranksum: 'Resampling' must be 'pooled' or 'stratified'.> ...
 %! ranksum ([1, 2, 3], [4, 5, 6], 'Resampling', 'foo')
+%!error<ranksum: X and Y must be vectors.> ranksum ([1, 2; 3, 4], [1, 2, 3])
+%!error<ranksum: X holds no observation that is not missing.> ...
+%! ranksum ([NaN, NaN], [1, 2, 3])
+%!error<ranksum: Y holds no observation that is not missing.> ...
+%! ranksum ([1, 2, 3], NaN)
+%!error<ranksum: ALPHA must be a scalar between 0 and 1.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 1.5)
+%!error<ranksum: optional arguments must be in Name, Value pairs.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 'tail')
+%!error<ranksum: 'alpha' must be a scalar between 0 and 1.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 'alpha', 0)
+%!error<ranksum: 'alpha' must be a scalar between 0 and 1.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 'alpha', [0.1, 0.2])
+%!error<ranksum: 'method' must be 'exact', 'approximate' or 'oldexact'.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 'method', 'foo')
+%!error<ranksum: 'tail' must be 'both', 'right' or 'left'.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 'tail', 'up')
