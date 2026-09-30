@@ -483,6 +483,7 @@ Plotting
  manovacluster
  normplot
  parallelcoords
+ parallelplot
  ppplot
  probplot
  qqplot
@@ -491,6 +492,7 @@ Plotting
  silhouette
  stats.chart.BoxChart
  stats.chart.HeatmapChart
+ stats.chart.ParallelCoordinatesPlot
  stats.chart.ScatterHistogramChart
  swarmchart
  violin

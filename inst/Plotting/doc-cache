@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 146
+# columns: 179
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -1412,6 +1412,69 @@ pca
 # elements: 1
 # length: 65
 Create a parallel coordinates plot of the multivariate data in x.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 12
+parallelplot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1794
+statistics: parallelplot (data)
+statistics: parallelplot (tbl)
+statistics: parallelplot (parent, ...)
+statistics: parallelplot (..., Name, Value)
+statistics: h = parallelplot (...)
+Parallel coordinates plot of observations of several variables.
+
+parallelplot (data) draws each column of the numeric matrix
+data as a vertical ruler, a coordinate, and each row as a line
+joining its values across the rulers. By default each ruler has limits of
+its own, from the smallest to the largest value of its column.
+
+parallelplot (tbl) draws the variables of the table
+tbl as coordinates, named after them. A variable of categories,
+text or logical values places its distinct values evenly along its ruler.
+
+'CoordinateData' chooses the columns of data to draw, and
+'CoordinateVariables' the variables of tbl, by names,
+indices or a logical vector. With 'GroupData', a vector with one
+element for each observation, or 'GroupVariable', a variable of
+tbl, each group is drawn in a colour of its own, with a legend
+naming the groups in the order in which each first appears.
+'DataNormalization' places the values as they are on rulers of
+their own, 'range', or on one shared scale: as they are,
+'none'; as z-scores, 'zscore'; divided by the standard
+deviation, 'scale'; less the mean, 'center'; divided by
+the 2-norm, 'norm'.
+
+parallelplot (parent, ...) places the chart in the
+figure or panel parent rather than the current figure. The chart
+takes the place of the current axes of its parent, and is refused where
+hold is on for them.
+
+parallelplot (..., Name, Value) sets properties of
+the chart; see stats.chart.ParallelCoordinatesPlot for all of them.
+
+h = parallelplot (...) returns the chart, a
+stats.chart.ParallelCoordinatesPlot object.
+
+See also:
+stats.chart.ParallelCoordinatesPlot,
+parallelcoords
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 63
+Parallel coordinates plot of observations of several variables.
 
 
 
@@ -3751,6 +3814,819 @@ limits, set them.
 # elements: 1
 # length: 76
 The first and last row shown, as YLimits holds them; given limits, set them.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+stats.chart.ParallelCoordinatesPlot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1753
+statistics: stats.chart.ParallelCoordinatesPlot
+A parallel coordinates plot, as parallelplot draws it.
+
+A stats.chart.ParallelCoordinatesPlot holds observations of several
+variables, optionally split into groups, and the choices they are drawn
+with, and redraws itself whenever one of them is set. It is what
+parallelplot returns, and the documented way to reach it. Each
+variable is a vertical ruler, a coordinate, and each observation a line
+joining its values across the rulers.
+
+The observations come either from a numeric matrix, Data, whose
+columns CoordinateData chooses, or from a table,
+SourceTable, whose variables CoordinateVariables chooses,
+never from both. A table variable of categories, text or logical values
+places its distinct values evenly along its ruler, whatever
+DataNormalization says, and Jitter spreads the lines passing
+through each value. A missing value breaks its line. The groups take
+the colours of the colour order, in the order in which each first
+appears in GroupData.
+
+A chart takes the place of the current axes of its parent, keeping their
+outer position, and refuses axes on which hold is on; a later plot
+into the figure takes the place of the chart in turn. MATLAB's chart is
+a graphics object of its own; this one is a handle class drawing into
+axes of its own, made current, and it lets go of them when a later plot
+clears them. Octave's lines carry no transparency, so LineAlpha
+blends each line's colour toward the background of the axes instead,
+which matches MATLAB where lines do not cross. LegendVisible and
+Visible hold 'on' or 'off', and LineStyle
+and MarkerStyle a character vector or a cell array of them, where
+MATLAB holds an on-off state and a string array.
+
+See also:
+parallelplot,
+parallelcoords
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+A parallel coordinates plot, as parallelplot draws it.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.ParallelCoordinatesPlot.Color
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 156
+stats.chart.ParallelCoordinatesPlot: property Color
+The colour of each group, one row of an RGB matrix for each; by
+default the colours of the colour order.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 104
+The colour of each group, one row of an RGB matrix for each; by default the colours of the colour order.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 50
+stats.chart.ParallelCoordinatesPlot.CoordinateData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 231
+stats.chart.ParallelCoordinatesPlot: property CoordinateData
+The columns of Data drawn as coordinates, in the order drawn,
+as indices or a logical vector; all of them by default. Setting it on
+a chart drawn from a table is refused.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 117
+The columns of Data drawn as coordinates, in the order drawn, as indices or a logical vector; all of them by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+stats.chart.ParallelCoordinatesPlot.CoordinateLabel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 94
+stats.chart.ParallelCoordinatesPlot: property CoordinateLabel
+The label under the coordinates.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+The label under the coordinates.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 56
+stats.chart.ParallelCoordinatesPlot.CoordinateTickLabels
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 186
+stats.chart.ParallelCoordinatesPlot: property CoordinateTickLabels
+The label of each coordinate, a column cell array; by default the
+numbers of the columns or the names of the variables.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 119
+The label of each coordinate, a column cell array; by default the numbers of the columns or the names of the variables.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 55
+stats.chart.ParallelCoordinatesPlot.CoordinateVariables
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 277
+stats.chart.ParallelCoordinatesPlot: property CoordinateVariables
+The variables of SourceTable drawn as coordinates, in the order
+drawn, as names, indices or a logical vector, kept in the form given;
+all of them by default. Setting it on a chart drawn from a matrix is
+refused.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 157
+The variables of SourceTable drawn as coordinates, in the order drawn, as names, indices or a logical vector, kept in the form given; all of them by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+stats.chart.ParallelCoordinatesPlot.Data
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 199
+stats.chart.ParallelCoordinatesPlot: property Data
+The observations, a numeric matrix with one row for each observation
+and one column for each variable; empty where the chart was drawn from
+a table.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 148
+The observations, a numeric matrix with one row for each observation and one column for each variable; empty where the chart was drawn from a table.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ParallelCoordinatesPlot.DataLabel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 84
+stats.chart.ParallelCoordinatesPlot: property DataLabel
+The label beside the rulers.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+The label beside the rulers.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+stats.chart.ParallelCoordinatesPlot.DataNormalization
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 393
+stats.chart.ParallelCoordinatesPlot: property DataNormalization
+How the values are placed along the rulers: 'range', the
+default, as they are on rulers with limits of their own;
+'none' as they are on rulers sharing one scale;
+'zscore' as z-scores; 'scale' divided by the standard
+deviation; 'center' less the mean; 'norm' divided by
+the 2-norm of the variable. All but 'range' share one scale.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 296
+How the values are placed along the rulers: 'range', the default, as they are on rulers with limits of their own; 'none' as they are on rulers sharing one scale; 'zscore' as z-scores; 'scale' divided by the standard deviation; 'center' less the mean; 'norm' divided by the 2-norm of the variable.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+stats.chart.ParallelCoordinatesPlot.FontName
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 115
+stats.chart.ParallelCoordinatesPlot: property FontName
+The font of every text on the chart, 'Helvetica' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 60
+The font of every text on the chart, 'Helvetica' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+stats.chart.ParallelCoordinatesPlot.FontSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 117
+stats.chart.ParallelCoordinatesPlot: property FontSize
+The size of every text on the chart, in points, 10 by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+The size of every text on the chart, in points, 10 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ParallelCoordinatesPlot.GroupData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 205
+stats.chart.ParallelCoordinatesPlot: property GroupData
+The group of each observation: a vector with one element for each row
+of Data of categories, text, numbers or logical values, or
+empty for no groups.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 149
+The group of each observation: a vector with one element for each row of Data of categories, text, numbers or logical values, or empty for no groups.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+stats.chart.ParallelCoordinatesPlot.GroupVariable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 117
+stats.chart.ParallelCoordinatesPlot: property GroupVariable
+The variable of SourceTable holding the groups, or empty.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 57
+The variable of SourceTable holding the groups, or empty.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+stats.chart.ParallelCoordinatesPlot.InnerPosition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 81
+stats.chart.ParallelCoordinatesPlot: property InnerPosition
+The same as Position.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+The same as Position.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+stats.chart.ParallelCoordinatesPlot.Jitter
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 202
+stats.chart.ParallelCoordinatesPlot: property Jitter
+How far the lines through one value of a variable of categories are
+spread, from 0 to 1, where 1 fills the room up to the next value. 0.1
+by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 133
+How far the lines through one value of a variable of categories are spread, from 0 to 1, where 1 fills the room up to the next value.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+stats.chart.ParallelCoordinatesPlot.LegendTitle
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 133
+stats.chart.ParallelCoordinatesPlot: property LegendTitle
+The title of the legend; from a table the name of
+GroupVariable, until set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 75
+The title of the legend; from a table the name of GroupVariable, until set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+stats.chart.ParallelCoordinatesPlot.LegendVisible
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 155
+stats.chart.ParallelCoordinatesPlot: property LegendVisible
+Whether the legend of the groups is shown, 'on' or
+'off'; on where there are groups, until set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 95
+Whether the legend of the groups is shown, 'on' or 'off'; on where there are groups, until set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ParallelCoordinatesPlot.LineAlpha
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 142
+stats.chart.ParallelCoordinatesPlot: property LineAlpha
+How opaque the lines are, from 0 to 1, a scalar or one for each group,
+0.7 by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 86
+How opaque the lines are, from 0 to 1, a scalar or one for each group, 0.7 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ParallelCoordinatesPlot.LineStyle
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 145
+stats.chart.ParallelCoordinatesPlot: property LineStyle
+The line style of each group, a character vector or a cell array of
+them, '-' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 89
+The line style of each group, a character vector or a cell array of them, '-' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ParallelCoordinatesPlot.LineWidth
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 125
+stats.chart.ParallelCoordinatesPlot: property LineWidth
+The width of the lines, a scalar or one for each group, 1 by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 69
+The width of the lines, a scalar or one for each group, 1 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 46
+stats.chart.ParallelCoordinatesPlot.MarkerSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 137
+stats.chart.ParallelCoordinatesPlot: property MarkerSize
+The size of the markers in points, a scalar or one for each group, 6
+by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+The size of the markers in points, a scalar or one for each group, 6 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+stats.chart.ParallelCoordinatesPlot.MarkerStyle
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 118
+stats.chart.ParallelCoordinatesPlot: property MarkerStyle
+The marker at each value, for each group, 'none' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 60
+The marker at each value, for each group, 'none' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+stats.chart.ParallelCoordinatesPlot.OuterPosition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 204
+stats.chart.ParallelCoordinatesPlot: property OuterPosition
+The position of the whole chart in its parent, labels included,
+[0, 0, 1, 1] by default, or the outer position of the axes it
+took the place of.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 144
+The position of the whole chart in its parent, labels included, [0, 0, 1, 1] by default, or the outer position of the axes it took the place of.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 59
+stats.chart.ParallelCoordinatesPlot.ParallelCoordinatesPlot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 595
+stats.chart.ParallelCoordinatesPlot: obj = stats.chart.ParallelCoordinatesPlot (parent, spec, args)
+Create a stats.chart.ParallelCoordinatesPlot object.
+
+parent is the figure or panel to place the chart in, or empty for
+the current figure, which is resolved only once every value has been
+accepted. spec is a structure carrying the data as
+parallelplot resolved it, with the fields Data,
+SourceTable, CoordinateData,
+CoordinateVariables, GroupData and
+GroupVariable, and args the name-value pairs left to set.
+The documented way to reach this constructor is parallelplot.
+
+See also:
+parallelplot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 52
+Create a stats.chart.ParallelCoordinatesPlot object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+stats.chart.ParallelCoordinatesPlot.Parent
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 124
+stats.chart.ParallelCoordinatesPlot: property Parent
+The figure or panel the chart is placed in. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+The figure or panel the chart is placed in.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+stats.chart.ParallelCoordinatesPlot.Position
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 340
+stats.chart.ParallelCoordinatesPlot: property Position
+The position of the rulers in their parent, as
+[left, bottom, width, height] in Units. While
+PositionConstraint is 'outerposition' the chart places
+them within OuterPosition itself; setting it fixes them there
+and turns PositionConstraint to 'innerposition'.
+InnerPosition is the same.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 86
+The position of the rulers in their parent, as [left, bottom, width, height] in Units.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+stats.chart.ParallelCoordinatesPlot.PositionConstraint
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 146
+stats.chart.ParallelCoordinatesPlot: property PositionConstraint
+Which position the chart keeps: 'outerposition', the default,
+or 'innerposition'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 81
+Which position the chart keeps: 'outerposition', the default, or 'innerposition'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+stats.chart.ParallelCoordinatesPlot.SourceTable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 103
+stats.chart.ParallelCoordinatesPlot: property SourceTable
+The table the chart was drawn from, or empty.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+The table the chart was drawn from, or empty.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.ParallelCoordinatesPlot.Title
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 75
+stats.chart.ParallelCoordinatesPlot: property Title
+The title of the chart.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+The title of the chart.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.ParallelCoordinatesPlot.Units
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 104
+stats.chart.ParallelCoordinatesPlot: property Units
+The units of the positions, 'normalized' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 52
+The units of the positions, 'normalized' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.chart.ParallelCoordinatesPlot.Visible
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 107
+stats.chart.ParallelCoordinatesPlot: property Visible
+Whether the chart is shown, 'on' by default or 'off'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Whether the chart is shown, 'on' by default or 'off'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+stats.chart.ParallelCoordinatesPlot.delete
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 93
+stats.chart.ParallelCoordinatesPlot: delete (h)
+Delete the chart and the axes it is drawn in.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+Delete the chart and the axes it is drawn in.
 
 
 
