@@ -473,6 +473,7 @@ Plotting
  dendrogram
  ecdfhist
  einstein
+ gardnerAltmanPlot
  glyphplot
  gplotmatrix
  gscatter

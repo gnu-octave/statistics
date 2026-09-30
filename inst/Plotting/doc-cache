@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 56
+# columns: 57
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -776,6 +776,87 @@ fhat contains the coordinates of the first fylfot cluster
 # elements: 1
 # length: 57
 Plots the tiling of the basic clusters of einstein tiles.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+gardnerAltmanPlot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2789
+statistics: gardnerAltmanPlot (X, Y)
+statistics: gardnerAltmanPlot (ax, X, Y)
+statistics: gardnerAltmanPlot (..., Name, Value)
+statistics: H = gardnerAltmanPlot (...)
+Gardner-Altman plot of two samples and the effect size between them.
+
+gardnerAltmanPlot (X, Y) draws the observations of the
+samples X and Y at the horizontal positions 1 and 2, and the
+difference between their means, with its confidence interval, at position
+3, measured against a second vertical axis on the right. That axis is
+placed so that its zero is level with the centre of Y and the effect
+size level with the centre of X, so the effect reads off the data it
+comes from. X and Y are vectors of type double or single, and
+a missing value (NaN) is left out.
+
+Two unpaired samples are drawn as swarms, the points of each spread
+sideways where they crowd, with a black line from the centre of each
+sample to the effect size: solid for X, dashed for Y. The
+centre is the median for 'mediandiff' and the mean otherwise.
+Paired samples are drawn as a line from each observation of X to its
+partner in Y, the pairs that increase, decrease and stay equal each
+in a colour of their own. For 'cliff' and 'kstest', whose
+values do not share the scale of the data, the right axis spans the values
+the effect can take, [-1.1, 1.1] and [-0.1, 1.1], and two
+unpaired samples get a reference line at zero instead of the lines from
+their centres.
+
+gardnerAltmanPlot (ax, ...) draws into the axes ax
+rather than the current axes.
+
+gardnerAltmanPlot (..., Name, Value) takes the
+options 'Effect', 'Paired', 'VarianceType',
+'Alpha', 'ConfidenceIntervalType', 'NumBootstraps',
+'BootstrapOptions' and 'Resampling' of
+meanEffectSize, which computes the effect size and its interval;
+'Effect' names a single effect. 'Mean' does not apply,
+there always being two samples.
+
+H = gardnerAltmanPlot (...) returns the graphics objects
+drawn, in a row vector. For two unpaired samples they are the two swarms,
+the error bar, and the lines from the centres of X and Y, or
+the reference line. For paired samples they are the lines of the pairs
+that increase, decrease and stay equal, each where there is any, and the
+error bar. Where 'ConfidenceIntervalType' is 'none' the
+error bar is a line holding a single marker.
+
+MATLAB draws the effect size on a second vertical axis of the same axes;
+Octave has no such axis, so here it is a second axes laid over the first,
+which follows the first's position and vertical limits. The error bar is
+Octave's errorbar object, whose bounds are its 'ldata' and
+'udata' properties.
+
+Reference: M. J. Gardner and D. G. Altman (1986). Confidence intervals
+rather than P values: estimation rather than hypothesis testing. British
+Medical Journal, 292(6522), 746-750.
+
+See also:
+meanEffectSize,
+swarmchart,
+errorbar
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 68
+Gardner-Altman plot of two samples and the effect size between them.
 
 
 
