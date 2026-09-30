@@ -176,6 +176,8 @@ function [p, h, stats] = ranksum(x, y, varargin)
         if (! any (strcmpi (resampling, {'pooled', 'stratified'})))
           error ("ranksum: 'Resampling' must be 'pooled' or 'stratified'.");
         endif
+      otherwise
+        error ("ranksum: invalid optional paired argument.");
     endswitch
     arg_pairs -= 2;
     num_pair += 2;
@@ -421,6 +423,10 @@ endfunction
 %! ranksum ([1, 2, 3], [4, 5, 6], 1.5)
 %!error<ranksum: optional arguments must be in Name, Value pairs.> ...
 %! ranksum ([1, 2, 3], [4, 5, 6], 'tail')
+%!error<ranksum: invalid optional paired argument.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 'Tial', 'left')
+%!error<ranksum: invalid optional paired argument.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 'alpha', 0.1, 5, 'left')
 %!error<ranksum: 'alpha' must be a scalar between 0 and 1.> ...
 %! ranksum ([1, 2, 3], [4, 5, 6], 'alpha', 0)
 %!error<ranksum: 'alpha' must be a scalar between 0 and 1.> ...
