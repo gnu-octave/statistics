@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 86
+# columns: 87
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -2793,6 +2793,208 @@ fishertest
 # elements: 1
 # length: 48
 Perform a McNemar's test on paired nominal data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+meanEffectSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8590
+statistics: Effect = meanEffectSize (X)
+statistics: Effect = meanEffectSize (X, Y)
+statistics: Effect = meanEffectSize (..., Name, Value)
+Effect sizes for the difference between two means, with their confidence
+intervals.
+
+Effect = meanEffectSize (X) returns the difference
+between the mean of the sample X and a known population mean, zero by
+default, with its confidence interval.
+
+Effect = meanEffectSize (X, Y) returns the
+difference between the means of the samples X and Y, with its
+confidence interval.
+
+X and Y are vectors of type double or single. A missing value
+(NaN) is left out of its sample, and out of both where the samples
+are paired. Where either sample is single, so are the results.
+
+Effect is a table with one row for each effect size asked for, in the
+order asked, named as listed below. Its variable Effect holds the
+effect size and its variable ConfidenceIntervals the lower and upper
+bounds of its confidence interval, the latter absent where
+'ConfidenceIntervalType' is 'none'.
+
+Effect = meanEffectSize (..., Name, Value)
+takes the following options.
+
+Name Value
+'Effect' The effect sizes to compute, as a
+character vector, a string array or a cell array of character vectors,
+chosen among those below. A name may be shortened to any prefix that
+names one effect alone, and case does not matter.
+'meandiff' by default.
+'Mean' The known population mean that one sample
+is compared with, a real scalar, 0 by default. It is ignored where there
+are two samples.
+'Paired' Whether X and Y are paired
+observations, true or false (also 'on' or
+'off'), false by default. Paired samples must have the
+same number of elements.
+'VarianceType' Whether two unpaired samples are
+taken to come from populations of 'equal' or 'unequal'
+variance, 'equal' by default. Paired samples take
+'equal' only; one sample ignores it.
+'Alpha' The significance level, a scalar between 0
+and 1, 0.05 by default, so that each interval covers
+100(1 - Alpha) percent.
+'ConfidenceIntervalType' 'exact',
+'bootstrap' or 'none'. By default each effect takes
+'exact' where it has an exact interval and 'bootstrap'
+where it has not.
+'NumBootstraps' The number of bootstrap replicates,
+a positive integer, 1000 by default.
+'BootstrapOptions' A structure, as returned by
+statset, accepted for compatibility. The replicates are always
+computed serially and drawn from the generator of rand.
+'Resampling' How the bootstrap resamples two
+unpaired samples, 'pooled' or 'stratified'; see below.
+'pooled' by default. This option is an Octave extension.
+
+The effect sizes are the following, where J(v) is Hedges'
+correction for bias, J(v) = Gamma(v/2) / (sqrt(v/2) Gamma((v-1)/2)).
+
+Effect Row name Description
+'meandiff' MeanDifference The difference
+between the means, mean(X) - mean(Y), or mean(X) - mu for
+one sample. Its exact interval is Student's t interval: pooled for equal
+variances, Welch's for unequal variances, and on the differences for
+paired samples.
+'cohen' CohensD Cohen's d corrected for
+bias, that is Hedges' g: the difference between the means divided by a
+standard deviation, times J(v). See below.
+'glass' GlasssDelta Glass's delta,
+J(n_x - 1) (mean(X) - mean(Y)) / s_x, the difference between the
+means divided by the standard deviation of the control sample X.
+Two unpaired samples only; 'VarianceType' does not change it.
+'cliff' CliffsDelta Cliff's delta, the
+share of pairs (x_i, y_j) with x_i > y_j less the share with
+x_i < y_j. For paired samples the pairs are those of different
+observations, i != j. Two samples only.
+'mediandiff' MedianDifference The
+difference between the medians, median(X) - median(Y), paired
+samples included. Two samples only.
+'robustcohen' RobustCohensD A robust
+Cohen's d, as MATLAB computes it; see below.
+'akpcohen' AKPCohensD The robust Cohen's d
+of Algina, Keselman and Penfield; see below. This effect is an Octave
+extension.
+'kstest' KolmogorovSmirnovStatistic The
+two-sample Kolmogorov-Smirnov statistic, the largest distance between the
+empirical distribution functions of X and Y, paired samples
+included. Two samples only.
+
+'meandiff', 'cohen', 'glass' and 'cliff'
+have exact intervals; the others are bootstrap only.
+
+Cohen's d. For one sample it is
+J(n - 1) (mean(X) - mu) / s_x, and for two unpaired samples of
+equal variance J(n_x + n_y - 2) (mean(X) - mean(Y)) / s_p, with
+s_p the pooled standard deviation. Its interval inverts the
+noncentral t distribution of the one-sample or the two-sample t statistic.
+For unequal variances it is the g^x of Delacre and colleagues: the
+difference between the means divided by
+s_a = sqrt((s_x^2 + s_y^2) / 2), times J(v) with
+v = (n_x - 1)(n_y - 1)(s_x^2 + s_y^2)^2 / ((n_y - 1) s_x^4 +
+(n_x - 1) s_y^4), and its interval inverts the noncentral t distribution
+of Welch's statistic on v degrees of freedom. For paired samples it
+is J(n - 1) mean(X - Y) / s_a, and its interval is the MAG interval
+of Cousineau and Goulet-Pelletier. The interval of Glass's delta inverts
+the noncentral t distribution of Welch's statistic on n_x - 1
+degrees of freedom.
+
+Cliff's delta. Its interval is Cliff's asymmetric interval from
+the normal distribution, with the variance of delta estimated as
+((n_y - 1) var(d_i) + (n_x - 1) var(d_j) + S / ((n_x - 1)(n_y - 1)))
+/ (n_x n_y), where d_i and d_j are the row and column means
+of the dominance matrix d_ij = sign(x_i - y_j) and S is the
+sum of (d_ij - delta)^2. For paired samples the interval is
+delta +/- z s with the variance of the U statistic over the
+n(n - 1) pairs, which needs four pairs or more.
+
+Robust Cohen's d. 'robustcohen' is MATLAB's:
+0.642 J(v) (T(X) - T(Y)) / s_w, where T is
+trimmean (..., 20), which trims 10 percent of each tail, and
+s_w the standard deviation of the values clipped at their 20th and
+80th percentiles, pooled over the two samples as s_p is, or averaged
+as s_a is for unequal variances and paired samples. v is the
+degrees of freedom of the matching 'cohen'. For one sample
+T(Y) is replaced by mu.
+
+'akpcohen' is the estimator of Algina, Keselman and Penfield, as
+the R package WRS2 computes it: c (T(X) - T(Y)) / s_w, where
+T trims 20 percent of each tail, floor(0.2 n) values, and
+s_w is the standard deviation of the sample winsorized at the same
+order statistics. Two samples of equal variance pool s_w as
+s_p is pooled; for unequal variances s_w is that of X
+alone. One sample takes c (T(X) - mu) / s_w, and paired samples
+the same over the differences X - Y, with mu zero. There is
+no correction for bias. The constant c = 0.64194, which the
+authors round to 0.642, is the standard deviation of a standard normal
+distribution winsorized at 20 percent, so that both estimators estimate
+Cohen's d where the data are normal; 'akpcohen' trims more of each
+tail and is the more robust of the two.
+
+Bootstrap. The bootstrap interval is the bias-corrected and
+accelerated (BCa) percentile interval, with the acceleration estimated by
+the jackknife. One sample is resampled with replacement, and paired
+samples by pairs. Two unpaired samples are resampled as
+'Resampling' says. 'pooled' resamples the observations of
+both samples together, each keeping its sample, so that the size of each
+sample varies from one replicate to the next; this is what MATLAB does,
+and it suits data where the sample an observation falls in is itself
+random. 'stratified' resamples each sample on its own, keeping
+their sizes; it suits data where the sizes were fixed by design, as in an
+experiment. A replicate in which a sample comes out empty is left out.
+
+An interval that cannot be computed, because a sample holds too few
+observations or has zero variance, is NaN, with a warning.
+
+MATLAB returns a paired Cliff's delta interval of zero width,
+[delta, delta], for fewer than four pairs, where the variance
+cannot be estimated; here that interval is NaN.
+
+References: J. Algina, H. J. Keselman and R. D. Penfield (2005). An
+alternative to Cohen's standardized mean difference effect size: a robust
+parameter and confidence interval in the two independent groups case.
+Psychological Methods, 10(3), 317-328. D. Cousineau and
+J.-C. Goulet-Pelletier (2021). A study of confidence intervals for Cohen's
+dp in within-subject designs with new proposals. The Quantitative Methods
+for Psychology, 17(1), 51-75. M. Delacre, D. Lakens, C. Ley, L. Liu and
+C. Leys (2021). Why Hedges' g*s based on the non-pooled standard deviation
+should be reported with Welch's t-test. PsyArXiv. N. Cliff (1993).
+Dominance statistics: ordinal analyses to answer ordinal questions.
+Psychological Bulletin, 114(3), 494-509.
+
+See also:
+ttest,
+ttest2,
+ranksum,
+kstest2,
+trimmean
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 83
+Effect sizes for the difference between two means, with their confidence intervals.
 
 
 

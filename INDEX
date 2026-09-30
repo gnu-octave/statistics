@@ -64,6 +64,7 @@ Hypothesis Testing
  lillietest
  manova1
  mcnemar_test
+ meanEffectSize
  mmdtest
  multcompare
  ranksum
