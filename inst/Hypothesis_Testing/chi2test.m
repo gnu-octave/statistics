@@ -354,22 +354,25 @@ function [h, p, stats] = chi2test (x, varargin)
   p = chi2cdf (chisq, df, 'upper');
   h = double (p < alpha);
 
-  ## Statistics, and the effect sizes with their confidence intervals
-  stats.chi2stat = chisq;
-  stats.df = df;
-  stats.O = x;
-  stats.E = E;
-  if (isfinite (chisq))
-    n = sum (x(:));
-    stats.CohensW = sqrt (max (chisq - df, 0) / n);
-    stats.CohensWCI = sqrt (__ncx2bounds__ (chisq, df, alpha) / n);
-  else
-    stats.CohensW = NaN;
-    stats.CohensWCI = [NaN, NaN];
-  endif
-  if (! isempty (vk) && vk > 0)
-    stats.CramersV = stats.CohensW / sqrt (vk);
-    stats.CramersVCI = min (stats.CohensWCI / sqrt (vk), 1);
+  ## Statistics, and the effect sizes with their confidence intervals,
+  ## only when asked for, since the intervals are costly
+  if (nargout > 2)
+    stats.chi2stat = chisq;
+    stats.df = df;
+    stats.O = x;
+    stats.E = E;
+    if (isfinite (chisq))
+      n = sum (x(:));
+      stats.CohensW = sqrt (max (chisq - df, 0) / n);
+      stats.CohensWCI = sqrt (__ncx2bounds__ (chisq, df, alpha) / n);
+    else
+      stats.CohensW = NaN;
+      stats.CohensWCI = [NaN, NaN];
+    endif
+    if (! isempty (vk) && vk > 0)
+      stats.CramersV = stats.CohensW / sqrt (vk);
+      stats.CramersVCI = min (stats.CohensWCI / sqrt (vk), 1);
+    endif
   endif
 
   ## Print results if no output requested
@@ -524,9 +527,9 @@ endfunction
 %! assert_equal ([st.chi2stat, st.df], [7.584460, 4], -1e-6);
 
 ## Check warnings
-%!warning<chi2test: Expected values less than 5.> chi2test (ones (2));
-%!warning<chi2test: Expected values less than 5.> chi2test (ones (3, 2));
-%!warning<chi2test: Expected values less than 1.> chi2test (0.4 * ones (3));
+%!warning<chi2test: Expected values less than 5.> h = chi2test (ones (2));
+%!warning<chi2test: Expected values less than 5.> h = chi2test (ones (3, 2));
+%!warning<chi2test: Expected values less than 1.> h = chi2test (0.4 * ones (3));
 
 ## Test input validation
 %!error chi2test ();
