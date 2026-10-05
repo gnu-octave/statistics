@@ -1030,7 +1030,21 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
                       rbest = std::max (rbest, nodecw[(r - 1) * K + k]);
                     }
                   if (whole[idx])
-                    collapse = (pbest >= lbest + rbest);
+                    {
+                      // The parent's best is the children's best summed
+                      // exactly when one class is the majority of both, so
+                      // that is what is tested, and no sum is formed.  The
+                      // sum, held at extended precision in an x87 register,
+                      // missed the parent's rounded total on i386.
+                      collapse = false;
+                      for (octave_idx_type k = 0; k < K; k++)
+                        if (nodecw[(l - 1) * K + k] == lbest
+                            && nodecw[(r - 1) * K + k] == rbest)
+                          {
+                            collapse = true;
+                            break;
+                          }
+                    }
                   else
                     collapse = ((nodes[l-1].nweight - lbest)
                                 + (nodes[r-1].nweight - rbest)
