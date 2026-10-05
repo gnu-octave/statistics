@@ -82,7 +82,11 @@ classdef shapley
   ## @qcode{'conditional'} averages instead over the tenth of them lying
   ## nearest the query point in the predictors being held, which stands in
   ## for conditioning on those predictors.  It asks more of the data and is
-  ## the dearer of the two.
+  ## the dearer of the two.  Observations at the same distance are taken in
+  ## their order in the data, and distances equal to within rounding count
+  ## as tied, so the result does not depend on the platform.  MATLAB lets
+  ## rounding decide such ties, so on data on a coarse grid the values can
+  ## differ slightly from MATLAB's.
   ## @end multitable
   ##
   ## @code{'UseParallel'} is not implemented and is refused rather than
@@ -1562,7 +1566,13 @@ function nb = shapNeighbours (cnd, mask)
 
   n = rows (cnd.Xz);
   D = cnd.Xz(:,mask) - repmat (cnd.qz(mask), n, 1);
-  [~, ord] = sort (sum (D .^ 2, 2));
+  ## Distances equal to within rounding tie, and sort keeps the lower row
+  d = sum (D .^ 2, 2);
+  s = max (d);
+  if (s > 0)
+    d = round (d / s * 1e12);
+  endif
+  [~, ord] = sort (d);
   nb = ord(1:cnd.NumNeighbors);
 
 endfunction
