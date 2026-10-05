@@ -2651,16 +2651,22 @@ endfunction
 %!                   0.0385020050553703; 0.0838177432700107], 1e-9);
 
 %!test  # MATLAB parity: a pair whose trees split one predictor alone is dropped
+%! ## One split per tree uses one predictor whatever the rounding.
 %! k = (0:119)';
 %! c1 = mod (k, 3) + 1;
 %! x2 = sin (k);
 %! c3 = 10 * (mod (floor (k / 2), 2) + 1);
 %! X = [c1, x2, c3];
 %! y = 5 * (c1 == 2) + 0.5 * x2 - 3 * (c3 == 20) + 0.1 * cos (k);
-%! warning ('off', 'all', 'local');
-%! Mdl = RegressionGAM (X, y, 'CategoricalPredictors', [1, 3], ...
-%!                      'Interactions', logical ([0, 1, 1]), ...
-%!                      'NumTreesPerInteraction', 5);
+%! S = warning ('off', 'all');
+%! unwind_protect
+%!   Mdl = RegressionGAM (X, y, 'CategoricalPredictors', [1, 3], ...
+%!                        'Interactions', logical ([0, 1, 1]), ...
+%!                        'NumTreesPerInteraction', 5, ...
+%!                        'MaxNumSplitsPerInteraction', 1);
+%! unwind_protect_cleanup
+%!   warning (S);
+%! end_unwind_protect
 %! assert_equal (size (Mdl.Interactions), [0, 2]);
 %!warning<RegressionGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.> ...
 %! k = (0:119)';
@@ -2669,7 +2675,8 @@ endfunction
 %!                - 3 * (mod (floor (k / 2), 2) == 1) + 0.1 * cos (k), ...
 %!                'CategoricalPredictors', [1, 3], ...
 %!                'Interactions', logical ([0, 1, 1]), ...
-%!                'NumTreesPerInteraction', 5);
+%!                'NumTreesPerInteraction', 5, ...
+%!                'MaxNumSplitsPerInteraction', 1);
 
 %!test  # MATLAB parity: 'CategoricalPredictors', 'all'
 %! k = (0:59)';
