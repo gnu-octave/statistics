@@ -68,7 +68,7 @@ function [v, idx] = nanmin (x, y, dim)
     nanvals = isnan (x);
     x(nanvals) = Inf;
     [v, idx] = min (x);
-    if (! isempty (v))
+    if (any (nanvals(:)))
       v(all (nanvals)) = NaN;
     endif
   elseif (nargin == 3 && strcmpi (dim, 'all') && isempty (y))
@@ -76,7 +76,7 @@ function [v, idx] = nanmin (x, y, dim)
     nanvals = isnan (x);
     x(nanvals) = Inf;
     [v, idx] = min (x);
-    if (! isempty (v))
+    if (any (nanvals(:)))
       v(all (nanvals)) = NaN;
     endif
   elseif (nargin == 3 && isempty (y))
@@ -84,7 +84,7 @@ function [v, idx] = nanmin (x, y, dim)
       nanvals = isnan (x);
       x(nanvals) = Inf;
       [v, idx] = min (x, [], dim);
-      if (! isempty (v))
+      if (any (nanvals(:)))
         v(all (nanvals, dim)) = NaN;
       endif
     else
@@ -114,7 +114,7 @@ function [v, idx] = nanmin (x, y, dim)
           nanvals = isnan (x);
           x(nanvals) = Inf;
           [v, idx] = min (x);
-          if (! isempty (v))
+          if (any (nanvals(:)))
             v(all (nanvals)) = NaN;
           endif
 
@@ -132,7 +132,7 @@ function [v, idx] = nanmin (x, y, dim)
           nanvals = isnan (x);
           x(nanvals) = Inf;
           [v, idx] = min (x, [], dim);
-          if (! isempty (v))
+          if (any (nanvals(:)))
             v(all (nanvals, dim)) = NaN;
           endif
 
@@ -151,7 +151,7 @@ function [v, idx] = nanmin (x, y, dim)
     x(Xnan) = Inf;
     y(Ynan) = Inf;
     v = min (x, y);
-    if (! isempty (v))
+    if (any (Xnan(:)) && any (Ynan(:)))
       v(Xnan & Ynan) = NaN;
     endif
   endif
@@ -228,8 +228,24 @@ endfunction
 ## Test comparisons
 %!assert_equal (nanmin (ones (2), 3), ones (2,2))
 
+## Test logical input
+%!assert_equal (nanmin (logical ([1, 0, 1])), logical (0))
+%!assert_equal (nanmin (logical ([0, 1; 1, 0])), logical ([0, 0]))
+%!assert_equal (nanmin (logical ([0, 1; 1, 0]), [], 2), logical ([0; 0]))
+%!assert_equal (nanmin (logical ([0, 1; 1, 0]), [], 'all'), logical (0))
+%!assert_equal (nanmin (logical ([0, 1; 1, 0]), [], [1, 2]), false)
+%!assert_equal (nanmin (true (2, 2, 2), [], 3), true (2, 2))
+%!assert_equal (nanmin (logical (zeros (0, 3))), logical (zeros (0, 3)))
+%!assert_equal (nthargout (2, @nanmin, logical ([1, 0, 1])), 2)
+%!assert_equal (nthargout (2, @nanmin, logical ([0, 1; 1, 0]), [], 2), [1; 2])
+%!assert_equal (nanmin (logical ([0, 1; 1, 0]), false), false (2))
+%!assert_equal (nanmin (logical ([1, 1]), NaN), [1, 1])
+%!assert_equal (nanmin ([NaN, 1], logical ([1, 0])), [1, 0])
+
 ## Test input validation
 %!error <nanmin: VECDIM must contain non-repeating positive integers.> ...
 %! nanmin (y, [], [1, 1, 2])
+%!error <nanmin: VECDIM must contain non-repeating positive integers.> ...
+%! nanmin (true (2), [], [1, 1])
 %!error <nanmin: a second output is not supported with this syntax.> ...
 %! [v, idx] = nanmin (x, y, [1 2])
