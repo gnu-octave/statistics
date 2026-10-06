@@ -61,7 +61,7 @@ function s = nanstd (x, varargin)
   if (nargin < 1 || nargin > 3)
     print_usage ();
   elseif (! isnumeric (x) && ! islogical (x))
-    error ("nanstd: X must be numeric.");
+    error ("nanstd: X must be numeric or logical.");
   endif
   s = sqrt (nanvar (x, varargin{:}));
 
@@ -100,4 +100,4 @@ endfunction
 
 ## Test input validation
 %!error <Invalid call to nanstd> nanstd ()
-%!error <nanstd: X must be numeric.> nanstd ({3})
+%!error <nanstd: X must be numeric or logical.> nanstd ({3})
