@@ -1708,6 +1708,7 @@ gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
       std::vector<std::vector<PairTreeNode>> trial ((std::size_t) np);
       ColumnVector fnew = f;
       double shift = 0.0;
+      bool grown = false;
 
       for (octave_idx_type q = 0; q < np; q++)
       {
@@ -1770,6 +1771,15 @@ gamb_boost_inter (const Matrix& X, const ColumnVector& Y,
         }
         shift += m;
         trial[(std::size_t) q] = tree;
+        grown = true;
+      }
+
+      // No pair kept a tree, so the fit is unchanged at any step.  Comparing
+      // the two equal deviances instead lets x87 excess precision on i386
+      // accept an empty round.
+      if (! grown)
+      {
+        break;
       }
 
       double devnew = gamb_deviance (Y, fnew, method, wt);
