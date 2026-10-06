@@ -62,12 +62,23 @@
 
 function [v, idx] = nanmax (x, y, dim)
   if (nargin < 1 || nargin > 3)
-    print_usage;
+      print_usage;
+   elseif (islogical (x))
+    if (nargin == 1 || (nargin == 2 && isempty (y)))
+      [v, idx] = max (x);
+    elseif (nargin == 3 && isempty (y))
+      [v, idx] = max (x, [], dim);
+    else
+      if (nargout > 1)
+        error ("nanmax: a second output is not supported with this syntax.");
+      endif
+      v = max (x, y);
+    endif
   elseif (nargin == 1 || (nargin == 2 && isempty (y)))
     nanvals = isnan (x);
     x(nanvals) = -Inf;
     [v, idx] = max (x);
-    if (! isempty (v))
+    if (! isempty (x))
       v(all (nanvals)) = NaN;
     endif
   elseif (nargin == 3 && strcmpi (dim, 'all') && isempty (y))
@@ -75,11 +86,11 @@ function [v, idx] = nanmax (x, y, dim)
     nanvals = isnan (x);
     x(nanvals) = -Inf;
     [v, idx] = max (x);
-    if (! isempty (v))
+    if (! isempty (x))
       v(all (nanvals)) = NaN;
     endif
   elseif (nargin == 3 && isempty (y))
-    if (isscalar (dim))
+    if (isscalar (dim) && isfinite (dim))
       nanvals = isnan (x);
       x(nanvals) = -Inf;
       [v, idx] = max (x, [], dim);
@@ -113,7 +124,7 @@ function [v, idx] = nanmax (x, y, dim)
           nanvals = isnan (x);
           x(nanvals) = -Inf;
           [v, idx] = max (x);
-          if (! isempty (v))
+          if (! isempty (x))
             v(all (nanvals)) = NaN;
           endif
 
@@ -226,6 +237,12 @@ endfunction
 
 ## Test comparisons
 %!assert_equal (nanmax (ones (2), 3), 3 * ones (2,2))
+
+## Test logical input
+%!assert_equal (nanmax (logical ([0, 1, 0])), logical (1))
+%!assert_equal (nanmax (logical ([0, 1; 1, 0])), logical ([1, 1]))
+%!assert_equal (nanmax (logical ([0, 1; 1, 0]), [], 2), logical ([1; 1]))
+%!assert_equal (nanmax (logical ([0, 1; 1, 0]), [], 'all'), logical (1))
 
 ## Test input validation
 %!error <nanmax: VECDIM must contain non-repeating positive integers.> ...
