@@ -1,4 +1,4 @@
-## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2026 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -47,15 +47,18 @@
 ## @item If @var{x} is a multidimensional array, then @code{harmmean(@var{x})}
 ## operates along the first nonsingleton dimension of @var{x}.
 ##
-## @item @var{x} must not contain any negative or complex values.
+## @item @var{x} may contain negative or complex values, in which case the
+## result follows from the formula above, as in MATLAB.
 ## @end itemize
 ##
 ## @code{harmmean(@var{x}, "all")} returns the harmonic mean of all the elements
-## in @var{x}.  If @var{x} contains any 0, then the returned value is 0.
+## in @var{x}.  If @var{x} contains any 0 and no negative or complex values,
+## then the returned value is 0.
 ##
 ## @code{harmmean(@var{x}, @var{dim})} returns the harmonic mean along the
 ## operating dimension @var{dim} of @var{x}.  Calculating the harmonic mean of
-## any subarray containing any 0 will return 0.
+## any subarray containing any 0 and no negative or complex values will return
+## 0.
 ##
 ## @code{harmmean(@var{x}, @var{vecdim})} returns the harmonic mean over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x} is
@@ -81,8 +84,8 @@ function m = harmmean (x, varargin)
     print_usage ();
   endif
 
-  if (! isnumeric (x) || ! isreal (x) || ! all (x(! isnan (x))(:) >= 0))
-    error ("harmmean: X must contain real nonnegative values.");
+  if (! isnumeric (x))
+    error ("harmmean: X must be numeric.");
   endif
 
   ## Set initial conditions
@@ -275,6 +278,18 @@ endfunction
 %! assert_equal (size (harmmean (x, [1 4 3])), [1 40]);
 %! assert_equal (size (harmmean (x, [1 2 3 4])), [1 1]);
 
+## Test negative and complex values, as in MATLAB
+%!test
+%! assert_equal (harmmean ([1 -1 3]), 9, 4e-14);
+%! assert_equal (harmmean ([1 1i]), 1 + 1i, 4e-14);
+%! assert_equal (harmmean ([1 -1 3], 'all'), 9, 4e-14);
+%! assert_equal (harmmean ([1 -1 3; 2 4 4], 2), [9; 3], 4e-14);
+%! assert_equal (harmmean ([1 -1 3; 2 4 4], [1 2]), 4.5, 4e-14);
+%! assert_equal (harmmean ([1 1i; 2 4i], 2), [1 + 1i; 3.2 + 1.6i], 4e-14);
+%! assert_equal (harmmean ([1 NaN -1 3], 'omitnan'), 9, 4e-14);
+%! assert_equal (harmmean ([1 NaN 1i], 'omitnan'), 1 + 1i, 4e-14);
+%! assert_equal (harmmean ([1 -1]), Inf);
+
 ## Test results with vecdim in n-dimensional arrays and "omitnan"
 %!test
 %! x = repmat ([1:20;6:25], [5 2 6 3]);
@@ -320,8 +335,8 @@ endfunction
 %!assert_equal (harmmean ([], 3), [])
 
 ## Test errors
-%!error <harmmean: X must contain real nonnegative values.> harmmean ('char')
-%!error <harmmean: X must contain real nonnegative values.> harmmean ([1 -1 3])
+%!error <harmmean: X must be numeric.> harmmean ('char')
+%!error <harmmean: X must be numeric.> harmmean ({1, 2, 3})
 %!error <harmmean: DIM must be a positive integer scalar or vector.> ...
 %! harmmean (repmat ([1:20;6:25], [5 2 6 3 5]), -1)
 %!error <harmmean: DIM must be a positive integer scalar or vector.> ...
