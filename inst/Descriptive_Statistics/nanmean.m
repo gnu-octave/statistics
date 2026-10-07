@@ -78,8 +78,10 @@ function y = nanmean (x, dim)
         dim = 1;
       endif
     else
-      if (isscalar (dim))
-        if (! isnumeric (dim) || fix (dim) != dim || dim <= 0)
+    if (isempty (dim))
+        error ("nanmean: DIM must be a positive integer.");
+      elseif (isscalar (dim))
+        if (! isnumeric (dim) || ! isfinite (dim)  || fix (dim) != dim || dim <= 0)
           error ("nanmean: DIM must be a positive integer.");
         endif
       elseif (isvector (dim))
@@ -91,7 +93,7 @@ function y = nanmean (x, dim)
              error ("nanmean: invalid option.");
           endif
         else
-          if (! isnumeric (dim) || any (fix (dim) != dim) || any (dim <= 0))
+          if (! isnumeric (dim) || any (! isfinite (dim)) || any (fix (dim) != dim) || any (dim <= 0) || any (diff (sort (dim)) == 0))
             error ("nanmean: VECDIM must be a vector of positive integers.");
           endif
         endif
@@ -157,6 +159,7 @@ endfunction
 %!assert_equal (nanmean ([1 NaN 3; NaN 4 6; 7 8 NaN]), [4 6 4.5])
 %!assert_equal (nanmean ([1 NaN 3; NaN 5 6; 7 8 NaN], 2), [2; 5.5; 7.5])
 %!assert_equal (nanmean (uint8 ([2 4 1 7])), 3.5)
+%!assert_equal (nanmean (logical ([0 1 1])), 2/3)
 %!test
 %! x = magic (3);
 %! x([1 6:9]) = NaN;
@@ -181,3 +184,7 @@ endfunction
 %!error <nanmean: DIM must be a positive integer.> nanmean (ones (3), 0)
 %!error <nanmean: invalid option.> nanmean (ones (3), "invalid")
 %!error <nanmean: VECDIM must be a vector of positive integers.> nanmean (ones (3), [1, -1])
+%!error <nanmean: DIM must be a positive integer.> nanmean (ones (3), Inf)
+%!error <nanmean: VECDIM must be a vector of positive integers.> nanmean (ones (3), [1, Inf])
+%!error <nanmean: VECDIM must be a vector of positive integers.> nanmean (ones (3), [1, 1])
+%!error <nanmean: DIM must be a positive integer.> nanmean (ones (3), [])
