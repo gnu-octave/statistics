@@ -101,6 +101,16 @@
 ## residual sum of squares.  It measures the goodness of fit compared to a
 ## saturated model.
 ##
+## The model is fitted by iteratively reweighted least squares.  A step that
+## takes the linear predictor outside the domain of the inverse link, as the
+## power link of the @qcode{'inverse gaussian'} distribution does at or below
+## zero, is halved back until the fitted means are valid.  MATLAB stops at
+## such a step with a warning that the weights are ill-conditioned and can
+## return coefficients whose fitted means are not valid: with
+## @code{u = (1:30)'}, for @code{glmfit (u, exp (0.1 * u) .* (1 + 0.2 * sin
+## (u)), 'inverse gaussian')} it reports a deviance of 2.2064 where the fit
+## reaches 1.9353.
+##
 ## @code{[@var{b}, @var{dev}, @var{stats}] = glmfit (@dots{})} also returns the
 ## structure @var{stats}, which contains the model statistics in the following
 ## fields:
@@ -362,9 +372,19 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
     [Q, R] = qr (Xweighted, 0);
     Bnew = R \ (Q' * yweighted);
 
-    ## Compute predicted mean using current linear predictor
-    eta = offset + X * Bnew;
-    mu = ilink(eta);
+    ## Compute predicted mean using current linear predictor.  A step that
+    ## leaves the domain of the inverse link, as a power link does at a
+    ## linear predictor at or below zero, is halved back towards the last
+    ## linear predictor until the mean is real and finite again.
+    eta_new = offset + X * Bnew;
+    mu = ilink(eta_new);
+    halvings = 0;
+    while ((! isreal (mu) || ! all (isfinite (mu))) && halvings < 60)
+      eta_new = (eta_new + eta) / 2;
+      mu = ilink(eta_new);
+      halvings += 1;
+    endwhile
+    eta = eta_new;
 
     ## Force predicted mean within distribution support limits
     if (strcmpi (distribution, 'normal'))
@@ -587,6 +607,18 @@ endfunction
 %! assert_equal (stats.se, [statsr.se; 0], -1e-12);
 %! assert_equal (stats.t, [statsr.t; NaN], -1e-12);
 %! assert_equal (stats.p, [statsr.p; NaN], -1e-12);
+%!test
+%! ## A step leaving the domain of the power link is halved back; MATLAB
+%! ## R2024a stops there at a deviance of 2.20639741059281 and computes
+%! ## 1.93529703471832 at the coefficients below
+%! u = (1:30)';
+%! [~, dev] = glmfit (u, exp (0.1 * u) .* (1 + 0.2 * sin (u)), ...
+%!                    'inverse gaussian');
+%! assert_equal (dev, 1.93529703471832, -1e-10);
+%!test
+%! u = (1:30)';
+%! b = glmfit (u, exp (0.1 * u) .* (1 + 0.2 * sin (u)), 'inverse gaussian');
+%! assert_equal (b, [0.1324742958; -0.004405637293], -1e-8);
 
 ## Test input validation
 %!error <glmfit: too few input arguments.> glmfit ()

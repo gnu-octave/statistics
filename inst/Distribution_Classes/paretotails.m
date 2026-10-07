@@ -45,7 +45,7 @@ classdef paretotails
   ## supported; only the default empirical (@qcode{"ecdf"}) middle is available.
   ##
   ## @seealso{gpfit, gpcdf, gppdf, gpinv, ecdf, fitdist,
-  ## GeneralizedParetoDistribution}
+  ## prob.GeneralizedParetoDistribution}
   ## @end deftp
 
   properties (SetAccess = private)
@@ -220,8 +220,8 @@ classdef paretotails
       hi = x > this.qu;
       mid = ! lo & ! hi;
       if (any (lo(:)))
-        p(lo) = this.pl .* (1 - gpcdf (this.ql - x(lo), ...
-                                       this.lowerP(1), this.lowerP(2), 0));
+        p(lo) = this.pl .* gpcdf (this.ql - x(lo), ...
+                                  this.lowerP(1), this.lowerP(2), 0, 'upper');
       endif
       if (any (hi(:)))
         p(hi) = this.pu + (1 - this.pu) .* gpcdf (x(hi) - this.qu, ...
@@ -499,6 +499,15 @@ endclassdef
 ## Boundary probabilities outside [0,1] give NaN from icdf
 %!test
 %! assert_equal (icdf (pt, [-0.1, 1.1]), [NaN, NaN]);
+%!test
+%! ## The lower tail far below the resolution of 1 - gpcdf
+%! pd = paretotails (tan (pi * ((1:200)' / 201 - 0.5)), 0.1, 0.9);
+%! [pb, qb] = boundary (pd);
+%! lp = lowerparams (pd);
+%! q = qb(1) - 1e20;
+%! assert_equal (cdf (pd, q), ...
+%!               pb(1) * (1 + lp(1) * (qb(1) - q) / lp(2)) ^ (-1 / lp(1)), ...
+%!               -1e-12);
 
 ## Test input validation
 %!error <Invalid call to paretotails> paretotails (1)

@@ -297,34 +297,15 @@ function D = pdist (X, varargin)
         D(D < 0) = 0;
     endswitch
 
-  ## For large N: use blocked row-by-row computation (O(N) memory)
+  ## For large N: one row at a time against every later row (O(N) memory).
+  ## Each row's distances are one vectorized step, so the loop runs N - 1
+  ## times rather than once per pair; what does not depend on the pair, a
+  ## row's centring, norm or ranks, is computed once beforehand.
   else
     num_pairs = N * (N - 1) / 2;
     D = zeros (1, num_pairs);
 
     switch (Distance)
-      case 'euclidean'
-        idx = 0;
-        for i = 1:(N-1)
-          Xi = X(i,:);
-          for j = (i+1):N
-            idx += 1;
-            d = Xi - X(j,:);
-            D(idx) = sqrt (sum (d .^ 2));
-          endfor
-        endfor
-
-      case 'squaredeuclidean'
-        idx = 0;
-        for i = 1:(N-1)
-          Xi = X(i,:);
-          for j = (i+1):N
-            idx += 1;
-            d = Xi - X(j,:);
-            D(idx) = sum (d .^ 2);
-          endfor
-        endfor
-
       case 'seuclidean'
         if (isempty (DistParameter))
           DistParameter = std (X, [], 1);
@@ -340,16 +321,6 @@ function D = pdist (X, varargin)
           endif
         endif
         DistParameter(DistParameter == 0) = 1;
-        idx = 0;
-        for i = 1:(N-1)
-          Xi = X(i,:);
-          for j = (i+1):N
-            idx += 1;
-            d = (Xi - X(j,:)) ./ DistParameter;
-            D(idx) = sqrt (sum (d .^ 2));
-          endfor
-        endfor
-
       case 'mahalanobis'
         if (isempty (DistParameter))
           DistParameter = cov (X(! any (isnan (X), 2),:));
@@ -371,26 +342,6 @@ function D = pdist (X, varargin)
           warning (sprintf (strcat ("pdist: matrix is close to singular", ...
                    " or badly scaled.\n RCOND = %e. Results may be inaccurate."), rc));
         endif
-        idx = 0;
-        for i = 1:(N-1)
-          Xi = X(i,:);
-          for j = (i+1):N
-            idx += 1;
-            d = Xi - X(j,:);
-            D(idx) = sqrt (sum ((d * DP_inv) .* d));
-          endfor
-        endfor
-
-      case 'cityblock'
-        idx = 0;
-        for i = 1:(N-1)
-          Xi = X(i,:);
-          for j = (i+1):N
-            idx += 1;
-            D(idx) = sum (abs (Xi - X(j,:)));
-          endfor
-        endfor
-
       case 'minkowski'
         if (isempty (DistParameter))
           DistParameter = 2;
@@ -403,105 +354,60 @@ function D = pdist (X, varargin)
         endif
         p_exp = DistParameter;
         p_inv = 1 / DistParameter;
-        idx = 0;
-        for i = 1:(N-1)
-          Xi = X(i,:);
-          for j = (i+1):N
-            idx += 1;
-            D(idx) = sum (abs (Xi - X(j,:)) .^ p_exp) .^ p_inv;
-          endfor
-        endfor
-
-      case 'chebychev'
-        idx = 0;
-        for i = 1:(N-1)
-          Xi = X(i,:);
-          for j = (i+1):N
-            idx += 1;
-            D(idx) = max (abs (Xi - X(j,:)));
-          endfor
-        endfor
-
       case 'cosine'
         sx = sum (X .^ 2, 2) .^ (-1 / 2);
-        idx = 0;
-        for i = 1:(N-1)
-          Xi = X(i,:);
-          sx_i = sx(i);
-          for j = (i+1):N
-            idx += 1;
-            D(idx) = 1 - sum (Xi .* X(j,:)) * sx_i * sx(j);
-            if (D(idx) < 0)
-              D(idx) = 0;
-            endif
-          endfor
-        endfor
 
       case 'correlation'
-        idx = 0;
-        for i = 1:(N-1)
-          Xi = X(i,:);
-          mXi = mean (Xi);
-          Xi_c = Xi - mXi;
-          for j = (i+1):N
-            idx += 1;
-            Xj = X(j,:);
-            mXj = mean (Xj);
-            Xj_c = Xj - mXj;
-            xy = sum (Xi_c .* Xj_c);
-            xx = sqrt (sum (Xi_c .^ 2));
-            yy = sqrt (sum (Xj_c .^ 2));
-            D(idx) = 1 - xy / (xx * yy);
-            if (D(idx) < 0)
-              D(idx) = 0;
-            endif
-          endfor
-        endfor
-
-      case 'hamming'
-        idx = 0;
-        for i = 1:(N-1)
-          Xi = X(i,:);
-          for j = (i+1):N
-            idx += 1;
-            D(idx) = mean (Xi != X(j,:));
-          endfor
-        endfor
-
-      case 'jaccard'
-        idx = 0;
-        for i = 1:(N-1)
-          Xi = X(i,:);
-          for j = (i+1):N
-            idx += 1;
-            Xj = X(j,:);
-            nz = (Xi != 0 | Xj != 0);
-            D(idx) = sum ((Xi != Xj) & nz) / sum (nz);
-          endfor
-        endfor
+        Xc = X - mean (X, 2);
+        nc = sqrt (sum (Xc .^ 2, 2));
 
       case 'spearman'
         rX = zeros (size (X));
         for i = 1:N
           rX(i,:) = tiedrank (X(i,:));
         endfor
-        rM = (columns (X) + 1) / 2;
-        idx = 0;
-        for i = 1:(N-1)
-          rXi = rX(i,:) - rM;
-          for j = (i+1):N
-            idx += 1;
-            rXj = rX(j,:) - rM;
-            xy = sum (rXi .* rXj);
-            xx = sqrt (sum (rXi .^ 2));
-            yy = sqrt (sum (rXj .^ 2));
-            D(idx) = 1 - xy / (xx * yy);
-            if (D(idx) < 0)
-              D(idx) = 0;
-            endif
-          endfor
-        endfor
+        Xc = rX - (columns (X) + 1) / 2;
+        nc = sqrt (sum (Xc .^ 2, 2));
     endswitch
+
+    idx = 0;
+    for i = 1:(N-1)
+      j = (i+1):N;
+      switch (Distance)
+        case 'euclidean'
+          d = sqrt (sum ((X(i,:) - X(j,:)) .^ 2, 2));
+        case 'squaredeuclidean'
+          d = sum ((X(i,:) - X(j,:)) .^ 2, 2);
+        case 'seuclidean'
+          d = sqrt (sum (((X(i,:) - X(j,:)) ./ DistParameter) .^ 2, 2));
+        case 'mahalanobis'
+          Z = X(i,:) - X(j,:);
+          d = sqrt (sum ((Z * DP_inv) .* Z, 2));
+        case 'cityblock'
+          d = sum (abs (X(i,:) - X(j,:)), 2);
+        case 'minkowski'
+          d = sum (abs (X(i,:) - X(j,:)) .^ p_exp, 2) .^ p_inv;
+        case 'chebychev'
+          d = max (abs (X(i,:) - X(j,:)), [], 2);
+        case 'cosine'
+          d = 1 - sum (X(i,:) .* X(j,:), 2) * sx(i) .* sx(j);
+        case {'correlation', 'spearman'}
+          d = 1 - sum (Xc(i,:) .* Xc(j,:), 2) ./ (nc(i) * nc(j));
+        case 'hamming'
+          d = mean (X(i,:) != X(j,:), 2);
+        case 'jaccard'
+          nz = (X(i,:) != 0 | X(j,:) != 0);
+          d = sum ((X(i,:) != X(j,:)) & nz, 2) ./ sum (nz, 2);
+      endswitch
+      D(idx + (1:(N-i))) = d;
+      idx += N - i;
+    endfor
+
+    ## A similarity a rounding step above one would give a negative distance,
+    ## which MATLAB never returns.  A NaN compares false and is left alone.
+    if (any (strcmp (Distance, {'cosine', 'correlation', 'spearman'})))
+      D(D < 0) = 0;
+    endif
   endif
 
 endfunction

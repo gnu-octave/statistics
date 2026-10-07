@@ -442,7 +442,7 @@ function [b, logl, H, stats] = coxphfit (X, T, varargin)
   ## Likelihood ratio against the model with no predictors.
   logl0 = partial_lik (zeros (p, 1), X, T, Tstart, event, w, Strata, Ties);
   df = sum (free);
-  lrtp = 1 - chi2cdf (2 * (logl - logl0), df);
+  lrtp = chi2cdf (2 * (logl - logl0), df, 'upper');
 
   ## --- residuals ----------------------------------------------------------
   ## Each stratum has its own baseline hazard, so every risk set below is

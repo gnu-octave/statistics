@@ -31,6 +31,15 @@
 ## Further information about the @math{F}-distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/F-distribution}
 ##
+## Where one degree of freedom is so large against the other that the
+## @math{F}-distribution cannot be told from its limit in double precision,
+## the quantile is taken from the limit, @code{chi2inv (@var{p}, @var{df1}) /
+## @var{df1}} as @var{df2} grows and @code{@var{df2} / chi2inv (1 - @var{p},
+## @var{df2})} as @var{df1} grows.  Once one degree of freedom reaches
+## @math{10^8} and the other is small, MATLAB returns quantiles whose
+## probability is off by about 3%: its @code{finv (0.025, 10, 1e8)} is
+## 0.32227, whose probability is 0.0243, where the quantile is 0.32470.
+##
 ## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
 ## and character arrays are rejected.  MATLAB accepts a character array and
 ## evaluates it at the character codes, which Octave deliberately does not,
@@ -74,29 +83,32 @@ function x = finv (p, df1, df2)
   ## Handle both DFs being INF
   kz = df1 == Inf & df2 == Inf;
 
-
-  ## Limit DFs to 1.5e6 to avoid numerical issues
-  df1(df1 > 1.5e6) = 1.5e6;
-  df2(df2 > 1.5e6) = 1.5e6;
-
   k = p == 1 & df1 > 0 & df2 > 0;
   x(k) = Inf;
 
-  ## Limit df2 to 1e6 unless it is Inf
-  #k = (df2 > 1e6) & (df2 < Inf);
-  #df2(k) = 1e6;
+  ## A DF so large against the other that the Beta form loses more to
+  ## rounding than the limit loses to the finite DF is taken as infinite; the
+  ## two errors cross where the larger DF squared is 3e15 times the smaller
+  big = max (df1, df2) .^ 2 > 3e15 * max (min (df1, df2), 1);
+  inf1 = (df1 == Inf | (big & df1 > df2)) & df2 < Inf;
+  inf2 = (df2 == Inf | (big & df2 > df1)) & df1 < Inf;
 
-  k = (p >= 0) & (p < 1) & (df1 > 0) & (df1 < Inf) & (df2 > 0) & (df2 < Inf);
-  if (isscalar (df1) && isscalar (df2))
-    x(k) = ((1 ./ betainv (1 - p(k), df2/2, df1/2) - 1) * df2 / df1);
-  else
-    x(k) = ((1 ./ betainv (1 - p(k), df2(k)/2, df1(k)/2) - 1)
-              .* df2(k) ./ df1(k));
-  endif
+  ## Solve on the tail nearer the answer: the lower one as Beta (DF1/2, DF2/2)
+  ## and the upper one as Beta (DF2/2, DF1/2), so that neither cancels
+  k = (p >= 0) & (p < 1) & (df1 > 0) & (df2 > 0) & ! inf1 & ! inf2 & ! kz;
+  kl = k & (p <= 0.5);
+  z = betainv (p(kl), df1(kl) / 2, df2(kl) / 2);
+  x(kl) = z ./ (1 - z) .* df2(kl) ./ df1(kl);
+  ku = k & (p > 0.5);
+  w = betainv (1 - p(ku), df2(ku) / 2, df1(ku) / 2);
+  x(ku) = (1 - w) ./ w .* df2(ku) ./ df1(ku);
 
-  ## Handle case when DF2 is infinite
-  k = p >= 0 & p < 1 & df1 > 0 & (df1 < Inf) & (df2 == Inf);
+  ## Limits: DF1 * X is chi-square with DF1 as DF2 grows, and DF2 / X is
+  ## chi-square with DF2 as DF1 grows
+  k = (p >= 0) & (p < 1) & (df1 > 0) & inf2;
   x(k) = chi2inv (p(k), df1(k)) ./ df1(k);
+  k = (p >= 0) & (p < 1) & (df2 > 0) & inf1;
+  x(k) = df2(k) ./ (2 * gammaincinv (p(k), df2(k) / 2, 'upper'));
 
   ## Force instances with df1 = df2 = INF to 0 for p = 0 and to 1 for 0 < p <= 1
   x(kz & p > 0 & p <= 1) = 1;
@@ -161,6 +173,25 @@ endfunction
 %!test
 %! x = finv ([0, 0.000001, 0.35, 1, 1.2], Inf, Inf);
 %! assert_equal (x, [0, 1, 1, 1, NaN]);
+
+## Values from MATLAB R2024a
+%!assert_equal (finv (1e-8, 2, 2), 1.00000001e-08, -1e-14)
+%!assert_equal (finv (1e-12, 2, 2), 1.000000000001e-12, -1e-14)
+%!assert_equal (finv (1e-10, 1, 1), 2.46740110027235e-20, -1e-14)
+%!assert_equal (finv (1e-6, 10, 20), 0.0285838655483384, -1e-14)
+%!assert_equal (finv (0.975, 1e6, 1e6), 1.00392762317843, -1e-10)
+%!assert_equal (finv (0.975, 2e6, 2e6), 1.00277565345099, -1e-10)
+%!assert_equal (finv (0.975, 1e7, 1e7), 1.00124035874565, -1e-10)
+%!assert_equal (finv (0.975, 1e8, 1e8), 1.00039206963839, -1e-10)
+%!assert_equal (finv (0.975, 1e8, 1e10), 1.00027858274271, -1e-9)
+%!assert_equal (finv (0.35, Inf, 4), 0.901370019458443, -1e-14)
+%!assert_equal (finv (0.35, 4, Inf), 0.617521846868827, -1e-14)
+
+## The limits, where MATLAB R2024a gives 0.322269543148685, 8.90372005876577
+## and 2.56334042013798e-05
+%!assert_equal (finv (0.025, 10, 1e12), 0.32469727802368437, -1e-10)
+%!assert_equal (finv (0.975, 1e12, 4), 8.2573219821426864, -1e-10)
+%!assert_equal (finv (1e-10, 10, 1e12), 0.0052331065631905406, -1e-10)
 
 ## Test class of input preserved
 %!assert_equal (finv ([p, NaN], 2, 2), [NaN 0 1 Inf NaN NaN])

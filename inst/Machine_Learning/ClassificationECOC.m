@@ -16,24 +16,24 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef ClassificationECOC < PredictiveModel
-## -*- texinfo -*-
-## @deftypefn {statistics} ClassificationECOC
-##
-## A multiclass model built from binary learners.
-##
-## An error correcting output codes model turns a problem of @math{K} classes
-## into a set of two class problems.  A coding matrix gives one column per
-## binary learner saying which classes that learner calls +1, which it calls
-## -1, and which sit it out; a new observation is sent to every learner and
-## given the class whose column of the matrix its scores match most closely.
-##
-## The fit is carried out by the learners themselves, whichever
-## @code{fitcecoc} was asked for, and the decoding by
-## @code{CompactClassificationECOC}, which this class holds the data of a fit
-## on top of.
-##
-## @seealso{fitcecoc, CompactClassificationECOC, designecoc}
-## @end deftypefn
+  ## -*- texinfo -*-
+  ## @deftp {statistics} ClassificationECOC
+  ##
+  ## A multiclass model built from binary learners.
+  ##
+  ## An error correcting output codes model turns a problem of @math{K} classes
+  ## into a set of two class problems.  A coding matrix gives one column per
+  ## binary learner saying which classes that learner calls +1, which it calls
+  ## -1, and which sit it out; a new observation is sent to every learner and
+  ## given the class whose column of the matrix its scores match most closely.
+  ##
+  ## The fit is carried out by the learners themselves, whichever
+  ## @code{fitcecoc} was asked for, and the decoding by
+  ## @code{CompactClassificationECOC}, which this class holds the data of a fit
+  ## on top of.
+  ##
+  ## @seealso{fitcecoc, CompactClassificationECOC, designecoc}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 
@@ -62,8 +62,9 @@ classdef ClassificationECOC < PredictiveModel
     ## -*- texinfo -*-
     ## @deftp {ClassificationECOC} {property} W
     ##
-    ## The observation weights, scaled so that each class carries its prior
-    ## and the whole sums to one.  This property is read-only.
+    ## The observation weights, scaled so that each class carries its prior and
+    ## the whole sums to one.  It has the class of the @qcode{'Weights'} given,
+    ## single or double.  This property is read-only.
     ##
     ## @end deftp
     W                     = [];
@@ -277,14 +278,6 @@ classdef ClassificationECOC < PredictiveModel
       this.BinaryLoss = tolower (val);
     endfunction
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       fprintf ("\n  ClassificationECOC\n\n");
       fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
@@ -334,44 +327,32 @@ classdef ClassificationECOC < PredictiveModel
         error ("ClassificationECOC: number of rows in X and Y must be equal.");
       endif
 
-      ClassNames = []; Cost = []; Prior = []; Weights = [];
-      PredictorNames = {}; ResponseName = 'Y'; ScoreTransform = 'none';
-      Coding = 'onevsone'; Learners = 'svm'; BinaryLoss = [];
-      CatPreds = [];
+      ## Parse optional paired arguments; the classes, prior, cost and
+      ## weights come from the response when left empty, and the binary loss
+      ## from the learners.
+      optNames = {'ClassNames', 'Cost', 'Prior', 'Weights', ...
+                  'PredictorNames', 'ResponseName', 'ScoreTransform', ...
+                  'Coding', 'Learners', 'BinaryLoss', ...
+                  'CategoricalPredictors', 'FitPosterior'};
+      dfValues = {[], [], [], [], {}, 'Y', 'none', 'onevsone', 'svm', [], ...
+                  [], []};
+      [ClassNames, Cost, Prior, Weights, PredictorNames, ResponseName, ...
+       ScoreTransform, Coding, Learners, BinaryLoss, CatPreds, ...
+       FitPosterior, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      for i = 1:2:numel (varargin)
-        switch (tolower (varargin{i}))
-          case 'classnames'
-            ClassNames = varargin{i+1};
-          case 'cost'
-            Cost = varargin{i+1};
-          case 'prior'
-            Prior = varargin{i+1};
-          case 'weights'
-            Weights = varargin{i+1};
-          case 'predictornames'
-            PredictorNames = varargin{i+1};
-          case 'responsename'
-            ResponseName = varargin{i+1};
-          case 'scoretransform'
-            ScoreTransform = varargin{i+1};
-          case 'coding'
-            Coding = varargin{i+1};
-          case 'learners'
-            Learners = varargin{i+1};
-          case 'binaryloss'
-            BinaryLoss = varargin{i+1};
-          case 'categoricalpredictors'
-            CatPreds = varargin{i+1};
-          case 'fitposterior'
-            error (strcat ("ClassificationECOC: 'FitPosterior' is not", ...
-                           " implemented, the binary learners having no", ...
-                           " fitted score transform to install."));
-          otherwise
-            error (strcat ("ClassificationECOC: invalid parameter name in", ...
-                           " optional pair arguments."));
-        endswitch
-      endfor
+      ## Validate optional paired arguments.  Asking for no posterior is
+      ## asking for nothing; asking for one is refused.
+      if (! (isempty (FitPosterior)
+             || (isscalar (FitPosterior) && ! FitPosterior)))
+        error (strcat ("ClassificationECOC: 'FitPosterior' is not", ...
+                       " implemented, the binary learners having no", ...
+                       " fitted score transform to install."));
+      endif
+
+      if (! isempty (args))
+        error ("ClassificationECOC: invalid optional paired argument.");
+      endif
 
       ## The learner, as a template or as a name.
       [tmpl, errmsg] = ClassificationECOC.ecocLearnerTemplate (Learners);
@@ -400,7 +381,7 @@ classdef ClassificationECOC < PredictiveModel
 
       this.X                     = F.X;
       this.Y                     = F.Y;
-      this.W                     = F.W;
+      this.W                     = cast (F.W, F.WeightsClass);
       this.RowsUsed              = F.RowsUsed;
       this.NumObservations       = F.n;
       this.ClassNames            = F.ClassNames;
@@ -433,17 +414,6 @@ classdef ClassificationECOC < PredictiveModel
 
       ## One learner per column: the classes that column marks +1 against
       ## those it marks -1, the rest of the rows left out of the fit.
-      ## Whether the weights given vary within a class.  Weights that only
-      ## carry the prior are constant within each class, and a learner taking
-      ## no observation weights can be given that prior instead.
-      evenWithin = true;
-      for k = 1:classCount (F.ClassNames)
-        wk = F.Weights(F.gY == k);
-        if (! isempty (wk) && max (wk) - min (wk) > 1e-12 * max (wk))
-          evenWithin = false;
-        endif
-      endfor
-
       L = columns (M);
       this.BinaryLearners = cell (L, 1);
       this.LearnerWeights = zeros (1, L);
@@ -453,7 +423,7 @@ classdef ClassificationECOC < PredictiveModel
         this.BinaryLearners{j} = ...
           ClassificationECOC.ecocFitBinary (tmpl, F.X(take,:), by, ...
                                             F.W(take), PredictorNames, ...
-                                            CatPreds, evenWithin);
+                                            CatPreds);
         this.LearnerWeights(j) = sum (F.W(take));
       endfor
 
@@ -908,8 +878,7 @@ classdef ClassificationECOC < PredictiveModel
     ## Fit one binary learner.  Its two classes are given outright as -1 and
     ## +1 so that the second is always the one the column calls +1, which is
     ## the score the decoding reads.
-    function Mdl = ecocFitBinary (tmpl, X, y, w, pnames, cats = [], ...
-                                  evenWithin = true)
+    function Mdl = ecocFitBinary (tmpl, X, y, w, pnames, cats = [])
 
       ## An ensemble template carries the method, cycles and learners under
       ## names of its own, which the ensemble takes under fitcensemble's.
@@ -928,34 +897,16 @@ classdef ClassificationECOC < PredictiveModel
         endif
         args(end+1:end+2) = {name, val};
       endfor
-      ## Weights are passed only when they carry information.  Uniform ones
-      ## say nothing a learner does not assume, and three of the seven
-      ## learners take no 'Weights' at all, so passing them regardless would
-      ## refuse the commonest fit there is.  A learner that cannot take them
-      ## refuses under its own name, which is the right place for it.
+      ## Weights are passed only when they carry information: uniform ones
+      ## say nothing a learner does not assume.
       args(end+1:end+4) = {'PredictorNames', pnames, 'ClassNames', [-1; 1]};
       if (! isempty (cats))
         args(end+1:end+2) = {'CategoricalPredictors', cats};
       endif
       ## Weights spread a prior over its classes one class at a time, so even
-      ## equal ones differ in the last bits; only a real spread counts.  Four
-      ## of the learners take no observation weights.  They are given the
-      ## share of the weight each side holds as their prior, which is the
-      ## prior MATLAB's learners report, and weights that vary within a class
-      ## have no such form and are refused.
+      ## equal ones differ in the last bits; only a real spread counts.
       if (max (w) - min (w) > 1e-12 * max (w))
-        if (any (strcmpi (tmpl.Method, {'svm', 'knn', 'naivebayes', ...
-                                        'discriminant'})))
-          if (! evenWithin)
-            error (strcat ("ClassificationECOC: the '%s' learners take no", ...
-                           " observation weights, so 'Weights' that vary", ...
-                           " within a class cannot be used with them."), ...
-                   tolower (tmpl.Method));
-          endif
-          args(end+1:end+2) = {'Prior', [sum(w(y == -1)), sum(w(y == 1))]};
-        else
-          args(end+1:end+2) = {'Weights', w};
-        endif
+        args(end+1:end+2) = {'Weights', w};
       endif
 
       if (ensemble && strcmp (tmpl.Method, 'Bag'))
@@ -1212,9 +1163,6 @@ endclassdef
 %! Mdl = ClassificationECOC (meas(11:150,:), y(11:150));
 %! assert_equal (Mdl.BinaryLearners{1}.Prior, [50, 50] / 100, 1e-12);
 
-%!error<ClassificationECOC: the 'svm' learners take no observation weights, so 'Weights' that vary within a class cannot be used with them.> ...
-%! load fisheriris
-%! ClassificationECOC (meas, species, 'Weights', (1:150)')
 
 ## A table at loss
 %!test  # the response is named, left out, or given beside the table
@@ -1254,3 +1202,55 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## Asking for no posterior is accepted; asking for one is refused
+%!test
+%! load fisheriris
+%! Mdl = ClassificationECOC (meas, species, 'FitPosterior', false);
+%! assert_equal (class (Mdl), 'ClassificationECOC');
+
+## Observation weights of class single or double
+%!error <ClassificationECOC: 'Weights' must be a real vector of class single or double.> ...
+%! fitcecoc ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ...
+%!           int8 ([1; 1; 1; 1]))
+%!error <ClassificationECOC: 'Weights' must be a real vector of class single or double.> ...
+%! fitcecoc ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', true (4, 1))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = fitcecoc (meas, species, 'Weights', single (w), 'Learners', 'tree');
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Weights varying within a class reach discriminant learners, as R2024a
+%! load fisheriris
+%! Mdl = ClassificationECOC (meas, species, 'Learners', 'discriminant', ...
+%!                           'Weights', 1 + (1:150)' / 7);
+%! [~, NegLoss] = predict (Mdl, meas(134,:));
+%! assert_equal (NegLoss, [-2, -0.2957570199841673, -0.2080860771266001], ...
+%!               1e-12);
+%!test
+%! ## Weights varying within a class reach nearest neighbour learners
+%! load fisheriris
+%! Mdl = ClassificationECOC (meas, species, ...
+%!                           'Learners', templateKNN ('NumNeighbors', 5), ...
+%!                           'Weights', 1 + (1:150)' / 7);
+%! [~, NegLoss] = predict (Mdl, meas(58,:));
+%! assert_equal (NegLoss, [-1.211303329864724, 0, -1.291948491155047], 1e-12);
+%!test
+%! ## Weights varying within a class reach support vector machine learners
+%! load fisheriris
+%! Mdl = ClassificationECOC (meas, species, 'Learners', 'svm', ...
+%!                           'Weights', 1 + (1:150)' / 7);
+%! [~, NegLoss] = predict (Mdl, meas(23,:));
+%! assert_equal (NegLoss, [0, -0.749030561477596, -3.406162840589479], 2e-3);
+%!test
+%! ## Weights varying within a class reach naive Bayes learners, as R2024a
+%! load fisheriris
+%! Mdl = ClassificationECOC (meas, species, 'Learners', 'naivebayes', ...
+%!                           'Weights', 1 + (1:150)' / 7);
+%! [~, NegLoss] = predict (Mdl, meas(51,:));
+%! assert_equal (NegLoss, [-2, -0.1264612831076871, -0.4152333784029093], ...
+%!               1e-12);
+

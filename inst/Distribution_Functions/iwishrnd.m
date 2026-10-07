@@ -87,7 +87,7 @@ endfunction
 %!assert_equal (size (iwishrnd ([3 1; 1 3], 2.00001, [], 1)), [2, 2]);
 %!assert_equal (size (iwishrnd (eye (2), 2, [], 3)), [2, 2, 3]);
 
-%% Test input validation
+## Test input validation
 %!error iwishrnd ()
 %!error iwishrnd (1)
 %!error iwishrnd ([-3 1; 1 3],1)

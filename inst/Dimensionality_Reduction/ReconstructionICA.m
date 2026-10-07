@@ -18,7 +18,8 @@
 ## -*- texinfo -*-
 ## @deftp {statistics} {} ReconstructionICA
 ##
-## Reconstruction independent component analysis (RICA) feature-extraction model.
+## Reconstruction independent component analysis (RICA) feature-extraction
+## model.
 ##
 ## A @qcode{ReconstructionICA} object stores the transformation learned by
 ## @code{rica} for extracting features from data.  Create one with @code{rica};
@@ -160,7 +161,7 @@ classdef ReconstructionICA
   methods
 
     ## -*- texinfo -*-
-    ## @deftypefn {statistics} {@var{Mdl} =} ReconstructionICA (@var{X}, @var{Q}, @dots{})
+    ## @deftypefn {ReconstructionICA} {@var{Mdl} =} ReconstructionICA (@var{X}, @var{Q}, @dots{})
     ## Fit a reconstruction ICA model.  This constructor is invoked by
     ## @code{rica}; see @code{help rica} for the arguments.
     ## @end deftypefn
@@ -301,7 +302,7 @@ classdef ReconstructionICA
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn {statistics} {@var{Z} =} transform (@var{Mdl}, @var{X})
+    ## @deftypefn {ReconstructionICA} {@var{Z} =} transform (@var{Mdl}, @var{X})
     ## Transform data @var{X} into the learned feature space, returning the
     ## @math{N * Q} matrix @var{Z} of features.
     ## @end deftypefn

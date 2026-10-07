@@ -403,12 +403,14 @@ classdef ClassificationNeuralNetwork < PredictiveModel
     ##
     ## Observation weights
     ##
-    ## A numeric column vector with one entry per training observation.  It
-    ## defaults to a uniform weight for every observation.  This property is
-    ## read-only.
+    ## A numeric column vector with one entry per training observation,
+    ## summing to one, by which the training loss weighs each observation.  It
+    ## has the class of the @qcode{'Weights'} given, single or double.  This
+    ## property is read-only.
     ##
-    ## Each class carries its prior spread evenly over its own observations,
-    ## so an observation of a class weighs @qcode{Prior} for that class
+    ## Each class carries its prior spread over its own observations in
+    ## proportion to the @qcode{'Weights'} given, or evenly when none were, so
+    ## that an observation of a class weighs @qcode{Prior} for that class
     ## divided by the number of observations it holds.
     ##
     ## @end deftp
@@ -570,15 +572,6 @@ classdef ClassificationNeuralNetwork < PredictiveModel
     endfunction
 
     ## Custom display
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
-    ## Custom display
     function disp (this)
       fprintf ("\n  ClassificationNeuralNetwork\n\n");
       ## Print selected properties
@@ -622,11 +615,11 @@ classdef ClassificationNeuralNetwork < PredictiveModel
   methods (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {statistics} {@var{obj} =} ClassificationNeuralNetwork (@var{X}, @var{Y})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationNeuralNetwork (@var{Tbl}, @var{ResponseVarName})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationNeuralNetwork (@var{Tbl}, @var{formula})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationNeuralNetwork (@var{Tbl}, @var{Y})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationNeuralNetwork (@dots{}, @var{name}, @var{value})
+    ## @deftypefn  {ClassificationNeuralNetwork} {@var{obj} =} ClassificationNeuralNetwork (@var{X}, @var{Y})
+    ## @deftypefnx {ClassificationNeuralNetwork} {@var{obj} =} ClassificationNeuralNetwork (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationNeuralNetwork} {@var{obj} =} ClassificationNeuralNetwork (@var{Tbl}, @var{formula})
+    ## @deftypefnx {ClassificationNeuralNetwork} {@var{obj} =} ClassificationNeuralNetwork (@var{Tbl}, @var{Y})
+    ## @deftypefnx {ClassificationNeuralNetwork} {@var{obj} =} ClassificationNeuralNetwork (@dots{}, @var{name}, @var{value})
     ##
     ## Create a @qcode{ClassificationNeuralNetwork} class object containing a
     ## neural network classification model.
@@ -777,201 +770,181 @@ classdef ClassificationNeuralNetwork < PredictiveModel
       ## Get groups in Y
       [gY, gnY, glY] = grp2idx (Y);
 
-      ## Set default values before parsing optional parameters
-      Standardize             = false;
-      ResponseName            = [];
-      PredictorNames          = [];
-      ClassNames              = [];
-      LayerSizes              = 10;
-      Activations             = 'relu';
-      OutputLayerActivation   = 'softmax';
-      LearningRate            = 0.003;
-      IterationLimit          = 1000;
-      DisplayInfo             = false;
-      Solver                  = 'lbfgs';
-      GradientTolerance       = 1e-6;
-      LossTolerance           = 1e-6;
-      StepTolerance           = 1e-6;
-      ## Which of the solver-specific options the caller actually named, so
-      ## that one meant for the other solver can be refused by name.
-      GivenTols               = {};
-      LearningRateGiven       = false;
-
       ## Supported activation functions
       acList = {'linear', 'none', 'sigmoid', 'relu', 'tanh', 'softmax', ...
                           'lrelu', 'prelu', 'elu', 'gelu'};
-      ## Parse extra parameters
-      Prior = [];
-      Cost  = [];
-      CatPreds = [];
-      while (numel (varargin) > 0)
-        switch (tolower (varargin {1}))
 
-          case 'standardize'
-            Standardize = varargin{2};
-            if (! (Standardize == true || Standardize == false))
-              error (strcat ("ClassificationNeuralNetwork:", ...
-                             " 'Standardize' must be either true or false."));
-            endif
+      ## Parse optional paired arguments
+      optNames = {'Standardize', 'PredictorNames', 'ResponseName', ...
+                  'ClassNames', 'ScoreTransform', 'Prior', 'Cost', ...
+                  'LayerSizes', 'LearningRate', 'Activations', ...
+                  'OutputLayerActivation', 'IterationLimit', 'Solver', ...
+                  'GradientTolerance', 'LossTolerance', 'StepTolerance', ...
+                  'DisplayInfo', 'CategoricalPredictors', 'Weights'};
+      ## An empty default stands for one resolved once the data are known:
+      ## 'PredictorNames' are x1, x2, ... and 'ResponseName' is 'Y'; the
+      ## classes, 'Prior' and 'Cost' come from the response; no
+      ## 'ScoreTransform' leaves the scores as they are; 'LearningRate' is
+      ## 0.003 and each tolerance 1e-6, empty so that giving one can be
+      ## refused by name when the solver cannot use it.
+      dfValues = {false, [], [], [], [], [], [], 10, [], 'relu', 'softmax', ...
+                  1000, 'lbfgs', [], [], [], false, [], []};
+      [Standardize, PredictorNames, ResponseName, ClassNames, STin, Prior, ...
+       Cost, LayerSizes, LearningRate, Activations, OutputLayerActivation, ...
+       IterationLimit, Solver, GradientTolerance, LossTolerance, ...
+       StepTolerance, DisplayInfo, CatPreds, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-          case 'predictornames'
-            PredictorNames = varargin{2};
-            if (! iscellstr (PredictorNames))
-              error (strcat ("ClassificationNeuralNetwork: 'PredictorNames'", ...
-                             " must be supplied as a cellstring array."));
-            elseif (columns (PredictorNames) != columns (X))
-              error (strcat ("ClassificationNeuralNetwork: 'PredictorNames'", ...
-                             " must have the same number of columns as X."));
-            endif
+      ## Validate optional paired arguments
+      if (! (Standardize == true || Standardize == false))
+        error (strcat ("ClassificationNeuralNetwork: 'Standardize' must be", ...
+                       " either true or false."));
+      endif
+      if (! isempty (PredictorNames) && ! iscellstr (PredictorNames))
+        error (strcat ("ClassificationNeuralNetwork: 'PredictorNames' must", ...
+                       " be supplied as a cellstring array."));
+      elseif (! isempty (PredictorNames)
+              && columns (PredictorNames) != columns (X))
+        error (strcat ("ClassificationNeuralNetwork: 'PredictorNames' must", ...
+                       " have the same number of columns as X."));
+      endif
+      if (! isempty (ResponseName) && ! ischar (ResponseName))
+        error (strcat ("ClassificationNeuralNetwork: 'ResponseName' must", ...
+                       " be a character vector."));
+      endif
+      if (! isempty (ClassNames) &&
+          ! (iscellstr (ClassNames) || isnumeric (ClassNames)
+             || islogical (ClassNames) || ischar (ClassNames)
+             || isa (ClassNames, 'categorical')
+             || isa (ClassNames, 'string')))
+        error (strcat ("ClassificationNeuralNetwork: 'ClassNames' must be", ...
+                       " a categorical array, a character array, a string", ...
+                       " array, a logical vector, a numeric vector, or a", ...
+                       " cell array of character vectors."));
+      endif
+      if (! isempty (ClassNames))
+        [~, errmsg] = namedClasses (glY, ClassNames);
+        if (! isempty (errmsg))
+          error ("ClassificationNeuralNetwork: %s", errmsg);
+        endif
+      endif
+      if (! (isnumeric (LayerSizes) && isvector (LayerSizes)
+        && all (LayerSizes > 0) && all (mod (LayerSizes, 1) == 0)))
+        error (strcat ("ClassificationNeuralNetwork: 'LayerSizes' must be", ...
+                       " a positive integer vector."));
+      endif
+      if (! isempty (LearningRate) &&
+          ! (isnumeric (LearningRate) && isscalar (LearningRate) &&
+             LearningRate > 0))
+        error (strcat ("ClassificationNeuralNetwork: 'LearningRate' must", ...
+                       " be a positive scalar."));
+      endif
+      if (! (ischar (Activations) || iscellstr (Activations)))
+        error (strcat ("ClassificationNeuralNetwork: 'Activations' must be", ...
+                       " a character vector or a cellstring vector."));
+      endif
+      if (ischar (Activations))
+        if (! any (strcmpi (Activations, acList)))
+          error (strcat ("ClassificationNeuralNetwork: unsupported", ...
+                         " 'Activation' function."));
+        endif
+      else
+        if (! all (cell2mat (cellfun (@(x) any (strcmpi (x, acList)),
+                             Activations, 'UniformOutput', false))))
+          error (strcat ("ClassificationNeuralNetwork: unsupported", ...
+                         " 'Activation' functions."));
+        endif
+      endif
+      Activations = tolower (Activations);
+      if (! (ischar (OutputLayerActivation)))
+        error (strcat ("ClassificationNeuralNetwork:", ...
+                       " 'OutputLayerActivation' must be a character", ...
+                       " vector."));
+      endif
+      if (! any (strcmpi (OutputLayerActivation, acList)))
+        error (strcat ("ClassificationNeuralNetwork: unsupported", ...
+                       " 'OutputLayerActivation' function."));
+      endif
+      OutputLayerActivation = tolower (OutputLayerActivation);
+      if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
+        && (IterationLimit > 0) && mod (IterationLimit, 1) == 0))
+        error (strcat ("ClassificationNeuralNetwork: 'IterationLimit' must", ...
+                       " be a positive integer."));
+      endif
+      if (! (ischar (Solver) && any (strcmpi (Solver, {'sgd', ...
+                                                       'lbfgs'}))))
+        error (strcat ("ClassificationNeuralNetwork: 'Solver' must be", ...
+                       " either 'sgd' or 'lbfgs'."));
+      endif
+      Solver = tolower (Solver);
+      if (! isempty (GradientTolerance) &&
+          ! (isnumeric (GradientTolerance)
+             && isscalar (GradientTolerance)
+             && GradientTolerance >= 0))
+        error (strcat ("ClassificationNeuralNetwork: 'GradientTolerance'", ...
+                       " must be a nonnegative scalar."));
+      endif
+      if (! isempty (LossTolerance) &&
+          ! (isnumeric (LossTolerance) && isscalar (LossTolerance)
+             && ! isnan (LossTolerance)))
+        error (strcat ("ClassificationNeuralNetwork: 'LossTolerance' must", ...
+                       " be a real scalar."));
+      endif
+      if (! isempty (StepTolerance) &&
+          ! (isnumeric (StepTolerance) && isscalar (StepTolerance)
+             && StepTolerance >= 0))
+        error (strcat ("ClassificationNeuralNetwork: 'StepTolerance' must", ...
+                       " be a nonnegative scalar."));
+      endif
+      if (! (DisplayInfo == true || DisplayInfo == false))
+        error (strcat ("ClassificationNeuralNetwork: 'DisplayInfo' must be", ...
+                       " either true or false."));
+      endif
 
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! ischar (ResponseName))
-              error (strcat ("ClassificationNeuralNetwork: 'ResponseName'", ...
-                             " must be a character vector."));
-            endif
+      if (! isempty (STin))
+        [this.STfun, this.ScoreTransform] = ...
+              parseScoreTransform (STin, 'ClassificationNeuralNetwork');
+      endif
 
-          case 'classnames'
-            ClassNames = varargin{2};
-            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
-                   || islogical (ClassNames) || ischar (ClassNames)
-                   || isa (ClassNames, 'categorical')
-                   || isa (ClassNames, 'string')))
-              error (strcat ("ClassificationNeuralNetwork: 'ClassNames'", ...
-                             " must be a categorical array, a character", ...
-                             " array, a string array, a logical vector, a", ...
-                             " numeric vector, or a cell array of", ...
-                             " character vectors."));
-            endif
-            [~, errmsg] = namedClasses (glY, ClassNames);
-            if (! isempty (errmsg))
-              error ("ClassificationNeuralNetwork: %s", errmsg);
-            endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationNeuralNetwork: %s", errmsg);
+      endif
+      if (! isempty (Weights)
+          && ! (isvector (Weights) && numel (Weights) == rows (X)))
+        error (strcat ("ClassificationNeuralNetwork: 'Weights' must be a", ...
+                       " vector with one element per row of X."));
+      endif
+      if (! isempty (Weights) && (any (Weights < 0)
+                                  || ! (sum (Weights(! isnan (Weights))) > 0)))
+        error (strcat ("ClassificationNeuralNetwork: 'Weights' must be", ...
+                       " nonnegative and must not be all zero."));
+      endif
 
-          case 'scoretransform'
-            name = 'ClassificationNeuralNetwork';
-            [this.STfun, this.ScoreTransform] = parseScoreTransform ...
-                                                 (varargin{2}, name);
+      if (! isempty (args))
+        error (strcat ("ClassificationNeuralNetwork: invalid optional", ...
+                       " paired argument."));
+      endif
 
-          case 'prior'
-            Prior = varargin{2};
-
-          case 'cost'
-            Cost = varargin{2};
-
-          case 'layersizes'
-            LayerSizes = varargin{2};
-            if (! (isnumeric (LayerSizes) && isvector (LayerSizes)
-              && all (LayerSizes > 0) && all (mod (LayerSizes, 1) == 0)))
-              error (strcat ("ClassificationNeuralNetwork: 'LayerSizes'", ...
-                             " must be a positive integer vector."));
-            endif
-
-          case 'learningrate'
-            LearningRate = varargin{2};
-            LearningRateGiven = true;
-            if (! (isnumeric (LearningRate) && isscalar (LearningRate) &&
-                   LearningRate > 0))
-              error (strcat ("ClassificationNeuralNetwork:", ...
-                             " 'LearningRate' must be a positive scalar."));
-            endif
-
-          case 'activations'
-            Activations = varargin{2};
-            if (! (ischar (Activations) || iscellstr (Activations)))
-              error (strcat ("ClassificationNeuralNetwork: 'Activations'", ...
-                        " must be a character vector or a cellstring vector."));
-            endif
-            if (ischar (Activations))
-              if (! any (strcmpi (Activations, acList)))
-                error (strcat ("ClassificationNeuralNetwork: unsupported", ...
-                               " 'Activation' function."));
-              endif
-            else
-              if (! all (cell2mat (cellfun (@(x) any (strcmpi (x, acList)),
-                                   Activations, 'UniformOutput', false))))
-                error (strcat ("ClassificationNeuralNetwork: unsupported", ...
-                               " 'Activation' functions."));
-              endif
-            endif
-            Activations = tolower (Activations);
-
-          case 'outputlayeractivation'
-            OutputLayerActivation = varargin{2};
-            if (! (ischar (OutputLayerActivation)))
-              error (strcat ("ClassificationNeuralNetwork:", ...
-                       " 'OutputLayerActivation' must be a character vector."));
-            endif
-            if (! any (strcmpi (OutputLayerActivation, acList)))
-              error (strcat ("ClassificationNeuralNetwork: unsupported", ...
-                             " 'OutputLayerActivation' function."));
-            endif
-            OutputLayerActivation = tolower (OutputLayerActivation);
-
-          case 'iterationlimit'
-            IterationLimit = varargin{2};
-            if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
-              && (IterationLimit > 0) && mod (IterationLimit, 1) == 0))
-              error (strcat ("ClassificationNeuralNetwork:", ...
-                             " 'IterationLimit' must be a positive integer."));
-            endif
-
-          case 'solver'
-            Solver = varargin{2};
-            if (! (ischar (Solver) && any (strcmpi (Solver, {'sgd', ...
-                                                             'lbfgs'}))))
-              error (strcat ("ClassificationNeuralNetwork: 'Solver' must", ...
-                             " be either 'sgd' or 'lbfgs'."));
-            endif
-            Solver = tolower (Solver);
-
-          case 'gradienttolerance'
-            GradientTolerance = varargin{2};
-            GivenTols{end+1} = 'GradientTolerance';
-            if (! (isnumeric (GradientTolerance)
-                   && isscalar (GradientTolerance)
-                   && GradientTolerance >= 0))
-              error (strcat ("ClassificationNeuralNetwork:", ...
-                             " 'GradientTolerance' must be a nonnegative", ...
-                             " scalar."));
-            endif
-
-          case 'losstolerance'
-            LossTolerance = varargin{2};
-            GivenTols{end+1} = 'LossTolerance';
-            if (! (isnumeric (LossTolerance) && isscalar (LossTolerance)
-                   && ! isnan (LossTolerance)))
-              error (strcat ("ClassificationNeuralNetwork:", ...
-                             " 'LossTolerance' must be a real scalar."));
-            endif
-
-          case 'steptolerance'
-            StepTolerance = varargin{2};
-            GivenTols{end+1} = 'StepTolerance';
-            if (! (isnumeric (StepTolerance) && isscalar (StepTolerance)
-                   && StepTolerance >= 0))
-              error (strcat ("ClassificationNeuralNetwork:", ...
-                             " 'StepTolerance' must be a nonnegative", ...
-                             " scalar."));
-            endif
-
-          case 'displayinfo'
-            DisplayInfo = varargin{2};
-            if (! (DisplayInfo == true || DisplayInfo == false))
-              error (strcat ("ClassificationNeuralNetwork: 'DisplayInfo'", ...
-                             " must be either true or false."));
-            endif
-
-          case 'categoricalpredictors'
-            CatPreds = varargin{2};
-
-          otherwise
-            error (strcat ("ClassificationNeuralNetwork: invalid",...
-                           " parameter name in optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## The solver-specific options the caller named, so that one meant for
+      ## the other solver can be refused by name, then their defaults
+      tolNames = {'GradientTolerance', 'LossTolerance', 'StepTolerance'};
+      GivenTols = tolNames(! cellfun (@isempty, {GradientTolerance, ...
+                                                  LossTolerance, ...
+                                                  StepTolerance}));
+      LearningRateGiven = ! isempty (LearningRate);
+      if (isempty (LearningRate))
+        LearningRate = 0.003;
+      endif
+      if (isempty (GradientTolerance))
+        GradientTolerance = 1e-6;
+      endif
+      if (isempty (LossTolerance))
+        LossTolerance = 1e-6;
+      endif
+      if (isempty (StepTolerance))
+        StepTolerance = 1e-6;
+      endif
 
       ## Generate default predictors and response variable names (if necessary)
       NumPredictors = columns (X);
@@ -996,10 +969,19 @@ classdef ClassificationNeuralNetwork < PredictiveModel
         gY(! ismember (gY, namedClasses (glY, ClassNames))) = NaN;
       endif
 
-      ## An observation is dropped only when its response is missing.  A row
+      ## An observation is dropped when its response is missing, or when its
+      ## weight is zero or missing, as R2024a drops it; the weights keep their
+      ## class in the model and every computation runs on them as double.  A row
       ## whose predictors hold missing values is kept and reported as used,
       ## while the fit below draws on the complete observations alone.
-      RowsUsed  = ! isnan (gY);
+      Wclass    = "double";
+      Wall      = ones (rows (X), 1);
+      if (! isempty (Weights))
+        Wclass  = class (Weights);
+        Wall    = double (Weights(:));
+      endif
+      RowsUsed  = ! isnan (gY) & ! isnan (Wall) & Wall > 0;
+      wret      = Wall(RowsUsed);
       ## Index the rows and not the elements: a response naming its
       ## classes in the rows of a character matrix has one column per
       ## character, and a linear index flattens the names into single
@@ -1012,6 +994,7 @@ classdef ClassificationNeuralNetwork < PredictiveModel
       cobs      = ! any (isnan (Xret), 2);
       Y         = Yret(cobs, :);
       X         = Xret(cobs, :);
+      wfit      = wret(cobs);
 
       ## Renew groups in Y over the retained observations, so a class held
       ## only by a row with missing predictors is still a class of the model;
@@ -1078,8 +1061,10 @@ classdef ClassificationNeuralNetwork < PredictiveModel
         Prior = priorFromStruct (Prior, this.ClassNames, ...
                                  'ClassificationNeuralNetwork');
       endif
-      if (isempty (Prior) || (ischar (Prior) && strcmpi (Prior, 'empirical')))
-        this.Prior = accumarray (gY(:), 1, [nclasses, 1])' / numel (gY);
+      empirical = isempty (Prior) || (ischar (Prior)
+                                      && strcmpi (Prior, 'empirical'));
+      if (empirical)
+        this.Prior = accumarray (gY(:), wfit, [nclasses, 1])' / sum (wfit);
       elseif (ischar (Prior) && strcmpi (Prior, 'uniform'))
         this.Prior = ones (1, nclasses) / nclasses;
       elseif (isnumeric (Prior) && isreal (Prior) && isvector (Prior)
@@ -1091,25 +1076,39 @@ classdef ClassificationNeuralNetwork < PredictiveModel
                        " 'empirical', 'uniform', or a non-negative numeric", ...
                        " vector with one entry per class."));
       endif
-      this.W = priorWeights (this.Prior, gY, this.NumObservations);
+      ## W has one entry per stored observation, those missing a predictor
+      ## included, so it lines up with X; the fit sees the complete ones.
+      if (isempty (Weights))
+        this.W = priorWeights (this.Prior, gret, this.NumObservations);
+      else
+        this.W = cast (priorNormalize (wret, gret, this.Prior), Wclass);
+      endif
 
       ## Handle the Standardize option
       if (Standardize)
         ## Mu and Sigma weight the complete observations so that each class
         ## keeps the share of the observation weight it carried before any row
-        ## was set aside, which is what MATLAB reports.
+        ## was set aside, or its prior where one was given, which is what
+        ## MATLAB reports.
         sw = zeros (rows (X), 1);
         for k = 1:classCount (this.ClassNames)
           ck = (gY == k);
           if (any (ck))
-            sw(ck) = (sum (gret == k) / numel (gret)) / sum (ck);
+            if (empirical)
+              share = sum (wret(gret == k)) / sum (wret);
+            else
+              share = this.Prior(k);
+            endif
+            sw(ck) = share * wfit(ck) / sum (wfit(ck));
           endif
         endfor
         sw = sw / sum (sw);
         this.Mu = sum (sw .* X, 1);
         Zs = X - this.Mu;
         this.Sigma = sqrt (sum (sw .* Zs .^ 2, 1) / (1 - sum (sw .^ 2)));
-        this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
+        ## A constant predictor is left unscaled; its weighted mean can miss
+        ## the constant by one rounding, so its deviation need not be zero.
+        this.Sigma(this.Sigma == 0 | all (X == X(1,:), 1)) = 1;
         ## A level's column is left as it is, as in MATLAB R2024a.
         this.Mu(Coding.Dummy) = 0;
         this.Sigma(Coding.Dummy) = 1;
@@ -1162,6 +1161,13 @@ classdef ClassificationNeuralNetwork < PredictiveModel
                               'GradientTolerance', GradientTolerance, ...
                               'LossTolerance', LossTolerance, ...
                               'StepTolerance', StepTolerance);
+      ## The loss weighs each observation by W, which carries the prior as
+      ## well as the weights given, as R2024a weighs it.  Weights that are all
+      ## equal are left out, so that such a fit keeps the plain mean.
+      Wfit = double (this.W(cobs));
+      if (max (Wfit) - min (Wfit) > 1e-12 * max (Wfit))
+        SolverOptions.Weights = Wfit;
+      endif
       ## The engine names the layers itself; this check stays here so the
       ## count is reported under the class rather than under fcnntrain.
       if (! ischar (Activations) && numel (LayerSizes) != numel (Activations))
@@ -1487,10 +1493,6 @@ classdef ClassificationNeuralNetwork < PredictiveModel
       endif
       [X, Y, varargin] = tableResponse (this, 'edge', X, Y, varargin, ...
                                         nargin > 2);
-      if (mod (numel (varargin), 2) != 0)
-        error (strcat ("ClassificationNeuralNetwork.edge: Name-Value", ...
-                       " arguments must be in pairs."));
-      endif
 
       [X, Y] = checkXY_ (this, X, Y, "edge");
 
@@ -1572,30 +1574,47 @@ classdef ClassificationNeuralNetwork < PredictiveModel
 
       [X, Y] = checkXY_ (this, X, Y, "loss");
 
-      ## Parse optional arguments
-      LossFun = 'mincost';
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mincost', []};
+      [LossFun, W, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
       lossnames = {'binodeviance', 'classifcost', 'classiferror', ...
                    'crossentropy', 'exponential', 'hinge', 'logit', ...
                    'mincost', 'quadratic'};
-      args = varargin;
-      keep = true (1, numel (args));
-      for i = 1:2:numel (args)
-        if (strcmpi (args{i}, 'lossfun'))
-          LossFun = args{i+1};
-          if (! (ischar (LossFun) && isrow (LossFun)))
-            error (strcat ("ClassificationNeuralNetwork.loss: 'LossFun'", ...
-                           " must be a character vector."));
-          endif
-          LossFun = tolower (LossFun);
-          if (! any (strcmpi (LossFun, lossnames)))
-            error (strcat ("ClassificationNeuralNetwork.loss: unsupported", ...
-                           " Loss function."));
-          endif
-          keep(i:i+1) = false;
-        endif
-      endfor
-      W = getWeights_ (this, args(keep), rows (X), "loss");
-      W = W(:) / sum (W);
+      if (! (ischar (LossFun) && isrow (LossFun)))
+        error (strcat ("ClassificationNeuralNetwork.loss: 'LossFun' must", ...
+                       " be a character vector."));
+      endif
+      LossFun = tolower (LossFun);
+      if (! any (strcmpi (LossFun, lossnames)))
+        error ("ClassificationNeuralNetwork.loss: unsupported Loss function.");
+      endif
+      errmsg = weightsClass (W);
+      if (! isempty (errmsg))
+        error ("ClassificationNeuralNetwork.loss: %s", errmsg);
+      endif
+      if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
+        error (strcat ("ClassificationNeuralNetwork.loss: 'Weights' must", ...
+                       " be a numeric vector."));
+      endif
+      if (! isempty (W) && numel (W) != rows (X))
+        error (strcat ("ClassificationNeuralNetwork.loss: size of", ...
+                       " 'Weights' must equal the number of rows in X."));
+      endif
+
+      if (! isempty (args))
+        error (strcat ("ClassificationNeuralNetwork.loss: invalid optional", ...
+                       " paired argument."));
+      endif
+      if (isempty (W))
+        W = ones (rows (X), 1);
+      endif
+      W = double (W(:));
+      W = W / sum (W);
 
       [label, scores] = predict (this, X);
       classes = this.ClassNames;
@@ -1975,34 +1994,6 @@ classdef ClassificationNeuralNetwork < PredictiveModel
         error (strcat ("ClassificationNeuralNetwork.%s: Y must have the", ...
                        " same number of rows as X."), caller);
       endif
-    endfunction
-
-    ## Pull a "Weights" pair out of the optional arguments, defaulting to a
-    ## uniform weight, and reject any other name.
-    function W = getWeights_ (this, args, n, caller)
-      W = ones (n, 1);
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("ClassificationNeuralNetwork.%s: parameter name", ...
-                         " must be a character vector."), caller);
-        endif
-        if (strcmpi (args{i}, 'weights'))
-          W = args{i+1};
-          if (! (isnumeric (W) && isvector (W)))
-            error (strcat ("ClassificationNeuralNetwork.%s: 'Weights'", ...
-                           " must be a numeric vector."), caller);
-          endif
-          if (numel (W) != n)
-            error (strcat ("ClassificationNeuralNetwork.%s: size of", ...
-                           " 'Weights' must equal the number of", ...
-                           " rows in X."), caller);
-          endif
-        else
-          error (strcat ("ClassificationNeuralNetwork.%s: invalid", ...
-                         " parameter name in optional paired", ...
-                         " arguments."), caller);
-        endif
-      endfor
     endfunction
 
   endmethods
@@ -2391,7 +2382,7 @@ endfunction
 %! ClassificationNeuralNetwork (ones (10,2), ones (10,1), 'ScoreTransform', [1,2])
 %!error<ClassificationNeuralNetwork: unrecognized 'ScoreTransform' function.> ...
 %! ClassificationNeuralNetwork (ones (10,2), ones (10,1), 'ScoreTransform', 'unsupported_type')
-%!error<ClassificationNeuralNetwork: invalid parameter name in optional pair arguments.> ...
+%!error<ClassificationNeuralNetwork: invalid optional paired argument.> ...
 %! ClassificationNeuralNetwork (ones (10,2), ones (10,1), 'some', 'some')
 %!error<ClassificationNeuralNetwork: invalid values in X.> ...
 %! ClassificationNeuralNetwork ([1;2;3;'a';4], ones (5,1))
@@ -2688,7 +2679,9 @@ endfunction
 %! loss (fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), [1, 2], [1; 2])
 %!error<ClassificationNeuralNetwork.loss: unsupported Loss function.> ...
 %! loss (fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), [1, 2], 1, 'LossFun', 'bogus')
-%!error<ClassificationNeuralNetwork.edge: invalid parameter name in optional paired arguments.> ...
+%!error<ClassificationNeuralNetwork.loss: invalid optional paired argument.> ...
+%! loss (fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), [1, 2], 1, 'Bogus', 1)
+%!error<ClassificationNeuralNetwork.edge: invalid optional paired argument.> ...
 %! edge (fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), [1, 2], 1, 'bogus', 1)
 %!error<ClassificationNeuralNetwork: the number of rows and columns in 'Cost' must correspond to selected classes in Y.> ...
 %! Mdl = fitcnet ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]);
@@ -3049,3 +3042,84 @@ endfunction
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <ClassificationNeuralNetwork.loss: 'Weights' must be a real vector of class single or double.> ...
+%! loss (fitcnet ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2]), ...
+%!       [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))
+
+## Observation weights
+%!error <ClassificationNeuralNetwork: 'Weights' must be a real vector of class single or double.> ...
+%! ClassificationNeuralNetwork ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!                              'Weights', int8 ([1; 1; 1; 1]))
+%!error <ClassificationNeuralNetwork: 'Weights' must be a real vector of class single or double.> ...
+%! ClassificationNeuralNetwork ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!                              'Weights', true (4, 1))
+%!error <ClassificationNeuralNetwork: 'Weights' must be a vector with one element per row of X.> ...
+%! ClassificationNeuralNetwork ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!                              'Weights', [1; 1])
+%!error <ClassificationNeuralNetwork: 'Weights' must be nonnegative and must not be all zero.> ...
+%! ClassificationNeuralNetwork ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!                              'Weights', [1; -1; 1; 1])
+%!test
+%! ## A weight of two fits as the observation given twice
+%! load fisheriris
+%! X = meas(51:130,:);
+%! Y = species(51:130);
+%! w = ones (80, 1);
+%! w(1:10) = 2;
+%! rand ('seed', 1);
+%! A = ClassificationNeuralNetwork (X, Y, 'LayerSizes', 1, 'Weights', w);
+%! rand ('seed', 1);
+%! B = ClassificationNeuralNetwork ([X; X(1:10,:)], [Y; Y(1:10)], ...
+%!                                  'LayerSizes', 1);
+%! assert_equal (nthargout (2, @predict, A, X), ...
+%!               nthargout (2, @predict, B, X), 1e-10);
+%!test
+%! ## A prior weighs the fit as weights would, as R2024a weighs it
+%! load fisheriris
+%! X = meas(51:130,:);
+%! Y = species(51:130);
+%! w = [ones(50, 1) / 50; ones(30, 1) / 30];
+%! rand ('seed', 1);
+%! A = ClassificationNeuralNetwork (X, Y, 'LayerSizes', 1, 'Prior', 'uniform');
+%! rand ('seed', 1);
+%! B = ClassificationNeuralNetwork (X, Y, 'LayerSizes', 1, 'Weights', w);
+%! assert_equal (nthargout (2, @predict, A, X), ...
+%!               nthargout (2, @predict, B, X), 1e-8);
+%!test
+%! ## W sums to one and keeps the class of single weights
+%! load fisheriris
+%! w = ones (150, 1);
+%! w([3, 60, 120]) = 2;
+%! Mdl = ClassificationNeuralNetwork (meas, species, 'LayerSizes', 3, ...
+%!                                    'Weights', single (w));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (double (Mdl.W(1)), 1 / 153, 1e-8);
+%!test
+%! ## Rows of zero weight are left out, as R2024a leaves them
+%! load fisheriris
+%! w = ones (150, 1);
+%! w(5) = 0;
+%! Mdl = ClassificationNeuralNetwork (meas, species, 'LayerSizes', 3, ...
+%!                                    'Weights', w);
+%! assert_equal (Mdl.NumObservations, 149);
+%!test
+%! ## Standardization weighs the observations by W, as R2024a does
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = ClassificationNeuralNetwork (meas, species, 'LayerSizes', 3, ...
+%!                                    'Weights', w, 'Standardize', true);
+%! assert_equal (Mdl.Mu, [6.153769696969698, 2.965608080808081, ...
+%!                        4.573050505050506, 1.55819797979798], 1e-14);
+%! Mdl = ClassificationNeuralNetwork (meas, species, 'LayerSizes', 3, ...
+%!                                    'Weights', w, 'Standardize', true, ...
+%!                                    'Prior', 'uniform');
+%! assert_equal (Mdl.Mu, [5.833297045931007, 3.054926460541555, ...
+%!                        3.749907727492633, 1.199335039802964], 1e-14);
+%!test
+%! ## A constant predictor is left unscaled by standardization
+%! X = [linspace(0, 1, 20)', ones(20, 1)];
+%! Mdl = ClassificationNeuralNetwork (X, [ones(10, 1); 2 * ones(10, 1)], 'Standardize', true);
+%! assert_equal (Mdl.Sigma(2), 1);
+

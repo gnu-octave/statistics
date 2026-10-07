@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -164,9 +173,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Supervised Learning">
+                  <a class="nav-link" href="index.html#Machine Learning">
                     <i class="fas fa-list-alt"></i>
-                    Supervised Learning
+                    Machine Learning
                   </a>
                 </li>
                 <li class="nav-item">
@@ -267,25 +276,27 @@
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
 					<li><a href="ansaribradley.html" class="text-decoration-none font-monospace"><small>ansaribradley</small></a></li>
-					<li><a href="bartlett_test.html" class="text-decoration-none font-monospace"><small>bartlett_test</small></a></li>
 					<li><a href="barttest.html" class="text-decoration-none font-monospace"><small>barttest</small></a></li>
 					<li><a href="binotest.html" class="text-decoration-none font-monospace"><small>binotest</small></a></li>
 					<li><a href="chi2gof.html" class="text-decoration-none font-monospace"><small>chi2gof</small></a></li>
 					<li><a href="chi2test.html" class="text-decoration-none font-monospace"><small>chi2test</small></a></li>
 					<li><a href="correlation_test.html" class="text-decoration-none font-monospace"><small>correlation_test</small></a></li>
+					<li><a href="detectdrift.html" class="text-decoration-none font-monospace"><small>detectdrift</small></a></li>
 					<li><a href="dwtest.html" class="text-decoration-none font-monospace"><small>dwtest</small></a></li>
 					<li><a href="fishertest.html" class="text-decoration-none font-monospace"><small>fishertest</small></a></li>
 					<li><a href="friedman.html" class="text-decoration-none font-monospace"><small>friedman</small></a></li>
 					<li><a href="hotelling_t2test.html" class="text-decoration-none font-monospace"><small>hotelling_t2test</small></a></li>
 					<li><a href="hotelling_t2test2.html" class="text-decoration-none font-monospace"><small>hotelling_t2test2</small></a></li>
 					<li><a href="jbtest.html" class="text-decoration-none font-monospace"><small>jbtest</small></a></li>
+					<li><a href="knntest.html" class="text-decoration-none font-monospace"><small>knntest</small></a></li>
 					<li><a href="kruskalwallis.html" class="text-decoration-none font-monospace"><small>kruskalwallis</small></a></li>
 					<li><a href="kstest.html" class="text-decoration-none font-monospace"><small>kstest</small></a></li>
 					<li><a href="kstest2.html" class="text-decoration-none font-monospace"><small>kstest2</small></a></li>
-					<li><a href="levene_test.html" class="text-decoration-none font-monospace"><small>levene_test</small></a></li>
 					<li><a href="lillietest.html" class="text-decoration-none font-monospace"><small>lillietest</small></a></li>
 					<li><a href="manova1.html" class="text-decoration-none font-monospace"><small>manova1</small></a></li>
 					<li><a href="mcnemar_test.html" class="text-decoration-none font-monospace"><small>mcnemar_test</small></a></li>
+					<li><a href="meanEffectSize.html" class="text-decoration-none font-monospace"><small>meanEffectSize</small></a></li>
+					<li><a href="mmdtest.html" class="text-decoration-none font-monospace"><small>mmdtest</small></a></li>
 					<li><a href="multcompare.html" class="text-decoration-none font-monospace"><small>multcompare</small></a></li>
 					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
 					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
@@ -293,6 +304,7 @@
 					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
 					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
 					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
+					<li><a href="stats.drift.DriftDiagnostics.html" class="text-decoration-none font-monospace"><small>stats.drift.DriftDiagnostics</small></a></li>
 					<li><a href="swtest.html" class="text-decoration-none font-monospace"><small>swtest</small></a></li>
 					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
 					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
@@ -339,6 +351,7 @@
 					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
 					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
 					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
+					<li><a href="fitrm.html" class="text-decoration-none font-monospace"><small>fitrm</small></a></li>
 					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
 					<li><a href="GeneralizedLinearModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearModel</small></a></li>
 					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
@@ -362,6 +375,7 @@
 					<li><a href="plsregress.html" class="text-decoration-none font-monospace"><small>plsregress</small></a></li>
 					<li><a href="regress.html" class="text-decoration-none font-monospace"><small>regress</small></a></li>
 					<li><a href="regress_gp.html" class="text-decoration-none font-monospace"><small>regress_gp</small></a></li>
+					<li><a href="RepeatedMeasuresModel.html" class="text-decoration-none font-monospace"><small>RepeatedMeasuresModel</small></a></li>
 					<li><a href="ridge.html" class="text-decoration-none font-monospace"><small>ridge</small></a></li>
 					<li><a href="robustfit.html" class="text-decoration-none font-monospace"><small>robustfit</small></a></li>
 					<li><a href="stepwisefit.html" class="text-decoration-none font-monospace"><small>stepwisefit</small></a></li>
@@ -373,8 +387,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox" checked>
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +452,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +468,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -511,6 +530,8 @@
 					<li><a href="KDTreeSearcher.html" class="text-decoration-none font-monospace"><small>KDTreeSearcher</small></a></li>
 					<li><a href="knnsearch.html" class="text-decoration-none font-monospace"><small>knnsearch</small></a></li>
 					<li><a href="mahal.html" class="text-decoration-none font-monospace"><small>mahal</small></a></li>
+					<li><a href="nomdist.html" class="text-decoration-none font-monospace"><small>nomdist</small></a></li>
+					<li><a href="nomdist2.html" class="text-decoration-none font-monospace"><small>nomdist2</small></a></li>
 					<li><a href="pdist.html" class="text-decoration-none font-monospace"><small>pdist</small></a></li>
 					<li><a href="pdist2.html" class="text-decoration-none font-monospace"><small>pdist2</small></a></li>
 					<li><a href="rangesearch.html" class="text-decoration-none font-monospace"><small>rangesearch</small></a></li>
@@ -873,6 +894,10 @@
 					<li><a href="stblinv.html" class="text-decoration-none font-monospace"><small>stblinv</small></a></li>
 					<li><a href="stblpdf.html" class="text-decoration-none font-monospace"><small>stblpdf</small></a></li>
 					<li><a href="stblrnd.html" class="text-decoration-none font-monospace"><small>stblrnd</small></a></li>
+					<li><a href="stdrcdf.html" class="text-decoration-none font-monospace"><small>stdrcdf</small></a></li>
+					<li><a href="stdrinv.html" class="text-decoration-none font-monospace"><small>stdrinv</small></a></li>
+					<li><a href="stdrpdf.html" class="text-decoration-none font-monospace"><small>stdrpdf</small></a></li>
+					<li><a href="stdrrnd.html" class="text-decoration-none font-monospace"><small>stdrrnd</small></a></li>
 					<li><a href="tcdf.html" class="text-decoration-none font-monospace"><small>tcdf</small></a></li>
 					<li><a href="tinv.html" class="text-decoration-none font-monospace"><small>tinv</small></a></li>
 					<li><a href="tpdf.html" class="text-decoration-none font-monospace"><small>tpdf</small></a></li>
@@ -929,6 +954,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -945,6 +971,7 @@
 					<li><a href="poisstat.html" class="text-decoration-none font-monospace"><small>poisstat</small></a></li>
 					<li><a href="raylstat.html" class="text-decoration-none font-monospace"><small>raylstat</small></a></li>
 					<li><a href="ricestat.html" class="text-decoration-none font-monospace"><small>ricestat</small></a></li>
+					<li><a href="stdrstat.html" class="text-decoration-none font-monospace"><small>stdrstat</small></a></li>
 					<li><a href="tlsstat.html" class="text-decoration-none font-monospace"><small>tlsstat</small></a></li>
 					<li><a href="tristat.html" class="text-decoration-none font-monospace"><small>tristat</small></a></li>
 					<li><a href="tstat.html" class="text-decoration-none font-monospace"><small>tstat</small></a></li>
@@ -985,24 +1012,34 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
 					<li><a href="ecdfhist.html" class="text-decoration-none font-monospace"><small>ecdfhist</small></a></li>
 					<li><a href="einstein.html" class="text-decoration-none font-monospace"><small>einstein</small></a></li>
+					<li><a href="gardnerAltmanPlot.html" class="text-decoration-none font-monospace"><small>gardnerAltmanPlot</small></a></li>
 					<li><a href="glyphplot.html" class="text-decoration-none font-monospace"><small>glyphplot</small></a></li>
 					<li><a href="gplotmatrix.html" class="text-decoration-none font-monospace"><small>gplotmatrix</small></a></li>
 					<li><a href="gscatter.html" class="text-decoration-none font-monospace"><small>gscatter</small></a></li>
+					<li><a href="heatmap.html" class="text-decoration-none font-monospace"><small>heatmap</small></a></li>
 					<li><a href="hist3.html" class="text-decoration-none font-monospace"><small>hist3</small></a></li>
 					<li><a href="histfit.html" class="text-decoration-none font-monospace"><small>histfit</small></a></li>
 					<li><a href="manovacluster.html" class="text-decoration-none font-monospace"><small>manovacluster</small></a></li>
 					<li><a href="normplot.html" class="text-decoration-none font-monospace"><small>normplot</small></a></li>
 					<li><a href="parallelcoords.html" class="text-decoration-none font-monospace"><small>parallelcoords</small></a></li>
+					<li><a href="parallelplot.html" class="text-decoration-none font-monospace"><small>parallelplot</small></a></li>
 					<li><a href="ppplot.html" class="text-decoration-none font-monospace"><small>ppplot</small></a></li>
 					<li><a href="probplot.html" class="text-decoration-none font-monospace"><small>probplot</small></a></li>
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
+					<li><a href="scatterhistogram.html" class="text-decoration-none font-monospace"><small>scatterhistogram</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="stats.chart.HeatmapChart.html" class="text-decoration-none font-monospace"><small>stats.chart.HeatmapChart</small></a></li>
+					<li><a href="stats.chart.ParallelCoordinatesPlot.html" class="text-decoration-none font-monospace"><small>stats.chart.ParallelCoordinatesPlot</small></a></li>
+					<li><a href="stats.chart.ScatterHistogramChart.html" class="text-decoration-none font-monospace"><small>stats.chart.ScatterHistogramChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,157 +1088,32 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: RegressionGP</h5></code></dl>
-<p> Create a <code>RegressionGP</code> object containing a Gaussian process
- regression model.
+<p class="h5 description mb-3"><code>statistics: RegressionGP</code></p>
+<p> Gaussian process regression model.
 </p>
 <div class="ms-5">
-<p> <code><var>obj</var> = RegressionGP (<var>X</var>, <var>Y</var>)</code> returns a Gaussian
- process regression model, <var>obj</var>, with <var>X</var> being the predictor data
- and <var>Y</var> the continuous response of the observations in <var>X</var>.
+<p> A <code>RegressionGP</code> object holds a Gaussian process fitted to a
+ continuous response, and predicts the response for new data with the
+ <code>predict</code> method, which also returns the standard deviation of each
+ prediction and a prediction interval.  The response is modelled as an
+ explicit basis times <code>Beta</code>, plus a draw from a process whose
+ covariance is given by the kernel function, plus independent noise of
+ standard deviation <code>Sigma</code>.  The kernel parameters and <code>Sigma</code>
+ are estimated by maximizing the log marginal likelihood.
 </p>
-<ul>
-<li>
- <var>X</var> must be an <em class="math">NxP</em> numeric matrix of predictor data, where rows
- correspond to observations and columns to features.
-</li><li>
- <var>Y</var> must be an <em class="math">Nx1</em> numeric vector holding the response of the
- corresponding predictor data in <var>X</var>.  <var>Y</var> must have the same number
- of rows as <var>X</var>.
-</li></ul>
-
-<p> A Gaussian process places a prior over functions, given by the covariance
- function, and conditions it on the observations.  The response is modelled
- as <em class="math">H&times;Beta</em> plus a draw from that process plus independent noise of
- standard deviation <code>Sigma</code>, where <em class="math">H</em> is the explicit basis.  The
- covariance parameters and <code>Sigma</code> are estimated by maximizing the log
- marginal likelihood, and <code>Beta</code> follows from them in closed form as
- the generalized least squares estimate.
+<p> The object keeps its training data, which <code>resubPredict</code>,
+ <code>resubLoss</code> and <code>crossval</code> work on; <code>compact</code> drops it and
+ returns a <code>CompactRegressionGP</code>, which still predicts.
 </p>
-<p> <code><var>obj</var> = RegressionGP (&hellip;, <var>name</var>, <var>value</var>)</code> returns a
- model with additional options specified by <code>Name-Value</code> pair
- arguments listed below.
-</p>
-<div class="table-responsive">
-<table class="table table-striped table-bordered table-sm">
-<thead class="table-primary"><tr><th width="32%"><var>Name</var></th><th width="68%"><var>Value</var></th></tr></thead>
-<tr><td width="32%"><code>'KernelFunction'</code></td><td width="68%">A character vector naming the covariance
- function, or a function handle taking two matrices of points and a parameter
- vector.  The default is <code>'squaredexponential'</code>.  The supported names
- are listed below.</td></tr>
-<tr><td width="32%"><code>'KernelParameters'</code></td><td width="68%">A numeric vector of initial values for
- the covariance parameters.  Its length depends on the covariance function.
- These are starting values for the optimization, not fixed values.</td></tr>
-<tr><td width="32%"><code>'BasisFunction'</code></td><td width="68%">A character vector naming the explicit
- basis, one of <code>'none'</code>, <code>'constant'</code>, <code>'linear'</code> or
- <code>'pureQuadratic'</code>, or a function handle taking <var>X</var> and returning
- the basis matrix.  The default is <code>'constant'</code>.</td></tr>
-<tr><td width="32%"><code>'Beta'</code></td><td width="68%">A numeric vector of basis coefficients.  These are
- used as known values only when <code>'FitMethod'</code> is <code>'none'</code>.</td></tr>
-<tr><td width="32%"><code>'Sigma'</code></td><td width="68%">A positive scalar, the initial value of the noise
- standard deviation.  The default is <code>std (<var>Y</var>) / sqrt (2)</code>.</td></tr>
-<tr><td width="32%"><code>'ConstantSigma'</code></td><td width="68%">A logical scalar.  When <code>true</code> the
- noise standard deviation is held at its initial value instead of being
- estimated.  The default is <code>false</code>.</td></tr>
-<tr><td width="32%"><code>'SigmaLowerBound'</code></td><td width="68%">A positive scalar bounding the noise
- standard deviation from below.  The default is
- <code>1e-2 * std (<var>Y</var>)</code>.</td></tr>
-<tr><td width="32%"><code>'FitMethod'</code></td><td width="68%">A character vector, either <code>'exact'</code> to
- estimate the parameters or <code>'none'</code> to keep them at their initial
- values.  The default is <code>'exact'</code>.</td></tr>
-<tr><td width="32%"><code>'PredictMethod'</code></td><td width="68%">A character vector.  Only <code>'exact'</code>
- is implemented, which is also the only method under which a standard
- deviation and a prediction interval are available.</td></tr>
-<tr><td width="32%"><code>'Optimizer'</code></td><td width="68%">A character vector naming the optimizer used
- to maximize the log marginal likelihood.  <code>'quasinewton'</code> and
- <code>'fminunc'</code> name the same dense solver and are the default,
- <code>'lbfgs'</code> selects limited-memory BFGS, which holds a fixed number of
- curvature pairs rather than a full inverse Hessian and is the cheaper
- choice when the kernel carries many parameters, and <code>'fminsearch'</code>
- is derivative-free.</td></tr>
-<tr><td width="32%"><code>'Standardize'</code></td><td width="68%">A logical scalar specifying whether the
- predictor data should be centred and scaled before training.  The same
- transformation is applied by <code>predict</code>.  The default is <code>false</code>.</td></tr>
-<tr><td width="32%"><code>'CategoricalPredictors'</code></td><td width="68%">The categorical predictors, as
- indices, as a logical vector with one element per predictor, or as
- <code>'all'</code>.  Each is dummy coded in its place, one column of zeros and
- ones per distinct value it takes in the training data, named as in
- <code>'x1 == 2'</code>, and the coded columns are not standardized.
- <code>X</code> keeps the predictors as given.  A row holding a value the
- training data did not is predicted as a row missing a predictor, the
- weighted lower median of the training response.</td></tr>
-<tr><td width="32%"><code>'Weights'</code></td><td width="68%">An <em class="math">Nx1</em> numeric vector of non-negative
- observation weights.  The default is a vector of ones.</td></tr>
-<tr><td width="32%"><code>'PredictorNames'</code></td><td width="68%">A cell array of character vectors
- naming the predictors, in the order they appear in <var>X</var>.</td></tr>
-<tr><td width="32%"><code>'ResponseName'</code></td><td width="68%">A character vector naming the response.
- The default is <code>'Y'</code>.</td></tr>
-<tr><td width="32%"><code>'ResponseTransform'</code></td><td width="68%">A character vector or a function
- handle applied to the response the model predicts.  The default is
- <code>'none'</code>.</td></tr>
-</table>
-<p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Supervised_Learning/RegressionGP.m">RegressionGP</a>
-</p>
-</div>
-
-<p> The supported values for <code>'KernelFunction'</code> are:
-</p>
-<div class="table-responsive">
-<table class="table table-striped table-bordered table-sm">
-<thead class="table-primary"><tr><th width="40%"><var>Value</var></th><th width="60%"><var>Parameters</var></th></tr></thead>
-<tr><td width="40%"><code>'exponential'</code></td><td width="60%"><code>[SigmaL; SigmaF]</code></td></tr>
-<tr><td width="40%"><code>'squaredexponential'</code></td><td width="60%"><code>[SigmaL; SigmaF]</code></td></tr>
-<tr><td width="40%"><code>'matern32'</code></td><td width="60%"><code>[SigmaL; SigmaF]</code></td></tr>
-<tr><td width="40%"><code>'matern52'</code></td><td width="60%"><code>[SigmaL; SigmaF]</code></td></tr>
-<tr><td width="40%"><code>'rationalquadratic'</code></td><td width="60%"><code>[SigmaL; AlphaRQ; SigmaF]</code></td></tr>
-<tr><td width="40%"><code>'ardexponential'</code></td><td width="60%"><code>[LengthScale1; &hellip;; SigmaF]</code></td></tr>
-<tr><td width="40%"><code>'ardsquaredexponential'</code></td><td width="60%"> <code>[LengthScale1; &hellip;; SigmaF]</code></td></tr>
-<tr><td width="40%"><code>'ardmatern32'</code></td><td width="60%"><code>[LengthScale1; &hellip;; SigmaF]</code></td></tr>
-<tr><td width="40%"><code>'ardmatern52'</code></td><td width="60%"><code>[LengthScale1; &hellip;; SigmaF]</code></td></tr>
-<tr><td width="40%"><code>'ardrationalquadratic'</code></td><td width="60%"> <code>[LengthScale1; &hellip;; AlphaRQ; SigmaF]</code></td></tr>
-</table>
-<p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Supervised_Learning/RegressionGP.m">RegressionGP</a>
-</p>
-</div>
-
-<p> The automatic relevance determination kernels carry one length scale per
- predictor, so a predictor the response does not depend on is given a large
- length scale and stops contributing.
-</p>
-<p> The supported values for <code>'ResponseTransform'</code> are:
-</p>
-<div class="table-responsive">
-<table class="table table-striped table-bordered table-sm">
-<thead class="table-primary"><tr><th width="30%"><var>Value</var></th><th width="70%"><var>Description</var></th></tr></thead>
-<tr><td width="30%"><code>'none'</code></td><td width="70%"><em class="math">x</em> (no transformation)</td></tr>
-<tr><td width="30%"><code>'identity'</code></td><td width="70%"><em class="math">x</em> (no transformation)</td></tr>
-<tr><td width="30%"><code>'exp'</code></td><td width="70%"><em class="math">exp (x)</em></td></tr>
-<tr><td width="30%"><code>'log'</code></td><td width="70%"><em class="math">log (x)</em></td></tr>
-</table>
-<p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Supervised_Learning/RegressionGP.m">RegressionGP</a>
-</p>
-</div>
-
-<p> Two deviations from MATLAB are deliberate and documented.  The distance
- between points is accumulated one predictor at a time instead of by the
- expanded form MATLAB uses by default, because the expanded form does not
- return exactly zero for a point against itself and the rough kernels
- amplify that residue through their square root.  The approximate fitting
- and prediction methods, <code>'sd'</code>, <code>'sr'</code>, <code>'fic'</code> and
- <code>'bcd'</code>, together with the active set options that serve them, are
- not implemented and are refused rather than silently ignored.
+<p> Create a <code>RegressionGP</code> object with <code>fitrgp</code> or the class
+ constructor.
 </p>
 <p> <strong>See also: </strong>
   <a href="fitrgp.html">fitrgp</a>, 
-  <a href="CompactRegressionGP.html">CompactRegressionGP</a>, 
-  <a href="RegressionSVM.html">RegressionSVM</a>, 
-  <a href="RegressionGAM.html">RegressionGAM</a>
+  <a href="CompactRegressionGP.html">CompactRegressionGP</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Supervised_Learning/RegressionGP.m">RegressionGP</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Machine_Learning/RegressionGP.m">RegressionGP</a>
 </p>
 </div>
         <p class="lead my-3">The <code>RegressionGP</code> class contains the following properties:</p>
@@ -1224,10 +1136,14 @@ Predictor data
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_X">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> An <em class="math">NxP</em> numeric matrix, as it was supplied to the constructor.
- This property is read-only.
+</p>
+<p> Where the model was fitted from a table, the predictors are the coded
+ matrix and not the table: a variable holding levels is stored as its
+ level codes, and the coding is kept with the model.
+</p>
+<p> This property is read-only.
 </p>
 
         <div class="card rounded my-4">
@@ -1293,7 +1209,6 @@ Response data
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_Y">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> An <em class="math">Nx1</em> numeric vector, as it was supplied to the constructor.
  This property is read-only.
@@ -1362,7 +1277,6 @@ Number of observations used to train the model
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_NumObservations">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer scalar, counting the rows whose response is not
  missing.  A row missing a predictor is counted, as in MATLAB, though the
@@ -1432,7 +1346,6 @@ Rows of the original data used to train the model
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_RowsUsed">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A logical vector with one element per row of the data as supplied, true
  where the row was used, false where its response was missing.  It is
@@ -1502,10 +1415,10 @@ Observation weights
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_W">
             <div class="border-bottom py-2">
-
 <p> </p>
-<p> An <em class="math">Nx1</em> numeric vector, one weight per observation used to train
- the model.  This property is read-only.
+<p> An <em class="math">Nx1</em> vector, one weight per observation used to train the
+ model, scaled to sum to one and of the class of the <code>'Weights'</code>
+ given, single or double.  This property is read-only.
 </p>
 
         <div class="card rounded my-4">
@@ -1571,7 +1484,6 @@ Predictor variable names
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_PredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors, one per column of <code>X</code>.  This
  property is read-only.
@@ -1640,7 +1552,6 @@ Expanded predictor variable names
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_ExpandedPredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors.  It differs from
  <code>PredictorNames</code> only where a categorical predictor has been
@@ -1710,7 +1621,6 @@ Response variable name
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_ResponseName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector.  This property is read-only.
 </p>
@@ -1778,7 +1688,6 @@ Indices of the categorical predictors
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_CategoricalPredictors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A vector of positive integers indexing the columns of <code>X</code> that
  hold categorical predictors, or empty when none does.  This property is
@@ -1848,7 +1757,6 @@ Bin edges of the predictors
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_BinEdges">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array with one entry per predictor, holding that predictor&rsquo;s bin
  edges where the model discretized it before fitting.  It is empty here
@@ -1920,7 +1828,6 @@ Method used to estimate the parameters
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_FitMethod">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> <code>'Exact'</code> when the covariance parameters and the noise were
  estimated by maximizing the log marginal likelihood, and <code>'None'</code>
@@ -1991,7 +1898,6 @@ Explicit basis of the model
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_BasisFunction">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> <code>'None'</code>, <code>'Constant'</code>, <code>'Linear'</code>,
  <code>'PureQuadratic'</code>, or the function handle that was supplied.  This
@@ -2061,7 +1967,6 @@ Estimated coefficients of the explicit basis
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_Beta">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A numeric vector with one element per basis term, empty when the basis
  is <code>'None'</code>.  This property is read-only.
@@ -2130,7 +2035,6 @@ Estimated noise standard deviation
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_Sigma">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive scalar.  This property is read-only.
 </p>
@@ -2198,7 +2102,6 @@ Maximized log marginal likelihood
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_LogLikelihood">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar, or empty when <code>FitMethod</code> is <code>'None'</code> and nothing
  was maximized.  This property is read-only.
@@ -2267,7 +2170,6 @@ Parameters used to train the model
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_ModelParameters">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure holding the options the fit was performed under.  MATLAB
  returns an object of its own class here; a structure carries the same
@@ -2356,7 +2258,6 @@ Form of the covariance function
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_KernelFunction">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector naming the covariance function, or the function
  handle that was supplied.  This property is read-only.
@@ -2425,7 +2326,6 @@ Covariance function and its parameters
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_KernelInformation">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with fields <code>Name</code>, <code>KernelParameters</code> and
  <code>KernelParameterNames</code>, the last naming each parameter in the
@@ -2495,7 +2395,6 @@ Method used to make predictions
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_PredictMethod">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> <code>'Exact'</code>.  This property is read-only.
 </p>
@@ -2563,7 +2462,6 @@ Weights the predictions are made from
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_Alpha">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> An <em class="math">Nx1</em> numeric vector.  A prediction is the basis term plus the
  covariance between the new point and the active set, weighted by these.
@@ -2633,7 +2531,6 @@ Subset of the training data used for predictions
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_ActiveSetVectors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> An <em class="math">MxP</em> numeric matrix, standardized where the model standardized
  its predictors.  It is the whole of the training data, since only the
@@ -2703,7 +2600,6 @@ Method used to select the active set
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_ActiveSetMethod">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> <code>'Random'</code>.  This property is read-only.
 </p>
@@ -2771,7 +2667,6 @@ Size of the active set
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_ActiveSetSize">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer scalar.  This property is read-only.
 </p>
@@ -2839,7 +2734,6 @@ Which observations are in the active set
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_IsActiveSetVector">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A logical vector with one element per training observation.  This
  property is read-only.
@@ -2908,7 +2802,6 @@ History of the active set selection
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_ActiveSetHistory">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> <strong>Always empty.</strong>  It is declared for MATLAB compatibility, where
  it records the active set chosen at each iteration by a fit method that
@@ -2980,7 +2873,6 @@ Block coordinate descent information
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_BCDInformation">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> <strong>Always empty.</strong>  It is declared for MATLAB compatibility, where
  it records a block coordinate descent.  This class does not use that
@@ -3050,7 +2942,6 @@ Means the predictors were centred by
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_PredictorLocation">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">1xP</em> numeric vector when the model standardized its predictors,
  and empty when it did not.  This property is read-only.
@@ -3119,7 +3010,6 @@ Standard deviations the predictors were scaled by
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_PredictorScale">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">1xP</em> numeric vector when the model standardized its predictors,
  and empty when it did not.  This property is read-only.
@@ -3188,7 +3078,6 @@ Results of the hyperparameter optimization
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_HyperparameterOptimizationResults">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> <strong>Always empty.</strong>  It is declared for MATLAB compatibility, where
  it holds what an automatic search over the hyperparameters found.  This
@@ -3259,7 +3148,6 @@ Transformation applied to the predicted response
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_ResponseTransform">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector, or the text of the function handle that was
  supplied.  Assigning to it accepts either.
@@ -3330,20 +3218,154 @@ Fit a Gaussian process regression model.
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_RegressionGP">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionGP: <var>obj</var> = <b>RegressionGP</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionGP: <var>obj</var> = <b>RegressionGP</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionGP: <var>obj</var> = <b>RegressionGP</b> (<var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>RegressionGP: <var>obj</var> = <b>RegressionGP</b> (<var>Tbl</var>, <var>ResponseVarName</var>)</code></p>
+<p class="h5 fs"><code>RegressionGP: <var>obj</var> = <b>RegressionGP</b> (<var>Tbl</var>, <var>formula</var>)</code></p>
+<p class="h5 fs"><code>RegressionGP: <var>obj</var> = <b>RegressionGP</b> (<var>Tbl</var>, <var>Y</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionGP: <var>obj</var> = <b>RegressionGP</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
-<p> <var>X</var> is an <em class="math">N&times;P</em> numeric matrix of predictor data, one
- observation per row, and <var>Y</var> is the continuous response of those
- <em class="math">N</em> observations.  The fit runs at construction, so <var>obj</var>
- arrives fitted.
+<p> <code><var>obj</var> = RegressionGP (<var>X</var>, <var>Y</var>)</code> returns a Gaussian
+ process regression model, <var>obj</var>, with <var>X</var> being the predictor
+ data and <var>Y</var> the continuous response of the observations in <var>X</var>.
 </p>
-<p> The <var>name</var>/<var>value</var> pairs the fit accepts, and the validation
- each one is held to, are listed in <code>help RegressionGP</code>.
- <code>fitrgp</code> is the documented way to reach this constructor and
- takes the same pairs.
+<ul>
+<li>
+ <var>X</var> must be an <em class="math">NxP</em> numeric matrix of predictor data, where
+ rows correspond to observations and columns to features.
+</li><li>
+ <var>Y</var> must be an <em class="math">Nx1</em> numeric vector holding the response of the
+ corresponding predictor data in <var>X</var>.  <var>Y</var> must have the same
+ number of rows as <var>X</var>.
+</li></ul>
+
+<p> A Gaussian process places a prior over functions, given by the covariance
+ function, and conditions it on the observations.  The response is
+ modelled as <em class="math">H&times;Beta</em> plus a draw from that process plus independent
+ noise of standard deviation <code>Sigma</code>, where <em class="math">H</em> is the explicit
+ basis.  The covariance parameters and <code>Sigma</code> are estimated by
+ maximizing the log marginal likelihood, and <code>Beta</code> follows from
+ them in closed form as the generalized least squares estimate.
+</p>
+<p> <code><var>obj</var> = RegressionGP (&hellip;, <var>name</var>, <var>value</var>)</code>
+ returns a model with additional options specified by <code>Name-Value</code>
+ pair arguments listed below.
+</p>
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="32%"><var>Name</var></th><th width="68%"><var>Value</var></th></tr></thead>
+<tr><td width="32%"><code>'KernelFunction'</code></td><td width="68%">A character vector naming the
+ covariance function, or a function handle taking two matrices of points
+ and a parameter vector.  The default is <code>'squaredexponential'</code>.
+ The supported names are listed below.</td></tr>
+<tr><td width="32%"><code>'KernelParameters'</code></td><td width="68%">A numeric vector of initial values
+ for the covariance parameters.  Its length depends on the covariance
+ function.  These are starting values for the optimization, not fixed
+ values.</td></tr>
+<tr><td width="32%"><code>'BasisFunction'</code></td><td width="68%">A character vector naming the explicit
+ basis, one of <code>'none'</code>, <code>'constant'</code>, <code>'linear'</code> or
+ <code>'pureQuadratic'</code>, or a function handle taking <var>X</var> and
+ returning the basis matrix.  The default is <code>'constant'</code>.</td></tr>
+<tr><td width="32%"><code>'Beta'</code></td><td width="68%">A numeric vector of basis coefficients.  These
+ are used as known values only when <code>'FitMethod'</code> is <code>'none'</code>.</td></tr>
+<tr><td width="32%"><code>'Sigma'</code></td><td width="68%">A positive scalar, the initial value of the
+ noise standard deviation.  The default is
+ <code>std (<var>Y</var>) / sqrt (2)</code>.</td></tr>
+<tr><td width="32%"><code>'ConstantSigma'</code></td><td width="68%">A logical scalar.  When <code>true</code>
+ the noise standard deviation is held at its initial value instead of
+ being estimated.  The default is <code>false</code>.</td></tr>
+<tr><td width="32%"><code>'SigmaLowerBound'</code></td><td width="68%">A positive scalar bounding the noise
+ standard deviation from below.  The default is
+ <code>1e-2 * std (<var>Y</var>)</code>.</td></tr>
+<tr><td width="32%"><code>'FitMethod'</code></td><td width="68%">A character vector, either <code>'exact'</code>
+ to estimate the parameters or <code>'none'</code> to keep them at their
+ initial values.  The default is <code>'exact'</code>.</td></tr>
+<tr><td width="32%"><code>'PredictMethod'</code></td><td width="68%">A character vector.  Only
+ <code>'exact'</code> is implemented, which is also the only method under which
+ a standard deviation and a prediction interval are available.</td></tr>
+<tr><td width="32%"><code>'Optimizer'</code></td><td width="68%">A character vector naming the optimizer
+ used to maximize the log marginal likelihood.  <code>'quasinewton'</code> and
+ <code>'fminunc'</code> name the same dense solver and are the default,
+ <code>'lbfgs'</code> selects limited-memory BFGS, which holds a fixed number
+ of curvature pairs rather than a full inverse Hessian and is the cheaper
+ choice when the kernel carries many parameters, and <code>'fminsearch'</code>
+ is derivative-free.</td></tr>
+<tr><td width="32%"><code>'Standardize'</code></td><td width="68%">A logical scalar specifying whether the
+ predictor data should be centred and scaled before training.  The same
+ transformation is applied by <code>predict</code>.  The default is
+ <code>false</code>.</td></tr>
+<tr><td width="32%"><code>'CategoricalPredictors'</code></td><td width="68%">The categorical predictors, as
+ indices, as a logical vector with one element per predictor, or as
+ <code>'all'</code>.  Each is dummy coded in its place, one column of zeros and
+ ones per distinct value it takes in the training data, named as in
+ <code>'x1 == 2'</code>, and the coded columns are not standardized.  <code>X</code>
+ keeps the predictors as given.  A row holding a value the training data
+ did not is predicted as a row missing a predictor, the weighted lower
+ median of the training response.  A predictor may be named rather than
+ indexed, as a character matrix of one padded name per row, a string array
+ or a cellstr; a name must match an entry of <code>'PredictorNames'</code>
+ exactly, its case included.</td></tr>
+<tr><td width="32%"><code>'Weights'</code></td><td width="68%">An <em class="math">Nx1</em> single or double vector of
+ non-negative observation weights.  The default is a vector of ones.  The
+ model&rsquo;s <code>W</code> keeps the class of the weights, while every computation
+ runs in double.</td></tr>
+<tr><td width="32%"><code>'PredictorNames'</code></td><td width="68%">A cell array of character vectors
+ naming the predictors, in the order they appear in <var>X</var>.</td></tr>
+<tr><td width="32%"><code>'ResponseName'</code></td><td width="68%">A character vector naming the response.
+ The default is <code>'Y'</code>.</td></tr>
+<tr><td width="32%"><code>'ResponseTransform'</code></td><td width="68%">A character vector or a function
+ handle applied to the response the model predicts.  The default is
+ <code>'none'</code>.</td></tr>
+</table>
+</div>
+
+<p> The supported values for <code>'KernelFunction'</code> are:
+</p>
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="40%"><var>Value</var></th><th width="60%"><var>Parameters</var></th></tr></thead>
+<tr><td width="40%"><code>'exponential'</code></td><td width="60%"><code>[SigmaL; SigmaF]</code></td></tr>
+<tr><td width="40%"><code>'squaredexponential'</code></td><td width="60%"><code>[SigmaL; SigmaF]</code></td></tr>
+<tr><td width="40%"><code>'matern32'</code></td><td width="60%"><code>[SigmaL; SigmaF]</code></td></tr>
+<tr><td width="40%"><code>'matern52'</code></td><td width="60%"><code>[SigmaL; SigmaF]</code></td></tr>
+<tr><td width="40%"><code>'rationalquadratic'</code></td><td width="60%"><code>[SigmaL; AlphaRQ; SigmaF]</code></td></tr>
+<tr><td width="40%"><code>'ardexponential'</code></td><td width="60%"> <code>[LengthScale1; &hellip;; SigmaF]</code></td></tr>
+<tr><td width="40%"><code>'ardsquaredexponential'</code></td><td width="60%"> <code>[LengthScale1; &hellip;; SigmaF]</code></td></tr>
+<tr><td width="40%"><code>'ardmatern32'</code></td><td width="60%"><code>[LengthScale1; &hellip;; SigmaF]</code></td></tr>
+<tr><td width="40%"><code>'ardmatern52'</code></td><td width="60%"><code>[LengthScale1; &hellip;; SigmaF]</code></td></tr>
+<tr><td width="40%"><code>'ardrationalquadratic'</code></td><td width="60%"> <code>[LengthScale1; &hellip;; AlphaRQ; SigmaF]</code></td></tr>
+</table>
+</div>
+
+<p> The automatic relevance determination kernels carry one length scale per
+ predictor, so a predictor the response does not depend on is given a
+ large length scale and stops contributing.
+</p>
+<p> The supported values for <code>'ResponseTransform'</code> are:
+</p>
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="30%"><var>Value</var></th><th width="70%"><var>Description</var></th></tr></thead>
+<tr><td width="30%"><code>'none'</code></td><td width="70%"><em class="math">x</em> (no transformation)</td></tr>
+<tr><td width="30%"><code>'identity'</code></td><td width="70%"><em class="math">x</em> (no transformation)</td></tr>
+<tr><td width="30%"><code>'exp'</code></td><td width="70%"><em class="math">exp (x)</em></td></tr>
+<tr><td width="30%"><code>'log'</code></td><td width="70%"><em class="math">log (x)</em></td></tr>
+</table>
+</div>
+
+<p> Two deviations from MATLAB are deliberate and documented.  The distance
+ between points is accumulated one predictor at a time instead of by the
+ expanded form MATLAB uses by default, because the expanded form does not
+ return exactly zero for a point against itself and the rough kernels
+ amplify that residue through their square root.  The approximate fitting
+ and prediction methods, <code>'sd'</code>, <code>'sr'</code>, <code>'fic'</code> and
+ <code>'bcd'</code>, together with the active set options that serve them, are
+ not implemented and are refused rather than silently ignored.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitrgp.html">fitrgp</a>, 
+  <a href="CompactRegressionGP.html">CompactRegressionGP</a>, 
+  <a href="RegressionSVM.html">RegressionSVM</a>, 
+  <a href="RegressionGAM.html">RegressionGAM</a>
 </p>
 
         <div class="card rounded my-4">
@@ -3409,11 +3431,9 @@ Predict the response for new data with a Gaussian process model.
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_predict">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionGP: <var>yFit</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionGP: [<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionGP: [&hellip;] = <b>predict</b> (&hellip;, <code>'Alpha'</code>, <var>alpha</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionGP: <var>yFit</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></p>
+<p class="h5 fs"><code>RegressionGP: [<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionGP: [&hellip;] = <b>predict</b> (&hellip;, <code>'Alpha'</code>, <var>alpha</var>)</code></p>
 <p> </p>
 <p> <code><var>yFit</var> = predict (<var>obj</var>, <var>XC</var>)</code> returns the predicted
  response of the <code>RegressionGP</code> model <var>obj</var> at the points in
@@ -3430,6 +3450,12 @@ Predict the response for new data with a Gaussian process model.
  the significance level of the intervals, so that they are
  <em class="math">100 &times; (1 - <var>alpha</var>)</em> per cent intervals.  <var>alpha</var> must be
  a scalar in the range <em class="math">[0, 1]</em> and defaults to <em class="math">0.05</em>.
+</p>
+<p> The new data may be a table, whose variables are matched to the
+ predictors the model was fitted on by name and not by position:
+ one the model was not fitted on is passed over, one it needs and
+ cannot find is named, and a value holding a level is coded as that
+ level was coded at fitting.
 </p>
 
         <div class="card rounded my-4">
@@ -3495,10 +3521,8 @@ Predict the response of the training data with a Gaussian process model.
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_resubPredict">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionGP: <var>yFit</var> = <b>resubPredict</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionGP: [<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = <b>resubPredict</b> (<var>obj</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionGP: <var>yFit</var> = <b>resubPredict</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionGP: [<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = <b>resubPredict</b> (<var>obj</var>)</code></p>
 <p> </p>
 <p> <code><var>yFit</var> = resubPredict (<var>obj</var>)</code> returns the response the
  <code>RegressionGP</code> model <var>obj</var> predicts at its own training data,
@@ -3568,13 +3592,21 @@ Compute the regression loss of a Gaussian process model.
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_loss">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionGP: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionGP: <var>L</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionGP: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>RegressionGP: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code></p>
+<p class="h5 fs"><code>RegressionGP: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>Tbl</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionGP: <var>L</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> <code><var>L</var> = loss (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns the mean
  squared error of the model <var>obj</var> on the data <var>X</var> and <var>Y</var>.
+</p>
+<p> <var>X</var> may also be a table <var>Tbl</var>, whose variables are matched to
+ the predictors the model was fitted on by name and not by position.
+ <code>loss (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code> takes the
+ response from the variable <var>ResponseVarName</var> names, and
+ <code>loss (<var>obj</var>, <var>Tbl</var>)</code> from the variable the model was
+ fitted on.  The response may also be given beside the table as
+ <var>Y</var>.
 </p>
 <p> <code><var>L</var> = loss (&hellip;, <var>name</var>, <var>value</var>)</code> accepts
  <code>'LossFun'</code>, either <code>'mse'</code>, <code>'mae'</code>,
@@ -3646,10 +3678,8 @@ Compute the resubstitution loss of a Gaussian process model.
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_resubLoss">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionGP: <var>L</var> = <b>resubLoss</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionGP: <var>L</var> = <b>resubLoss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionGP: <var>L</var> = <b>resubLoss</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionGP: <var>L</var> = <b>resubLoss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> <code><var>L</var> = resubLoss (<var>obj</var>)</code> returns the loss of the model
  <var>obj</var> on the data it was trained on, and accepts the same
@@ -3719,9 +3749,7 @@ Compute the leave-one-out residuals of a Gaussian process model.
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_postFitStatistics">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionGP: [<var>loores</var>, <var>neff</var>] = <b>postFitStatistics</b> (<var>obj</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>RegressionGP: [<var>loores</var>, <var>neff</var>] = <b>postFitStatistics</b> (<var>obj</var>)</code></p>
 <p> </p>
 <p> <code>[<var>loores</var>, <var>neff</var>] = postFitStatistics (<var>obj</var>)</code>
  returns the <em class="math">Nx1</em> vector of leave-one-out residuals of the model
@@ -3797,10 +3825,8 @@ Cross validate a Gaussian process model.
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_crossval">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionGP: <var>CVMdl</var> = <b>crossval</b> (<var>obj</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RegressionGP: <var>CVMdl</var> = <b>crossval</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>RegressionGP: <var>CVMdl</var> = <b>crossval</b> (<var>obj</var>)</code></p>
+<p class="h5 fs fs-last"><code>RegressionGP: <var>CVMdl</var> = <b>crossval</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> <code><var>CVMdl</var> = crossval (<var>obj</var>)</code> returns a
  <code>RegressionPartitionedModel</code> built from the model <var>obj</var> by
@@ -3874,9 +3900,7 @@ Return a compact Gaussian process regression model.
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_compact">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionGP: <var>CMdl</var> = <b>compact</b> (<var>obj</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>RegressionGP: <var>CMdl</var> = <b>compact</b> (<var>obj</var>)</code></p>
 <p> </p>
 <p> <code><var>CMdl</var> = compact (<var>obj</var>)</code> returns a
  <code>CompactRegressionGP</code> object holding what is needed to predict
@@ -3947,9 +3971,7 @@ Save a Gaussian process model to a file.
           </div>
           <div class="collapse multi-collapse" id="RegressionGP_savemodel">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">RegressionGP: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>RegressionGP: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></p>
 <p> </p>
 <p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves the model <var>obj</var>
  into <var>filename</var> in a form <code>loadmodel</code> can read back.

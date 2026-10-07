@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 30
+# columns: 32
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -13,9 +13,8 @@ ExhaustiveSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 716
+# length: 713
 statistics: ExhaustiveSearcher
-
 Exhaustive nearest neighbor searcher
 
 The ExhaustiveSearcher class implements an exhaustive search
@@ -24,7 +23,7 @@ supports various distance metrics along with their parameter values for
 performing an exhaustive search. The exhaustive search algorithm computes
 the distance from each query point to all the points in the training data
 and facilitates a nearest neighbor search using knnsearch or a
-radius search using rangesearch .
+radius search using rangesearch.
 
 You can either use the ExhaustiveSearcher class constructor or the
 createns function to create an ExhaustiveSearcher object.
@@ -33,7 +32,7 @@ See also:
 createns,
 KDTreeSearcher,
 hnswSearcher,
-knnsearch ,
+knnsearch,
 rangesearch
 
 
@@ -55,20 +54,19 @@ ExhaustiveSearcher.DistParameter
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 531
+# length: 523
 ExhaustiveSearcher: property DistParameter
-
 Distance parameter
 
 The type and value of the distance parameter depends on the selected
 Distance metric and can be any of the following:
 
-For 'minkowski' , a positive scalar exponent (default 2).
-For 'seuclidean' , a nonnegative vector of scaling factors
+For 'minkowski', a positive scalar exponent (default 2).
+For 'seuclidean', a nonnegative vector of scaling factors
 matching the number of columns in X (default is standard
-deviation of X ).
-For 'mahalanobis' , a positive definite covariance matrix
-matching the dimensions of X (default is cov ( X ) ).
+deviation of X).
+For 'mahalanobis', a positive definite covariance matrix
+matching the dimensions of X (default is cov (X)).
 Empty for other metrics or custom functions.
 
 
@@ -90,15 +88,14 @@ ExhaustiveSearcher.Distance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 281
+# length: 276
 ExhaustiveSearcher: property Distance
-
 Distance metric
 
 Distance metric used for searches, specified as a character vector (e.g.,
-'euclidean' , 'minkowski' ) or a function handle to a
-custom distance function. Default is 'euclidean' . Supported
-metrics align with those in pdist2 .
+'euclidean', 'minkowski') or a function handle to a
+custom distance function. Default is 'euclidean'. Supported
+metrics align with those in pdist2.
 
 
 # name: <cell-element>
@@ -119,47 +116,47 @@ ExhaustiveSearcher.ExhaustiveSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1508
-ExhaustiveSearcher: obj = ExhaustiveSearcher ( X )
-ExhaustiveSearcher: obj = ExhaustiveSearcher ( X , name , value )
-
+# length: 1471
+ExhaustiveSearcher: obj = ExhaustiveSearcher (X)
+ExhaustiveSearcher: obj = ExhaustiveSearcher (X, name, value)
 Create an ExhaustiveSearcher object for nearest neighbor
 searches.
 
-obj = ExhaustiveSearcher ( X ) constructs an
+obj = ExhaustiveSearcher (X) constructs an
 ExhaustiveSearcher object with training data X using the
 default 'euclidean' distance metric. X must be an
-N&times;P numeric matrix, where rows represent observations and columns
+NxP numeric matrix, where rows represent observations and columns
 represent features.
 
-obj = ExhaustiveSearcher ( X , name , value )
+obj = ExhaustiveSearcher (X, name, value)
 allows customization through name-value pairs:
 
 Name Value
 'Distance' Distance metric, specified as a
-character vector (e.g., 'euclidean' , 'minkowski' ) or a
-function handle. Default is 'euclidean' . See pdist2 for
+character vector (e.g., 'euclidean', 'minkowski') or a
+function handle. Default is 'euclidean'. See pdist2 for
 supported metrics.
 'P' a positive scalar specifying the exponent for
 the Minkowski distance. Valid only when 'Distance' is
-'minkowski' . Default is 2.
+'minkowski'. Default is 2.
 'Scale' a nonnegative vector with the same number
 of elements as the columns in X specifying the scale parameter for
 the standardized Euclidean distance. Valid only when
-'Distance' is 'seuclidean' . Default is std (X) .
+'Distance' is 'seuclidean'. Default is std (X).
 'Cov' a positive definite matrix matching the
 number of columns in X specifying the covariance matrix for the
 Mahalanobis distance. Valid only when 'Distance' is
-'mahalanobis' . Default is cov (X) .
+'mahalanobis'. Default is cov (X).
 
-'Distance' , 'P' , 'Cov' and 'Scale' override
-the searcher&rsquo;s own metric for that call only; the Distance and
-DistParameter properties keep their values, as they do in MATLAB.
+'Distance', 'P', 'Cov' and 'Scale'
+override the searcher's own metric for that call only; the
+Distance and DistParameter properties keep their values,
+as they do in MATLAB.
 
 See also:
 ExhaustiveSearcher,
-knnsearch ,
-rangesearch ,
+knnsearch,
+rangesearch,
 pdist2
 
 
@@ -181,17 +178,16 @@ ExhaustiveSearcher.X
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 345
+# length: 337
 ExhaustiveSearcher: property X
-
 Point data
 
-Point data, specified as an N&times;P numeric matrix where each row
+Point data, specified as an NxP numeric matrix where each row
 is an observation and each column is a feature. This property is private
 and cannot be modified after object creation.
 
 Data of class single is stored and searched in single
-precision, any other numeric class is converted to double .
+precision, any other numeric class is converted to double.
 
 
 # name: <cell-element>
@@ -212,28 +208,27 @@ ExhaustiveSearcher.knnsearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1364
-ExhaustiveSearcher: [ idx , D ] = knnsearch ( obj , Y )
-ExhaustiveSearcher: [ idx , D ] = knnsearch ( obj , Y , name , value )
-
+# length: 1319
+ExhaustiveSearcher: [idx, D] = knnsearch (obj, Y)
+ExhaustiveSearcher: [idx, D] = knnsearch (obj, Y, name, value)
 Find the K nearest neighbors in the training data to query points.
 
-[ idx , D ] = knnsearch ( obj , Y ) returns the
+[idx, D] = knnsearch (obj, Y) returns the
 indices idx and distances D of the nearest neighbor in
-obj.X to each point in Y , using the distance metric specified
-in obj.Distance .
+obj.X to each point in Y, using the distance metric specified
+in obj.Distance.
 
 obj is an ExhaustiveSearcher object.
-Y is an M&times;P numeric matrix of query points, where
-P must match the number of columns in obj.X .
+Y is an MxP numeric matrix of query points, where
+P must match the number of columns in obj.X.
 
-idx is always of class double . D is of class
-single when either obj.X or Y is single ,
+idx is always of class double. D is of class
+single when either obj.X or Y is single,
 in which case the distances are computed in single precision, and of
 class double otherwise.
 
-[ idx , D ] = knnsearch ( obj , Y , name ,
-value )
+[idx, D] = knnsearch (obj, Y, name,
+value)
 allows additional options via name-value pairs:
 
 Name Value
@@ -242,15 +237,15 @@ nearest neighbors to find. Default is 1. A value larger than the
 number of observations in the training data is answered with all of
 them, since there are no more neighbors to return.
 'IncludeTies' Logical flag indicating whether to
-include all neighbors tied with the K th smallest distance. Default
-is false . If true , idx and D are cell arrays.
+include all neighbors tied with the Kth smallest distance. Default
+is false. If true, idx and D are cell arrays.
 
-idx contains the indices of the nearest neighbors in obj.X .
+idx contains the indices of the nearest neighbors in obj.X.
 D contains the corresponding distances.
 
 See also:
 ExhaustiveSearcher,
-rangesearch ,
+rangesearch,
 pdist2
 
 
@@ -272,40 +267,39 @@ ExhaustiveSearcher.rangesearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1141
-ExhaustiveSearcher: [ idx , D ] = rangesearch ( obj , Y , r )
-ExhaustiveSearcher: [ idx , D ] = rangesearch ( obj , Y , r , name , value )
-
+# length: 1093
+ExhaustiveSearcher: [idx, D] = rangesearch (obj, Y, r)
+ExhaustiveSearcher: [idx, D] = rangesearch (obj, Y, r, name, value)
 Find all neighbors within a specified radius of query points.
 
-[ idx , D ] = rangesearch ( obj , Y , r )
+[idx, D] = rangesearch (obj, Y, r)
 returns the indices idx and distances D of all points in
-obj.X within radius r of each point in Y , using the
-distance metric specified in obj.Distance .
+obj.X within radius r of each point in Y, using the
+distance metric specified in obj.Distance.
 
 obj is an ExhaustiveSearcher object.
-Y is an M&times;P numeric matrix of query points, where
-P must match the number of columns in obj.X .
+Y is an MxP numeric matrix of query points, where
+P must match the number of columns in obj.X.
 r is a nonnegative scalar specifying the search radius.
 
-idx is always of class double . D is of class
-single when either obj.X or Y is single ,
+idx is always of class double. D is of class
+single when either obj.X or Y is single,
 in which case the distances are computed in single precision, and of
 class double otherwise.
 
-[ idx , D ] = rangesearch (&hellip;, name ,
-value ) allows additional options via name-value pairs:
+[idx, D] = rangesearch (..., name,
+value) allows additional options via name-value pairs:
 
 Name Value
 'SortIndices' Logical flag indicating whether to
-sort the indices by distance. Default is true .
+sort the indices by distance. Default is true.
 
 idx and D are cell arrays where each cell contains the
-indices and distances for one query point in Y .
+indices and distances for one query point in Y.
 
 See also:
 ExhaustiveSearcher,
-knnsearch ,
+knnsearch,
 pdist2
 
 
@@ -327,9 +321,8 @@ KDTreeSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 763
+# length: 760
 statistics: KDTreeSearcher
-
 KD-tree nearest neighbor searcher
 
 The KDTreeSearcher class implements a KD-tree search algorithm for
@@ -339,7 +332,7 @@ search. The KD-tree algorithm partitions the training data into a
 hierarchical tree structure and performs search operations by traversing
 the tree to reduce the number of distance computations. It facilitates
 nearest neighbor queries using knnsearch and radius queries using
-rangesearch .
+rangesearch.
 
 You can either use the KDTreeSearcher class constructor or the
 createns function to create an KDTreeSearcher object.
@@ -348,7 +341,7 @@ See also:
 createns,
 ExhaustiveSearcher,
 hnswSearcher,
-knnsearch ,
+knnsearch,
 rangesearch
 
 
@@ -370,9 +363,8 @@ KDTreeSearcher.BucketSize
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 244
+# length: 243
 KDTreeSearcher: property BucketSize
-
 Maximum number of data points in each leaf node
 
 The maximum number of data points in the leaf node of the KD-tree.
@@ -398,17 +390,16 @@ KDTreeSearcher.DistParameter
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 384
+# length: 378
 KDTreeSearcher: property DistParameter
-
 Distance parameter
 
 The type and value of the distance parameter depends on the selected
 Distance metric and can be any of the following:
 
-For 'minkowski' , a positive scalar exponent (default 2).
-Empty for other metrics ( 'euclidean' , 'cityblock' ,
-'chebychev' ). Attempting to set a non-empty value for these
+For 'minkowski', a positive scalar exponent (default 2).
+Empty for other metrics ('euclidean', 'cityblock',
+'chebychev'). Attempting to set a non-empty value for these
 metrics will result in an error.
 
 
@@ -430,15 +421,14 @@ KDTreeSearcher.Distance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 232
+# length: 226
 KDTreeSearcher: property Distance
-
 Distance metric
 
 Distance metric used for searches, specified as a character vector.
-Supported metrics are 'euclidean' , 'cityblock' ,
-'minkowski' , and 'chebychev' . Default value is
-'euclidean' .
+Supported metrics are 'euclidean', 'cityblock',
+'minkowski', and 'chebychev'. Default value is
+'euclidean'.
 
 
 # name: <cell-element>
@@ -459,28 +449,27 @@ KDTreeSearcher.KDTreeSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1317
-KDTreeSearcher: obj = KDTreeSearcher ( X )
-KDTreeSearcher: obj = KDTreeSearcher ( X , name , value )
-
+# length: 1283
+KDTreeSearcher: obj = KDTreeSearcher (X)
+KDTreeSearcher: obj = KDTreeSearcher (X, name, value)
 Create a KDTreeSearcher object for nearest neighbor searches.
 
-obj = KDTreeSearcher ( X ) constructs a
+obj = KDTreeSearcher (X) constructs a
 KDTreeSearcher object with training data X using the
 default 'euclidean' distance metric. X must be an
-N&times;P numeric matrix, where rows represent observations and columns
+NxP numeric matrix, where rows represent observations and columns
 represent features.
 
-obj = KDTreeSearcher ( X , name , value )
+obj = KDTreeSearcher (X, name, value)
 allows customization through name-value pairs:
 
 Name Value
 'Distance' Distance metric, specified as a
-character vector ( 'euclidean' , 'cityblock' ,
-'minkowski' , 'chebychev' ). Default is
-'euclidean' .
+character vector ('euclidean', 'cityblock',
+'minkowski', 'chebychev'). Default is
+'euclidean'.
 'P' Minkowski distance exponent, a positive
-scalar. Valid only when 'Distance' is 'minkowski' .
+scalar. Valid only when 'Distance' is 'minkowski'.
 Default is 2.
 'BucketSize' Maximum number of data points in the
 leaf node of the KD-tree, a positive integer. Default is 50.
@@ -488,7 +477,7 @@ leaf node of the KD-tree, a positive integer. Default is 50.
 You can also create a KDTreeSearcher object using the
 createns function.
 
-'Distance' and 'P' override the searcher&rsquo;s own metric for
+'Distance' and 'P' override the searcher's own metric for
 that call only; the Distance and DistParameter
 properties keep their values. The tree is built from the data alone, so
 changing the metric does not rebuild it. 'Cov' and
@@ -497,8 +486,8 @@ cannot search.
 
 See also:
 KDTreeSearcher,
-knnsearch ,
-rangesearch ,
+knnsearch,
+rangesearch,
 createns
 
 
@@ -520,17 +509,16 @@ KDTreeSearcher.X
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 341
+# length: 333
 KDTreeSearcher: property X
-
 Point data
 
-Point data, specified as an N&times;P numeric matrix where each row is
+Point data, specified as an NxP numeric matrix where each row is
 an observation and each column is a feature. This property is private
 and cannot be modified after object creation.
 
 Data of class single is stored and searched in single
-precision, any other numeric class is converted to double .
+precision, any other numeric class is converted to double.
 
 
 # name: <cell-element>
@@ -551,31 +539,30 @@ KDTreeSearcher.knnsearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1441
-KDTreeSearcher: [ idx , D ] = knnsearch ( obj , Y )
-KDTreeSearcher: [ idx , D ] = knnsearch ( obj , Y , name , value )
-
+# length: 1395
+KDTreeSearcher: [idx, D] = knnsearch (obj, Y)
+KDTreeSearcher: [idx, D] = knnsearch (obj, Y, name, value)
 Find the K nearest neighbors in the training data to query points.
 
-[ idx , D ] = knnsearch ( obj , Y , K )
+[idx, D] = knnsearch (obj, Y, K)
 returns the indices idx and distances D of the K
-nearest neighbors in obj.X to each point in Y , using the
-distance metric specified in obj.Distance .
+nearest neighbors in obj.X to each point in Y, using the
+distance metric specified in obj.Distance.
 
 obj is a KDTreeSearcher object.
-Y is an M&times;P numeric matrix of query points, where
-P must match the number of columns in obj.X .
+Y is an MxP numeric matrix of query points, where
+P must match the number of columns in obj.X.
 idx contains the indices of the nearest neighbors in
-obj.X .
+obj.X.
 D contains the corresponding distances.
 
-idx is always of class double . D is of class
-single when either obj.X or Y is single ,
+idx is always of class double. D is of class
+single when either obj.X or Y is single,
 in which case the distances are computed in single precision, and of
 class double otherwise.
 
-[ idx , D ] = knnsearch ( obj , Y , name ,
-value ) allows additional options via name-value pairs:
+[idx, D] = knnsearch (obj, Y, name,
+value) allows additional options via name-value pairs:
 
 Name Value
 'K' A positive integer specifying the number of
@@ -583,10 +570,10 @@ nearest neighbors to find. Default is 1. A value larger than the
 number of observations in the training data is answered with all of
 them, since there are no more neighbors to return.
 'IncludeTies' Logical flag indicating whether to
-include all neighbors tied with the K th smallest distance. Default
-is false . If true , idx and D are cell arrays.
+include all neighbors tied with the Kth smallest distance. Default
+is false. If true, idx and D are cell arrays.
 'SortIndices' Logical flag indicating whether to
-sort the indices by distance. Default is true .
+sort the indices by distance. Default is true.
 
 See also:
 KDTreeSearcher,
@@ -611,38 +598,37 @@ KDTreeSearcher.rangesearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1120
-KDTreeSearcher: [ idx , D ] = rangesearch ( obj , Y , r )
-KDTreeSearcher: [ idx , D ] = rangesearch ( obj , Y , r , name , value )
-
+# length: 1074
+KDTreeSearcher: [idx, D] = rangesearch (obj, Y, r)
+KDTreeSearcher: [idx, D] = rangesearch (obj, Y, r, name, value)
 Find all neighbors within a specified radius of query points.
 
-[ idx , D ] = rangesearch ( obj , Y , r )
+[idx, D] = rangesearch (obj, Y, r)
 returns the indices idx and distances D of all points in
-obj.X within radius r of each point in Y , using the
-distance metric specified in obj.Distance .
+obj.X within radius r of each point in Y, using the
+distance metric specified in obj.Distance.
 
 obj is a KDTreeSearcher object.
-Y is an M&times;P numeric matrix of query points, where
-P must match the number of columns in obj.X .
+Y is an MxP numeric matrix of query points, where
+P must match the number of columns in obj.X.
 r is a nonnegative scalar specifying the search radius.
 
-idx is always of class double . D is of class
-single when either obj.X or Y is single ,
+idx is always of class double. D is of class
+single when either obj.X or Y is single,
 in which case the distances are computed in single precision, and of
 class double otherwise.
 
-[ idx , D ] = rangesearch ( obj , Y , r ,
-name ,
-value )
+[idx, D] = rangesearch (obj, Y, r,
+name,
+value)
 allows additional options via name-value pairs:
 
 Name Value
 'SortIndices' Logical flag indicating whether to
-sort the indices by distance. Default is true .
+sort the indices by distance. Default is true.
 
 idx and D are cell arrays where each cell contains the
-indices and distances for one query point in Y .
+indices and distances for one query point in Y.
 
 See also:
 KDTreeSearcher,
@@ -667,17 +653,16 @@ createns
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2102
-statistics: obj = createns ( X )
-statistics: obj = createns ( X , name , value , &hellip;)
-
+# length: 2048
+statistics: obj = createns (X)
+statistics: obj = createns (X, name, value, ...)
 Create a nearest neighbor searcher object.
 
-obj = createns ( X ) creates a nearest neighbor searcher
-object using the training data X . By default, it constructs an
+obj = createns (X) creates a nearest neighbor searcher
+object using the training data X. By default, it constructs an
 ExhaustiveSearcher object with the Euclidean distance metric.
 
-obj = createns ( X , name , value , &hellip;)
+obj = createns (X, name, value, ...)
 allows customization of the searcher type and its properties through
 name-value pairs. The following name-value pair is supported to specify
 the searcher type:
@@ -686,36 +671,36 @@ Name Value
 'NSMethod' Specifies the nearest neighbor search
 method. Possible values are:
 
-'exhaustive' : Creates an ExhaustiveSearcher object.
-'kdtree' : Creates a KDTreeSearcher object.
-'hnsw' : Creates an hnswSearcher object.
+'exhaustive': Creates an ExhaustiveSearcher object.
+'kdtree': Creates a KDTreeSearcher object.
+'hnsw': Creates an hnswSearcher object.
 
-Default is 'exhaustive' .
+Default is 'exhaustive'.
 
 Additional name-value pairs depend on the selected 'NSMethod' and
 are passed directly to the constructor of the corresponding class:
 
-For 'exhaustive' , see ExhaustiveSearcher documentation
-for parameters like 'Distance' , 'P' , 'Scale' , and
-'Cov' .
-For 'kdtree' , see KDTreeSearcher documentation for
-parameters like 'Distance' , 'P' , and 'BucketSize' .
-For 'hnsw' , see hnswSearcher documentation for
+For 'exhaustive', see ExhaustiveSearcher documentation
+for parameters like 'Distance', 'P', 'Scale', and
+'Cov'.
+For 'kdtree', see KDTreeSearcher documentation for
+parameters like 'Distance', 'P', and 'BucketSize'.
+For 'hnsw', see hnswSearcher documentation for
 parameters
-like 'Distance' , 'P' , 'Scale' , 'Cov' ,
-'MaxNumLinksPerNode' , and 'TrainSetSize' .
+like 'Distance', 'P', 'Scale', 'Cov',
+'MaxNumLinksPerNode', and 'TrainSetSize'.
 
 Input Arguments:
 
-X - Training data, specified as an N&times;P numeric matrix
+X - Training data, specified as an NxP numeric matrix
 where rows represent observations and columns represent features. Must be
 finite and numeric.
 
 Output:
 
 obj - A nearest neighbor searcher object of type
-ExhaustiveSearcher , KDTreeSearcher , or hnswSearcher ,
-depending on the specified 'NSMethod' .
+ExhaustiveSearcher, KDTreeSearcher, or hnswSearcher,
+depending on the specified 'NSMethod'.
 
 Examples:
 
@@ -756,9 +741,8 @@ hnswSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 671
+# length: 669
 statistics: hnswSearcher
-
 Hierarchical Navigable Small World (HNSW) nearest neighbor searcher class.
 
 The hnswSearcher class implements the HNSW algorithm for efficient
@@ -766,7 +750,7 @@ nearest neighbor queries. It stores training data and supports various
 distance metrics for performing searches. The HNSW algorithm builds a
 multilayer graph structure that enables fast approximate nearest neighbor
 searches by navigating through the graph. It facilitates nearest neighbor
-queries search using knnsearch .
+queries search using knnsearch.
 
 You can either use the hnswSearcher class constructor or the
 createns function to create an hnswSearcher object.
@@ -796,20 +780,19 @@ hnswSearcher.DistParameter
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 577
+# length: 569
 hnswSearcher: property DistParameter
-
 Distance parameter
 
 The type and value of the distance parameter depends on the selected
 Distance metric and can be any of the following:
 
-For 'minkowski' , a positive scalar exponent (default 2).
-For 'seuclidean' , a nonnegative vector of scaling factors
+For 'minkowski', a positive scalar exponent (default 2).
+For 'seuclidean', a nonnegative vector of scaling factors
 matching the number of columns in X (default is standard
-deviation of X ).
-For 'mahalanobis' , a positive definite covariance matrix
-matching the dimensions of X (default is cov ( X ) ).
+deviation of X).
+For 'mahalanobis', a positive definite covariance matrix
+matching the dimensions of X (default is cov (X)).
 Empty for other metrics.
 
 This property is private and cannot be modified after object creation.
@@ -833,15 +816,14 @@ hnswSearcher.Distance
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 309
+# length: 303
 hnswSearcher: property Distance
-
 Distance metric
 
 Distance metric used for searches, specified as a character vector (e.g.,
-'euclidean' , 'minkowski' , 'cityblock' ). Default
-is 'euclidean' . Supported metrics align with those in
-pdist2 . This property is private and cannot be modified after
+'euclidean', 'minkowski', 'cityblock'). Default
+is 'euclidean'. Supported metrics align with those in
+pdist2. This property is private and cannot be modified after
 object creation.
 
 
@@ -863,9 +845,8 @@ hnswSearcher.MaxNumLinksPerNode
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 283
+# length: 282
 hnswSearcher: property MaxNumLinksPerNode
-
 Number of connections created for each node
 
 Maximum number of neighbors per node in the HNSW graph. Affects graph
@@ -891,9 +872,8 @@ hnswSearcher.TrainSetSize
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 295
+# length: 294
 hnswSearcher: property TrainSetSize
-
 Number of potential nearest neighbors
 
 Size of the dynamic candidate list during graph construction. Higher
@@ -920,17 +900,16 @@ hnswSearcher.X
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 339
+# length: 331
 hnswSearcher: property X
-
 Point data
 
-Point data, specified as an N&times;P numeric matrix where each row is
+Point data, specified as an NxP numeric matrix where each row is
 an observation and each column is a feature. This property is private
 and cannot be modified after object creation.
 
 Data of class single is stored and searched in single
-precision, any other numeric class is converted to double .
+precision, any other numeric class is converted to double.
 
 
 # name: <cell-element>
@@ -951,36 +930,35 @@ hnswSearcher.hnswSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1354
-hnswSearcher: obj = hnswSearcher ( X )
-hnswSearcher: obj = hnswSearcher ( X , name , value )
-
+# length: 1323
+hnswSearcher: obj = hnswSearcher (X)
+hnswSearcher: obj = hnswSearcher (X, name, value)
 Create an hnswSearcher object for approximate nearest neighbor
 searches.
 
-obj = hnswSearcher ( X ) constructs an
+obj = hnswSearcher (X) constructs an
 hnswSearcher object with training data X using the
 default 'euclidean' distance metric. X must be an
-N&times;P numeric matrix, where rows represent observations and columns
+NxP numeric matrix, where rows represent observations and columns
 represent features.
 
-obj = hnswSearcher ( X , name , value )
+obj = hnswSearcher (X, name, value)
 allows customization through name-value pairs:
 
 Name Value
 'Distance' Distance metric, specified as a
-character vector (e.g., 'euclidean' , 'minkowski' ,
-'cityblock' ). Default is 'euclidean' . See pdist2
+character vector (e.g., 'euclidean', 'minkowski',
+'cityblock'). Default is 'euclidean'. See pdist2
 for supported metrics.
 'P' Minkowski distance exponent, a positive
-scalar. Valid only when 'Distance' is 'minkowski' .
+scalar. Valid only when 'Distance' is 'minkowski'.
 Default is 2.
 'Scale' Nonnegative vector of scaling factors
-matching the number of columns in X . Valid only when
-'Distance' is 'seuclidean' . Default is std (X) .
+matching the number of columns in X. Valid only when
+'Distance' is 'seuclidean'. Default is std (X).
 'Cov' Positive definite covariance matrix
-matching the number of columns in X . Valid only when
-'Distance' is 'mahalanobis' . Default is cov (X) .
+matching the number of columns in X. Valid only when
+'Distance' is 'mahalanobis'. Default is cov (X).
 'MaxNumLinksPerNode' Maximum number of neighbors
 per node in the HNSW graph, a positive integer. Default is 16.
 'TrainSetSize' Size of the dynamic candidate
@@ -988,7 +966,7 @@ list during graph construction, a positive integer. Default is 200.
 
 See also:
 hnswSearcher,
-knnsearch ,
+knnsearch,
 createns,
 pdist2
 
@@ -1011,31 +989,30 @@ hnswSearcher.knnsearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1474
-hnswSearcher: [ idx , D ] = knnsearch ( obj , Y )
-hnswSearcher: [ idx , D ] = knnsearch ( obj , Y , name , value )
-
+# length: 1429
+hnswSearcher: [idx, D] = knnsearch (obj, Y)
+hnswSearcher: [idx, D] = knnsearch (obj, Y, name, value)
 Find the nearest neighbors in the training data to query points.
 
-[ idx , D ] = knnsearch ( obj , Y ) returns the
+[idx, D] = knnsearch (obj, Y) returns the
 indices idx and distances D of the nearest neighbor in
-obj.X to each point in Y , using the distance metric specified
-in obj.Distance .
+obj.X to each point in Y, using the distance metric specified
+in obj.Distance.
 
 obj is an hnswSearcher object.
-Y is an M&times;P numeric matrix of query points, where
-P must match the number of columns in obj.X .
+Y is an MxP numeric matrix of query points, where
+P must match the number of columns in obj.X.
 idx contains the indices of the nearest neighbors in
-obj.X .
+obj.X.
 D contains the corresponding distances.
 
-idx is always of class double . D is of class
-single when either obj.X or Y is single ,
+idx is always of class double. D is of class
+single when either obj.X or Y is single,
 in which case the distances are computed in single precision, and of
 class double otherwise.
 
-[ idx , D ] = knnsearch ( obj , Y , name ,
-value )
+[idx, D] = knnsearch (obj, Y, name,
+value)
 allows additional options via name-value pairs:
 
 Name Value
@@ -1045,10 +1022,10 @@ number of observations in the training data is answered with all of
 them, since there are no more neighbors to return.
 'SearchSetSize' A positive integer specifying the
 size of the candidate list of nearest neighbors for a single query point
-during the search process. Default is max (10, C ) , where
-C is the number of columns in obj.X . 'SearchSetSize'
+during the search process. Default is max (10, C), where
+C is the number of columns in obj.X. 'SearchSetSize'
 must be at least C and no more than the number of rows in training
-data obj.X .
+data obj.X.
 
 See also:
 hnswSearcher,
@@ -1073,23 +1050,22 @@ knnsearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5130
-statistics: idx = knnsearch ( X , Y )
-statistics: [ idx , D ] = knnsearch ( X , Y )
-statistics: [&hellip;] = knnsearch (&hellip;, name , value )
-
+# length: 5025
+statistics: idx = knnsearch (X, Y)
+statistics: [idx, D] = knnsearch (X, Y)
+statistics: [...] = knnsearch (..., name, value)
 Find k-nearest neighbors from input data.
 
-idx = knnsearch ( X , Y ) finds K nearest
-neighbors in X for Y . It returns idx which contains indices
-of K nearest neighbors of each row of Y , If not specified,
-K = 1 . X must be an N&times;P numeric matrix of input
+idx = knnsearch (X, Y) finds K nearest
+neighbors in X for Y. It returns idx which contains indices
+of K nearest neighbors of each row of Y, If not specified,
+K = 1. X must be an NxP numeric matrix of input
 data, where rows correspond to observations and columns correspond to
-features or variables. Y is an M&times;P numeric matrix with query
-points, which must have the same numbers of column as X .
+features or variables. Y is an MxP numeric matrix with query
+points, which must have the same numbers of column as X.
 
-[ idx , D ] = knnsearch ( X , Y ) also returns the
-the distances, D , which correspond to the K nearest neighbour in
+[idx, D] = knnsearch (X, Y) also returns the
+the distances, D, which correspond to the K nearest neighbour in
 X for each Y
 
 Additional parameters can be specified by Name-Value pair arguments.
@@ -1100,21 +1076,21 @@ in the kNN search. It must be a positive integer value and by default it is
 1.
 'P' is the Minkowski distance exponent and it must be
 a positive scalar. This argument is only valid when the selected distance
-metric is 'minkowski' . By default it is 2.
+metric is 'minkowski'. By default it is 2.
 'Scale' is the scale parameter for the standardized
 Euclidean distance and it must be a nonnegative numeric vector of equal
-length to the number of columns in X . This argument is only valid when
-the selected distance metric is 'seuclidean' , in which case each
+length to the number of columns in X. This argument is only valid when
+the selected distance metric is 'seuclidean', in which case each
 coordinate of X is scaled by the corresponding element of
-'scale' , as is each query point in Y . By default, the scale
-parameter is the standard deviation of each coordinate in X .
+'scale', as is each query point in Y. By default, the scale
+parameter is the standard deviation of each coordinate in X.
 'Cov' is the covariance matrix for computing the
 mahalanobis distance and it must be a positive definite matrix matching the
-the number of columns in X . This argument is only valid when the
-selected distance metric is 'mahalanobis' .
+the number of columns in X. This argument is only valid when the
+selected distance metric is 'mahalanobis'.
 'BucketSize' is the maximum number of data points in
 the leaf node of the Kd-tree and it must be a positive integer. This
-argument is only valid when the selected search method is 'kdtree' .
+argument is only valid when the selected search method is 'kdtree'.
 'SortIndices' is a boolean flag to sort the returned
 indices in ascending order by distance and it is true by default.
 When the selected search method is 'exhaustive' or the
@@ -1127,7 +1103,7 @@ knnsearch as specified below:
 'seuclidean' standardized Euclidean distance. Each
 coordinate difference between the rows in X and the query matrix
 Y is scaled by dividing by the corresponding element of the standard
-deviation computed from X . To specify a different scaling, use the
+deviation computed from X. To specify a different scaling, use the
 'Scale' name-value argument.
 'cityblock' City block distance.
 'chebychev' Chebychev distance (maximum coordinate
@@ -1141,19 +1117,19 @@ matrix, use the 'Cov' name-value argument.
 'cosine' Cosine distance.
 'correlation' One minus the sample linear correlation
 between observations (treated as sequences of values).
-'spearman' One minus the sample Spearman&rsquo;s rank
+'spearman' One minus the sample Spearman's rank
 correlation between observations (treated as sequences of values).
 'hamming' Hamming distance, which is the percentage
 of coordinates that differ.
 'jaccard' One minus the Jaccard coefficient, which is
 the percentage of nonzero coordinates that differ.
 @distfun Custom distance function handle. A distance
-function of the form function D2 = distfun ( XI , YI ) ,
-where XI is a 1&times;P vector containing a single observation in
-P -dimensional space, YI is an N&times;P matrix containing an
-arbitrary number of observations in the same P -dimensional space, and
-D2 is an N&times;P vector of distances, where ( D2 k) is
-the distance between observations XI and ( YI k,:) .
+function of the form function D2 = distfun (XI, YI),
+where XI is a 1xP vector containing a single observation in
+P-dimensional space, YI is an NxP matrix containing an
+arbitrary number of observations in the same P-dimensional space, and
+D2 is an NxP vector of distances, where (D2k) is
+the distance between observations XI and (YIk,:).
 
 'NSMethod' is the nearest neighbor search method used
 by knnsearch as specified below.
@@ -1161,23 +1137,23 @@ by knnsearch as specified below.
 'kdtree' Creates and uses a Kd-tree to find nearest
 neighbors. 'kdtree' is the default value when the number of columns
 in X is less than or equal to 10, X is not sparse, and the
-distance metric is 'euclidean' , 'cityblock' ,
-'manhattan' , 'chebychev' , or 'minkowski' . Otherwise,
-the default value is 'exhaustive' . This argument is only valid when
+distance metric is 'euclidean', 'cityblock',
+'manhattan', 'chebychev', or 'minkowski'. Otherwise,
+the default value is 'exhaustive'. This argument is only valid when
 the distance metric is one of the four aforementioned metrics.
 'exhaustive' Uses the exhaustive search algorithm by
 computing the distance values from all the points in X to each point in
-Y .
+Y.
 
 'IncludeTies' is a boolean flag to indicate if the
 returned values should contain the indices that have same distance as the
-K^th neighbor. When false , knnsearch chooses the
+K^th neighbor. When false, knnsearch chooses the
 observation with the smallest index among the observations that have the same
-distance from a query point. When true , knnsearch includes
+distance from a query point. When true, knnsearch includes
 all nearest neighbors whose distances are equal to the K^th smallest
-distance in the output arguments. To specify K , use the 'K'
+distance in the output arguments. To specify K, use the 'K'
 name-value pair argument. In that case idx and D are
-M -by- 1 cell arrays and each cell holds a row vector,
+M-by-1 cell arrays and each cell holds a row vector,
 whichever search method is used.
 
 See also:
@@ -1204,20 +1180,19 @@ mahal
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 468
-statistics: d = mahal ( y , x )
+# length: 442
+statistics: d = mahal (y, x)
+Mahalanobis' D-square distance.
 
-Mahalanobis&rsquo; D-square distance.
-
-Return the Mahalanobis&rsquo; D-square distance of the points in
-y from the distribution implied by points x .
+Return the Mahalanobis' D-square distance of the points in
+y from the distribution implied by points x.
 
 Specifically, it uses a Cholesky decomposition to set
 
-answer(i) = ( y (i,:) - mean ( x )) * inv (A) *
-( y (i,:)-mean ( x ))'
+answer(i) = (y(i,:) - mean (x)) * inv (A) *
+(y(i,:)-mean (x))'
 
-where A is the covariance of x .
+where A is the covariance of x.
 
 The data x and y must have the same number of components
 (columns), but may have a different number of observations (rows).
@@ -1234,6 +1209,232 @@ Mahalanobis' D-square distance.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 7
+nomdist
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5087
+statistics: D = nomdist (X)
+statistics: D = nomdist (X, measure)
+statistics: D = nomdist (..., Name, Value)
+Dissimilarity between every pair of rows of nominal data.
+
+D = nomdist (X) returns the Goodall 3 dissimilarity
+between each pair of rows of X, whose columns are nominal variables
+and whose values are their levels. D is a row vector in the order
+pdist returns, pairs (1,2), (1,3), ...,
+(2,3), ..., so squareform turns it into a matrix and
+linkage takes it as it stands. An X of one row gives a
+1x0 D.
+
+X is a numeric, logical, categorical, string or cellstr matrix, each
+distinct value being a level, or a table whose every variable is one column
+of these. A missing value, NaN, an empty character vector, a
+missing string or an undefined category, is refused.
+
+The measures weigh a match or a mismatch by how often the levels involved
+occur, counted over the rows of X unless 'Reference' names
+another sample.
+
+D = nomdist (X, measure) uses the measure named,
+in any case, from those of Boriah, Chandola and Kumar (2008) and of Sulc and
+Rezankova (2019), as the R package nomclust 2.8.1 implements them.
+In the table, N is the number of rows the frequencies are counted
+over, f the count of a level, p = f/N its frequency,
+p2 = f(f-1)/(N(N-1)) the chance of drawing it twice, and n
+the number of levels the variable holds. A subscript names the level of
+either row, and a variable scores 0 wherever its entry names no score.
+
+measure Score of one variable
+'anderberg' The similarity is
+\(\frac{\sum_{x = y} c/p_x^2}
+{\sum_{x = y} c/p_x^2 + \sum_{x \ne y} c/(2 p_x p_y)},\)
+with
+\(c = 2/(n(n+1)).\)
+'burnaby' 1 on a match; on a mismatch
+\(\frac{B}{\log \frac{p_x p_y}{(1-p_x)(1-p_y)} + B},\)
+with
+\(B = \sum_q 2 \log (1 - p_q).\)
+'eskin' 1 on a match,
+\(\frac{n^2}{n^2 + 2}\)
+on a mismatch.
+'gambaryan' \(-\left(p_x \log_2 p_x + (1-p_x) \log_2 (1-p_x)\right)\)
+on a match, which peaks where p is 0.5.
+'goodall1' On a match
+\(1 - \sum_{q:\, p_q \le p_x} \mathit{p2}_q.\)
+'goodall2' On a match
+\(1 - \sum_{q:\, p_q \ge p_x} \mathit{p2}_q.\)
+'goodall3' \(1 - \mathit{p2}_x\)
+on a match.
+'goodall4' \(\mathit{p2}_x\)
+on a match.
+'iof' 1 on a match,
+\(\frac{1}{1 + \log f_x \log f_y}\)
+on a mismatch.
+'lin' \(2 \log p_x\)
+on a match,
+\(2 \log (p_x + p_y)\)
+on a mismatch, over the sum of
+\(\log p_x + \log p_y.\)
+'lin1' On a match
+\(\log \sum_{q:\, p_q = p_x} p_q;\)
+on a mismatch
+\(2 \log \sum_{q:\, \min (p_x, p_y) \le p_q \le \max (p_x, p_y)} p_q;\)
+over the same sum as 'lin'.
+'of' 1 on a match,
+\(\frac{1}{1 + \log (N/f_x) \log (N/f_y)}\)
+on a mismatch.
+'sm' 1 on a match, the simple matching coefficient.
+'smirnov' On a match
+\(2 + \frac{N - f_x}{f_x} + \sum_{q \ne x} \frac{f_q}{N - f_q};\)
+on a mismatch
+\(\sum_{q \ne x, y} \frac{f_q}{N - f_q}.\)
+'ve' On a match the entropy of the variable,
+\(-\frac{1}{\log n} \sum_q p_q \log p_q.\)
+'vm' On a match the Gini index of the variable,
+\(\frac{n}{n-1} \left(1 - \sum_q p_q^2\right).\)
+
+The scores of a pair are summed over the variables, each times its weight,
+and divided by the sum of the weights, except where the table names another
+divisor, and 'gambaryan' and 'smirnov' divide by the number
+of levels over every variable. With S that similarity,
+'eskin', 'iof', 'lin', 'lin1' and
+'of' return 1/S - 1, 'smirnov' returns
+1/(1+S), and every other measure 1 - S. Several measures,
+the four Goodall ones among them, place two identical rows at a nonzero
+dissimilarity, a match on a common level saying less than one on a rare
+level. 'lin' and 'lin1' return Inf for a pair of
+similarity 0, such as two rows differing in every variable where each
+variable holds two levels.
+
+D = nomdist (..., Name, Value) takes the
+following options.
+
+Name Value
+'Weights' One weight per variable, each from 0 to
+1 and at least one positive; a variable of weight 0 is left out. Not taken
+by 'anderberg', 'gambaryan' and 'smirnov'.
+'Reference' A sample to count level frequencies
+over in place of X, of the same kind: a matrix with as many columns,
+the same type in each, or a table holding every variable of X, read
+by name. It must hold every level X holds. Given the whole data,
+it measures a subsample by how rare its levels are in the whole.
+
+Where nomclust answers otherwise, the answer here is the limit of
+the measure's formula. 'lin' and 'lin1' sum the counts
+of levels, so a sum over every level is exactly 1 and a similarity of 0 is
+exactly 0, where nomclust rounds it to about 1e16 or
+replaces it with one more than the largest finite dissimilarity.
+'gambaryan' scores a level every row holds as 0, where
+nomclust returns NaN. Where every variable holds one level,
+'lin' returns 0 and 'lin1' 1, where nomclust
+returns NaN.
+
+References:
+
+Boriah, S., Chandola, V. and Kumar, V. (2008). Similarity measures
+for categorical data: a comparative evaluation. Proceedings of the 8th
+SIAM International Conference on Data Mining, 243-254.
+Sulc, Z. and Rezankova, H. (2019). Comparison of similarity
+measures for categorical data in hierarchical clustering. Journal of
+Classification, 36(1), 58-72.
+
+See also:
+nomdist2,
+pdist,
+squareform,
+linkage
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 57
+Dissimilarity between every pair of rows of nominal data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+nomdist2
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2225
+statistics: D = nomdist2 (X, Y)
+statistics: D = nomdist2 (X, Y, measure)
+statistics: D = nomdist2 (..., Name, Value)
+Dissimilarity between the rows of two samples of nominal data.
+
+D = nomdist2 (X, Y) returns the Goodall 3
+dissimilarity of each row of X to each row of Y, as the
+NxM matrix D, where X has N rows and Y
+M. Their columns are the same nominal variables and their values
+the levels, of any type nomdist takes; where X is a table,
+Y must be one holding every variable of X, read by name. A
+Y of no rows gives an Nx0 D.
+
+Level frequencies are counted over X, the sample the rows of Y
+are measured against, so D is not symmetric in the two:
+nomdist2 (X, Y) is not in general
+nomdist2 (Y, X)'. nomdist2 (X, X)
+equals squareform (nomdist (X)) off the diagonal; on it,
+several measures give two identical rows a nonzero dissimilarity.
+
+D = nomdist2 (X, Y, measure) uses the
+measure named, one of 'anderberg', 'burnaby',
+'eskin', 'gambaryan', 'goodall1',
+'goodall2', 'goodall3', 'goodall4', 'iof',
+'lin', 'lin1', 'of', 'sm',
+'smirnov', 've' or 'vm', in any case, each defined
+as in nomdist.
+
+D = nomdist2 (..., Name, Value) takes the
+options nomdist takes. 'Weights' gives one weight per
+variable. 'Reference' names a sample to count level frequencies
+over in place of X, which must hold every level X holds;
+[X; Y] counts them over both samples.
+'CountQuery', false by default, counts each row of Y
+into the reference while it is measured, so that its column of D
+takes level frequencies over the reference with that row appended.
+
+Y may hold a level the reference sample does not, unless
+'CountQuery' is true, which counts that level once. Each measure
+then answers with the limit of its formula as that level's count falls
+to 0.
+'sm', 'eskin', 'gambaryan', the four Goodall
+measures, 'smirnov', 've' and 'vm' never read that
+count and answer as usual. 'of' and 'burnaby' score the
+variable 0, 'anderberg' places the pair at 1, and 'lin' and
+'lin1' at Inf. Refused, where the limit does not exist:
+'iof', whose similarity rises as a level grows rarer, and
+'of' and 'burnaby' where the reference holds that variable
+at a single level. A variable of weight 0 is left out, and so never
+refused.
+
+See also:
+nomdist,
+pdist2
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+Dissimilarity between the rows of two samples of nominal data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 5
 pdist
 
@@ -1241,25 +1442,24 @@ pdist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3050
-statistics: D = pdist ( X )
-statistics: D = pdist ( X , Distance )
-statistics: D = pdist ( X , Distance , DistParameter )
+# length: 2963
+statistics: D = pdist (X)
+statistics: D = pdist (X, Distance)
+statistics: D = pdist (X, Distance, DistParameter)
+Return the distance between any two rows in X.
 
-Return the distance between any two rows in X .
-
-D = pdist ( X calculates the euclidean distance between
-pairs of observations in X . X must be an M&times;P numeric
-matrix representing M points in P -dimensional space. This
+D = pdist (X calculates the euclidean distance between
+pairs of observations in X. X must be an MxP numeric
+matrix representing M points in P-dimensional space. This
 function computes the pairwise distances returned in D as an
-M&times;(M-1)/P row vector. Use Z = squareform ( D ) to
-convert the row vector D into a an M&times;M symmetric matrix Z ,
-where Z (i,j) corresponds to the pairwise distance between
-points i and j .
+Mx(M-1)/P row vector. Use Z = squareform (D) to
+convert the row vector D into a an MxM symmetric matrix Z,
+where Z(i,j) corresponds to the pairwise distance between
+points i and j.
 
-D = pdist ( X , Y , Distance ) returns the
+D = pdist (X, Y, Distance) returns the
 distance between pairs of observations in X using the metric specified
-by Distance , which can be any of the following options.
+by Distance, which can be any of the following options.
 
 'euclidean' Euclidean distance.
 'fasteuclidean' Euclidean distance computed with an
@@ -1270,7 +1470,7 @@ with an alternative algorithm which may be faster but might reduce accuracy.
 'seuclidean' standardized Euclidean distance. Each
 coordinate difference between the rows in X and the query matrix
 Y is scaled by dividing by the corresponding element of the standard
-deviation computed from X . A different scaling vector can be specified
+deviation computed from X. A different scaling vector can be specified
 with the subsequent DistParameter input argument.
 'mahalanobis' Mahalanobis distance, computed using a
 positive definite covariance matrix. A different covariance matrix can be
@@ -1289,22 +1489,22 @@ between observations (treated as sequences of values).
 of coordinates that differ.
 'jaccard' One minus the Jaccard coefficient, which is
 the percentage of nonzero coordinates that differ.
-'spearman' One minus the sample Spearman&rsquo;s rank
+'spearman' One minus the sample Spearman's rank
 correlation between observations (treated as sequences of values).
 @distfun Custom distance function handle. A distance
-function of the form function D2 = distfun ( XI , YI ) ,
-where XI is a 1&times;P vector containing a single observation in
-P -dimensional space, YI is an N&times;P matrix containing an
-arbitrary number of observations in the same P -dimensional space, and
-D2 is an N&times;P vector of distances, where ( D2 k) is
-the distance between observations XI and ( YI k,:) .
+function of the form function D2 = distfun (XI, YI),
+where XI is a 1xP vector containing a single observation in
+P-dimensional space, YI is an NxP matrix containing an
+arbitrary number of observations in the same P-dimensional space, and
+D2 is an NxP vector of distances, where (D2k) is
+the distance between observations XI and (YIk,:).
 
-D = pdist ( X , Y , Distance ,
-DistParameter )
+D = pdist (X, Y, Distance,
+DistParameter)
 returns the distance using the metric specified by Distance and
-DistParameter . The latter one can only be specified when the selected
-Distance is 'seuclidean' , 'minkowski' , and
-'mahalanobis' .
+DistParameter. The latter one can only be specified when the selected
+Distance is 'seuclidean', 'minkowski', and
+'mahalanobis'.
 
 See also:
 pdist2,
@@ -1330,26 +1530,25 @@ pdist2
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3984
-statistics: D = pdist2 ( X , Y )
-statistics: D = pdist2 ( X , Y , Distance )
-statistics: D = pdist2 ( X , Y , Distance , DistParameter )
-statistics: D = pdist2 (&hellip;, Name , Value )
-statistics: [ D , I ] = pdist2 (&hellip;, Name , Value )
-
+# length: 3840
+statistics: D = pdist2 (X, Y)
+statistics: D = pdist2 (X, Y, Distance)
+statistics: D = pdist2 (X, Y, Distance, DistParameter)
+statistics: D = pdist2 (..., Name, Value)
+statistics: [D, I] = pdist2 (..., Name, Value)
 Compute pairwise distance between two sets of vectors.
 
-D = pdist2 ( X , Y ) calculates the euclidean distance
-between each pair of observations in X and Y . Let X be an
-M&times;P matrix representing M points in P -dimensional space
-and Y be an N&times;P matrix representing another set of points in the
-same space. This function computes the M&times;N distance matrix D ,
-where D (i,j) is the distance between X (i,:) and
-Y (j,:) .
+D = pdist2 (X, Y) calculates the euclidean distance
+between each pair of observations in X and Y. Let X be an
+MxP matrix representing M points in P-dimensional space
+and Y be an NxP matrix representing another set of points in the
+same space. This function computes the MxN distance matrix D,
+where D(i,j) is the distance between X(i,:) and
+Y(j,:).
 
-D = pdist2 ( X , Y , Distance ) returns the
+D = pdist2 (X, Y, Distance) returns the
 distance between each pair of observations in X and Y using the
-metric specified by Distance , which can be any of the following
+metric specified by Distance, which can be any of the following
 options.
 
 'euclidean' Euclidean distance.
@@ -1361,7 +1560,7 @@ with an alternative algorithm which may be faster but might reduce accuracy.
 'seuclidean' standardized Euclidean distance. Each
 coordinate difference between the rows in X and the query matrix
 Y is scaled by dividing by the corresponding element of the standard
-deviation computed from X . A different scaling vector can be specified
+deviation computed from X. A different scaling vector can be specified
 with the subsequent DistParameter input argument.
 'mahalanobis' Mahalanobis distance, computed using a
 positive definite covariance matrix. A different covariance matrix can be
@@ -1380,41 +1579,41 @@ between observations (treated as sequences of values).
 of coordinates that differ.
 'jaccard' One minus the Jaccard coefficient, which is
 the percentage of nonzero coordinates that differ.
-'spearman' One minus the sample Spearman&rsquo;s rank
+'spearman' One minus the sample Spearman's rank
 correlation between observations (treated as sequences of values).
 @distfun Custom distance function handle. A distance
-function of the form function D2 = distfun ( XI , YI ) ,
-where XI is a 1&times;P vector containing a single observation in
-P -dimensional space, YI is an N&times;P matrix containing an
-arbitrary number of observations in the same P -dimensional space, and
-D2 is an N&times;P vector of distances, where ( D2 k) is
-the distance between observations XI and ( YI k,:) .
+function of the form function D2 = distfun (XI, YI),
+where XI is a 1xP vector containing a single observation in
+P-dimensional space, YI is an NxP matrix containing an
+arbitrary number of observations in the same P-dimensional space, and
+D2 is an NxP vector of distances, where (D2k) is
+the distance between observations XI and (YIk,:).
 
-D = pdist2 ( X , Y , Distance ,
-DistParameter )
+D = pdist2 (X, Y, Distance,
+DistParameter)
 returns the distance using the metric specified by Distance and
-DistParameter . The latter one can only be specified when the selected
-Distance is 'seuclidean' , 'minkowski' , and
-'mahalanobis' .
+DistParameter. The latter one can only be specified when the selected
+Distance is 'seuclidean', 'minkowski', and
+'mahalanobis'.
 
-D = pdist2 (&hellip;, Name , Value ) for any previous
-arguments, modifies the computation using Name - Value parameters.
+D = pdist2 (..., Name, Value) for any previous
+arguments, modifies the computation using Name-Value parameters.
 
-D = pdist2 ( X , Y , Distance , 'Smallest' ,
-K ) computes the distance using the metric specified by
+D = pdist2 (X, Y, Distance, 'Smallest',
+K) computes the distance using the metric specified by
 Distance and returns the K smallest pairwise distances to
 observations in X for each observation in Y in ascending order.
 
-D = pdist2 ( X , Y , Distance ,
-DistParameter ,
-'Largest' , K ) computes the distance using the metric specified
+D = pdist2 (X, Y, Distance,
+DistParameter,
+'Largest', K) computes the distance using the metric specified
 by Distance and DistParameter and returns the K largest
 pairwise distances in descending order.
 
-[ D , I ] = pdist2 (&hellip;, Name , Value ) also
-returns the matrix I , which contains the indices of the observations in
-X corresponding to the distances in D . You must specify either
-'Smallest' or 'Largest' as an optional Name - Value
+[D, I] = pdist2 (..., Name, Value) also
+returns the matrix I, which contains the indices of the observations in
+X corresponding to the distances in D. You must specify either
+'Smallest' or 'Largest' as an optional Name-Value
 pair argument to compute the second output argument.
 
 See also:
@@ -1441,53 +1640,52 @@ rangesearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4841
-statistics: idx = rangesearch ( X , Y , r )
-statistics: [ idx , D ] = rangesearch ( X , Y , r )
-statistics: [&hellip;] = rangesearch (&hellip;, name , value )
-
+# length: 4718
+statistics: idx = rangesearch (X, Y, r)
+statistics: [idx, D] = rangesearch (X, Y, r)
+statistics: [...] = rangesearch (..., name, value)
 Find all neighbors within specified distance from input data.
 
-idx = rangesearch ( X , Y , r ) returns all the
+idx = rangesearch (X, Y, r) returns all the
 points in X that are within distance r from the points in
-Y .
-X must be an N&times;P numeric matrix of input data, where rows
+Y.
+X must be an NxP numeric matrix of input data, where rows
 correspond to observations and columns correspond to features or variables.
-Y is an M&times;P numeric matrix with query points, which must have
-the same numbers of column as X . r must be a nonnegative scalar
-value. idx is an M&times;1 cell array, where M is the number
-of observations in Y . The vector Idx {j} contains the
+Y is an MxP numeric matrix with query points, which must have
+the same numbers of column as X. r must be a nonnegative scalar
+value. idx is an Mx1 cell array, where M is the number
+of observations in Y. The vector Idx{j} contains the
 indices of observations (rows) in X whose distances to
-Y (j,:) are not greater than r .
+Y(j,:) are not greater than r.
 
-[ idx , D ] = rangesearch ( X , Y , r ) also
-returns the distances, D , which correspond to the points in X
-that are within distance r from the points in Y . D is an
-M&times;1 cell array, where M is the number of observations in
-Y . The vector D {j} contains the distances of
-observations (rows) in X whose distances to Y (j,:) are
-not greater than r .
+[idx, D] = rangesearch (X, Y, r) also
+returns the distances, D, which correspond to the points in X
+that are within distance r from the points in Y. D is an
+Mx1 cell array, where M is the number of observations in
+Y. The vector D{j} contains the distances of
+observations (rows) in X whose distances to Y(j,:) are
+not greater than r.
 
 Additional parameters can be specified by Name-Value pair arguments.
 
 Name Value
 'P' is the Minkowski distance exponent and it must be
 a positive scalar. This argument is only valid when the selected distance
-metric is 'minkowski' . By default it is 2.
+metric is 'minkowski'. By default it is 2.
 'Scale' is the scale parameter for the standardized
 Euclidean distance and it must be a nonnegative numeric vector of equal
-length to the number of columns in X . This argument is only valid when
-the selected distance metric is 'seuclidean' , in which case each
+length to the number of columns in X. This argument is only valid when
+the selected distance metric is 'seuclidean', in which case each
 coordinate of X is scaled by the corresponding element of
-'scale' , as is each query point in Y . By default, the scale
-parameter is the standard deviation of each coordinate in X .
+'scale', as is each query point in Y. By default, the scale
+parameter is the standard deviation of each coordinate in X.
 'Cov' is the covariance matrix for computing the
 mahalanobis distance and it must be a positive definite matrix matching the
-the number of columns in X . This argument is only valid when the
-selected distance metric is 'mahalanobis' .
+the number of columns in X. This argument is only valid when the
+selected distance metric is 'mahalanobis'.
 'BucketSize' is the maximum number of data points in
 the leaf node of the Kd-tree and it must be a positive integer. This
-argument is only valid when the selected search method is 'kdtree' .
+argument is only valid when the selected search method is 'kdtree'.
 'SortIndices' is a boolean flag to sort the returned
 indices in ascending order by distance and it is true by default.
 When the selected search method is 'exhaustive' or the
@@ -1500,7 +1698,7 @@ rangesearch as specified below:
 'seuclidean' standardized Euclidean distance. Each
 coordinate difference between the rows in X and the query matrix
 Y is scaled by dividing by the corresponding element of the standard
-deviation computed from X . To specify a different scaling, use the
+deviation computed from X. To specify a different scaling, use the
 'Scale' name-value argument.
 'cityblock' City block distance.
 'chebychev' Chebychev distance (maximum coordinate
@@ -1514,19 +1712,19 @@ matrix, use the 'Cov' name-value argument.
 'cosine' Cosine distance.
 'correlation' One minus the sample linear correlation
 between observations (treated as sequences of values).
-'spearman' One minus the sample Spearman&rsquo;s rank
+'spearman' One minus the sample Spearman's rank
 correlation between observations (treated as sequences of values).
 'hamming' Hamming distance, which is the percentage
 of coordinates that differ.
 'jaccard' One minus the Jaccard coefficient, which is
 the percentage of nonzero coordinates that differ.
 @distfun Custom distance function handle. A distance
-function of the form function D2 = distfun ( XI , YI ) ,
-where XI is a 1&times;P vector containing a single observation in
-P -dimensional space, YI is an N&times;P matrix containing an
-arbitrary number of observations in the same P -dimensional space, and
-D2 is an N&times;P vector of distances, where ( D2 k) is
-the distance between observations XI and ( YI k,:) .
+function of the form function D2 = distfun (XI, YI),
+where XI is a 1xP vector containing a single observation in
+P-dimensional space, YI is an NxP matrix containing an
+arbitrary number of observations in the same P-dimensional space, and
+D2 is an NxP vector of distances, where (D2k) is
+the distance between observations XI and (YIk,:).
 
 'NSMethod' is the nearest neighbor search method used
 by rangesearch as specified below.
@@ -1534,13 +1732,13 @@ by rangesearch as specified below.
 'kdtree' Creates and uses a Kd-tree to find nearest
 neighbors. 'kdtree' is the default value when the number of columns
 in X is less than or equal to 10, X is not sparse, and the
-distance metric is 'euclidean' , 'cityblock' ,
-'manhattan' , 'chebychev' , or 'minkowski' . Otherwise,
-the default value is 'exhaustive' . This argument is only valid when
+distance metric is 'euclidean', 'cityblock',
+'manhattan', 'chebychev', or 'minkowski'. Otherwise,
+the default value is 'exhaustive'. This argument is only valid when
 the distance metric is one of the four aforementioned metrics.
 'exhaustive' Uses the exhaustive search algorithm by
 computing the distance values from all the points in X to each point in
-Y .
+Y.
 
 See also:
 knnsearch,
@@ -1565,12 +1763,11 @@ squareform
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1182
-statistics: zOut = squareform ( yIn )
-statistics: yOut = squareform ( zIn )
-statistics: zOut = squareform ( yIn , 'tovector' )
-statistics: yOut = squareform ( zIn , 'tomatrix' )
-
+# length: 1164
+statistics: zOut = squareform (yIn)
+statistics: yOut = squareform (zIn)
+statistics: zOut = squareform (yIn, 'tovector')
+statistics: yOut = squareform (zIn, 'tomatrix')
 Interchange between distance matrix and distance vector formats.
 
 Converts between a hollow (diagonal filled with zeros), square, and
@@ -1582,16 +1779,16 @@ if input is a matrix.
 
 If x is a numeric or logical vector, its number of elements must fit
 into the triangular part of a matrix (main diagonal excluded). In other
-words, numel ( x ) = n * ( n - 1) / 2 for some integer
-n . The resulting matrix will be n by n .
+words, numel (x) = n * (n - 1) / 2 for some integer
+n. The resulting matrix will be n by n.
 
 If x is a numeric or logical distance matrix, it must be square and the
 diagonal entries of x must all be zeros. If x is not symmetric,
 only the lower triangular part is used.
 
 The second argument is used to specify the output type in case the distance
-input is a scalar. Accepted values are 'tomatrix' (or 'tom' )
-and 'tovector' (or 'tov' ). If not specified, it defaults to
+input is a scalar. Accepted values are 'tomatrix' (or 'tom')
+and 'tovector' (or 'tov'). If not specified, it defaults to
 'tomatrix' otherwise.
 
 See also:

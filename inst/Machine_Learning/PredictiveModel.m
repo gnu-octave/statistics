@@ -87,9 +87,9 @@ classdef (Abstract) PredictiveModel
     endfunction
 
     ## Resolve table input into the predictors and the response that loss,
-    ## margin and edge take.  METH is the method's own name, GIVEN says
-    ## whether the call gave a third argument at all, and ARGS are the ones
-    ## after it.  A matrix passes through untouched.
+    ## margin, edge and their kin take.  METH is the method's own name,
+    ## GIVEN says whether the call gave a third argument at all, and ARGS
+    ## are the ones after it.  A matrix passes through untouched.
     function [X, Y, args] = tableResponse (this, meth, X, Y, args, given)
 
       if (! istable (X))
@@ -148,6 +148,19 @@ classdef (Abstract) PredictiveModel
       [varargout{1:max(nargout, 1)}] = pdCompute ('partialDependence', ...
                                                   this, varargin{:});
 
+    endfunction
+
+  endmethods
+
+  methods (Hidden)
+
+    ## Print the variable name, then the subclass's own disp
+    function display (this)
+      in_name = inputname (1);
+      if (! isempty (in_name))
+        fprintf ('%s =\n', in_name);
+      endif
+      disp (this);
     endfunction
 
   endmethods

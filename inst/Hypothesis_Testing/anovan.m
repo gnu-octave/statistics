@@ -670,7 +670,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     Nt = rows (TERMS);
 
     ## Calculate total sum-of-squares
-    ct  = sum (Y)^2 / n;   % correction term
+    ct  = sum (Y)^2 / n;   # correction term
     sst = sum (Y.^2) - ct;
     dft = n - 1;
 
@@ -780,7 +780,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                                     ALPHA, VARNAMES, Nt);
     endif
     F = ms ./ msdenom;
-    P = 1 - fcdf (F, df, dfdenom);
+    P = fcdf (F, df, dfdenom, 'upper');
     ## The denominator columns describe a random-effects fit, so they stay
     ## empty when every factor is fixed and the error term is the denominator.
     if (isempty (RANDOM))
@@ -854,7 +854,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     t_crit = tinv (1 - ALPHA / 2, dfe);
     se = sqrt (diag (ucov) * mse);
     t =  b ./ se;
-    p = 2 * (1 - (tcdf (abs (t), dfe)));
+    p = 2 * tcdf (-abs (t), dfe);
     coeff_stats = zeros (1 + sum (df_coef), 6);
     coeff_stats(:,1) = b;                                # coefficients
     coeff_stats(:,2) = se;                               # standard errors
@@ -871,9 +871,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     endfor
 
     ## Compute leverage values and Cook's distance
-    h = diag (hat);          % Leverage values
+    h = diag (hat);          # Leverage values
     D = resid.^2 / ((1 + sum (df_coef)) * mse) ...
-        .* h ./ (1 - h).^2;  % Cook's distance
+        .* h ./ (1 - h).^2;  # Cook's distance
 
     ## Create STATS structure for MULTCOMPARE
     STATS = struct ('source','anovan', ...
@@ -1010,10 +1010,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
         ## Make figure of diagnostic plots
         figure ('Name', 'Diagnostic Plots: Model Residuals');
-        t = STATS.resid ./ (sqrt (mse * (1 - h))); % Studentized residuals
-        fit = STATS.X * STATS.coeffs(:,1);         % Fitted values
-        [jnk, DI] = sort (D, 'descend');           % Indices of sorted D
-        nk = 4;                               % Top nk residuals with largest D
+        t = STATS.resid ./ (sqrt (mse * (1 - h))); # Studentized residuals
+        fit = STATS.X * STATS.coeffs(:,1);         # Fitted values
+        [jnk, DI] = sort (D, 'descend');           # Indices of sorted D
+        nk = 4;                               # Top nk residuals with largest D
 
         ## Normal quantile-quantile plot
         subplot (2, 2, 1);
@@ -2368,6 +2368,21 @@ endfunction
 %!                                'sstype', 'H', 'display', 'off');
 %! assert_equal (p_upper, p_lower);
 %! assert_equal (tbl_upper, tbl_lower);
+
+%!test
+%! ## Below the resolution of 1 - tcdf
+%! [~, ~, stats] = anovan ([1:10, 101:110, 201:210]', ...
+%!                         kron ((1:3)', ones (10, 1)), 'display', 'off');
+%! t = stats.coeffs(:,5);
+%! dfe = stats.dfe;
+%! assert_equal (stats.coeffs(:,6), ...
+%!               betainc (dfe ./ (dfe + t .^ 2), dfe / 2, 1/2), -1e-12);
+%!test
+%! ## Below the resolution of 1 - fcdf, values from MATLAB R2024a
+%! w = [1:10, 101:110, 201:210]';
+%! g = kron ((1:3)', ones (10, 1));
+%! p = anovan (w, {g}, 'display', 'off');
+%! assert_equal (p, 5.52216470815463e-40, -1e-10);
 
 %!error <categorical factors cannot have exponent> ...
 %! anovan ((1:4)', {[1; 1; 2; 2], [1; 2; 1; 2]}, ...

@@ -143,7 +143,8 @@ function [t, chisq, p, labels] = crosstab (varargin)
       chisq = NaN;
       p = NaN;
     else
-      [p, chisq] = chi2test (tt);
+      [~, p, st] = chi2test (tt);
+      chisq = st.chi2stat;
     endif
   endif
 endfunction

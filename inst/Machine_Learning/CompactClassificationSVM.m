@@ -198,11 +198,15 @@ classdef CompactClassificationSVM < PredictiveModel
     ##
     ## Linear predictor coefficients
     ##
-    ## The linear predictor coefficients specified as an @math{s*1} numeric
-    ## vector, where @math{s} is the number of support vectors,
-    ## @qcode{rows (obj.SupportVectors)}.  If the SVM classifier was trained
-    ## with a @qcode{'linear'} kernel function, then @qcode{Beta} is empty.
-    ## This property is read-only.
+    ## The linear predictor coefficients specified as a @math{p*1} numeric
+    ## vector, where @math{p} is the number of predictors.  @qcode{Beta} is
+    ## the primal representation of the fitted hyperplane and exists only when
+    ## the SVM classifier was trained with a @qcode{'linear'} kernel function;
+    ## for any other kernel there is no such representation and @qcode{Beta} is
+    ## empty.  It equals @qcode{(obj.SupportVectors / s)' * (obj.Alpha .*
+    ## obj.SupportVectorLabels)}, where @math{s} is the kernel scale, and a
+    ## score is @qcode{(@var{x} / s) * Beta + Bias}, as in MATLAB.  This
+    ## property is read-only.
     ##
     ## @end deftp
     Beta                = [];
@@ -228,7 +232,8 @@ classdef CompactClassificationSVM < PredictiveModel
     ## @code{SupportVectorLabels} indicates that the corresponding support
     ## vector belongs to the positive class @qcode{(ClassNames@{2@})}.  A value
     ## of -1 indicates that the corresponding support vector belongs to the
-    ## negative class @qcode{(ClassNames@{1@})}.  This property is read-only.
+    ## negative class @qcode{(ClassNames@{1@})}.  A one-class model labels
+    ## every support vector +1.  This property is read-only.
     ##
     ## @end deftp
     SupportVectorLabels = [];
@@ -390,15 +395,6 @@ classdef CompactClassificationSVM < PredictiveModel
       this.SupportVectorLabels   = Mdl.SupportVectorLabels;
       this.SupportVectors        = Mdl.SupportVectors;
 
-    endfunction
-
-    ## Custom display
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
     endfunction
 
     ## Custom display
@@ -801,50 +797,42 @@ classdef CompactClassificationSVM < PredictiveModel
                        " the same number of rows as X."));
       endif
 
-      ## Set default values before parsing optional parameters
-      LossFun = 'classiferror';
-      Weights = ones (size (X, 1), 1);
+      ## Parse optional paired arguments; 'Weights' are uniform unless given
+      W0 = ones (rows (X), 1);
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'classiferror', W0};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      ## Parse extra parameters
-      while (numel (varargin) > 0)
-        switch (tolower (varargin {1}))
+      ## Validate optional paired arguments
+      if (! (ischar (LossFun)))
+        error (strcat ("CompactClassificationSVM.loss: 'LossFun' must be a", ...
+                       " character vector."));
+      endif
+      LossFun = tolower (LossFun);
+      if (! any (strcmpi (LossFun, {'binodeviance', 'classiferror', ...
+                                    'classifcost', 'exponential', ...
+                                    'hinge', 'logit', 'mincost', ...
+                                    'quadratic'})))
+        error ("CompactClassificationSVM.loss: unsupported Loss function.");
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("CompactClassificationSVM.loss: %s", errmsg);
+      endif
+      if (! (isnumeric (Weights) && isvector (Weights)))
+        error (strcat ("CompactClassificationSVM.loss: 'Weights' must be a", ...
+                       " numeric vector."));
+      endif
+      if (numel (Weights) != size (X, 1))
+        error (strcat ("CompactClassificationSVM.loss: size of 'Weights'", ...
+                       " must be equal to the number of rows in X."));
+      endif
 
-          case 'lossfun'
-            LossFun = varargin{2};
-            if (! (ischar (LossFun)))
-              error (strcat ("CompactClassificationSVM.loss: 'LossFun'", ...
-                             " must be a character vector."));
-            endif
-            LossFun = tolower (LossFun);
-            if (! any (strcmpi (LossFun, {'binodeviance', 'classiferror', ...
-                                          'classifcost', 'exponential', ...
-                                          'hinge', 'logit', 'mincost', ...
-                                          'quadratic'})))
-              error (strcat ("CompactClassificationSVM.loss:", ...
-                             " unsupported Loss function."));
-            endif
-
-          case 'weights'
-            Weights = varargin{2};
-            ## Validate if weights is a numeric vector
-            if (! (isnumeric (Weights) && isvector (Weights)))
-              error (strcat ("CompactClassificationSVM.loss: 'Weights'", ...
-                             " must be a numeric vector."));
-            endif
-
-            ## Check if the size of weights matches the number of rows in X
-            if (numel (Weights) != size (X, 1))
-              error (strcat ("CompactClassificationSVM.loss: size of", ...
-                             " 'Weights' must be equal to the number", ...
-                             " of rows in X."));
-            endif
-
-          otherwise
-            error (strcat ("CompactClassificationSVM.loss: invalid", ...
-                           " parameter name in optional pair arguments."));
-          endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("CompactClassificationSVM.loss: invalid optional", ...
+                       " paired argument."));
+      endif
 
       ## Compute the classification score
       ## Y may be the class labels, as this documents and MATLAB
@@ -853,7 +841,8 @@ classdef CompactClassificationSVM < PredictiveModel
 
       ## The weights are scaled so that each class carries its prior and the
       ## loss is their weighted sum, as in MATLAB.
-      Weights = priorNormalize (Weights(:), 1 + (Ypm(:) == -1), this.Prior);
+      Weights = priorNormalize (double (Weights(:)), 1 + (Ypm(:) == -1), ...
+                                this.Prior);
       ## The model scores the coded, standardized predictors, which is the
       ## scale predict gives it; X taken as it stands was scored unscaled.
       if (! isempty (this.Coding_))
@@ -967,10 +956,6 @@ classdef CompactClassificationSVM < PredictiveModel
       endif
       [X, Y, varargin] = tableResponse (this, 'edge', X, Y, varargin, ...
                                         nargin > 2);
-      if (mod (numel (varargin), 2) != 0)
-        error (strcat ("CompactClassificationSVM.edge: Name-Value", ...
-                       " arguments must be in pairs."));
-      endif
 
       ## The weights are parsed before anything is computed, so a bad
       ## Name-Value pair is reported as such rather than after a margin.
@@ -1194,7 +1179,9 @@ endclassdef
 %! assert_equal (rows (CMdl.SupportVectors), numel (CMdl.Alpha))
 %! [label, score] = predict (CMdl, xc);
 %! assert_equal (label, [1; 2; 2]);
-%! assert_equal (score(:,1), [0.99285; -0.080296; -0.93694], 1e-5);
+%! ## R2024a's scores.
+%! assert_equal (score(:,1), [0.9813697204; -0.1752955874; ...
+%!                            -0.9410361822], 5e-4);
 %! assert_equal (score(:,1), -score(:,2), eps)
 %!test
 %! Mdl = fitcsvm (x, y);
@@ -1250,16 +1237,14 @@ endclassdef
 %!                'KernelFunction', 'rbf', 'Tolerance', 1e-7);
 %! CMdl = compact (Mdl);
 %! testInds = test (C);
-%! ## Every one of these fifteen is classified correctly, so every margin is
-%! ## positive.  They used to read -4.0000 downwards for the second class:
-%! ## the margin was formed from the response as given, so a 1/2 coding
-%! ## scaled that class by four instead of negating it, and the model looked
-%! ## as though it misclassified every observation of it.
-%! expected_margin = [2.0000;  0.8579;  1.6690;  3.4141;  3.4552; ...
-%!                    2.6605;  3.5251;  2.0000;  3.1705;  3.2256; ...
-%!                    1.5266;  3.7527;  0.8350;  2.8113;  3.6820];
+%! ## R2024a's margins, fitted on the same training rows.  Every one of the
+%! ## fifteen is classified correctly, so every margin is positive.
+%! expected_margin = [2.183612293; 0.998032770; 1.999658371; 3.068544065; ...
+%!                    2.967820747; 2.189865834; 3.256968349; 2.318380120; ...
+%!                    3.188442076; 3.154586323; 1.701435679; 3.218617427; ...
+%!                    1.028076370; 3.029995574; 2.811141675];
 %! computed_margin = margin (CMdl, x(testInds,:), y(testInds,:));
-%! assert_equal (computed_margin, expected_margin, 1e-4);
+%! assert_equal (computed_margin, expected_margin, 2e-3);
 %! assert (all (computed_margin > 0));
 
 ## Test input validation for margin method
@@ -1290,24 +1275,13 @@ endclassdef
 %! L4 = loss (CMdl, x(testInds,:), y(testInds,:), 'LossFun', 'hinge');
 %! L5 = loss (CMdl, x(testInds,:), y(testInds,:), 'LossFun', 'logit');
 %! L6 = loss (CMdl, x(testInds,:), y(testInds,:), 'LossFun', 'quadratic');
-%! ## These changed when loss stopped handing the response to LIBSVM
-%! ## unmapped: it used the labels 1 and 2 where the margin's sign wants +1
-%! ## and -1, so every loss but the error rate was scaled by the labels.
-%! ## margin had already been given svmPlusMinus and loss had been missed.
-%! ## Cross-checked against R2024a on a deterministic half-and-half split,
-%! ## where ours reads 0.1800, 0.0800, 0.3984, 0.1785, 0.3184, 0.2939 and
-%! ## MATLAB reads 0.1812, 0.0800, 0.4107, 0.1520, 0.3297, 0.1981: the
-%! ## error rate agrees exactly and the rest sit within the LIBSVM against
-%! ## SMO difference of section 1.  The old values were an order of
-%! ## magnitude out, a 53%% error rate among them.
-%! ## They moved again, by under 0.002, when loss began scaling the weights
-%! ## of each class to its prior, as MATLAB does.
-%! assert_equal (L1, 0.1125, 1e-4);
-%! assert_equal (L2, 0.0000, 1e-4);
-%! assert_equal (L3, 0.3140, 1e-4);
-%! assert_equal (L4, 0.1038, 1e-4);
-%! assert_equal (L5, 0.2656, 1e-4);
-%! assert_equal (L6, 0.3199, 1e-4);
+%! ## R2024a's losses, fitted on the same training rows.
+%! assert_equal (L1, 0.1059272872, 5e-4);
+%! assert_equal (L2, 0, 5e-4);
+%! assert_equal (L3, 0.3141243253, 5e-4);
+%! assert_equal (L4, 0.07545354045, 5e-4);
+%! assert_equal (L5, 0.2684014524, 5e-4);
+%! assert_equal (L6, 0.194889185, 5e-4);
 
 ## Test input validation for loss method
 %!error<CompactClassificationSVM.loss: too few input arguments.> ...
@@ -1328,13 +1302,15 @@ endclassdef
 %! loss (CMdl, [1, 2], 1, 'LossFun', 1)
 %!error<CompactClassificationSVM.loss: unsupported Loss function.> ...
 %! loss (CMdl, [1, 2], 1, 'LossFun', 'some')
-%!error<CompactClassificationSVM.loss: 'Weights' must be a numeric vector.> ...
+%!error<CompactClassificationSVM.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (CMdl, [1, 2], 1, 'Weights', ['a', 'b'])
 %!error<CompactClassificationSVM.loss: 'Weights' must be a numeric vector.> ...
+%! loss (CMdl, [1, 2], 1, 'Weights', ones (2, 2))
+%!error<CompactClassificationSVM.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (CMdl, [1, 2], 1, 'Weights', 'a')
 %!error<CompactClassificationSVM.loss: size of 'Weights' must be equal to the number of rows in X.> ...
 %! loss (CMdl, [1, 2], 1, 'Weights', [1, 2])
-%!error<CompactClassificationSVM.loss: invalid parameter name in optional pair arguments.> ...
+%!error<CompactClassificationSVM.loss: invalid optional paired argument.> ...
 %! loss (CMdl, [1, 2], 1, 'some', 'some')
 %!error <CompactClassificationSVM.savemodel: too few input arguments.> ...
 %! savemodel (CompactClassificationSVM ())

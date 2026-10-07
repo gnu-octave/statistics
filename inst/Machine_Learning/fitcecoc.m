@@ -72,8 +72,10 @@
 ## @item @qcode{'Prior'} @tab @tab @qcode{'empirical'} (default),
 ## @qcode{'uniform'}, or a vector with one element per class.
 ##
-## @item @qcode{'Weights'} @tab @tab A nonnegative numeric vector with one
-## element per observation.  The default is uniform.
+## @item @qcode{'Weights'} @tab @tab A nonnegative single or double vector with
+## one element per observation.  The default is uniform.  The model's @code{W}
+## keeps the class of the weights, while every computation runs in double, so
+## @code{Prior} is double where MATLAB returns single.
 ##
 ## @item @qcode{'CategoricalPredictors'} @tab @tab The predictors whose values
 ## are levels, as indices, a logical vector or @qcode{'all'}, passed as given
@@ -120,12 +122,7 @@
 ## MATLAB keeps no tree and never predicts those classes from it.
 ##
 ## Each binary learner is fitted with the weight its observations carry, which
-## the prior and any @qcode{'Weights'} decide.  The SVM, KNN, naive Bayes and
-## discriminant learners of this package take no observation weights, so when
-## those weights are unequal they are given instead the prior their two sides
-## hold, the prior MATLAB's learners report, and weights that vary within a
-## class, which no prior can express, are refused for them.  MATLAB weighs
-## each observation of those learners as well.
+## the prior and any @qcode{'Weights'} decide.
 ##
 ## @seealso{ClassificationECOC, CompactClassificationECOC, designecoc,
 ## templateSVM, templateTree}
@@ -306,7 +303,7 @@ endfunction
 %! fitcecoc (ones (4, 2), [1; 2; 1; 2], 'Learners', 'nosuch')
 %!error<ClassificationECOC: 'FitPosterior' is not implemented> ...
 %! fitcecoc (ones (4, 2), [1; 2; 1; 2], 'FitPosterior', true)
-%!error<ClassificationECOC: invalid parameter name> ...
+%!error<ClassificationECOC: invalid optional paired argument.> ...
 %! fitcecoc (ones (4, 2), [1; 2; 1; 2], 'NoSuch', 1)
 
 %!test  # MATLAB parity: classes given as text are sorted

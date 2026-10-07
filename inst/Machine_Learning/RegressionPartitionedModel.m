@@ -15,37 +15,23 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftypefn {statistics} {@var{obj} =} RegressionPartitionedModel (@var{Mdl}, @var{Partition})
-##
-## Create a @qcode{RegressionPartitionedModel} object, a regression model
-## cross validated over a partition of its training data.
-##
-## @code{@var{obj} = RegressionPartitionedModel (@var{Mdl}, @var{Partition})}
-## refits @var{Mdl} once per fold of @var{Partition}, each time on the
-## observations that fold holds out of its test set, and stores the compact
-## form of every fit in @code{Trained}.  It is normally reached through
-## @code{crossval (@var{Mdl})} rather than called directly.
-##
-## @itemize
-## @item
-## @var{Mdl} must be a @qcode{RegressionGAM}, a
-## @qcode{RegressionNeuralNetwork}, or a @qcode{RegressionSVM} object.
-## @item
-## @var{Partition} must be a @qcode{cvpartition} object over as many
-## observations as @var{Mdl} was trained on.
-## @end itemize
-##
-## Every observation is held out by exactly one fold under @math{k}-fold or
-## leave-one-out partitioning, so @code{kfoldPredict} can answer for it with a
-## model that never saw it.  Under a holdout partition only the test set is
-## answered for, and the rest come back @code{NaN}.
-##
-## @seealso{crossval, cvpartition, RegressionGAM, RegressionNeuralNetwork,
-## RegressionSVM}
-## @end deftypefn
-
 classdef RegressionPartitionedModel
+  ## -*- texinfo -*-
+  ## @deftp {statistics} RegressionPartitionedModel
+  ##
+  ## Cross-validated regression model.
+  ##
+  ## A @qcode{RegressionPartitionedModel} object holds a regression model cross
+  ## validated over a partition of its training data: one compact model per
+  ## fold, in @code{Trained}, each fitted without the observations that fold
+  ## tests on.  @code{kfoldPredict}, @code{kfoldLoss} and @code{kfoldfun} answer
+  ## for every observation with a model that never saw it.
+  ##
+  ## Create a @qcode{RegressionPartitionedModel} object with the @code{crossval}
+  ## method of a regression model or with the class constructor.
+  ##
+  ## @seealso{crossval, cvpartition, ClassificationPartitionedModel}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = public)
 
@@ -324,11 +310,31 @@ classdef RegressionPartitionedModel
     ## -*- texinfo -*-
     ## @deftypefn {RegressionPartitionedModel} {@var{obj} =} RegressionPartitionedModel (@var{Mdl}, @var{Partition})
     ##
-    ## Create a @qcode{RegressionPartitionedModel} object.
+    ## Cross-validate a regression model over a partition of its training data.
     ##
-    ## See the class documentation for what it holds and how it is reached.
+    ## @code{@var{obj} = RegressionPartitionedModel (@var{Mdl},
+    ## @var{Partition})} refits @var{Mdl} once per fold of @var{Partition},
+    ## each time on the observations that fold holds out of its test set, and
+    ## stores the compact form of every fit in @code{Trained}.  It is normally
+    ## reached through @code{crossval (@var{Mdl})} rather than called directly.
     ##
-    ## @seealso{crossval, RegressionPartitionedModel}
+    ## @itemize
+    ## @item
+    ## @var{Mdl} must be a @qcode{RegressionGAM}, a @qcode{RegressionGP}, a
+    ## @qcode{RegressionNeuralNetwork}, a @qcode{RegressionSVM} or a
+    ## @qcode{RegressionTree} object.
+    ## @item
+    ## @var{Partition} must be a @qcode{cvpartition} object over as many
+    ## observations as @var{Mdl} was trained on.
+    ## @end itemize
+    ##
+    ## Every observation is held out by exactly one fold under @math{k}-fold or
+    ## leave-one-out partitioning, so @code{kfoldPredict} can answer for it with
+    ## a model that never saw it.  Under a holdout partition only the test set
+    ## is answered for, and the rest come back @code{NaN}.
+    ##
+    ## @seealso{crossval, cvpartition, RegressionGAM, RegressionGP,
+    ## RegressionNeuralNetwork, RegressionSVM, RegressionTree}
     ## @end deftypefn
     function this = RegressionPartitionedModel (Mdl, Partition)
 
@@ -456,9 +462,20 @@ classdef RegressionPartitionedModel
           else
             args = [args, {'Solver', 'sgd', 'LearningRate', Mdl.LearningRate}];
           endif
+          ## A model fitted with weights passes each fold the weights of its
+          ## rows; without them W is uniform and the folds need none.
+          wAll = [];
+          Wd = double (this.W);
+          if (max (Wd) - min (Wd) > 1e-12 * max (Wd))
+            wAll = this.W;
+          endif
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            tmp = fitrnet (X(idx, :), Y(idx), args{:});
+            fargs = args;
+            if (! isempty (wAll))
+              fargs = [fargs, {'Weights', wAll(idx)}];
+            endif
+            tmp = fitrnet (X(idx, :), Y(idx), fargs{:});
             this.Trained{k} = compact (tmp);
           endfor
 
@@ -504,9 +521,11 @@ classdef RegressionPartitionedModel
                   'CategoricalPredictors', Mdl.CategoricalPredictors, ...
                   'ResponseName', Mdl.ResponseName, ...
                   'PredictorNames', Mdl.PredictorNames};
+          ## A fold keeps the weights of the rows it holds.
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            tmp = fitrsvm (X(idx, :), Y(idx), args{:});
+            tmp = fitrsvm (X(idx, :), Y(idx), args{:}, ...
+                           'Weights', this.W(idx));
             this.Trained{k} = compact (tmp);
           endfor
 
@@ -631,27 +650,28 @@ classdef RegressionPartitionedModel
                        " optional arguments are only accepted for a", ...
                        " cross-validated RegressionGP."));
       endif
-      CIAlpha = 0.05;
-      while (numel (varargin) > 0)
-        if (numel (varargin) < 2)
-          error (strcat ("RegressionPartitionedModel.kfoldPredict:", ...
-                         " optional arguments must be given in Name-Value", ...
-                         " pairs."));
-        endif
-        switch (lower (varargin{1}))
-          case 'alpha'
-            CIAlpha = varargin{2};
-            if (! (isnumeric (CIAlpha) && isscalar (CIAlpha) && ...
-                   CIAlpha >= 0 && CIAlpha <= 1))
-              error (strcat ("RegressionPartitionedModel.kfoldPredict:", ...
-                             " 'Alpha' must be a scalar between 0 and 1."));
-            endif
-          otherwise
-            error (strcat ("RegressionPartitionedModel.kfoldPredict:", ...
-                           " invalid NAME in optional pairs of arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("RegressionPartitionedModel.kfoldPredict:", ...
+                       " optional arguments must be given in Name-Value", ...
+                       " pairs."));
+      endif
+      ## Parse optional paired arguments
+      optNames = {'Alpha'};
+      dfValues = {0.05};
+      [CIAlpha, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (isnumeric (CIAlpha) && isscalar (CIAlpha) && ...
+             CIAlpha >= 0 && CIAlpha <= 1))
+        error (strcat ("RegressionPartitionedModel.kfoldPredict: 'Alpha'", ...
+                       " must be a scalar between 0 and 1."));
+      endif
+
+      if (! isempty (args))
+        error (strcat ("RegressionPartitionedModel.kfoldPredict: invalid", ...
+                       " optional paired argument."));
+      endif
 
       yFit = nan (this.NumObservations, 1);
       if (nargout > 1)
@@ -732,57 +752,39 @@ classdef RegressionPartitionedModel
                        " arguments must be in pairs."));
       endif
 
-      ## Defaults, then the optional pairs
-      LossFun = 'mse';
-      Mode    = 'average';
-      Folds   = 1:this.KFold;
-      while (numel (varargin) > 0)
-        if (! (ischar (varargin{1}) && isrow (varargin{1})))
-          error (strcat ("RegressionPartitionedModel.kfoldLoss: parameter", ...
-                         " name must be a character vector."));
-        endif
-        switch (tolower (varargin{1}))
+      ## Parse optional paired arguments
+      optNames = {'LossFun', 'Mode', 'Folds'};
+      dfValues = {'mse', 'average', 1:this.KFold};
+      [LossFun, Mode, Folds, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-          case 'lossfun'
-            LossFun = varargin{2};
-            if (! (is_function_handle (LossFun) ||
-                   (ischar (LossFun) && isrow (LossFun))))
-              error (strcat ("RegressionPartitionedModel.kfoldLoss:", ...
-                             " 'LossFun' must be a character vector or", ...
-                             " a function handle."));
-            endif
-            if (ischar (LossFun) && ! any (strcmpi (LossFun, ...
-                                           {'mse', 'epsiloninsensitive'})))
-              error (strcat ("RegressionPartitionedModel.kfoldLoss:", ...
-                             " unsupported 'LossFun' value."));
-            endif
+      ## Validate optional paired arguments
+      if (! (is_function_handle (LossFun) ||
+             (ischar (LossFun) && isrow (LossFun))))
+        error (strcat ("RegressionPartitionedModel.kfoldLoss: 'LossFun'", ...
+                       " must be a character vector or a function handle."));
+      endif
+      if (ischar (LossFun) && ! any (strcmpi (LossFun, ...
+                                     {'mse', 'epsiloninsensitive'})))
+        error (strcat ("RegressionPartitionedModel.kfoldLoss: unsupported", ...
+                       " 'LossFun' value."));
+      endif
+      if (! (ischar (Mode) && isrow (Mode) &&
+             any (strcmpi (Mode, {'average', 'individual'}))))
+        error (strcat ("RegressionPartitionedModel.kfoldLoss: 'Mode' must", ...
+                       " be either 'average' or 'individual'."));
+      endif
+      if (! (isnumeric (Folds) && isvector (Folds)
+             && all (Folds == fix (Folds))
+             && all (Folds >= 1) && all (Folds <= this.KFold)))
+        error (strcat ("RegressionPartitionedModel.kfoldLoss: 'Folds' must", ...
+                       " be a vector of fold indices between 1 and KFold."));
+      endif
 
-          case 'mode'
-            Mode = varargin{2};
-            if (! (ischar (Mode) && isrow (Mode) &&
-                   any (strcmpi (Mode, {'average', 'individual'}))))
-              error (strcat ("RegressionPartitionedModel.kfoldLoss:", ...
-                             " 'Mode' must be either 'average' or", ...
-                             " 'individual'."));
-            endif
-
-          case 'folds'
-            Folds = varargin{2};
-            if (! (isnumeric (Folds) && isvector (Folds)
-                   && all (Folds == fix (Folds))
-                   && all (Folds >= 1) && all (Folds <= this.KFold)))
-              error (strcat ("RegressionPartitionedModel.kfoldLoss:", ...
-                             " 'Folds' must be a vector of fold indices", ...
-                             " between 1 and KFold."));
-            endif
-
-          otherwise
-            error (strcat ("RegressionPartitionedModel.kfoldLoss: invalid", ...
-                           " parameter name in optional paired arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("RegressionPartitionedModel.kfoldLoss: invalid", ...
+                       " optional paired argument."));
+      endif
 
       ## The insensitive tube is a property of a support vector model, so any
       ## other cross-validated model has nothing to measure against.  Answering
@@ -825,8 +827,8 @@ classdef RegressionPartitionedModel
     ## numeric vector of the same length every time it is called:
     ##
     ## @example
-    ## @var{testvals} = @var{fun} (@var{M}, @var{Xtrain}, @var{Ytrain}, @var{Wtrain}, @dots{}
-    ##                @var{Xtest}, @var{Ytest}, @var{Wtest})
+    ## @var{testvals} = @var{fun} (@var{M}, @var{Xtrain}, @var{Ytrain}, @dots{}
+    ##                @var{Wtrain}, @var{Xtest}, @var{Ytest}, @var{Wtest})
     ## @end example
     ##
     ## @var{M} is the model the fold was fitted with, taken from
@@ -895,7 +897,7 @@ classdef RegressionPartitionedModel
       endif
       y = this.Y(idx);
       f = yFit(idx);
-      w = this.W(idx);
+      w = double (this.W(idx));
       w = w(:) / sum (w);
       if (is_function_handle (LossFun))
         L = LossFun (y(:), f(:), w);
@@ -1172,7 +1174,7 @@ endclassdef
 %! load fisheriris; ...
 %! CVMdl = crossval (fitrgp (meas(:,1:3), meas(:,4)), 'KFold', 3); ...
 %! kfoldPredict (CVMdl, 'Alpha', 2);
-%!error<RegressionPartitionedModel.kfoldPredict: invalid NAME in optional pairs of arguments.> ...
+%!error<RegressionPartitionedModel.kfoldPredict: invalid optional paired argument.> ...
 %! load fisheriris; ...
 %! CVMdl = crossval (fitrgp (meas(:,1:3), meas(:,4)), 'KFold', 3); ...
 %! kfoldPredict (CVMdl, 'Bogus', 1);
@@ -1236,7 +1238,7 @@ endclassdef
 %! CVR = crossval (fitrsvm (randn (20, 2), randn (20, 1)), 'KFold', 4);
 %!error<RegressionPartitionedModel.kfoldLoss: Name-Value arguments must be in pairs.> ...
 %! kfoldLoss (CVR, 'Mode')
-%!error<RegressionPartitionedModel.kfoldLoss: parameter name must be a character vector.> ...
+%!error<RegressionPartitionedModel.kfoldLoss: invalid optional paired argument.> ...
 %! kfoldLoss (CVR, 5, 1)
 %!error<RegressionPartitionedModel.kfoldLoss: 'LossFun' must be a character vector or a function handle.> ...
 %! kfoldLoss (CVR, 'LossFun', 5)
@@ -1250,7 +1252,7 @@ endclassdef
 %! kfoldLoss (CVR, 'Folds', 0)
 %!error<RegressionPartitionedModel.kfoldLoss: 'Folds' must be a vector of fold indices between 1 and KFold.> ...
 %! kfoldLoss (CVR, 'Folds', 9)
-%!error<RegressionPartitionedModel.kfoldLoss: invalid parameter name in optional paired arguments.> ...
+%!error<RegressionPartitionedModel.kfoldLoss: invalid optional paired argument.> ...
 %! kfoldLoss (CVR, 'Nope', 1)
 
 ## The insensitive tube belongs to a support vector model only.
@@ -1459,3 +1461,28 @@ endclassdef
 %! Mdl.ResponseTransform = @(x) x .^ 2;
 %! yhat = kfoldPredict (Mdl);
 %! assert_equal (yhat, raw .^ 2, 1e-12);
+%!test
+%! ## A support vector regression fold is fitted with its rows' weights
+%! load fisheriris
+%! X = meas(:,2:4);
+%! y = meas(:,1);
+%! w = 1 + (1:150)' / 7;
+%! CVMdl = crossval (fitrsvm (X, y, 'Weights', w), 'KFold', 3);
+%! idx = training (CVMdl.Partition, 1);
+%! Mdl = fitrsvm (X(idx,:), y(idx), 'Weights', CVMdl.W(idx), ...
+%!                'Epsilon', CVMdl.ModelParameters.Epsilon);
+%! assert_equal (predict (CVMdl.Trained{1}, X), predict (Mdl, X), 1e-14);
+%!test
+%! ## A neural network fold is fitted with its rows' weights
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = fitrnet (meas(:,2:4), meas(:,1), 'LayerSizes', 3, 'Weights', w);
+%! rand ('seed', 7);
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! idx = training (CVMdl.Partition, 1);
+%! rand ('seed', 7);
+%! cvpartition (150, 'KFold', 3);
+%! F = fitrnet (meas(idx,2:4), meas(idx,1), 'LayerSizes', 3, ...
+%!              'Weights', Mdl.W(idx));
+%! assert_equal (predict (CVMdl.Trained{1}, meas(:,2:4)), ...
+%!               predict (F, meas(:,2:4)), 1e-10);

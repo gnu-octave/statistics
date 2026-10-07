@@ -22,9 +22,9 @@ classdef GeneralizedExtremeValueDistribution < prob.ProbabilityDistribution
   ##
   ## Generalized extreme value probability distribution object.
   ##
-  ## A @code{prob.GeneralizedExtremeValueDistribution} object consists of parameters,
-  ## a model description, and sample data for a generalized extreme value
-  ## probability distribution.
+  ## A @code{prob.GeneralizedExtremeValueDistribution} object consists of
+  ## parameters, a model description, and sample data for a generalized extreme
+  ## value probability distribution.
   ##
   ## The generalized extreme value distribution is a continuous probability
   ## distribution that models extreme values.  It is defined by shape parameter
@@ -41,10 +41,10 @@ classdef GeneralizedExtremeValueDistribution < prob.ProbabilityDistribution
   ## (@var{k}, @var{sigma}, @var{mu})} to create a generalized extreme value
   ## distribution with fixed parameter values @var{k}, @var{sigma}, and
   ## @var{mu}.
-  ## @item Use the static method @qcode{prob.GeneralizedExtremeValueDistribution.fit
-  ## (@var{x}, @var{alpha}, @var{freq}, @var{options})} to fit a distribution to
-  ## the data in @var{x} using the same input arguments as the @code{gevfit}
-  ## function.
+  ## @item Use the static method
+  ## @qcode{prob.GeneralizedExtremeValueDistribution.fit (@var{x}, @var{alpha},
+  ## @var{freq}, @var{options})} to fit a distribution to the data in @var{x}
+  ## using the same input arguments as the @code{gevfit} function.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}

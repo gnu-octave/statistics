@@ -24,13 +24,14 @@
 ##
 ## Predict values for a multinomial logistic regression model.
 ##
-## @code{@var{pihat} = mnrval (@var{B}, @var{X})} returns the predicted
-## category probabilities @var{pihat} of a multinomial logistic regression with
+## @code{@var{pihat} = mnrval (@var{B}, @var{X})} returns the predicted category
+## probabilities @var{pihat} of a multinomial logistic regression with
 ## coefficients @var{B}, evaluated at the predictor values in @var{X}.  @var{X}
 ## is an @math{N*P} numeric matrix of @math{N} observations on @math{P}
-## predictors.  @var{pihat} is an @math{N*K} matrix, where @math{K} is the number
-## of response categories and each row sums to one.  @var{B} is the coefficient
-## matrix returned by @code{mnrfit} (see below for its shape under each model).
+## predictors.  @var{pihat} is an @math{N*K} matrix, where @math{K} is the
+## number of response categories and each row sums to one.  @var{B} is the
+## coefficient matrix returned by @code{mnrfit} (see below for its shape under
+## each model).
 ##
 ## @code{mnrval} is the prediction companion of @code{mnrfit}.  Unlike the
 ## current @code{mnrfit}, which only fits ordinal and two-category nominal
@@ -62,8 +63,8 @@
 ## category-specific intercepts only.  Default is @qcode{'on'} for nominal and
 ## hierarchical models and @qcode{'off'} for ordinal models.  With
 ## @qcode{'interactions','on'}, @var{B} is a @math{(P+1)*(K-1)} matrix.  With
-## @qcode{'interactions','off'}, @var{B} is a @math{(K-1+P)*1} vector holding the
-## @math{K-1} intercepts followed by the @math{P} common slopes.
+## @qcode{'interactions','off'}, @var{B} is a @math{(K-1+P)*1} vector holding
+## the @math{K-1} intercepts followed by the @math{P} common slopes.
 ##
 ## @item @qcode{'link'} @tab The link function for ordinal and hierarchical
 ## models: @qcode{'logit'} (default), @qcode{'probit'}, @qcode{'comploglog'}, or

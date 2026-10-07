@@ -16,28 +16,28 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef CompactRegressionSVM < PredictiveModel
-## -*- texinfo -*-
-## @deftp {statistics} CompactRegressionSVM
-##
-## Compact Support Vector Machine regression
-##
-## A @code{CompactRegressionSVM} object holds a support vector regression
-## model that has dropped its training data.
-##
-## Create a @code{CompactRegressionSVM} object by using the @code{compact}
-## method of a @code{RegressionSVM} object.
-##
-## The compact model keeps what is needed to answer about new data, the
-## support vectors and their coefficients, the intercept, the kernel, the
-## standardization and the response transform, and drops what only describes
-## the fit: the predictor and response data, the observation weights, the rows
-## used, the observation count, and which training rows became support
-## vectors.  @code{predict} and @code{loss} therefore agree with the full
-## model to the last digit, while @code{resubPredict} and @code{resubLoss} do
-## not exist here, there being no training data left to resubstitute.
-##
-## @seealso{RegressionSVM, fitrsvm}
-## @end deftp
+  ## -*- texinfo -*-
+  ## @deftp {statistics} CompactRegressionSVM
+  ##
+  ## Compact Support Vector Machine regression
+  ##
+  ## A @code{CompactRegressionSVM} object holds a support vector regression
+  ## model that has dropped its training data.
+  ##
+  ## Create a @code{CompactRegressionSVM} object by using the @code{compact}
+  ## method of a @code{RegressionSVM} object.
+  ##
+  ## The compact model keeps what is needed to answer about new data, the
+  ## support vectors and their coefficients, the intercept, the kernel, the
+  ## standardization and the response transform, and drops what only describes
+  ## the fit: the predictor and response data, the observation weights, the
+  ## rows used, the observation count, and which training rows became support
+  ## vectors.  @code{predict} and @code{loss} therefore agree with the full
+  ## model to the last digit, while @code{resubPredict} and @code{resubLoss}
+  ## do not exist here, there being no training data left to resubstitute.
+  ##
+  ## @seealso{RegressionSVM, fitrsvm}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
@@ -123,8 +123,10 @@ classdef CompactRegressionSVM < PredictiveModel
     ## Primal coefficients, one per predictor
     ##
     ## A numeric column vector, equal to
-    ## @code{obj.SupportVectors' * obj.Alpha}, and empty for any kernel other
-    ## than linear.  This property is read-only.
+    ## @code{(obj.SupportVectors / s)' * obj.Alpha}, where @math{s} is the
+    ## kernel scale, so that a prediction is @code{(@var{x} / s) * Beta + Bias},
+    ## as in MATLAB.  It is empty for any kernel other than linear.  This
+    ## property is read-only.
     ##
     ## @end deftp
     Beta                  = [];
@@ -297,15 +299,6 @@ classdef CompactRegressionSVM < PredictiveModel
       this.MissingResponse_ = Mdl.MissingResponse_;
       this.ExpandedPredictorNames = Mdl.ExpandedPredictorNames;
 
-    endfunction
-
-    ## Custom display
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
     endfunction
 
     ## Custom display
@@ -499,35 +492,47 @@ classdef CompactRegressionSVM < PredictiveModel
 
       [X, Y] = checkXY_ (this, X, Y, 'loss');
 
-      ## Defaults, then the optional pairs
-      LossFun = 'mse';
-      args = varargin;
-      keep = true (1, numel (args));
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("CompactRegressionSVM.loss: parameter name must", ...
-                         " be a character vector."));
-        endif
-        if (strcmpi (args{i}, 'lossfun'))
-          LossFun = args{i+1};
-          if (! (is_function_handle (LossFun) ||
-                 (ischar (LossFun) && isrow (LossFun))))
-            error (strcat ("CompactRegressionSVM.loss: 'LossFun' must be", ...
-                           " a character vector or a function handle."));
-          endif
-          if (ischar (LossFun) && ! any (strcmpi (LossFun, ...
-                                         {'mse', 'epsiloninsensitive'})))
-            error (strcat ("CompactRegressionSVM.loss: unsupported", ...
-                           " 'LossFun' value."));
-          endif
-          keep(i:i+1) = false;
-        endif
-      endfor
-      W = getWeights_ (this, args(keep), rows (X), 'loss');
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mse', []};
+      [LossFun, W, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (is_function_handle (LossFun) ||
+             (ischar (LossFun) && isrow (LossFun))))
+        error (strcat ("CompactRegressionSVM.loss: 'LossFun' must be a", ...
+                       " character vector or a function handle."));
+      endif
+      if (ischar (LossFun) && ! any (strcmpi (LossFun, ...
+                                     {'mse', 'epsiloninsensitive'})))
+        error ("CompactRegressionSVM.loss: unsupported 'LossFun' value.");
+      endif
+      errmsg = weightsClass (W);
+      if (! isempty (errmsg))
+        error ("CompactRegressionSVM.loss: %s", errmsg);
+      endif
+      if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
+        error (strcat ("CompactRegressionSVM.loss: 'Weights' must be a", ...
+                       " numeric vector."));
+      endif
+      if (! isempty (W) && numel (W) != rows (X))
+        error (strcat ("CompactRegressionSVM.loss: size of 'Weights' must", ...
+                       " equal the number of rows in X."));
+      endif
+
+      if (! isempty (args))
+        error ("CompactRegressionSVM.loss: invalid optional paired argument.");
+      endif
+      if (isempty (W))
+        W = ones (rows (X), 1);
+      endif
 
       ## Weights are normalized to sum to one, as MATLAB does, so a loss is
       ## a weighted average rather than a weighted sum.
-      W = W(:) / sum (W);
+      W = double (W(:));
+      W = W / sum (W);
       yFit = predict (this, X);
       Y = Y(:);
 
@@ -619,32 +624,6 @@ classdef CompactRegressionSVM < PredictiveModel
         error (strcat ("CompactRegressionSVM.%s: Y must have the same", ...
                        " number of rows as X."), caller);
       endif
-    endfunction
-
-    ## Pull a "Weights" pair out of the optional arguments, defaulting to a
-    ## uniform weight, and reject any other name.
-    function W = getWeights_ (this, args, n, caller)
-      W = ones (n, 1);
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("CompactRegressionSVM.%s: parameter name must", ...
-                         " be a character vector."), caller);
-        endif
-        if (strcmpi (args{i}, 'weights'))
-          W = args{i+1};
-          if (! (isnumeric (W) && isvector (W)))
-            error (strcat ("CompactRegressionSVM.%s: 'Weights' must be", ...
-                           " a numeric vector."), caller);
-          endif
-          if (numel (W) != n)
-            error (strcat ("CompactRegressionSVM.%s: size of 'Weights'", ...
-                           " must equal the number of rows in X."), caller);
-          endif
-        else
-          error (strcat ("CompactRegressionSVM.%s: invalid parameter name", ...
-                         " in optional paired arguments."), caller);
-        endif
-      endfor
     endfunction
 
   endmethods
@@ -870,11 +849,13 @@ endclassdef
 %! loss (CRSVM, [1, 1; 2, 1], [2; 4], 'LossFun', 'mae')
 %!error<CompactRegressionSVM.loss: 'LossFun' must return a numeric scalar.> ...
 %! loss (CRSVM, [1, 1; 2, 1], [2; 4], 'LossFun', @(y, yf, w) [1, 2])
-%!error<CompactRegressionSVM.loss: 'Weights' must be a numeric vector.> ...
+%!error<CompactRegressionSVM.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (CRSVM, [1, 1; 2, 1], [2; 4], 'Weights', {'a'})
+%!error<CompactRegressionSVM.loss: 'Weights' must be a numeric vector.> ...
+%! loss (CRSVM, [1, 1; 2, 1], [2; 4], 'Weights', ones (2, 2))
 %!error<CompactRegressionSVM.loss: size of 'Weights' must equal the number of rows in X.> ...
 %! loss (CRSVM, [1, 1; 2, 1], [2; 4], 'Weights', [1; 2; 3])
-%!error<CompactRegressionSVM.loss: invalid parameter name in optional paired arguments.> ...
+%!error<CompactRegressionSVM.loss: invalid optional paired argument.> ...
 %! loss (CRSVM, [1, 1; 2, 1], [2; 4], 'Nope', 1)
 
 ## Test input validation for savemodel

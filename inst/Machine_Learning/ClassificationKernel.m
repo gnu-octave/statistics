@@ -15,38 +15,37 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftp {statistics} ClassificationKernel
-##
-## Gaussian kernel binary classifier for large data.
-##
-## A @qcode{ClassificationKernel} object maps the predictors into a
-## randomized feature space whose inner product approximates a Gaussian
-## kernel, and then fits a linear model there.  A kernel classifier is
-## therefore as nonlinear as a support vector machine with a Gaussian kernel,
-## while costing what a linear fit costs: nothing of size @math{NxN} is ever
-## formed.
-##
-## The expansion is the random Fourier basis of Rahimi and Recht, drawn once
-## when the model is fitted and kept with it, so @code{predict} maps new data
-## through the same basis.  MATLAB approximates the same kernel by the
-## Fastfood construction, which reaches the same distribution more cheaply;
-## the two are interchangeable in distribution but not draw by draw, and the
-## draws come from different generators in any case, so the scores of a model
-## fitted here and one fitted in MATLAB differ even from the same seed.
-## What does not differ is what they estimate.
-##
-## Like @qcode{ClassificationLinear} the object holds no copy of the training
-## data.  It does hold the basis and the coefficients, so it is bounded by
-## the number of expansion dimensions rather than by the number of
-## observations.
-##
-## Create a @qcode{ClassificationKernel} object with @code{fitckernel}.
-##
-## @seealso{fitckernel, ClassificationLinear, ClassificationSVM}
-## @end deftp
-
 classdef ClassificationKernel < PredictiveModel
+  ## -*- texinfo -*-
+  ## @deftp {statistics} ClassificationKernel
+  ##
+  ## Gaussian kernel binary classifier for large data.
+  ##
+  ## A @qcode{ClassificationKernel} object maps the predictors into a
+  ## randomized feature space whose inner product approximates a Gaussian
+  ## kernel, and then fits a linear model there.  A kernel classifier is
+  ## therefore as nonlinear as a support vector machine with a Gaussian kernel,
+  ## while costing what a linear fit costs: nothing of size @math{NxN} is ever
+  ## formed.
+  ##
+  ## The expansion is the random Fourier basis of Rahimi and Recht, drawn once
+  ## when the model is fitted and kept with it, so @code{predict} maps new data
+  ## through the same basis.  MATLAB approximates the same kernel by the
+  ## Fastfood construction, which reaches the same distribution more cheaply;
+  ## the two are interchangeable in distribution but not draw by draw, and the
+  ## draws come from different generators in any case, so the scores of a model
+  ## fitted here and one fitted in MATLAB differ even from the same seed.
+  ## What does not differ is what they estimate.
+  ##
+  ## Like @qcode{ClassificationLinear} the object holds no copy of the training
+  ## data.  It does hold the basis and the coefficients, so it is bounded by
+  ## the number of expansion dimensions rather than by the number of
+  ## observations.
+  ##
+  ## Create a @qcode{ClassificationKernel} object with @code{fitckernel}.
+  ##
+  ## @seealso{fitckernel, ClassificationLinear, ClassificationSVM}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 
@@ -379,7 +378,8 @@ classdef ClassificationKernel < PredictiveModel
     ## @item @qcode{'ScoreTransform'} @tab A transformation applied to the
     ## scores, named or given as a function handle.
     ##
-    ## @item @qcode{'Weights'} @tab One nonnegative weight per observation.
+    ## @item @qcode{'Weights'} @tab One nonnegative weight per observation, as a
+    ## single or double vector.  Every computation runs in double.
     ##
     ## @item @qcode{'PredictorNames'} @tab One name per predictor.
     ##
@@ -417,228 +417,155 @@ classdef ClassificationKernel < PredictiveModel
                        " be given in Name-Value pairs."));
       endif
 
-      ## Defaults
-      Learner                = 'svm';
-      NumDimsIn              = 'auto';
-      KernelScaleIn          = 1;
-      LambdaIn               = 'auto';
-      BoxConstraint          = 1;
-      BoxGiven               = false;
-      LambdaGiven            = false;
-      Standardize            = false;
-      BetaTolerance          = 1e-4;
-      GradientTolerance      = 1e-6;
-      IterationLimit         = 1000;
-      HessianHistorySize     = 15;
-      BlockSize              = 4e3;
-      Verbose                = 0;
-      ClassNames             = [];
-      CostIn                 = [];
-      Prior                  = [];
-      ScoreTransform         = [];
-      Weights                = [];
-      PredictorNames         = {};
-      ResponseName           = 'Y';
-      CategoricalPredictors  = [];
+      ## Parse optional paired arguments
+      optNames = {'Learner', 'NumExpansionDimensions', 'KernelScale', ...
+                  'Lambda', 'BoxConstraint', 'Standardize', ...
+                  'BetaTolerance', 'GradientTolerance', 'IterationLimit', ...
+                  'HessianHistorySize', 'BlockSize', 'Verbose', ...
+                  'ClassNames', 'Cost', 'Prior', 'ScoreTransform', ...
+                  'Weights', 'PredictorNames', 'ResponseName', ...
+                  'CategoricalPredictors'};
+      ## An empty default stands for one resolved once the data are known:
+      ## 'Lambda' is 'auto', 1/n, and 'BoxConstraint' is 1, each empty so
+      ## that giving it is told apart from leaving it out; 'ClassNames',
+      ## 'Cost', 'Prior' and 'Weights' come from the response as every
+      ## class, a zero-one cost, the empirical prior and uniform weights;
+      ## 'ScoreTransform' is 'logit' for a logistic learner and 'none'
+      ## otherwise; 'PredictorNames' are x1, x2, ...
+      dfValues = {'svm', 'auto', 1, [], [], false, 1e-4, 1e-6, 1000, 15, ...
+                  4e3, 0, [], [], [], [], [], {}, 'Y', []};
+      [Learner, NumDimsIn, KernelScaleIn, LambdaIn, BoxConstraint, ...
+       Standardize, BetaTolerance, GradientTolerance, IterationLimit, ...
+       HessianHistorySize, BlockSize, Verbose, ClassNames, CostIn, Prior, ...
+       ScoreTransform, Weights, PredictorNames, ResponseName, ...
+       CategoricalPredictors, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
+      ## Validate optional paired arguments
+      if (! (ischar (Learner) && any (strcmpi (Learner, {'svm', 'logistic'}))))
+        error (strcat ("ClassificationKernel: 'Learner' must be either", ...
+                       " 'svm' or 'logistic'."));
+      endif
+      Learner = lower (Learner);
+      if (! ((ischar (NumDimsIn) && strcmpi (NumDimsIn, 'auto'))
+             || (isnumeric (NumDimsIn) && isscalar (NumDimsIn)
+                 && isreal (NumDimsIn) && NumDimsIn > 0
+                 && fix (NumDimsIn) == NumDimsIn)))
+        error (strcat ("ClassificationKernel: 'NumExpansionDimensions'", ...
+                       " must be 'auto' or a positive integer scalar."));
+      endif
+      if (! ((ischar (KernelScaleIn) && strcmpi (KernelScaleIn, 'auto'))
+             || (isnumeric (KernelScaleIn) && isscalar (KernelScaleIn)
+                 && isreal (KernelScaleIn) && KernelScaleIn > 0)))
+        error (strcat ("ClassificationKernel: 'KernelScale' must be 'auto'", ...
+                       " or a positive scalar."));
+      endif
+      if (! isempty (LambdaIn) &&
+          ! ((ischar (LambdaIn) && strcmpi (LambdaIn, 'auto'))
+             || (isnumeric (LambdaIn) && isscalar (LambdaIn)
+                 && isreal (LambdaIn) && LambdaIn >= 0
+                 && isfinite (LambdaIn))))
+        error (strcat ("ClassificationKernel: 'Lambda' must be 'auto' or a", ...
+                       " nonnegative finite scalar."));
+      endif
+      if (! isempty (BoxConstraint) &&
+          ! (isnumeric (BoxConstraint) && isscalar (BoxConstraint)
+             && isreal (BoxConstraint) && BoxConstraint > 0
+             && isfinite (BoxConstraint)))
+        error (strcat ("ClassificationKernel: 'BoxConstraint' must be a", ...
+                       " positive finite scalar."));
+      endif
+      if (! (islogical (Standardize) || (isnumeric (Standardize)
+             && isscalar (Standardize) && any (Standardize == [0, 1]))))
+        error (strcat ("ClassificationKernel: 'Standardize' must be either", ...
+                       " true or false."));
+      endif
+      Standardize = logical (Standardize);
+      if (! (isnumeric (BetaTolerance) && isscalar (BetaTolerance)
+             && isreal (BetaTolerance) && BetaTolerance >= 0))
+        error (strcat ("ClassificationKernel: 'BetaTolerance' must be a", ...
+                       " nonnegative scalar."));
+      endif
+      if (! (isnumeric (GradientTolerance) && isscalar (GradientTolerance)
+             && isreal (GradientTolerance) && GradientTolerance >= 0))
+        error (strcat ("ClassificationKernel: 'GradientTolerance' must be", ...
+                       " a nonnegative scalar."));
+      endif
+      if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
+             && isreal (IterationLimit) && IterationLimit > 0
+             && fix (IterationLimit) == IterationLimit))
+        error (strcat ("ClassificationKernel: 'IterationLimit' must be a", ...
+                       " positive integer scalar."));
+      endif
+      if (! (isnumeric (HessianHistorySize) && isscalar (HessianHistorySize)
+             && isreal (HessianHistorySize) && HessianHistorySize > 0
+             && fix (HessianHistorySize) == HessianHistorySize))
+        error (strcat ("ClassificationKernel: 'HessianHistorySize' must be", ...
+                       " a positive integer scalar."));
+      endif
+      if (! (isnumeric (BlockSize) && isscalar (BlockSize)
+             && isreal (BlockSize) && BlockSize > 0))
+        error ("ClassificationKernel: 'BlockSize' must be a positive scalar.");
+      endif
+      if (! (isnumeric (Verbose) && isscalar (Verbose) && isreal (Verbose)
+             && any (Verbose == [0, 1])))
+        error ("ClassificationKernel: 'Verbose' must be 0 or 1.");
+      endif
+      if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
+             || islogical (ClassNames) || ischar (ClassNames)
+             || isa (ClassNames, 'categorical')
+             || isa (ClassNames, 'string')))
+        error (strcat ("ClassificationKernel: 'ClassNames' must be a", ...
+                       " categorical array, a character array, a string", ...
+                       " array, a logical vector, a numeric vector, or a", ...
+                       " cell array of character vectors."));
+      endif
+      if (! (isnumeric (CostIn) && isreal (CostIn) && ismatrix (CostIn)
+             && ndims (CostIn) == 2 && rows (CostIn) == columns (CostIn)))
+        error ("ClassificationKernel: 'Cost' must be a square numeric matrix.");
+      endif
+      if (! isempty (Prior) &&
+          ! ((ischar (Prior) && any (strcmpi (Prior, {'empirical', ...
+                                                      'uniform'})))
+             || (isnumeric (Prior) && isreal (Prior) && isvector (Prior)
+                 && all (Prior >= 0))
+             || (isstruct (Prior) && isscalar (Prior))))
+        error (strcat ("ClassificationKernel: 'Prior' must be 'empirical',", ...
+                       " 'uniform', a vector of nonnegative values, or a", ...
+                       " structure."));
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationKernel: %s", errmsg);
+      endif
+      if (! isempty (Weights) && ! (isnumeric (Weights) && isreal (Weights) &&
+                                    isvector (Weights) && all (Weights >= 0)))
+        error (strcat ("ClassificationKernel: 'Weights' must be a vector", ...
+                       " of nonnegative values."));
+      endif
+      if (! isempty (PredictorNames) &&
+          ! (iscellstr (PredictorNames) && isvector (PredictorNames)))
+        error (strcat ("ClassificationKernel: 'PredictorNames' must be a", ...
+                       " cell array of character vectors."));
+      endif
+      if (! (ischar (ResponseName) && isrow (ResponseName)))
+        error (strcat ("ClassificationKernel: 'ResponseName' must be a", ...
+                       " character vector."));
+      endif
 
-          case 'learner'
-            Learner = varargin{2};
-            if (! (ischar (Learner)
-                   && any (strcmpi (Learner, {'svm', 'logistic'}))))
-              error (strcat ("ClassificationKernel: 'Learner' must be", ...
-                             " either 'svm' or 'logistic'."));
-            endif
-            Learner = lower (Learner);
-
-          case 'numexpansiondimensions'
-            NumDimsIn = varargin{2};
-            if (! ((ischar (NumDimsIn) && strcmpi (NumDimsIn, 'auto'))
-                   || (isnumeric (NumDimsIn) && isscalar (NumDimsIn)
-                       && isreal (NumDimsIn) && NumDimsIn > 0
-                       && fix (NumDimsIn) == NumDimsIn)))
-              error (strcat ("ClassificationKernel:", ...
-                             " 'NumExpansionDimensions' must be 'auto'", ...
-                             " or a positive integer scalar."));
-            endif
-
-          case 'kernelscale'
-            KernelScaleIn = varargin{2};
-            if (! ((ischar (KernelScaleIn)
-                    && strcmpi (KernelScaleIn, 'auto'))
-                   || (isnumeric (KernelScaleIn)
-                       && isscalar (KernelScaleIn)
-                       && isreal (KernelScaleIn) && KernelScaleIn > 0)))
-              error (strcat ("ClassificationKernel: 'KernelScale' must", ...
-                             " be 'auto' or a positive scalar."));
-            endif
-
-          case 'lambda'
-            LambdaIn = varargin{2};
-            LambdaGiven = true;
-            if (! ((ischar (LambdaIn) && strcmpi (LambdaIn, 'auto'))
-                   || (isnumeric (LambdaIn) && isscalar (LambdaIn)
-                       && isreal (LambdaIn) && LambdaIn >= 0
-                       && isfinite (LambdaIn))))
-              error (strcat ("ClassificationKernel: 'Lambda' must be", ...
-                             " 'auto' or a nonnegative finite scalar."));
-            endif
-
-          case 'boxconstraint'
-            BoxConstraint = varargin{2};
-            BoxGiven = true;
-            if (! (isnumeric (BoxConstraint) && isscalar (BoxConstraint)
-                   && isreal (BoxConstraint) && BoxConstraint > 0
-                   && isfinite (BoxConstraint)))
-              error (strcat ("ClassificationKernel: 'BoxConstraint' must", ...
-                             " be a positive finite scalar."));
-            endif
-
-          case 'standardize'
-            Standardize = varargin{2};
-            if (! (islogical (Standardize) || (isnumeric (Standardize)
-                   && isscalar (Standardize)
-                   && any (Standardize == [0, 1]))))
-              error (strcat ("ClassificationKernel: 'Standardize' must", ...
-                             " be either true or false."));
-            endif
-            Standardize = logical (Standardize);
-
-          case 'betatolerance'
-            BetaTolerance = varargin{2};
-            if (! (isnumeric (BetaTolerance) && isscalar (BetaTolerance)
-                   && isreal (BetaTolerance) && BetaTolerance >= 0))
-              error (strcat ("ClassificationKernel: 'BetaTolerance' must", ...
-                             " be a nonnegative scalar."));
-            endif
-
-          case 'gradienttolerance'
-            GradientTolerance = varargin{2};
-            if (! (isnumeric (GradientTolerance)
-                   && isscalar (GradientTolerance)
-                   && isreal (GradientTolerance) && GradientTolerance >= 0))
-              error (strcat ("ClassificationKernel: 'GradientTolerance'", ...
-                             " must be a nonnegative scalar."));
-            endif
-
-          case 'iterationlimit'
-            IterationLimit = varargin{2};
-            if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
-                   && isreal (IterationLimit) && IterationLimit > 0
-                   && fix (IterationLimit) == IterationLimit))
-              error (strcat ("ClassificationKernel: 'IterationLimit'", ...
-                             " must be a positive integer scalar."));
-            endif
-
-          case 'hessianhistorysize'
-            HessianHistorySize = varargin{2};
-            if (! (isnumeric (HessianHistorySize)
-                   && isscalar (HessianHistorySize)
-                   && isreal (HessianHistorySize) && HessianHistorySize > 0
-                   && fix (HessianHistorySize) == HessianHistorySize))
-              error (strcat ("ClassificationKernel:", ...
-                             " 'HessianHistorySize' must be a positive", ...
-                             " integer scalar."));
-            endif
-
-          case 'blocksize'
-            BlockSize = varargin{2};
-            if (! (isnumeric (BlockSize) && isscalar (BlockSize)
-                   && isreal (BlockSize) && BlockSize > 0))
-              error (strcat ("ClassificationKernel: 'BlockSize' must be", ...
-                             " a positive scalar."));
-            endif
-
-          case 'verbose'
-            Verbose = varargin{2};
-            if (! (isnumeric (Verbose) && isscalar (Verbose)
-                   && isreal (Verbose) && any (Verbose == [0, 1])))
-              error (strcat ("ClassificationKernel: 'Verbose' must be 0", ...
-                             " or 1."));
-            endif
-
-          case 'classnames'
-            ClassNames = varargin{2};
-            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
-                   || islogical (ClassNames) || ischar (ClassNames)
-                   || isa (ClassNames, 'categorical')
-                   || isa (ClassNames, 'string')))
-              error (strcat ("ClassificationKernel: 'ClassNames' must be a", ...
-                             " categorical array, a character array, a", ...
-                             " string array, a logical vector, a numeric", ...
-                             " vector, or a cell array of character", ...
-                             " vectors."));
-            endif
-
-          case 'cost'
-            CostIn = varargin{2};
-            if (! (isnumeric (CostIn) && isreal (CostIn)
-                   && ismatrix (CostIn) && ndims (CostIn) == 2
-                   && rows (CostIn) == columns (CostIn)))
-              error (strcat ("ClassificationKernel: 'Cost' must be a", ...
-                             " square numeric matrix."));
-            endif
-
-          case 'prior'
-            Prior = varargin{2};
-            if (! ((ischar (Prior) && any (strcmpi (Prior, {'empirical', ...
-                                                            'uniform'})))
-                   || (isnumeric (Prior) && isreal (Prior)
-                       && isvector (Prior) && all (Prior >= 0))
-                   || (isstruct (Prior) && isscalar (Prior))))
-              error (strcat ("ClassificationKernel: 'Prior' must be", ...
-                             " 'empirical', 'uniform', a vector of", ...
-                             " nonnegative values, or a structure."));
-            endif
-
-          case 'scoretransform'
-            ScoreTransform = varargin{2};
-
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isreal (Weights)
-                   && isvector (Weights) && all (Weights >= 0)))
-              error (strcat ("ClassificationKernel: 'Weights' must be a", ...
-                             " vector of nonnegative values."));
-            endif
-
-          case 'predictornames'
-            PredictorNames = varargin{2};
-            if (! (iscellstr (PredictorNames) && isvector (PredictorNames)))
-              error (strcat ("ClassificationKernel: 'PredictorNames'", ...
-                             " must be a cell array of character", ...
-                             " vectors."));
-            endif
-
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! (ischar (ResponseName) && isrow (ResponseName)))
-              error (strcat ("ClassificationKernel: 'ResponseName' must", ...
-                             " be a character vector."));
-            endif
-
-          case 'categoricalpredictors'
-            CategoricalPredictors = varargin{2};
-
-          otherwise
-            error (strcat ("ClassificationKernel: invalid parameter name", ...
-                           " in optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("ClassificationKernel: invalid optional paired argument.");
+      endif
 
       ## Lambda and the box constraint are reciprocal, so naming both
       ## overdetermines the fit rather than describing it twice.
-      if (LambdaGiven && BoxGiven)
+      if (! isempty (LambdaIn) && ! isempty (BoxConstraint))
         error (strcat ("ClassificationKernel: 'Lambda' and", ...
                        " 'BoxConstraint' cannot be given together, one", ...
                        " being the reciprocal of the other times the", ...
                        " number of observations."));
       endif
-      if (BoxGiven && strcmp (Learner, 'logistic'))
+      if (! isempty (BoxConstraint) && strcmp (Learner, 'logistic'))
         error (strcat ("ClassificationKernel: 'BoxConstraint' applies to", ...
                        " a support vector machine only."));
       endif
@@ -699,14 +626,17 @@ classdef ClassificationKernel < PredictiveModel
       endif
 
       ## Resolve Lambda and the box constraint from whichever was given
-      if (BoxGiven)
+      if (! isempty (BoxConstraint))
         Lambda = 1 / (n * BoxConstraint);
-      elseif (LambdaGiven && ! ischar (LambdaIn))
+      elseif (! isempty (LambdaIn) && ! ischar (LambdaIn))
         Lambda = LambdaIn;
         BoxConstraint = 1 / (n * Lambda);
       else
         Lambda = 1 / n;
         BoxConstraint = 1 / (n * Lambda);
+      endif
+      if (isempty (LambdaIn))
+        LambdaIn = 'auto';
       endif
 
       ## Draw the basis, map the data through it, and fit a linear model
@@ -931,7 +861,8 @@ classdef ClassificationKernel < PredictiveModel
                                         nargin > 2);
       W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
                        'ClassificationKernel', 'edge');
-      e = sum (W .* margin (this, X, Y));
+      m = margin (this, X, Y);
+      e = sum (W .* m(:)) / sum (W);
 
     endfunction
 
@@ -979,35 +910,38 @@ classdef ClassificationKernel < PredictiveModel
                        " must be given in Name-Value pairs."));
       endif
 
-      LossFun = 'classiferror';
-      Weights = [];
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
-          case 'lossfun'
-            LossFun = varargin{2};
-            valid = {'binodeviance', 'classifcost', 'classiferror', ...
-                     'exponential', 'hinge', 'logit', 'mincost', ...
-                     'quadratic'};
-            if (! (ischar (LossFun) && any (strcmpi (LossFun, valid))))
-              error (strcat ("ClassificationKernel.loss: 'LossFun' must", ...
-                             " be 'binodeviance', 'classifcost',", ...
-                             " 'classiferror', 'exponential', 'hinge',", ...
-                             " 'logit', 'mincost', or 'quadratic'."));
-            endif
-            LossFun = lower (LossFun);
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isreal (Weights)
-                   && isvector (Weights) && all (Weights >= 0)))
-              error (strcat ("ClassificationKernel.loss: 'Weights' must", ...
-                             " be a vector of nonnegative values."));
-            endif
-          otherwise
-            error (strcat ("ClassificationKernel.loss: invalid parameter", ...
-                           " name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments
+      optNames = {'LossFun', 'Weights'};
+      ## An empty 'Weights' stands for uniform weights
+      dfValues = {'classiferror', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      valid = {'binodeviance', 'classifcost', 'classiferror', ...
+               'exponential', 'hinge', 'logit', 'mincost', ...
+               'quadratic'};
+      if (! (ischar (LossFun) && any (strcmpi (LossFun, valid))))
+        error (strcat ("ClassificationKernel.loss: 'LossFun' must", ...
+                       " be 'binodeviance', 'classifcost',", ...
+                       " 'classiferror', 'exponential', 'hinge',", ...
+                       " 'logit', 'mincost', or 'quadratic'."));
+      endif
+      LossFun = lower (LossFun);
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationKernel.loss: %s", errmsg);
+      endif
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isreal (Weights)
+             && isvector (Weights) && all (Weights >= 0)))
+        error (strcat ("ClassificationKernel.loss: 'Weights' must", ...
+                       " be a vector of nonnegative values."));
+      endif
+
+      if (! isempty (args))
+        error ("ClassificationKernel.loss: invalid optional paired argument.");
+      endif
 
       [gY, errmsg] = labelIndices (this.ClassNames, Y);
       if (! isempty (errmsg))
@@ -1020,7 +954,7 @@ classdef ClassificationKernel < PredictiveModel
       if (isempty (Weights))
         w = ones (numel (gY), 1);
       else
-        w = Weights(:);
+        w = double (Weights(:));
         if (numel (w) != numel (gY))
           error (strcat ("ClassificationKernel.loss: 'Weights' must have", ...
                          " one element per observation."));
@@ -1036,6 +970,7 @@ classdef ClassificationKernel < PredictiveModel
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationKernel} {@var{obj} =} resume (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {ClassificationKernel} {@var{obj} =} resume (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {ClassificationKernel} {@var{obj} =} resume (@var{obj}, @var{Tbl}, @var{ResponseVarName})
     ##
     ## Continue fitting a kernel classifier.
     ##
@@ -1054,62 +989,71 @@ classdef ClassificationKernel < PredictiveModel
     ## R2024a, resuming a weighted fit without passing the weights back
     ## reaches the objective of the @emph{unweighted} fit.
     ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## The response is then named by @var{ResponseVarName}, a variable of the
+    ## table, or given beside the table as @var{Y}; unlike
+    ## @code{ClassificationKernel.loss}, it is never taken from the table
+    ## unasked.
+    ##
     ## @end deftypefn
     function this = resume (this, X, Y, varargin)
 
       if (nargin < 3)
         error ("ClassificationKernel.resume: too few input arguments.");
       endif
+
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("ClassificationKernel.resume: optional arguments", ...
                        " must be given in Name-Value pairs."));
       endif
 
-      BetaTolerance = this.ModelParameters.BetaTolerance;
-      GradientTolerance = this.ModelParameters.GradientTolerance;
-      IterationLimit = this.ModelParameters.IterationLimit;
-      Weights = [];
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isreal (Weights)
-                   && isvector (Weights) && all (Weights >= 0)))
-              error (strcat ("ClassificationKernel.resume: 'Weights'", ...
-                             " must be a vector of nonnegative values."));
-            endif
-          case 'betatolerance'
-            BetaTolerance = varargin{2};
-            if (! (isnumeric (BetaTolerance) && isscalar (BetaTolerance)
-                   && isreal (BetaTolerance) && BetaTolerance >= 0))
-              error (strcat ("ClassificationKernel.resume:", ...
-                             " 'BetaTolerance' must be a nonnegative", ...
-                             " scalar."));
-            endif
-          case 'gradienttolerance'
-            GradientTolerance = varargin{2};
-            if (! (isnumeric (GradientTolerance)
-                   && isscalar (GradientTolerance)
-                   && isreal (GradientTolerance) && GradientTolerance >= 0))
-              error (strcat ("ClassificationKernel.resume:", ...
-                             " 'GradientTolerance' must be a", ...
-                             " nonnegative scalar."));
-            endif
-          case 'iterationlimit'
-            IterationLimit = varargin{2};
-            if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
-                   && isreal (IterationLimit) && IterationLimit > 0
-                   && fix (IterationLimit) == IterationLimit))
-              error (strcat ("ClassificationKernel.resume:", ...
-                             " 'IterationLimit' must be a positive", ...
-                             " integer scalar."));
-            endif
-          otherwise
-            error (strcat ("ClassificationKernel.resume: invalid", ...
-                           " parameter name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments
+      optNames = {'Weights', 'BetaTolerance', 'GradientTolerance', ...
+                  'IterationLimit'};
+      dfValues = {[], this.ModelParameters.BetaTolerance, ...
+                  this.ModelParameters.GradientTolerance, ...
+                  this.ModelParameters.IterationLimit};
+      [Weights, BetaTolerance, GradientTolerance, IterationLimit, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationKernel.resume: %s", errmsg);
+      endif
+      if (! isempty (Weights) && ! (isnumeric (Weights) && isreal (Weights) &&
+                                    isvector (Weights) && all (Weights >= 0)))
+        error (strcat ("ClassificationKernel.resume: 'Weights'", ...
+                       " must be a vector of nonnegative values."));
+      endif
+      if (! (isnumeric (BetaTolerance) && isscalar (BetaTolerance)
+             && isreal (BetaTolerance) && BetaTolerance >= 0))
+        error (strcat ("ClassificationKernel.resume: 'BetaTolerance'", ...
+                       " must be a nonnegative scalar."));
+      endif
+      if (! (isnumeric (GradientTolerance)
+             && isscalar (GradientTolerance)
+             && isreal (GradientTolerance) && GradientTolerance >= 0))
+        error (strcat ("ClassificationKernel.resume: 'GradientTolerance'", ...
+                       " must be a nonnegative scalar."));
+      endif
+      if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
+             && isreal (IterationLimit) && IterationLimit > 0
+             && fix (IterationLimit) == IterationLimit))
+        error (strcat ("ClassificationKernel.resume: 'IterationLimit'", ...
+                       " must be a positive integer scalar."));
+      endif
+
+      ## Handle table input
+      if (istable (X))
+        [X, Y] = tableResponse (this, 'resume', X, Y, {}, true);
+      endif
+
+      if (! isempty (args))
+        error (strcat ("ClassificationKernel.resume: invalid optional", ...
+                       " paired argument."));
+      endif
 
       [T, y, W] = resumeData (this, X, Y, Weights, 'resume');
 
@@ -1180,14 +1124,6 @@ classdef ClassificationKernel < PredictiveModel
   endmethods
 
   methods (Access = public, Hidden)
-
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        printf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
 
     function disp (this)
       printf ("\n  ClassificationKernel\n\n");
@@ -1260,7 +1196,7 @@ classdef ClassificationKernel < PredictiveModel
       if (isempty (Weights))
         Weights = ones (numel (gY), 1);
       else
-        Weights = Weights(:);
+        Weights = double (Weights(:));
         if (numel (Weights) != numel (gY))
           error (strcat ("ClassificationKernel.%s: 'Weights' must have", ...
                          " one element per observation."), caller);
@@ -1446,6 +1382,14 @@ endclassdef
 %! Mdl = ClassificationKernel (X, Y);
 %! assert_equal (loss (Mdl, X, Y) < 0.15, true);
 %! assert_equal (edge (Mdl, X, Y) > 0, true);
+
+%!test
+%! ## On a set holding one class the edge is still the mean margin
+%! load fisheriris
+%! X = meas(51:100,:);
+%! Y = species(51:100);
+%! Mdl = ClassificationKernel (meas(51:end,:), species(51:end));
+%! assert_equal (edge (Mdl, X, Y), mean (margin (Mdl, X, Y)), 1e-14);
 
 %!test
 %! ## margin is the true class score less the other, and the labels follow
@@ -1659,7 +1603,7 @@ endclassdef
 %!                     'IterationLimit', -5)
 %!error<ClassificationKernel: 'Verbose' must be 0 or 1.> ...
 %! ClassificationKernel (ones (10, 2), [ones(5,1); 2*ones(5,1)], 'Verbose', 2)
-%!error<ClassificationKernel: invalid parameter name in optional pair arguments.> ...
+%!error<ClassificationKernel: invalid optional paired argument.> ...
 %! ClassificationKernel (ones (10, 2), [ones(5,1); 2*ones(5,1)], 'Nonsense', 1)
 %!error<ClassificationKernel: invalid values in X.> ...
 %! ClassificationKernel ({1, 2; 3, 4}, [1; 2])
@@ -1682,6 +1626,9 @@ endclassdef
 %!error<ClassificationKernel.loss: 'LossFun' must be 'binodeviance', 'classifcost', 'classiferror', 'exponential', 'hinge', 'logit', 'mincost', or 'quadratic'.> ...
 %! loss (ClassificationKernel (ones (10, 2), [ones(5,1); 2*ones(5,1)]), ...
 %!                     ones (10, 2), [ones(5,1); 2*ones(5,1)], 'LossFun', 'mse')
+%!error<ClassificationKernel.loss: invalid optional paired argument.> ...
+%! loss (ClassificationKernel (ones (10, 2), [ones(5,1); 2*ones(5,1)]), ...
+%!                     ones (10, 2), [ones(5,1); 2*ones(5,1)], 'Bogus', 1)
 %!error<ClassificationKernel.resume: too few input arguments.> ...
 %! resume (ClassificationKernel (ones (10, 2), [ones(5,1); 2*ones(5,1)]), ...
 %!                     ones (10, 2))
@@ -1689,7 +1636,7 @@ endclassdef
 %! resume (ClassificationKernel (ones (10, 2), [ones(5,1); 2*ones(5,1)]), ...
 %!                     ones (10, 2), [ones(5,1); 2*ones(5,1)], ...
 %!                     'IterationLimit', 0)
-%!error<ClassificationKernel.resume: invalid parameter name in optional pair arguments.> ...
+%!error<ClassificationKernel.resume: invalid optional paired argument.> ...
 %! resume (ClassificationKernel (ones (10, 2), [ones(5,1); 2*ones(5,1)]), ...
 %!                     ones (10, 2), [ones(5,1); 2*ones(5,1)], 'Nonsense', 1)
 %!error<ClassificationKernel.resume: 'Weights' must be a vector of nonnegative values.> ...
@@ -1814,3 +1761,58 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## A table at resume
+%!test  # the response is named or given beside the table
+%! load fisheriris
+%! X = meas(51:150,1:2);
+%! y = categorical (species(51:150));
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = fitckernel (T, 'Species', 'IterationLimit', 5);
+%! [~, a] = predict (resume (Mdl, X, y, 'IterationLimit', 20), X);
+%! [~, b] = predict (resume (Mdl, T(:,1:2), y, 'IterationLimit', 20), X);
+%! assert_equal (b, a);
+%! [~, b] = predict (resume (Mdl, T, 'Species', 'IterationLimit', 20), X);
+%! assert_equal (b, a);
+%! [~, b] = predict (resume (Mdl, T(:,[3, 2, 1]), 'Species'), X);
+%! [~, c] = predict (resume (Mdl, X, y), X);
+%! assert_equal (b, c);
+%!error<ClassificationKernel.resume: too few input arguments.> ...
+%! load fisheriris
+%! T = table (meas(51:150,1), meas(51:150,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = categorical (species(51:150));
+%! resume (fitckernel (T, 'Species'), T)
+%!error<ClassificationKernel.resume: optional arguments must be given in Name-Value pairs.> ...
+%! load fisheriris
+%! T = table (meas(51:150,1), meas(51:150,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = categorical (species(51:150));
+%! resume (fitckernel (T, 'Species'), T, 'IterationLimit', 5)
+
+## Observation weights of class single or double
+%!error <ClassificationKernel: 'Weights' must be a real vector of class single or double.> ...
+%! fitckernel ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ...
+%!             int8 ([1; 1; 1; 1]))
+%!error <ClassificationKernel: 'Weights' must be a real vector of class single or double.> ...
+%! fitckernel ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', true (4, 1))
+%!error <ClassificationKernel.loss: 'Weights' must be a real vector of class single or double.>
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! Y = [1; 1; 2; 2];
+%! loss (fitckernel (X, Y), X, Y, 'Weights', int8 ([1; 1; 1; 1]))
+%!error <ClassificationKernel.resume: 'Weights' must be a real vector of class single or double.>
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! Y = [1; 1; 2; 2];
+%! resume (fitckernel (X, Y), X, Y, 'Weights', int8 ([1; 1; 1; 1]))
+%!test
+%! ## Single weights compute as double
+%! load fisheriris
+%! X = meas(51:end,:);
+%! Y = species(51:end);
+%! w = 1 + (1:100)' / 7;
+%! rand ('seed', 1);
+%! randn ('seed', 1);
+%! A = fitckernel (X, Y, 'Weights', single (w));
+%! rand ('seed', 1);
+%! randn ('seed', 1);
+%! B = fitckernel (X, Y, 'Weights', double (single (w)));
+%! assert_equal (nthargout (2, @predict, A, X), nthargout (2, @predict, B, X));

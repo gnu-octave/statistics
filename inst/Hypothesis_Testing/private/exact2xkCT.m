@@ -119,7 +119,7 @@ function nodes = backward_induce (nodes, arcs)
     arclen = arcs{2,j};
     arcprob = arcs{3,j};
     for nodenum = 1:startmax
-      % for each start node, compute SP, LP, TP
+      ## for each start node, compute SP, LP, TP
       k1 = find (a(:,1) == nodenum);
       k2 = a(k1,2);
       startLP(nodenum) = max (arclen(k1) + endLP(k2));

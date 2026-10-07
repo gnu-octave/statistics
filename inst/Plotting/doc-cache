@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 56
+# columns: 179
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -13,29 +13,28 @@ andrewsplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1524
-statistics: andrewsplot ( x )
-statistics: andrewsplot ( x , name , value , &hellip;)
-statistics: andrewsplot ( ax , &hellip;)
-statistics: h = andrewsplot (&hellip;)
+# length: 1470
+statistics: andrewsplot (x)
+statistics: andrewsplot (x, name, value, ...)
+statistics: andrewsplot (ax, ...)
+statistics: h = andrewsplot (...)
+Create an Andrews plot of the multivariate data in x.
 
-Create an Andrews plot of the multivariate data in x .
-
-andrewsplot ( x ) plots each observation (row) of the
-n -by- p matrix x as a smooth curve defined by the finite
+andrewsplot (x) plots each observation (row) of the
+n-by-p matrix x as a smooth curve defined by the finite
 Fourier series
 
 f_i(t) = x_i1/sqrt(2) + x_i2 sin(2*pi*t) + x_i3 cos(2*pi*t)
-+ x_i4 sin(4*pi*t) + x_i5 cos(4*pi*t) + &hellip;
++ x_i4 sin(4*pi*t) + x_i5 cos(4*pi*t) + ...
 
-evaluated over t in the interval [0,1] , where x_ij is the
-j -th variable of the i -th observation.
+evaluated over t in the interval [0,1], where x_ij is the
+j-th variable of the i-th observation.
 
 The following name/value pairs are accepted:
 
 "Group"
 A grouping variable (numeric, logical, character, string, or cell array of
-strings) with one entry per row of x . Curves are colored by group.
+strings) with one entry per row of x. Curves are colored by group.
 "Standardize"
 Controls how the columns of x are transformed before the curves are
 computed: "off" (default) uses the raw data, "on" centers and
@@ -43,11 +42,11 @@ scales each column to zero mean and unit standard deviation, "PCA"
 uses the principal component scores, and "PCAStd" uses the principal
 component scores of the standardized data.
 "Quantile"
-A scalar alpha in the interval (0,1) . Instead of one curve per
+A scalar alpha in the interval (0,1). Instead of one curve per
 observation, only three curves per group are drawn: the pointwise median and
-the alpha and 1- alpha quantiles of the group&rsquo;s curves.
+the alpha and 1-alpha quantiles of the group's curves.
 
-andrewsplot ( ax , &hellip;) plots into the axes ax .
+andrewsplot (ax, ...) plots into the axes ax.
 
 The optional output h is a vector of handles to the plotted lines: one
 per observation, or three per group when "Quantile" is used.
@@ -76,84 +75,83 @@ bar3
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3699
-statistics: bar3 ( z )
-statistics: bar3 ( y , z )
-statistics: bar3 (&hellip;, width )
-statistics: bar3 (&hellip;, style )
-statistics: bar3 (&hellip;, color )
-statistics: bar3 (&hellip;, name , value )
-statistics: bar3 ( ax , &hellip;)
-statistics: p = bar3 (&hellip;)
-
+# length: 3571
+statistics: bar3 (z)
+statistics: bar3 (y, z)
+statistics: bar3 (..., width)
+statistics: bar3 (..., style)
+statistics: bar3 (..., color)
+statistics: bar3 (..., name, value)
+statistics: bar3 (ax, ...)
+statistics: p = bar3 (...)
 Plot a 3D bar graph.
 
-bar3 ( z ) plots 3D bar graph for the elements of z . Each
-bar corresponds to an element in z , which can be a scalar, vector, or
+bar3 (z) plots 3D bar graph for the elements of z. Each
+bar corresponds to an element in z, which can be a scalar, vector, or
 2D matrix. By default, each column in z is considered as a series and
 it is handled as a distinct series of bars. When z is a vector, unlike
 MATLAB, which plots it as a single series of bars, Octave discriminates
-between a row and column vector of z . Hence, when z is column
+between a row and column vector of z. Hence, when z is column
 vector, it is plotted as a single series of bars (same color), whereas when
 z is row vector, each bar is plotted as a different group (different
-colors). For an M&times;N matrix, the function plots the bars corresponding
+colors). For an MxN matrix, the function plots the bars corresponding
 to each row on the y-axis ranging from 1 to M and each
-column on the x-axis ranging from 1 to N .
+column on the x-axis ranging from 1 to N.
 
-bar3 ( y , z ) plots a 3D bar graph of the elements in
-z at the y-values specified in y . It should be noted
+bar3 (y, z) plots a 3D bar graph of the elements in
+z at the y-values specified in y. It should be noted
 that y only affects the tick names along the y-axis rather the
-actual values. If you want to specify non-numerical values for y , you
-can specify it with the paired name / value syntax shown below.
+actual values. If you want to specify non-numerical values for y, you
+can specify it with the paired name/value syntax shown below.
 
-bar3 (&hellip;, width ) sets the width of the bars along the
+bar3 (..., width) sets the width of the bars along the
 x- and y-axes and controls the separation of bars among each
-other. width can take any value in the range (0,1] . By default,
+other. width can take any value in the range (0,1]. By default,
 width is 0.8 and the bars have a small separation. If width is 1, the
 bars touch one another. Alternatively, you can define width as a two-
-element vector using the paired name / value syntax shown below, in
+element vector using the paired name/value syntax shown below, in
 which case you can control the bar separation along each axis independently.
 
-bar3 (&hellip;, style ) specifies the style of the bars, where
-style can be 'detached' , 'grouped' , or
-'stacked' . The default style is 'detached' .
+bar3 (..., style) specifies the style of the bars, where
+style can be 'detached', 'grouped', or
+'stacked'. The default style is 'detached'.
 
-bar3 (&hellip;, color ) displays all bars using the color
+bar3 (..., color) displays all bars using the color
 specified
 by color. For example, use 'red' or 'r' to specify all red
 bars. When you want to specify colors for several groups, color can be
 a cellstr vector with each element specifying the color of each group.
-color can also be specified as a numerical M&times;3 matrix, where
+color can also be specified as a numerical Mx3 matrix, where
 each row corresponds to a RGB value with its elements in the range
-[0,1] . If only one color is specified, then it applies to all bars.
+[0,1]. If only one color is specified, then it applies to all bars.
 If the number of colors equals the number of groups, then each color is
 applied to each group. If the number of colors equals the number of elements
-in z , then each individual bar is assigned the particular color. You
-can also define color using the paired name / value syntax
+in z, then each individual bar is assigned the particular color. You
+can also define color using the paired name/value syntax
 shown below.
 
-bar3 (&hellip;, name , value ) specifies one or more of the
+bar3 (..., name, value) specifies one or more of the
 following name/value pairs:
 
 Name Value
 'width' A two-element vector specifying the width
-of the bars along the x- and y-axes , respectively. Each
-element must be in the range (0,1] .
+of the bars along the x- and y-axes, respectively. Each
+element must be in the range (0,1].
 'color' A character or a cellstr vector, or a
-numerical M&times;3 matrix following the same conventions as the color
+numerical Mx3 matrix following the same conventions as the color
 input argument.
 'xlabel' A cellstr vector specifying the group names
-along the x-axis .
+along the x-axis.
 'ylabel' A cellstr vector specifying the names of the
-bars in the same series along the y-axis .
+bars in the same series along the y-axis.
 
-bar3 ( ax , &hellip;) can also take an axes handle ax as a
+bar3 (ax, ...) can also take an axes handle ax as a
 first argument in which case it plots into the axes specified by ax
-instead of into the current axes specified by gca () . The optional
+instead of into the current axes specified by gca (). The optional
 argument ax can precede any of the input argument combinations in the
 previous syntaxes.
 
-p = bar3 (&hellip;) returns a patch handle p , which can be
+p = bar3 (...) returns a patch handle p, which can be
 used to set properties of the bars after displaying the 3D bar graph.
 
 See also:
@@ -179,83 +177,82 @@ bar3h
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3726
-statistics: bar3h ( y )
-statistics: bar3h ( z , y )
-statistics: bar3h (&hellip;, width )
-statistics: bar3h (&hellip;, style )
-statistics: bar3h (&hellip;, color )
-statistics: bar3h (&hellip;, name , value )
-statistics: bar3h ( ax , &hellip;)
-statistics: p = bar3h (&hellip;)
-
+# length: 3598
+statistics: bar3h (y)
+statistics: bar3h (z, y)
+statistics: bar3h (..., width)
+statistics: bar3h (..., style)
+statistics: bar3h (..., color)
+statistics: bar3h (..., name, value)
+statistics: bar3h (ax, ...)
+statistics: p = bar3h (...)
 Plot a horizontal 3D bar graph.
 
-bar3h ( y ) plots 3D bar graph for the elements of y . Each
-bar corresponds to an element in y , which can be a scalar, vector, or
+bar3h (y) plots 3D bar graph for the elements of y. Each
+bar corresponds to an element in y, which can be a scalar, vector, or
 2D matrix. By default, each column in y is considered as a series and
 it is handled as a distinct series of bars. When y is a vector, unlike
 MATLAB, which plots it as a single series of bars, Octave distinguishes
-between a row and column vector of y . Hence, when y is column
+between a row and column vector of y. Hence, when y is column
 vector, it is plotted as a single series of bars (same color), whereas when
 y is row vector, each bar is plotted as a different group (different
-colors). For an M&times;N matrix, the function plots the bars corresponding
+colors). For an MxN matrix, the function plots the bars corresponding
 to each row on the z-axis ranging from 1 to M and each
-column on the x-axis ranging from 1 to N .
+column on the x-axis ranging from 1 to N.
 
-bar3h ( z , y ) plots a 3D bar graph of the elements in
-y at the z-values specified in z . It should be noted
+bar3h (z, y) plots a 3D bar graph of the elements in
+y at the z-values specified in z. It should be noted
 that z only affects the tick names along the z-axis rather the
-actual values. If you want to specify non-numerical values for z , you
-can specify it with the paired name / value syntax shown below.
+actual values. If you want to specify non-numerical values for z, you
+can specify it with the paired name/value syntax shown below.
 
-bar3h (&hellip;, width ) sets the width of the bars along the
+bar3h (..., width) sets the width of the bars along the
 x- and z-axes and controls the separation of bars among each
-other. width can take any value in the range (0,1] . By default,
+other. width can take any value in the range (0,1]. By default,
 width is 0.8 and the bars have a small separation. If width is 1, the
 bars touch one another. Alternatively, you can define width as a two-
-element vector using the paired name / value syntax shown below, in
+element vector using the paired name/value syntax shown below, in
 which case you can control the bar separation along each axis independently.
 
-bar3h (&hellip;, style ) specifies the style of the bars, where
-style can be 'detached' , 'grouped' , or
-'stacked' . The default style is 'detached' .
+bar3h (..., style) specifies the style of the bars, where
+style can be 'detached', 'grouped', or
+'stacked'. The default style is 'detached'.
 
-bar3h (&hellip;, color ) displays all bars using the color
+bar3h (..., color) displays all bars using the color
 specified by color. For example, use 'red' or 'r' to
 specify all red bars. When you want to specify colors for several groups,
 color can be a cellstr vector with each element specifying the color of
-each group. color can also be specified as a numerical M&times;3
+each group. color can also be specified as a numerical Mx3
 matrix, where each row corresponds to a RGB value with its elements in the
-range [0,1] . If only one color is specified, then it applies to all
+range [0,1]. If only one color is specified, then it applies to all
 bars. If the number of colors equals the number of groups, then each color
 is applied to each group. If the number of colors equals the number of
-elements in y , then each individual bar is assigned the particular
+elements in y, then each individual bar is assigned the particular
 color. You can also define color using the paired
-name / value syntax shown below.
+name/value syntax shown below.
 
-bar3h (&hellip;, name , value ) specifies one or more of the
+bar3h (..., name, value) specifies one or more of the
 following name/value pairs:
 
 Name Value
 'width' A two-element vector specifying the width
-of the bars along the x- and z-axes , respectively. Each
-element must be in the range (0,1] .
+of the bars along the x- and z-axes, respectively. Each
+element must be in the range (0,1].
 'color' A character or a cellstr vector, or a
-numerical M&times;3 matrix following the same conventions as the color
+numerical Mx3 matrix following the same conventions as the color
 input argument.
 'xlabel' A cellstr vector specifying the group names
-along the x-axis .
+along the x-axis.
 'zlabel' A cellstr vector specifying the names of the
-bars in the same series along the z-axis .
+bars in the same series along the z-axis.
 
-bar3h ( ax , &hellip;) can also take an axes handle ax as a
+bar3h (ax, ...) can also take an axes handle ax as a
 first argument in which case it plots into the axes specified by ax
-instead of into the current axes specified by gca () . The optional
+instead of into the current axes specified by gca (). The optional
 argument ax can precede any of the input argument combinations in the
 previous syntaxes.
 
-p = bar3h (&hellip;) returns a patch handle p , which can be
+p = bar3h (...) returns a patch handle p, which can be
 used to set properties of the bars after displaying the 3D bar graph.
 
 See also:
@@ -281,17 +278,16 @@ biplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1853
-statistics: biplot ( coefs )
-statistics: biplot ( coefs , name , value , &hellip;)
-statistics: biplot ( ax , &hellip;)
-statistics: h = biplot (&hellip;)
+# length: 1814
+statistics: biplot (coefs)
+statistics: biplot (coefs, name, value, ...)
+statistics: biplot (ax, ...)
+statistics: h = biplot (...)
+Create a biplot of the coefficients in coefs.
 
-Create a biplot of the coefficients in coefs .
-
-biplot ( coefs ) plots the rows of coefs , typically the
+biplot (coefs) plots the rows of coefs, typically the
 principal component coefficients returned by pca or pcacov or
-the factor loadings returned by factoran , as vectors from the origin.
+the factor loadings returned by factoran, as vectors from the origin.
 coefs has one row per observed variable and either two columns (for a
 2-D biplot) or three columns (for a 3-D biplot).
 
@@ -308,8 +304,8 @@ A character array or cell array of strings labeling each variable vector.
 "ObsLabels"
 A character array or cell array of strings labeling each observation.
 "Positive"
-If true , the reference axes are drawn only over the positive quadrant
-(2-D) or octant (3-D). The default is false .
+If true, the reference axes are drawn only over the positive quadrant
+(2-D) or octant (3-D). The default is false.
 
 Any additional name/value pairs are treated as line properties and applied to
 the variable vectors.
@@ -318,7 +314,7 @@ For readability the sign of each column of coefs is chosen so that its
 largest-magnitude element is positive; the same sign change is applied to the
 corresponding column of the scores.
 
-biplot ( ax , &hellip;) plots into the axes ax .
+biplot (ax, ...) plots into the axes ax.
 
 The optional output h is a column vector of handles to the plotted
 graphics objects, ordered as the variable vector lines, the variable markers,
@@ -350,35 +346,34 @@ boxchart
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1506
-statistics: boxchart ( ydata )
-statistics: boxchart ( xgroupdata , ydata )
-statistics: boxchart (&hellip;, 'GroupByColor' , cgroupdata )
-statistics: boxchart ( tbl , yvar )
-statistics: boxchart ( tbl , xvar , yvar )
-statistics: boxchart (&hellip;, name , value )
-statistics: boxchart ( ax , &hellip;)
-statistics: b = boxchart (&hellip;)
-
+# length: 1447
+statistics: boxchart (ydata)
+statistics: boxchart (xgroupdata, ydata)
+statistics: boxchart (..., 'GroupByColor', cgroupdata)
+statistics: boxchart (tbl, yvar)
+statistics: boxchart (tbl, xvar, yvar)
+statistics: boxchart (..., name, value)
+statistics: boxchart (ax, ...)
+statistics: b = boxchart (...)
 Draw a box chart.
 
-boxchart ( ydata ) draws one box over the observations in
-ydata . The box spans the lower and upper quartiles with the median
+boxchart (ydata) draws one box over the observations in
+ydata. The box spans the lower and upper quartiles with the median
 across it, the whiskers reach the furthest observations within one and a
 half interquartile ranges of the box, and whatever lies beyond is drawn as
 a marker.
 
-boxchart ( xgroupdata , ydata ) draws one box per distinct
-value of xgroupdata , which holds one value per observation.
+boxchart (xgroupdata, ydata) draws one box per distinct
+value of xgroupdata, which holds one value per observation.
 
-boxchart ( tbl , yvar ) and
-boxchart ( tbl , xvar , yvar ) take the observations,
+boxchart (tbl, yvar) and
+boxchart (tbl, xvar, yvar) take the observations,
 and where asked the grouping, from the named columns of a table. The
 chart keeps the table, so assigning SourceTable again re-reads it.
 
-b = boxchart (&hellip;) returns the
+b = boxchart (...) returns the
 stats.chart.BoxChart object drawn, whose properties may be set
-afterwards to redraw it; see stats.chart.BoxChart . Where
+afterwards to redraw it; see stats.chart.BoxChart. Where
 'GroupByColor' names a grouping, one object is returned per
 colour group, in the order of its distinct values.
 
@@ -412,15 +407,14 @@ boxplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6499
-statistics: s = boxplot ( data )
-statistics: s = boxplot ( data , group )
-statistics: s = boxplot ( data , notched , symbol , orientation , whisker , &hellip;)
-statistics: s = boxplot ( data , group , notched , symbol , orientation , whisker , &hellip;)
-statistics: s = boxplot ( data , options )
-statistics: s = boxplot ( data , group , options , &hellip;)
-statistics: [&hellip;, h ] = boxplot ( data , &hellip;)
-
+# length: 5924
+statistics: s = boxplot (data)
+statistics: s = boxplot (data, group)
+statistics: s = boxplot (data, notched, symbol, orientation, whisker, ...)
+statistics: s = boxplot (data, group, notched, symbol, orientation, whisker, ...)
+statistics: s = boxplot (data, options)
+statistics: s = boxplot (data, group, options, ...)
+statistics: [..., h] = boxplot (data, ...)
 Produce a box plot.
 
 A box plot is a graphical display that simultaneously describes several
@@ -442,19 +436,19 @@ notched within the interval (0,1) produces a notch of the specified
 depth. Notched values outside (0,1) are amusing if not exactly impractical.
 
 symbol sets the symbol for the outlier values. The default symbol
-for points that lie outside 3 times the interquartile range is &rsquo;o&rsquo;;
+for points that lie outside 3 times the interquartile range is 'o';
 the default symbol for points between 1.5 and 3 times the interquartile
-range is &rsquo;+&rsquo;.
+range is '+'.
 Alternative symbol settings:
-symbol = &rsquo;.&rsquo;: points between 1.5 and 3 times the IQR are marked with
-&rsquo;.&rsquo; and points outside 3 times IQR with &rsquo;o&rsquo;.
+symbol = '.': points between 1.5 and 3 times the IQR are marked with
+'.' and points outside 3 times IQR with 'o'.
 
-symbol = [&rsquo;x&rsquo;,&rsquo;*&rsquo;]: points between 1.5 and 3 times the IQR are marked
-with &rsquo;x&rsquo; and points outside 3 times IQR with &rsquo;*&rsquo;.
+symbol = ['x','*']: points between 1.5 and 3 times the IQR are marked
+with 'x' and points outside 3 times IQR with '*'.
 
 orientation = 0 makes the boxes horizontally.
 orientation = 1 plots the boxes vertically (default). Alternatively,
-orientation can be passed as a string, e.g., &rsquo;vertical&rsquo; or &rsquo;horizontal&rsquo;.
+orientation can be passed as a string, e.g., 'vertical' or 'horizontal'.
 
 whisker defines the length of the whiskers as a function of the IQR
 (default = 1.5). If whisker = 0 then boxplot displays all data
@@ -462,62 +456,62 @@ values outside the box using the plotting symbol for points that lie
 outside 3 times the IQR.
 
 group may be passed as an optional argument only in the second
-position after data . group can be a numeric, character,
+position after data. group can be a numeric, character,
 string, or categorical vector defining separate categories. To group by
 multiple variables simultaneously, pass a cell array of grouping vectors
-(e.g., {group1, group2} ). A separate box is plotted for each
+(e.g., {group1, group2}). A separate box is plotted for each
 unique combination of group values. All grouping variables must have the
-same length as data .
+same length as data.
 
 options are additional paired arguments passed with the formalism
 (Name, Value) that provide extra functionality as listed below.
 options can be passed at any order after the initial arguments and
 are case-insensitive.
 
-&rsquo;Notch&rsquo; &rsquo;on&rsquo; Notched by 0.25 of the boxes width.
-&rsquo;off&rsquo; Produces a straight box.
+'Notch' 'on' Notched by 0.25 of the boxes width.
+'off' Produces a straight box.
 scalar Proportional width of the notch.
-&rsquo;Symbol&rsquo; &rsquo;.&rsquo; Defines only outliers between 1.5 and 3 IQR.
-[&rsquo;x&rsquo;,&rsquo;*&rsquo;] 2nd character defines outliers > 3 IQR
-&rsquo;Orientation&rsquo; &rsquo;vertical&rsquo; Default value, can also be defined
+'Symbol' '.' Defines only outliers between 1.5 and 3 IQR.
+['x','*'] 2nd character defines outliers > 3 IQR
+'Orientation' 'vertical' Default value, can also be defined
 with numerical 1.
-&rsquo;horizontal&rsquo; Can also be defined with numerical 0.
-&rsquo;Whisker&rsquo; scalar Multiplier of IQR (default is 1.5).
-&rsquo;OutlierTags&rsquo; &rsquo;on&rsquo; or 1 Plot the vector index of the outlier
+'horizontal' Can also be defined with numerical 0.
+'Whisker' scalar Multiplier of IQR (default is 1.5).
+'OutlierTags' 'on' or 1 Plot the vector index of the outlier
 value next to its point.
-&rsquo;off&rsquo; or 0 No tags are plotted (default value).
-&rsquo;Sample_IDs&rsquo; &rsquo;cell&rsquo; A cell vector with one cell for each
-data set containing a nested cell vector with each sample&rsquo;s ID (should be
+'off' or 0 No tags are plotted (default value).
+'Sample_IDs' 'cell' A cell vector with one cell for each
+data set containing a nested cell vector with each sample's ID (should be
 a string). If this option is passed, then all outliers are tagged with
-their respective sample&rsquo;s ID string instead of their vector&rsquo;s index.
-&rsquo;BoxWidth&rsquo; &rsquo;proportional&rsquo; Create boxes with their width
+their respective sample's ID string instead of their vector's index.
+'BoxWidth' 'proportional' Create boxes with their width
 proportional to the number of samples in their respective dataset (default
 value).
-&rsquo;fixed&rsquo; Make all boxes with equal width.
-&rsquo;Widths&rsquo; scalar Scaling factor for box widths (default
+'fixed' Make all boxes with equal width.
+'Widths' scalar Scaling factor for box widths (default
 value is 0.4).
-&rsquo;CapWidths&rsquo; scalar Scaling factor for whisker cap widths
-(default value is 1, which results to &rsquo;Widths&rsquo;/8 halflength)
-&rsquo;BoxStyle&rsquo; &rsquo;outline&rsquo; Draw boxes as outlines (default value).
-&rsquo;filled&rsquo; Fill boxes with a color (outlines are still
+'CapWidths' scalar Scaling factor for whisker cap widths
+(default value is 1, which results to 'Widths'/8 halflength)
+'BoxStyle' 'outline' Draw boxes as outlines (default value).
+'filled' Fill boxes with a color (outlines are still
 plotted).
-&rsquo;Positions&rsquo; vector Numerical vector that defines the
+'Positions' vector Numerical vector that defines the
 position of each data set. It must have the same length as the number of
 groups in a desired manner. This vector merely defines the points along
 the group axis, which by default is [1:number of groups].
-&rsquo;Labels&rsquo; cell A cell vector of strings containing the names
+'Labels' cell A cell vector of strings containing the names
 of each group. By default each group is labeled numerically. If multiple
 grouping variables are provided, default labels are automatically generated
 by joining the category names and stacked hierarchically.
-&rsquo;Colors&rsquo; character string or Nx3 numerical matrix If just
+'Colors' character string or Nx3 numerical matrix If just
 one character or 1x3 vector of RGB values, specify the fill color of all
-boxes when BoxStyle = &rsquo;filled&rsquo;. If a character string or Nx3 matrix is
-entered, box #1&rsquo;s fill color corresponds to the first character or first
-matrix row, and the next boxes&rsquo; fill colors corresponds to the next
+boxes when BoxStyle = 'filled'. If a character string or Nx3 matrix is
+entered, box #1's fill color corresponds to the first character or first
+matrix row, and the next boxes' fill colors corresponds to the next
 characters or rows. If the char string or Nx3 array is exhausted the color
 selection wraps around.
 
-Supplemental arguments not described above (&hellip;) are concatenated and
+Supplemental arguments not described above (...) are concatenated and
 passed to the plot() function.
 
 The returned matrix s has one column for each data set as follows:
@@ -532,7 +526,7 @@ The returned matrix s has one column for each data set as follows:
 
 The quartiles are those of quantile at its default method, which is
 also what prctile returns, so the box edges of a data set always
-agree with prctile ( data , [25, 75]) . They set the
+agree with prctile (data, [25, 75]). They set the
 inter-quartile range, and so the whisker fences and which observations are
 reported as outliers.
 
@@ -565,26 +559,25 @@ cdfplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1047
-statistics: hCDF = cdfplot ( x )
-statistics: [ hCDF , stats ] = cdfplot ( x )
-
+# length: 1017
+statistics: hCDF = cdfplot (x)
+statistics: [hCDF, stats] = cdfplot (x)
 Display an empirical cumulative distribution function.
 
-hCDF = cdfplot ( x ) plots an empirical cumulative
+hCDF = cdfplot (x) plots an empirical cumulative
 distribution function (CDF) of the observations in the data sample vector
-x . x may be a row or column vector, and represents a random
+x. x may be a row or column vector, and represents a random
 sample of observations from some underlying distribution.
 
 cdfplot plots F(x), the empirical (or sample) CDF versus the
-observations in x . The empirical CDF, F(x), is defined as follows:
+observations in x. The empirical CDF, F(x), is defined as follows:
 
 F(x) = (Number of observations <= x) / (Total number of observations)
 
-for all values in the sample vector x . NaNs are ignored. hCDF
-is the handle of the empirical CDF curve (a handle graphics &rsquo;line&rsquo; object).
+for all values in the sample vector x. NaNs are ignored. hCDF
+is the handle of the empirical CDF curve (a handle graphics 'line' object).
 
-[ hCDF , stats ] = cdfplot ( x ) also returns a structure
+[hCDF, stats] = cdfplot (x) also returns a structure
 with the following fields as a statistical summary.
 
 STATS.min minimum value of x
@@ -616,22 +609,21 @@ dendrogram
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2000
-statistics: dendrogram ( tree )
-statistics: dendrogram ( tree , p )
-statistics: dendrogram ( tree , prop , val )
-statistics: dendrogram ( tree , p , prop , val )
-statistics: h = dendrogram (&hellip;)
-statistics: [ h , t , perm ] = dendrogram (&hellip;)
-
+# length: 1961
+statistics: dendrogram (tree)
+statistics: dendrogram (tree, p)
+statistics: dendrogram (tree, prop, val)
+statistics: dendrogram (tree, p, prop, val )
+statistics: h = dendrogram (...)
+statistics: [h, t, perm] = dendrogram (...)
 Plot a dendrogram of a hierarchical binary cluster tree.
 
-Given tree , a hierarchical binary cluster tree as the output of
-linkage , plot a dendrogram of the tree. The number of leaves shown by
-the dendrogram plot is limited to p . The default value for p is
+Given tree, a hierarchical binary cluster tree as the output of
+linkage, plot a dendrogram of the tree. The number of leaves shown by
+the dendrogram plot is limited to p. The default value for p is
 30. Set p to 0 to plot all leaves.
 
-The optional outputs are h , t and perm :
+The optional outputs are h, t and perm:
 
 h is a handle to the lines of the plot.
 t is the vector with the numbers assigned to each leaf.
@@ -639,7 +631,7 @@ Each element of t is a leaf of tree and its value is the number
 shown in the plot.
 When the dendrogram plot is collapsed, that is when the number of shown
 leaves p is inferior to the total number of leaves, a single leaf of
-the plot can represent more than one leaf of tree : in that case
+the plot can represent more than one leaf of tree: in that case
 multiple elements of t share the same value, that is the same leaf of
 the plot.
 When the dendrogram plot is not collapsed, each leaf of the plot is the leaf
@@ -651,14 +643,14 @@ values. Known properties are:
 
 'Reorder'
 Reorder the leaves of the dendrogram plot using a numerical vector of size n,
-the number of leaves. When p is smaller than n , the reordering
+the number of leaves. When p is smaller than n, the reordering
 cannot break the p groups of leaves.
 'Orientation'
 Change the orientation of the plot. Available values: top (default),
-bottom , left , right .
+bottom, left, right.
 'CheckCrossing'
 Check if the lines of a reordered dendrogram cross each other. Available
-values: true (default), false .
+values: true (default), false.
 'ColorThreshold'
 Not implemented.
 'Labels'
@@ -692,45 +684,43 @@ ecdfhist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1316
-statistics: [ n , c ] = ecdfhist ( f , x )
-statistics: [ n , c ] = ecdfhist ( f , x , m )
-statistics: [ n , c ] = ecdfhist ( f , x , centers )
-statistics: ecdfhist (&hellip;)
-statistics: ecdfhist ( ax , &hellip;)
+# length: 1233
+statistics: [n, c] = ecdfhist (f, x)
+statistics: [n, c] = ecdfhist (f, x, m)
+statistics: [n, c] = ecdfhist (f, x, centers)
+statistics: ecdfhist (...)
+statistics: ecdfhist (ax, ...)
+Create a histogram from the output of ecdf.
 
-Create a histogram from the output of ecdf .
-
-[ n , c ] = ecdfhist ( f , x ) takes the empirical
-cumulative distribution function f evaluated at the points x , as
-computed by ecdf , and returns the heights n of histogram bars
-for 10 equally spaced bins together with their centers c . Unlike a
+[n, c] = ecdfhist (f, x) takes the empirical
+cumulative distribution function f evaluated at the points x, as
+computed by ecdf, and returns the heights n of histogram bars
+for 10 equally spaced bins together with their centers c. Unlike a
 count histogram, the bar heights are normalized so that the area of the
 histogram is equal to 1, giving an estimate of the probability density
 function.
 
-[ n , c ] = ecdfhist ( f , x , m ) uses m
+[n, c] = ecdfhist (f, x, m) uses m
 equally spaced bins.
 
-[ n , c ] = ecdfhist ( f , x , centers ) uses
+[n, c] = ecdfhist (f, x, centers) uses
 bins with the specified centers, given as a vector of monotonically
 increasing values.
 
-ecdfhist (&hellip;) without output arguments plots the histogram.
+ecdfhist (...) without output arguments plots the histogram.
 
-ecdfhist ( ax , &hellip;) plots into the axes ax instead of
+ecdfhist (ax, ...) plots into the axes ax instead of
 the current axes.
 
 The probability mass assigned to each bin is the sum of the increments of the
-empirical cdf, diff ( f ) , over the points x that fall
+empirical cdf, diff (f), over the points x that fall
 closest to the corresponding bin center; ties are assigned to the lower
 center. Each bar height is that mass divided by the bin width.
 
 See also:
 ecdf,
 cdfplot,
-hist,
-histogram
+hist
 
 
 # name: <cell-element>
@@ -751,15 +741,14 @@ einstein
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1261
+# length: 1212
 statistics: einstein ()
-statistics: tiles = einstein ( a , b )
-statistics: [ tiles , rhat ] = einstein ( a , b )
-statistics: [ tiles , rhat , that ] = einstein ( a , b )
-statistics: [ tiles , rhat , that , shat ] = einstein ( a , b )
-statistics: [ tiles , rhat , that , shat , phat ] = einstein ( a , b )
-statistics: [ tiles , rhat , that , shat , phat , fhat ] = einstein ( a , b )
-
+statistics: tiles = einstein (a, b)
+statistics: [tiles, rhat] = einstein (a, b)
+statistics: [tiles, rhat, that] = einstein (a, b)
+statistics: [tiles, rhat, that, shat] = einstein (a, b)
+statistics: [tiles, rhat, that, shat, phat] = einstein (a, b)
+statistics: [tiles, rhat, that, shat, phat, fhat] = einstein (a, b)
 Plots the tiling of the basic clusters of einstein tiles.
 
 Scalars a and b define the shape of the einstein tile.
@@ -769,11 +758,11 @@ tiles is a structure containing the coordinates of the einstein
 tiles that are tiled on the plot. Each field contains the tile coordinates
 of the corresponding clusters.
 
-tiles .rhat contains the reflected einstein tiles
-tiles .that contains the three-hat shells
-tiles .shat contains the single-hat clusters
-tiles .phat contains the paired-hat clusters
-tiles .fhat contains the fylfot clusters
+tiles.rhat contains the reflected einstein tiles
+tiles.that contains the three-hat shells
+tiles.shat contains the single-hat clusters
+tiles.phat contains the paired-hat clusters
+tiles.fhat contains the fylfot clusters
 
 rhat contains the coordinates of the first reflected tile
 that contains the coordinates of the first three-hat shell
@@ -793,6 +782,87 @@ Plots the tiling of the basic clusters of einstein tiles.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 17
+gardnerAltmanPlot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2789
+statistics: gardnerAltmanPlot (X, Y)
+statistics: gardnerAltmanPlot (ax, X, Y)
+statistics: gardnerAltmanPlot (..., Name, Value)
+statistics: H = gardnerAltmanPlot (...)
+Gardner-Altman plot of two samples and the effect size between them.
+
+gardnerAltmanPlot (X, Y) draws the observations of the
+samples X and Y at the horizontal positions 1 and 2, and the
+difference between their means, with its confidence interval, at position
+3, measured against a second vertical axis on the right. That axis is
+placed so that its zero is level with the centre of Y and the effect
+size level with the centre of X, so the effect reads off the data it
+comes from. X and Y are vectors of type double or single, and
+a missing value (NaN) is left out.
+
+Two unpaired samples are drawn as swarms, the points of each spread
+sideways where they crowd, with a black line from the centre of each
+sample to the effect size: solid for X, dashed for Y. The
+centre is the median for 'mediandiff' and the mean otherwise.
+Paired samples are drawn as a line from each observation of X to its
+partner in Y, the pairs that increase, decrease and stay equal each
+in a colour of their own. For 'cliff' and 'kstest', whose
+values do not share the scale of the data, the right axis spans the values
+the effect can take, [-1.1, 1.1] and [-0.1, 1.1], and two
+unpaired samples get a reference line at zero instead of the lines from
+their centres.
+
+gardnerAltmanPlot (ax, ...) draws into the axes ax
+rather than the current axes.
+
+gardnerAltmanPlot (..., Name, Value) takes the
+options 'Effect', 'Paired', 'VarianceType',
+'Alpha', 'ConfidenceIntervalType', 'NumBootstraps',
+'BootstrapOptions' and 'Resampling' of
+meanEffectSize, which computes the effect size and its interval;
+'Effect' names a single effect. 'Mean' does not apply,
+there always being two samples.
+
+H = gardnerAltmanPlot (...) returns the graphics objects
+drawn, in a row vector. For two unpaired samples they are the two swarms,
+the error bar, and the lines from the centres of X and Y, or
+the reference line. For paired samples they are the lines of the pairs
+that increase, decrease and stay equal, each where there is any, and the
+error bar. Where 'ConfidenceIntervalType' is 'none' the
+error bar is a line holding a single marker.
+
+MATLAB draws the effect size on a second vertical axis of the same axes;
+Octave has no such axis, so here it is a second axes laid over the first,
+which follows the first's position and vertical limits. The error bar is
+Octave's errorbar object, whose bounds are its 'ldata' and
+'udata' properties.
+
+Reference: M. J. Gardner and D. G. Altman (1986). Confidence intervals
+rather than P values: estimation rather than hypothesis testing. British
+Medical Journal, 292(6522), 746-750.
+
+See also:
+meanEffectSize,
+swarmchart,
+errorbar
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 68
+Gardner-Altman plot of two samples and the effect size between them.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 9
 glyphplot
 
@@ -800,15 +870,14 @@ glyphplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1562
-statistics: glyphplot ( x )
-statistics: glyphplot ( x , name , value , &hellip;)
-statistics: g = glyphplot (&hellip;)
+# length: 1534
+statistics: glyphplot (x)
+statistics: glyphplot (x, name, value, ...)
+statistics: g = glyphplot (...)
+Create a star (glyph) plot of the multivariate data in x.
 
-Create a star (glyph) plot of the multivariate data in x .
-
-glyphplot ( x ) draws each observation (row) of the
-n -by- p matrix x as a star glyph, arranged on a grid. The
+glyphplot (x) draws each observation (row) of the
+n-by-p matrix x as a star glyph, arranged on a grid. The
 p spokes of each star radiate from its center at equally spaced angles,
 with lengths proportional to the values of the p variables; the tips of
 the spokes are joined to form the star perimeter.
@@ -820,24 +889,24 @@ The following name/value pairs are accepted:
 is not currently supported.
 "Standardize"
 How the columns of x are scaled to spoke lengths: "column"
-(default) scales each column to the range [0,1] , "matrix"
-scales the whole matrix to [0,1] , "PCA" uses principal
-component scores scaled to [0,1] , and "off" uses the values as
+(default) scales each column to the range [0,1], "matrix"
+scales the whole matrix to [0,1], "PCA" uses principal
+component scores scaled to [0,1], and "off" uses the values as
 given. A spoke of relative length 0 is still drawn at 10% of the maximum
 radius so that it remains visible.
 "Grid"
 A two-element vector [rows cols] specifying the layout of the glyphs.
 The default is chosen automatically.
 "Centers"
-An n -by-2 matrix giving the center coordinates of the glyphs
-explicitly, overriding "Grid" .
+An n-by-2 matrix giving the center coordinates of the glyphs
+explicitly, overriding "Grid".
 "Radius"
 The maximum glyph radius (default 0.4).
 "ObsLabels"
 A character array or cell array of strings labeling the observations. The
 default is the observation numbers.
 
-The optional output g is an n -by-3 matrix of handles whose
+The optional output g is an n-by-3 matrix of handles whose
 columns hold, respectively, the star perimeters, the star spokes, and the
 text labels.
 
@@ -864,42 +933,41 @@ gplotmatrix
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2644
-statistics: gplotmatrix ( x , y , group )
-statistics: gplotmatrix ( x , [], group )
-statistics: gplotmatrix ( x , y , group , clr , sym , siz )
-statistics: gplotmatrix (&hellip;, doleg , dispopt )
-statistics: gplotmatrix (&hellip;, doleg , dispopt , xnam , ynam )
-statistics: gplotmatrix ( parent , &hellip;)
-statistics: [ h , ax , bigax ] = gplotmatrix (&hellip;)
-
+# length: 2559
+statistics: gplotmatrix (x, y, group)
+statistics: gplotmatrix (x, [], group)
+statistics: gplotmatrix (x, y, group, clr, sym, siz)
+statistics: gplotmatrix (..., doleg, dispopt)
+statistics: gplotmatrix (..., doleg, dispopt, xnam, ynam)
+statistics: gplotmatrix (parent, ...)
+statistics: [h, ax, bigax] = gplotmatrix (...)
 Create a matrix of scatter plots grouped by a categorical variable.
 
-gplotmatrix ( x , y , group ) creates a matrix of
+gplotmatrix (x, y, group) creates a matrix of
 scatter plots. Each subplot in the resulting figure is a scatter plot of a
-column of x against a column of y . If x is n -by- p
-and y is n -by- q , the resulting figure holds a
-q -by- p grid of subplots; the subplot in row i and column
-j plots x (:,j) on the horizontal axis against
-y (:,i) on the vertical axis. Points are grouped and colored
-according to group , which is a grouping variable (numeric, logical,
+column of x against a column of y. If x is
+n-by-p and y is n-by-q, the resulting figure
+holds a q-by-p grid of subplots; the subplot in row i and
+column j plots x(:,j) on the horizontal axis against
+y(:,i) on the vertical axis. Points are grouped and colored
+according to group, which is a grouping variable (numeric, logical,
 character, string, or cell array of strings) with one entry per row of
-x .
+x.
 
-gplotmatrix ( x , [], group ) is equivalent to
-gplotmatrix ( x , x , group ) except that the diagonal of
-the p -by- p grid is replaced by grouped histograms of the columns
-of x .
+gplotmatrix (x, [], group) is equivalent to
+gplotmatrix (x, x, group) except that the diagonal
+of the p-by-p grid is replaced by grouped histograms of the
+columns of x.
 
 The appearance of the plot is controlled by further positional arguments:
 
 clr
 Marker colors, given as a character vector of color specifiers (e.g.
-"rgb" ) or as a matrix of RGB triplets, one row per group. Colors
+"rgb") or as a matrix of RGB triplets, one row per group. Colors
 cycle if fewer are supplied than there are groups.
 sym
-Marker symbols, given as a character vector (e.g. "o+x" ); defaults to
-"." . Symbols cycle if fewer are supplied than there are groups.
+Marker symbols, given as a character vector (e.g. "o+x"); defaults to
+".". Symbols cycle if fewer are supplied than there are groups.
 siz
 Marker sizes, given as a numeric vector. Sizes cycle if fewer are supplied
 than there are groups.
@@ -912,19 +980,19 @@ Controls the diagonal of the grid when y is empty: "stairs"
 "grpbars" for grouped bar histograms, "none" to leave the
 diagonal empty, or "variable" to write the variable names on the
 diagonal.
-xnam , ynam
-Character vectors or cell arrays of strings giving the names of the columns of
-x and y , used to label the outer axes.
+xnam, ynam
+Character vectors or cell arrays of strings giving the names of the columns
+of x and y, used to label the outer axes.
 
-An optional leading parent argument (a figure or uipanel handle) selects
-the container for the plot.
+An optional leading parent argument (a figure or uipanel handle)
+selects the container for the plot.
 
-The optional outputs are h , an array of handles to the plotted objects
-with size ny -by- p -by- k (where ny is the number of rows
-of the grid and k the number of groups); ax , the matrix of handles
-to the subplot axes (with an extra row of hidden axes for the diagonal
-histograms); and bigax , the handle to the invisible enclosing axes used
-for titles and labels.
+The optional outputs are h, an array of handles to the plotted objects
+with size ny-by-p-by-k (where ny is the number of
+rows of the grid and k the number of groups); ax, the matrix of
+handles to the subplot axes (with an extra row of hidden axes for the
+diagonal histograms); and bigax, the handle to the invisible enclosing
+axes used for titles and labels.
 
 See also:
 gscatter,
@@ -950,19 +1018,18 @@ gscatter
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1566
-statistics: gscatter ( x , y , g )
-statistics: gscatter ( x , y , g , clr , sym , siz )
-statistics: gscatter (&hellip;, doleg , xnam , ynam )
-statistics: h = gscatter (&hellip;)
-
+# length: 1532
+statistics: gscatter (x, y, g)
+statistics: gscatter (x, y, g, clr, sym, siz)
+statistics: gscatter (..., doleg, xnam, ynam)
+statistics: h = gscatter (...)
 Draw a scatter plot with grouped data.
 
 gscatter is a utility function to draw a scatter plot of x and
-y , according to the groups defined by g . Input x and
+y, according to the groups defined by g. Input x and
 y are numeric vectors of the same size, while g is either a
 vector of the same size as x or a character matrix with the same number
-of rows as the size of x . As a vector g can be numeric, logical,
+of rows as the size of x. As a vector g can be numeric, logical,
 a character array, a string array (not implemented), a cell string or cell
 array.
 
@@ -970,19 +1037,19 @@ A number of optional inputs change the appearance of the plot:
 
 "clr"
 defines the color for each group; if not enough colors are defined by
-"clr" , gscatter cycles through the specified colors. Colors can
+"clr", gscatter cycles through the specified colors. Colors can
 be defined as named colors, as rgb triplets or as indices for the current
-colormap . The default value is a different color for each group,
-according to the current colormap .
+colormap. The default value is a different color for each group,
+according to the current colormap.
 "sym"
 is a char array of symbols for each group; if not enough symbols are defined
-by "sym" , gscatter cycles through the specified symbols.
+by "sym", gscatter cycles through the specified symbols.
 "siz"
 is a numeric array of sizes for each group; if not enough sizes are defined
-by "siz" , gscatter cycles through the specified sizes.
+by "siz", gscatter cycles through the specified sizes.
 "doleg"
 is a boolean value to show the legend; it can be either on (default)
-or off .
+or off.
 "xnam"
 is a character array, the name for the x axis.
 "ynam"
@@ -1006,6 +1073,75 @@ Draw a scatter plot with grouped data.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 7
+heatmap
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1851
+statistics: heatmap (cdata)
+statistics: heatmap (xvalues, yvalues, cdata)
+statistics: heatmap (tbl, xvar, yvar)
+statistics: heatmap (parent, ...)
+statistics: heatmap (..., Name, Value)
+statistics: h = heatmap (...)
+Heatmap of a matrix, or of the rows of a table counted or aggregated over
+two of its variables.
+
+heatmap (cdata) draws the matrix cdata as a grid of
+coloured cells, each carrying its value, with a colour bar beside them.
+The columns are named '1', '2', ..., and so are the
+rows.
+
+heatmap (xvalues, yvalues, cdata) names the columns
+with xvalues and the rows with yvalues, vectors of distinct
+numbers, text or categories with one element for each column and each row
+of cdata.
+
+heatmap (tbl, xvar, yvar) makes a column of each
+distinct value of the table variable xvar and a row of each distinct
+value of yvar, and colours each cell by the number of rows of
+tbl falling in it. With 'ColorVariable' naming a numeric
+variable, each cell holds the mean of that variable over its rows instead,
+or what 'ColorMethod' asks for: 'count', 'mean',
+'median', 'sum', 'min', 'max', or
+'none' where each cell holds at most one row. The categories of a
+categorical variable are taken in their order, those no row uses
+included; numbers, text and logical values are sorted. A row whose
+xvar or yvar is missing is left out.
+
+heatmap (parent, ...) places the heatmap in the figure or
+panel parent rather than the current figure. The heatmap takes the
+place of the current axes of its parent, and is refused where
+hold is on for them.
+
+heatmap (..., Name, Value) sets properties of the
+heatmap; see stats.chart.HeatmapChart for all of them.
+
+h = heatmap (...) returns the heatmap, a
+stats.chart.HeatmapChart object, whose methods sortx,
+sorty, xlim and ylim reorder and restrict its columns
+and rows.
+
+See also:
+stats.chart.HeatmapChart,
+imagesc,
+crosstab
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 95
+Heatmap of a matrix, or of the rows of a table counted or aggregated over two of its variables.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 5
 hist3
 
@@ -1013,45 +1149,44 @@ hist3
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1879
-statistics: hist3 ( X )
-statistics: hist3 ( X , nbins )
-statistics: hist3 ( X , "Nbins" , nbins )
-statistics: hist3 ( X , centers )
-statistics: hist3 ( X , "Ctrs" , centers )
-statistics: hist3 ( X , "Edges" , edges )
-statistics: [ N , C ] = hist3 (&hellip;)
-statistics: hist3 (&hellip;, prop , val , &hellip;)
-statistics: hist3 ( hax , &hellip;)
-
+# length: 1817
+statistics: hist3 (X)
+statistics: hist3 (X, nbins)
+statistics: hist3 (X, "Nbins", nbins)
+statistics: hist3 (X, centers)
+statistics: hist3 (X, "Ctrs", centers)
+statistics: hist3 (X, "Edges", edges)
+statistics: [N, C] = hist3 (...)
+statistics: hist3 (..., prop, val, ...)
+statistics: hist3 (hax, ...)
 Produce bivariate (2D) histogram counts or plots.
 
 The elements to produce the histogram are taken from the Nx2 matrix
-X . Any row with NaN values are ignored. The actual bins can
+X. Any row with NaN values are ignored. The actual bins can
 be configured in 3 different: number, centers, or edges of the bins:
 
 Number of bins (default)
 Produces equally spaced bins between the minimum and maximum values
-of X . Defined as a 2 element vector, nbins , one for each
-dimension. Defaults to [10 10] .
+of X. Defined as a 2 element vector, nbins, one for each
+dimension. Defaults to [10 10].
 Center of bins
 Defined as a cell array of 2 monotonically increasing vectors,
-centers . The width of each bin is determined from the adjacent
+centers. The width of each bin is determined from the adjacent
 values in the vector with the initial and final bin, extending to Infinity.
 Edge of bins
 Defined as a cell array of 2 monotonically increasing vectors,
-edges . N (i,j) contains the number of elements
+edges. N(i,j) contains the number of elements
 in X for which:
 
-edges {1}(i) <= X (:,1) < edges {1}(i+1)
+edges{1}(i) <= X(:,1) < edges{1}(i+1)
 
-edges {2}(j) <= X (:,2) < edges {2}(j+1)
+edges{2}(j) <= X(:,2) < edges{2}(j+1)
 
 The consequence of this definition is that values outside the initial
 and final edge values are ignored, and that the final bin only contains
 the number of elements exactly equal to the final edge.
 
-The return values, N and C , are the bin counts and centers
+The return values, N and C, are the bin counts and centers
 respectively. These are specially useful to produce intensity maps:
 
 [counts, centers] = hist3 (data);
@@ -1087,35 +1222,34 @@ histfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1331
-statistics: histfit ( x )
-statistics: histfit ( x , nbins )
-statistics: histfit ( x , nbins , distname )
-statistics: histfit ( ax , &hellip;)
-statistics: h = histfit (&hellip;)
-
+# length: 1284
+statistics: histfit (x)
+statistics: histfit (x, nbins)
+statistics: histfit (x, nbins, distname)
+statistics: histfit (ax, ...)
+statistics: h = histfit (...)
 Plot histogram with superimposed distribution fit.
 
-histfit ( x ) plots a histogram of the values in the vector
+histfit (x) plots a histogram of the values in the vector
 x using the number of bins equal to the square root of the number of
 non-missing elements in x and superimposes a fitted normal density
 function.
 
-histfit ( x , nbins ) plots a histogram of the values in the
+histfit (x, nbins) plots a histogram of the values in the
 vector x using nbins number of bins in the histogram and
 superimposes a fitted normal density function.
 
-histfit ( x , nbins , distname ) plots a histogram of
+histfit (x, nbins, distname) plots a histogram of
 the values in the vector x using nbins number of bins in the
 histogram and superimposes a fitted density function from the distribution
-specified by distname .
+specified by distname.
 
-histfit ( ax , &hellip;) uses the axes handle ax to plot the
+histfit (ax, ...) uses the axes handle ax to plot the
 histogram and the fitted density function onto followed by any of the input
 argument combinations specified in the previous syntaxes.
 
-h = histfit (&hellip;) returns a vector of handles h , where
-h (1) is the handle to the histogram and h (2) is
+h = histfit (...) returns a vector of handles h, where
+h(1) is the handle to the histogram and h(2) is
 the handle to the density curve.
 
 Note: calling histfit without any input arguments will return a cell
@@ -1146,29 +1280,28 @@ manovacluster
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 848
-statistics: manovacluster ( stats )
-statistics: manovacluster ( stats , method )
-statistics: h = manovacluster ( stats )
-statistics: h = manovacluster ( stats , method )
-
+# length: 807
+statistics: manovacluster (stats)
+statistics: manovacluster (stats, method)
+statistics: h = manovacluster (stats)
+statistics: h = manovacluster (stats, method)
 Cluster group means using manova1 output.
 
-manovacluster ( stats ) draws a dendrogram showing the clustering
+manovacluster (stats) draws a dendrogram showing the clustering
 of group means, calculated using the output STATS structure from
 manova1 and applying the single linkage algorithm. See the
 dendrogram function for more information about the figure.
 
-manovacluster ( stats , method ) uses the method
+manovacluster (stats, method) uses the method
 algorithm in place of single linkage. The available methods are:
 
-"single" &mdash; nearest distance
-"complete" &mdash; furthest distance
-"average" &mdash; average distance
-"centroid" &mdash; center of mass distance
-"ward" &mdash; inner squared distance
+"single" --- nearest distance
+"complete" --- furthest distance
+"average" --- average distance
+"centroid" --- center of mass distance
+"ward" --- inner squared distance
 
-h = manovacluster (&hellip;) returns a vector of line handles.
+h = manovacluster (...) returns a vector of line handles.
 
 See also:
 manova1
@@ -1192,18 +1325,17 @@ normplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 690
-statistics: normplot ( x )
-statistics: normplot ( ax , x )
-statistics: h = normplot (&hellip;)
-
-Produce normal probability plot of the data in x . If x is a
+# length: 674
+statistics: normplot (x)
+statistics: normplot (ax, x)
+statistics: h = normplot (...)
+Produce normal probability plot of the data in x. If x is a
 matrix, normplot plots the data for each column. NaN values are
 ignored.
 
-h = normplot ( ax , x ) takes a handle ax in
+h = normplot (ax, x) takes a handle ax in
 addition to the data in x and it uses that axes for plotting. You may
-get this handle of an existing plot with gca .
+get this handle of an existing plot with gca.
 
 The line joining the 1st and 3rd quantile is drawn solid whereas its
 extensions to both ends are dotted. If the underlying distribution is normal,
@@ -1233,24 +1365,23 @@ parallelcoords
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1492
-statistics: parallelcoords ( x )
-statistics: parallelcoords ( x , name , value , &hellip;)
-statistics: parallelcoords ( ax , &hellip;)
-statistics: h = parallelcoords (&hellip;)
+# length: 1446
+statistics: parallelcoords (x)
+statistics: parallelcoords (x, name, value, ...)
+statistics: parallelcoords (ax, ...)
+statistics: h = parallelcoords (...)
+Create a parallel coordinates plot of the multivariate data in x.
 
-Create a parallel coordinates plot of the multivariate data in x .
-
-parallelcoords ( x ) plots each observation (row) of the
-n -by- p matrix x as a line connecting the values of its
+parallelcoords (x) plots each observation (row) of the
+n-by-p matrix x as a line connecting the values of its
 p coordinates, which are placed at the equally spaced horizontal
-positions 1, 2, &hellip;, p .
+positions 1, 2, ..., p.
 
 The following name/value pairs are accepted:
 
 "Group"
 A grouping variable (numeric, logical, character, string, or cell array of
-strings) with one entry per row of x . Lines are colored by group.
+strings) with one entry per row of x. Lines are colored by group.
 "Standardize"
 Controls how the columns of x are transformed before plotting:
 "off" (default) uses the raw data, "on" centers and scales
@@ -1258,14 +1389,14 @@ each column to zero mean and unit standard deviation, "PCA" uses the
 principal component scores, and "PCAStd" uses the principal component
 scores of the standardized data.
 "Quantile"
-A scalar alpha in the interval (0,1) . Instead of one line per
+A scalar alpha in the interval (0,1). Instead of one line per
 observation, only three lines per group are drawn: the coordinate-wise median
-and the alpha and 1- alpha quantiles of the group.
+and the alpha and 1-alpha quantiles of the group.
 "Labels"
 A character array or cell array of strings giving the tick labels for the
 coordinate axis.
 
-parallelcoords ( ax , &hellip;) plots into the axes ax .
+parallelcoords (ax, ...) plots into the axes ax.
 
 The optional output h is a vector of handles to the plotted lines: one
 per observation, or three per group when "Quantile" is used.
@@ -1287,6 +1418,69 @@ Create a parallel coordinates plot of the multivariate data in x.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 12
+parallelplot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1794
+statistics: parallelplot (data)
+statistics: parallelplot (tbl)
+statistics: parallelplot (parent, ...)
+statistics: parallelplot (..., Name, Value)
+statistics: h = parallelplot (...)
+Parallel coordinates plot of observations of several variables.
+
+parallelplot (data) draws each column of the numeric matrix
+data as a vertical ruler, a coordinate, and each row as a line
+joining its values across the rulers. By default each ruler has limits of
+its own, from the smallest to the largest value of its column.
+
+parallelplot (tbl) draws the variables of the table
+tbl as coordinates, named after them. A variable of categories,
+text or logical values places its distinct values evenly along its ruler.
+
+'CoordinateData' chooses the columns of data to draw, and
+'CoordinateVariables' the variables of tbl, by names,
+indices or a logical vector. With 'GroupData', a vector with one
+element for each observation, or 'GroupVariable', a variable of
+tbl, each group is drawn in a colour of its own, with a legend
+naming the groups in the order in which each first appears.
+'DataNormalization' places the values as they are on rulers of
+their own, 'range', or on one shared scale: as they are,
+'none'; as z-scores, 'zscore'; divided by the standard
+deviation, 'scale'; less the mean, 'center'; divided by
+the 2-norm, 'norm'.
+
+parallelplot (parent, ...) places the chart in the
+figure or panel parent rather than the current figure. The chart
+takes the place of the current axes of its parent, and is refused where
+hold is on for them.
+
+parallelplot (..., Name, Value) sets properties of
+the chart; see stats.chart.ParallelCoordinatesPlot for all of them.
+
+h = parallelplot (...) returns the chart, a
+stats.chart.ParallelCoordinatesPlot object.
+
+See also:
+stats.chart.ParallelCoordinatesPlot,
+parallelcoords
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 63
+Parallel coordinates plot of observations of several variables.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 6
 ppplot
 
@@ -1294,27 +1488,26 @@ ppplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 890
-statistics: ppplot ( x , dist )
-statistics: ppplot ( x , dist , params )
-statistics: [ p , y ] = ppplot ( x , dist , params )
-
+# length: 860
+statistics: ppplot (x, dist)
+statistics: ppplot (x, dist, params)
+statistics: [p, y] = ppplot (x, dist, params)
 Perform a PP-plot (probability plot).
 
 If F is the CDF of the distribution dist with parameters
-params and x a sample vector of length n , the PP-plot
-graphs ordinate y ( i ) = F ( i -th largest element of
-x ) versus abscissa p ( i ) = ( i - 0.5)/ n . If
+params and x a sample vector of length n, the PP-plot
+graphs ordinate y(i) = F (i-th largest element of
+x) versus abscissa p(i) = (i - 0.5)/n. If
 the sample comes from F, the pairs will approximately follow a straight
 line.
 
 The default for dist is the standard normal distribution.
 
 The optional argument params contains a list of parameters of
-dist .
+dist.
 
 For example, for a probability plot of the uniform distribution on [2,4]
-and x , use
+and x, use
 
 ppplot (x, "unif", 2, 4)
 
@@ -1345,17 +1538,16 @@ probplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1998
-statistics: probplot ( y )
-statistics: probplot ( dist , y )
-statistics: probplot ( dist , y , cens )
-statistics: probplot ( dist , y , cens , freq )
-statistics: probplot ( ax , &hellip;)
-statistics: probplot (&hellip;, "noref" )
-statistics: h = probplot (&hellip;)
-
+# length: 1941
+statistics: probplot (y)
+statistics: probplot (dist, y)
+statistics: probplot (dist, y, cens)
+statistics: probplot (dist, y, cens, freq)
+statistics: probplot (ax, ...)
+statistics: probplot (..., "noref")
+statistics: h = probplot (...)
 Produce a probability plot of the data in y against the distribution
-dist .
+dist.
 
 On a probability plot the ordered data are drawn against a nonlinear
 probability axis chosen so that a sample from the reference distribution
@@ -1363,33 +1555,33 @@ dist falls approximately along a straight line. Systematic departures
 from the reference line indicate departures from the distribution.
 
 dist is one of "normal" (the default when dist is
-omitted), "lognormal" , "exponential" , "extreme value" ,
-"weibull" , "rayleigh" , "logistic" , or
-"loglogistic" . For "lognormal" , "weibull" , and
-"loglogistic" the data axis is logarithmic.
+omitted), "lognormal", "exponential",
+"extreme value", "weibull", "rayleigh",
+"logistic", or "loglogistic". For "lognormal",
+"weibull", and "loglogistic" the data axis is logarithmic.
 
 y is a numeric vector, or a matrix in which case each column is plotted
 as a separate sample. NaN values are ignored.
 
 cens is a logical vector the same size as y that is true for
 right-censored observations; censored points are not plotted and the plotting
-positions of the remaining points follow the Kaplan-Meier estimate. freq
-is a vector of nonnegative integer frequencies (counts) the same size as
-y . Pass [] to omit either one.
+positions of the remaining points follow the Kaplan-Meier estimate.
+freq is a vector of nonnegative integer frequencies (counts) the same
+size as y. Pass [] to omit either one.
 
-probplot ( ax , &hellip;) plots into the axes ax instead of
+probplot (ax, ...) plots into the axes ax instead of
 the current axes. The trailing option "noref" suppresses the
 reference line.
 
-h = probplot (&hellip;) returns a column vector of handles to the
+h = probplot (...) returns a column vector of handles to the
 plotted line objects (the data markers, followed by the reference line unless
 "noref" was given).
 
-The reference line is a robust fit through the first and third quartiles of the
-data on the transformed scale. For censored data the quartiles are taken from
-the Kaplan-Meier plotting positions; when heavy censoring prevents the data
-from reaching a quartile the position is linearly extrapolated, which may
-deviate slightly from MATLAB .
+The reference line is a robust fit through the first and third quartiles of
+the data on the transformed scale. For censored data the quartiles are taken
+from the Kaplan-Meier plotting positions; when heavy censoring prevents the
+data from reaching a quartile the position is linearly extrapolated, which
+may deviate slightly from MATLAB.
 
 See also:
 normplot,
@@ -1417,37 +1609,36 @@ qqplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1127
-statistics: [ q , s ] = qqplot ( x )
-statistics: [ q , s ] = qqplot ( x , y )
-statistics: [ q , s ] = qqplot ( x , dist )
-statistics: [ q , s ] = qqplot ( x , y , params )
-statistics: qqplot (&hellip;)
-
+# length: 1082
+statistics: [q, s] = qqplot (x)
+statistics: [q, s] = qqplot (x, y)
+statistics: [q, s] = qqplot (x, dist)
+statistics: [q, s] = qqplot (x, y, params)
+statistics: qqplot (...)
 Perform a QQ-plot (quantile plot).
 
 If F is the CDF of the distribution dist with parameters
 params and G its inverse, and x a sample vector of length
-n , the QQ-plot graphs ordinate s ( i ) = i -th
-largest element of x versus abscissa q ( i f) = G(( i -
-0.5)/ n ).
+n, the QQ-plot graphs ordinate s(i) = i-th
+largest element of x versus abscissa q(if) = G((i -
+0.5)/n).
 
 If the sample comes from F, except for a transformation of location
 and scale, the pairs will approximately follow a straight line.
 
 If the second argument is a vector y the empirical CDF of y
-is used as dist .
+is used as dist.
 
 The default for dist is the standard normal distribution. The
 optional argument params contains a list of parameters of
-dist . For example, for a quantile plot of the uniform
-distribution on [2,4] and x , use
+dist. For example, for a quantile plot of the uniform
+distribution on [2,4] and x, use
 
 qqplot (x, "unif", 2, 4)
 
 dist can be any string for which a function distinv or
 dist_inv exists that calculates the inverse CDF of distribution
-dist .
+dist.
 
 If no output arguments are given, the data are plotted directly.
 
@@ -1473,14 +1664,13 @@ scatterhist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3438
-statistics: scatterhist ( x , y )
-statistics: scatterhist ( x , y , name , value , &hellip;)
-statistics: h = scatterhist (&hellip;)
-
+# length: 3371
+statistics: scatterhist (x, y)
+statistics: scatterhist (x, y, name, value, ...)
+statistics: h = scatterhist (...)
 Create a scatter plot of x and y with marginal histograms.
 
-scatterhist ( x , y ) draws a scatter plot of the vectors
+scatterhist (x, y) draws a scatter plot of the vectors
 x and y in a central set of axes, with a histogram of x
 above it and a histogram of y to its right. x and y must
 be vectors of the same length; NaN values are removed pairwise from
@@ -1494,19 +1684,19 @@ strings) with one entry per point. The scatter points and the marginal
 histograms are separated and colored by group.
 "NBins"
 The number of bins for the marginal histograms, either a scalar applied to
-both or a two-element vector [nx ny] . The default is chosen by Scott&rsquo;s
-rule.
+both or a two-element vector [nx ny]. The default is chosen by
+Scott's rule.
 "Kernel"
 "off" (default) draws histograms for the marginals; "on" or
 "overlay" draws kernel density estimates instead.
 "Location"
 Corner occupied by the marginal plots, the scatter taking the opposite one:
-"SouthWest" (default), "SouthEast" , "NorthEast" , or
-"NorthWest" .
+"SouthWest" (default), "SouthEast", "NorthEast", or
+"NorthWest".
 "Legend"
 "on" or "off" to show or hide the group legend. The default
 is "on" when a grouping variable is supplied.
-"Marker" , "MarkerSize"
+"Marker", "MarkerSize"
 The marker symbol(s) and size(s) for the scatter points, cycled over the
 groups.
 
@@ -1514,14 +1704,14 @@ The optional output h is a three-element vector of axes handles: the
 central scatter axes, the axes of the x (horizontal) histogram, and the
 axes of the y (vertical) histogram.
 
-The y histogram&rsquo;s axes is built differently from MATLAB&rsquo;s and its
+The y histogram's axes is built differently from MATLAB's and its
 properties read accordingly. We plot that marginal transposed, so its
 "XLim" is the density and "XDir" carries the bar direction.
-MATLAB plots it like the x one &ndash; data along "XLim" , density
-along "YLim" &ndash; and rotates the whole axes by setting
-"View" to [270, 90] , so there the direction is carried by
-"YDir" and "XDir" is always "normal" . The picture
-is the same; code reading those properties off h (3) is not
+MATLAB plots it like the x one -- data along "XLim", density
+along "YLim" -- and rotates the whole axes by setting
+"View" to [270, 90], so there the direction is carried by
+"YDir" and "XDir" is always "normal". The picture
+is the same; code reading those properties off h(3) is not
 portable between the two.
 
 'Parent' draws into a supplied figure or uipanel instead of the
@@ -1529,30 +1719,30 @@ current figure. The container is used as it stands and is never
 cleared, so a scatterhist can be placed alongside other axes.
 
 'Location' names the corner the marginal histograms occupy,
-'SouthWest' by default, or 'SouthEast' , 'NorthEast'
-or 'NorthWest' ; the scatter takes the opposite corner. With the
+'SouthWest' by default, or 'SouthEast', 'NorthEast'
+or 'NorthWest'; the scatter takes the opposite corner. With the
 default the histograms are drawn below and to the left of the scatter.
 
 'Direction' points the marginal bars toward the scatter plot,
-'in' by default, or away from it with 'out' , whichever side
+'in' by default, or away from it with 'out', whichever side
 'Location' has placed them on.
 
-'PlotGroup' draws one marginal per group with 'on' , or a
-single pooled marginal with 'off' . It defaults to 'on' when
+'PlotGroup' draws one marginal per group with 'on', or a
+single pooled marginal with 'off'. It defaults to 'on' when
 'Group' is given and to 'off' otherwise.
 
-'Style' outlines the marginals as 'bar' or 'stairs' ,
+'Style' outlines the marginals as 'bar' or 'stairs',
 defaulting to stairs when the data are grouped and bars when they are not.
 
 'Color' sets the group colours, either as a character vector of
-colour names or as an N -by-3 matrix of RGB values, cycled over the
+colour names or as an N-by-3 matrix of RGB values, cycled over the
 groups.
 
 'LineStyle' and 'LineWidth' style the marginal outlines, not
 the scatter markers, and are cycled over the groups.
 
 'Bandwidth' sets the kernel bandwidth used when 'Kernel' is
-on: a scalar for all marginals, a pair for x and y , or one row
+on: a scalar for all marginals, a pair for x and y, or one row
 per group.
 
 See also:
@@ -1573,6 +1763,71 @@ Create a scatter plot of x and y with marginal histograms.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 16
+scatterhistogram
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1694
+statistics: scatterhistogram (x, y)
+statistics: scatterhistogram (tbl, xvar, yvar)
+statistics: scatterhistogram (parent, ...)
+statistics: scatterhistogram (..., Name, Value)
+statistics: h = scatterhistogram (...)
+Scatter plot of two samples with the histogram of each along its sides.
+
+scatterhistogram (x, y) draws the points
+(x(i), y(i)) with a histogram of x above the
+scatter plot and a histogram of y to its right, each normalized as a
+probability density, with the bins histcounts chooses. x and
+y are numeric vectors of the same length; a missing value is left out
+of the drawing.
+
+scatterhistogram (tbl, xvar, yvar) takes the
+samples from the variables xvar and yvar of the table
+tbl, and labels the axes with their names.
+
+With 'GroupData', a vector of categories, text, numbers or logical
+values with one element for each observation, or 'GroupVariable',
+a variable of tbl holding them, each group is drawn in a colour of
+its own, with histograms of its own and a legend naming the groups in the
+order in which each first appears.
+
+scatterhistogram (parent, ...) places the chart in the
+figure or panel parent rather than the current figure. The chart
+takes the place of the current axes of its parent, and is refused where
+hold is on for them.
+
+scatterhistogram (..., Name, Value) sets
+properties of the chart; see stats.chart.ScatterHistogramChart for
+all of them, among which 'HistogramDisplayStyle',
+'stairs', 'bar' or 'smooth' for a kernel density
+estimate, 'NumBins', 'BinWidths' and
+'ScatterPlotLocation'.
+
+h = scatterhistogram (...) returns the chart, a
+stats.chart.ScatterHistogramChart object.
+
+See also:
+stats.chart.ScatterHistogramChart,
+scatterhist,
+histcounts,
+ksdensity
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 71
+Scatter plot of two samples with the histogram of each along its sides.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 10
 silhouette
 
@@ -1580,18 +1835,17 @@ silhouette
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1782
-statistics: silhouette ( X , clust )
-statistics: [ si , h ] = silhouette ( X , clust )
-statistics: [ si , h ] = silhouette (&hellip;, Metric , MetricArg )
-
+# length: 1748
+statistics: silhouette (X, clust)
+statistics: [si, h] = silhouette (X, clust)
+statistics: [si, h] = silhouette (..., Metric, MetricArg)
 Compute the silhouette values of clustered data and show them on a plot.
 
 X is a n-by-p matrix of n data points in a p-dimensional space. Each
-datapoint is assigned to a cluster using clust , a vector of n elements,
+datapoint is assigned to a cluster using clust, a vector of n elements,
 one cluster assignment for each data point.
 
-Each silhouette value of si , a vector of size n, is a measure of the
+Each silhouette value of si, a vector of size n, is a measure of the
 likelihood that a data point is accurately classified to the right cluster.
 Defining "a" as the mean distance between a point and the other points from
 its cluster, and "b" as the mean distance between that point and the points
@@ -1607,11 +1861,11 @@ between data points. Since silhouette uses pdist to compute
 these distances, Metric is similar to the Distance input argument
 of pdist and it can be:
 
-A known distance metric defined as a string: euclidean ,
-squaredeuclidean (default), seuclidean , mahalanobis ,
-cityblock , minkowski , chebychev , cosine ,
-correlation , hamming , jaccard , or spearman .
-A vector as those created by pdist . In this case X does
+A known distance metric defined as a string: euclidean,
+squaredeuclidean (default), seuclidean, mahalanobis,
+cityblock, minkowski, chebychev, cosine,
+correlation, hamming, jaccard, or spearman.
+A vector as those created by pdist. In this case X does
 nothing.
 A function handle that is passed to pdist with MetricArg
 as optional inputs.
@@ -1648,9 +1902,8 @@ stats.chart.BoxChart
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1566
+# length: 1557
 statistics: stats.chart.BoxChart
-
 A box chart, as boxchart draws it.
 
 A stats.chart.BoxChart holds the data a box chart is drawn from and
@@ -1660,7 +1913,7 @@ it; one is returned per colour group where 'GroupByColor' names
 one.
 
 The data comes either from vectors or from a table, never from both, and
-the object says which through XDataMode and YDataMode .
+the object says which through XDataMode and YDataMode.
 Where the data came from vectors these read 'manual' and
 XVariable and YVariable are empty; where it came from a
 table they read 'auto' and naming a variable is what chooses the
@@ -1673,9 +1926,9 @@ The box spans the lower and upper quartiles with the median across it, the
 whiskers reach the furthest values within one and a half interquartile
 ranges of the box, and whatever lies beyond is drawn as a marker. These
 are the quartiles quantile computes and the rule
-isoutlier applies with 'quartiles' .
+isoutlier applies with 'quartiles'.
 
-MATLAB&rsquo;s object carries the properties every graphics object carries,
+MATLAB's object carries the properties every graphics object carries,
 Annotation and DataTipTemplate among them. This one is a
 handle class drawing with ordinary primitives rather than a graphics
 object of its own, so it carries what belongs to a box chart and leaves
@@ -1705,19 +1958,18 @@ stats.chart.BoxChart.BoxChart
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 499
-stats.chart.BoxChart: obj = stats.chart.BoxChart ( hax , spec , args )
-
+# length: 488
+stats.chart.BoxChart: obj = stats.chart.BoxChart (hax, spec, args)
 Create a stats.chart.BoxChart object.
 
 hax is the axes to draw into, or empty for the current axes,
 which is resolved only once every value has been accepted. spec
 is a structure carrying
 the data as boxchart resolved it, with the fields
-XData , YData , SourceTable , XVariable ,
-YVariable and XDataMode , and args the
+XData, YData, SourceTable, XVariable,
+YVariable and XDataMode, and args the
 name-value pairs left to set. The documented way to reach this
-constructor is boxchart .
+constructor is boxchart.
 
 See also:
 boxchart
@@ -1741,11 +1993,10 @@ stats.chart.BoxChart.BoxEdgeColor
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 106
-BoxChart: property BoxEdgeColor
-
+# length: 116
+stats.chart.BoxChart: property BoxEdgeColor
 Colour of the box outline. Setting it puts
-BoxEdgeColorMode at 'manual' .
+BoxEdgeColorMode at 'manual'.
 
 
 # name: <cell-element>
@@ -1766,9 +2017,8 @@ stats.chart.BoxChart.BoxEdgeColorMode
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 97
-BoxChart: property BoxEdgeColorMode
-
+# length: 108
+stats.chart.BoxChart: property BoxEdgeColorMode
 Whether BoxEdgeColor was chosen. This property is read-only.
 
 
@@ -1790,9 +2040,8 @@ stats.chart.BoxChart.BoxFaceAlpha
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 93
-BoxChart: property BoxFaceAlpha
-
+# length: 104
+stats.chart.BoxChart: property BoxFaceAlpha
 How opaque the box fill is, from 0 to 1. The default is 0.2.
 
 
@@ -1814,11 +2063,10 @@ stats.chart.BoxChart.BoxFaceColor
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 132
-BoxChart: property BoxFaceColor
-
+# length: 142
+stats.chart.BoxChart: property BoxFaceColor
 Colour the boxes are filled with, as an RGB triplet. Setting it puts
-BoxFaceColorMode at 'manual' .
+BoxFaceColorMode at 'manual'.
 
 
 # name: <cell-element>
@@ -1839,11 +2087,10 @@ stats.chart.BoxChart.BoxFaceColorMode
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 139
-BoxChart: property BoxFaceColorMode
-
-Whether BoxFaceColor was chosen, 'manual' , or left to
-the chart, 'auto' . This property is read-only.
+# length: 148
+stats.chart.BoxChart: property BoxFaceColorMode
+Whether BoxFaceColor was chosen, 'manual', or left to
+the chart, 'auto'. This property is read-only.
 
 
 # name: <cell-element>
@@ -1864,11 +2111,10 @@ stats.chart.BoxChart.BoxMedianLineColor
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 130
-BoxChart: property BoxMedianLineColor
-
+# length: 140
+stats.chart.BoxChart: property BoxMedianLineColor
 Colour of the line marking the median. Setting it puts
-BoxMedianLineColorMode at 'manual' .
+BoxMedianLineColorMode at 'manual'.
 
 
 # name: <cell-element>
@@ -1889,9 +2135,8 @@ stats.chart.BoxChart.BoxMedianLineColorMode
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 109
-BoxChart: property BoxMedianLineColorMode
-
+# length: 120
+stats.chart.BoxChart: property BoxMedianLineColorMode
 Whether BoxMedianLineColor was chosen. This property is
 read-only.
 
@@ -1914,9 +2159,8 @@ stats.chart.BoxChart.BoxWidth
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 104
-BoxChart: property BoxWidth
-
+# length: 115
+stats.chart.BoxChart: property BoxWidth
 Width of each box, in the units of the horizontal axis. The default
 is 0.5.
 
@@ -1939,9 +2183,8 @@ stats.chart.BoxChart.CapWidth
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 131
-BoxChart: property CapWidth
-
+# length: 142
+stats.chart.BoxChart: property CapWidth
 Width of the cap at the end of each whisker, in the units of the
 horizontal axis. The default is 0.25.
 
@@ -1964,9 +2207,8 @@ stats.chart.BoxChart.CapWidthMode
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 89
-BoxChart: property CapWidthMode
-
+# length: 100
+stats.chart.BoxChart: property CapWidthMode
 Whether CapWidth was chosen. This property is read-only.
 
 
@@ -1988,9 +2230,8 @@ stats.chart.BoxChart.JitterOutliers
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 144
-BoxChart: property JitterOutliers
-
+# length: 155
+stats.chart.BoxChart: property JitterOutliers
 Whether outlier markers are spread across the width of the box rather
 than drawn in a line, 'off' by default.
 
@@ -2013,9 +2254,8 @@ stats.chart.BoxChart.LineWidth
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 83
-BoxChart: property LineWidth
-
+# length: 94
+stats.chart.BoxChart: property LineWidth
 Width of the box and whisker lines. The default is 1.
 
 
@@ -2037,11 +2277,10 @@ stats.chart.BoxChart.MarkerColor
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 106
-BoxChart: property MarkerColor
-
+# length: 116
+stats.chart.BoxChart: property MarkerColor
 Colour of an outlier marker. Setting it puts
-MarkerColorMode at 'manual' .
+MarkerColorMode at 'manual'.
 
 
 # name: <cell-element>
@@ -2062,9 +2301,8 @@ stats.chart.BoxChart.MarkerColorMode
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 95
-BoxChart: property MarkerColorMode
-
+# length: 106
+stats.chart.BoxChart: property MarkerColorMode
 Whether MarkerColor was chosen. This property is read-only.
 
 
@@ -2086,9 +2324,8 @@ stats.chart.BoxChart.MarkerSize
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 75
-BoxChart: property MarkerSize
-
+# length: 86
+stats.chart.BoxChart: property MarkerSize
 Size of an outlier marker. The default is 6.
 
 
@@ -2110,9 +2347,8 @@ stats.chart.BoxChart.MarkerStyle
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 104
-BoxChart: property MarkerStyle
-
+# length: 115
+stats.chart.BoxChart: property MarkerStyle
 Marker an outlier is drawn with, 'o' by default, or
 'none' to draw none.
 
@@ -2135,12 +2371,11 @@ stats.chart.BoxChart.Notch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 253
-BoxChart: property Notch
-
+# length: 263
+stats.chart.BoxChart: property Notch
 Whether the box is notched about its median, 'off' by default.
 A notch spans the median plus and minus
-1.57 IQR / sqrt (n) , so two boxes whose notches do not overlap
+1.57 IQR / sqrt (n), so two boxes whose notches do not overlap
 have medians that differ at roughly the five per cent level.
 
 
@@ -2162,11 +2397,10 @@ stats.chart.BoxChart.Orientation
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 103
-BoxChart: property Orientation
-
-Whether the boxes stand 'vertical' , the default, or lie
-'horizontal' .
+# length: 112
+stats.chart.BoxChart: property Orientation
+Whether the boxes stand 'vertical', the default, or lie
+'horizontal'.
 
 
 # name: <cell-element>
@@ -2187,9 +2421,8 @@ stats.chart.BoxChart.Parent
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 88
-BoxChart: property Parent
-
+# length: 99
+stats.chart.BoxChart: property Parent
 The axes the chart is drawn into. This property is read-only.
 
 
@@ -2211,9 +2444,8 @@ stats.chart.BoxChart.SourceTable
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 227
-BoxChart: property SourceTable
-
+# length: 238
+stats.chart.BoxChart: property SourceTable
 The table the data is read from, empty where it came from vectors.
 Assigning it again re-reads the columns XVariable and
 YVariable name, so a table changed after the chart was drawn is
@@ -2238,9 +2470,8 @@ stats.chart.BoxChart.WhiskerLineColor
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 75
-BoxChart: property WhiskerLineColor
-
+# length: 86
+stats.chart.BoxChart: property WhiskerLineColor
 Colour of the whiskers and their caps.
 
 
@@ -2262,11 +2493,10 @@ stats.chart.BoxChart.WhiskerLineStyle
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 113
-BoxChart: property WhiskerLineStyle
-
-Line style of the whiskers: '-' by default, or '--' ,
-':' , '-.' or 'none' .
+# length: 121
+stats.chart.BoxChart: property WhiskerLineStyle
+Line style of the whiskers: '-' by default, or '--',
+':', '-.' or 'none'.
 
 
 # name: <cell-element>
@@ -2287,10 +2517,9 @@ stats.chart.BoxChart.XData
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 340
-BoxChart: property XData
-
-Where each observation&rsquo;s box stands, one value per observation: a
+# length: 345
+stats.chart.BoxChart: property XData
+Where each observation's box stands, one value per observation: a
 grouping variable, numeric or categorical. Where no grouping was
 given every observation shares one position and this is a
 categorical of one level. Setting it is refused while
@@ -2316,9 +2545,8 @@ stats.chart.BoxChart.XDataMode
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 261
-BoxChart: property XDataMode
-
+# length: 272
+stats.chart.BoxChart: property XDataMode
 Where XData came from: 'manual' where it was given as a
 grouping vector, and 'auto' where the chart derived it, from a
 table or from there being no grouping at all. This property is
@@ -2343,9 +2571,8 @@ stats.chart.BoxChart.XVariable
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 165
-BoxChart: property XVariable
-
+# length: 176
+stats.chart.BoxChart: property XVariable
 The column of SourceTable the boxes are grouped by, empty where
 none was named. Naming one is refused while the data came from
 vectors.
@@ -2369,9 +2596,8 @@ stats.chart.BoxChart.YData
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 135
-BoxChart: property YData
-
+# length: 146
+stats.chart.BoxChart: property YData
 The observations themselves, one value per observation. Setting it is
 refused while YVariable names a column.
 
@@ -2394,9 +2620,8 @@ stats.chart.BoxChart.YDataMode
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 202
-BoxChart: property YDataMode
-
+# length: 213
+stats.chart.BoxChart: property YDataMode
 Where YData came from: 'manual' where it was given as a
 vector and 'auto' where it was read from a table. This
 property is read-only, where MATLAB allows it to be assigned.
@@ -2420,9 +2645,8 @@ stats.chart.BoxChart.YVariable
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 137
-BoxChart: property YVariable
-
+# length: 148
+stats.chart.BoxChart: property YVariable
 The column of SourceTable holding the observations. Naming one
 is refused while the data came from vectors.
 
@@ -2438,6 +2662,3024 @@ The column of SourceTable holding the observations.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 24
+stats.chart.HeatmapChart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1609
+statistics: stats.chart.HeatmapChart
+A heatmap, as heatmap draws it.
+
+A stats.chart.HeatmapChart holds a matrix of values, the labels of
+its columns and rows, and the choices it is drawn with, and redraws itself
+whenever one of them is set. It is what heatmap returns, and the
+documented way to reach it.
+
+The values come either from a matrix or from a table, never from both.
+From a table, each distinct value of XVariable is a column and each
+distinct value of YVariable a row, and each cell holds the number of
+rows of the table falling in it, or the mean, median, sum, minimum or
+maximum of ColorVariable over them, as ColorMethod says.
+Missing values of ColorVariable are left out of the mean, median,
+sum, minimum and maximum, and counted by 'count'.
+
+XData and YData name the columns and rows of ColorData.
+XDisplayData and YDisplayData say which of them are shown and
+in what order, and XDisplayLabels and YDisplayLabels what they
+are called on the chart. ColorDisplayData is the matrix as shown.
+
+A heatmap takes the place of the current axes of its parent, as MATLAB's
+does, keeping their outer position, and refuses axes on which
+hold is on. A later plot into the figure takes the place of the
+heatmap in turn.
+
+MATLAB's chart is a graphics object of its own. This one is a handle class
+that draws into axes of its own, which become the current axes and are
+deleted with it; when a later plot clears those axes the chart lets go of
+them, and Parent and the drawing are gone. GridVisible,
+ColorbarVisible and Visible hold 'on' or
+'off' where MATLAB holds an on-off state.
+
+See also:
+heatmap,
+imagesc
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+A heatmap, as heatmap draws it.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.chart.HeatmapChart.CellLabelColor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 220
+stats.chart.HeatmapChart: property CellLabelColor
+The colour of the cell labels, as an RGB triplet or a colour name;
+'auto', the default, writes black on a light cell and white on
+a dark one, and 'none' writes no labels.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 170
+The colour of the cell labels, as an RGB triplet or a colour name; 'auto', the default, writes black on a light cell and white on a dark one, and 'none' writes no labels.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+stats.chart.HeatmapChart.CellLabelFormat
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 144
+stats.chart.HeatmapChart: property CellLabelFormat
+The format each value is written into its cell with, as
+sprintf takes it. '%0.4g' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 73
+The format each value is written into its cell with, as sprintf takes it.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+stats.chart.HeatmapChart.ColorData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 238
+stats.chart.HeatmapChart: property ColorData
+The matrix of values, one row for each element of YData and one
+column for each element of XData. Where the chart was drawn
+from a table it is computed from the table and setting it is refused.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 97
+The matrix of values, one row for each element of YData and one column for each element of XData.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.HeatmapChart.ColorDisplayData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 225
+stats.chart.HeatmapChart: property ColorDisplayData
+ColorData as it is shown: its rows and columns in the order of
+YDisplayData and XDisplayData, missing where a displayed
+value is not in the data. This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 145
+ColorData as it is shown: its rows and columns in the order of YDisplayData and XDisplayData, missing where a displayed value is not in the data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+stats.chart.HeatmapChart.ColorLimits
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 323
+stats.chart.HeatmapChart: property ColorLimits
+The values mapped to the first and the last colour of Colormap,
+as a 1-by-2 increasing vector. Until it is set it follows the values
+shown: their smallest and largest, v - 1 and v + 1 where
+they are all v, [0, 1] where none is finite or where the
+columns or rows are rescaled.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 94
+The values mapped to the first and the last colour of Colormap, as a 1-by-2 increasing vector.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+stats.chart.HeatmapChart.ColorMethod
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 343
+stats.chart.HeatmapChart: property ColorMethod
+How the rows of SourceTable falling in a cell make its value:
+'count', 'mean', 'median', 'sum',
+'min', 'max' or 'none', which takes the one
+value there is and is refused where a cell holds more than one. It
+is 'count' where no ColorVariable is named,
+'mean' where one is, and 'none' for a matrix.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 203
+How the rows of SourceTable falling in a cell make its value: 'count', 'mean', 'median', 'sum', 'min', 'max' or 'none', which takes the one value there is and is refused where a cell holds more than one.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+stats.chart.HeatmapChart.ColorScaling
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 390
+stats.chart.HeatmapChart: property ColorScaling
+How the values are turned into colours: 'scaled', the default,
+maps them to the colormap as they are; 'scaledcolumns' and
+'scaledrows' rescale each column or row to run from 0 to 1;
+'log' maps their natural logarithm, a negative value then
+being left uncoloured with a warning. The cell labels show the values
+themselves whatever the scaling.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 277
+How the values are turned into colours: 'scaled', the default, maps them to the colormap as they are; 'scaledcolumns' and 'scaledrows' rescale each column or row to run from 0 to 1; 'log' maps their natural logarithm, a negative value then being left uncoloured with a warning.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+stats.chart.HeatmapChart.ColorVariable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 139
+stats.chart.HeatmapChart: property ColorVariable
+The numeric variable of SourceTable aggregated into each cell,
+or empty to count the rows.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 90
+The numeric variable of SourceTable aggregated into each cell, or empty to count the rows.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+stats.chart.HeatmapChart.ColorbarVisible
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 109
+stats.chart.HeatmapChart: property ColorbarVisible
+Whether the colour bar is drawn, 'on' by default or
+'off'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 58
+Whether the colour bar is drawn, 'on' by default or 'off'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+stats.chart.HeatmapChart.Colormap
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 173
+stats.chart.HeatmapChart: property Colormap
+The colours, as an M-by-3 matrix of values between 0 and 1. By default
+256 colours running from a pale blue to [0, 0.447, 0.741].
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 59
+The colours, as an M-by-3 matrix of values between 0 and 1.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+stats.chart.HeatmapChart.FontColor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 137
+stats.chart.HeatmapChart: property FontColor
+The colour of the title, the axis labels and the tick labels.
+[0.15, 0.15, 0.15] by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 61
+The colour of the title, the axis labels and the tick labels.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+stats.chart.HeatmapChart.FontName
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 104
+stats.chart.HeatmapChart: property FontName
+The font of every text on the chart, 'Helvetica' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 60
+The font of every text on the chart, 'Helvetica' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+stats.chart.HeatmapChart.FontSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 106
+stats.chart.HeatmapChart: property FontSize
+The size of every text on the chart, in points, 10 by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+The size of every text on the chart, in points, 10 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+stats.chart.HeatmapChart.GridVisible
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 115
+stats.chart.HeatmapChart: property GridVisible
+Whether lines are drawn between the cells, 'on' by default or
+'off'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 68
+Whether lines are drawn between the cells, 'on' by default or 'off'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+stats.chart.HeatmapChart.HeatmapChart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 540
+stats.chart.HeatmapChart: obj = stats.chart.HeatmapChart (parent, spec, args)
+Create a stats.chart.HeatmapChart object.
+
+parent is the figure or panel to place the chart in, or empty for
+the current figure, which is resolved only once every value has been
+accepted. spec is a structure carrying the data as
+heatmap resolved it, with the fields ColorData,
+XData, YData, SourceTable, XVariable,
+YVariable and ColorVariable, and args the
+name-value pairs left to set. The documented way to reach this
+constructor is heatmap.
+
+See also:
+heatmap
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+Create a stats.chart.HeatmapChart object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+stats.chart.HeatmapChart.InnerPosition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 70
+stats.chart.HeatmapChart: property InnerPosition
+The same as Position.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+The same as Position.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+stats.chart.HeatmapChart.Interpreter
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 116
+stats.chart.HeatmapChart: property Interpreter
+How the texts are interpreted: 'tex', the default,
+'latex' or 'none'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 69
+How the texts are interpreted: 'tex', the default, 'latex' or 'none'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.HeatmapChart.MissingDataColor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 164
+stats.chart.HeatmapChart: property MissingDataColor
+The colour of a cell holding a missing value, as an RGB triplet or a
+colour name. [0.15, 0.15, 0.15] by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 81
+The colour of a cell holding a missing value, as an RGB triplet or a colour name.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.HeatmapChart.MissingDataLabel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 114
+stats.chart.HeatmapChart: property MissingDataLabel
+The label of a cell holding a missing value, 'NaN' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+The label of a cell holding a missing value, 'NaN' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+stats.chart.HeatmapChart.OuterPosition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 249
+stats.chart.HeatmapChart: property OuterPosition
+The position of the whole chart in its parent, labels included,
+[0, 0, 1, 1] by default, or the outer position of the axes it
+took the place of. Setting it turns PositionConstraint to
+'outerposition'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 144
+The position of the whole chart in its parent, labels included, [0, 0, 1, 1] by default, or the outer position of the axes it took the place of.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+stats.chart.HeatmapChart.Parent
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 113
+stats.chart.HeatmapChart: property Parent
+The figure or panel the chart is placed in. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+The figure or panel the chart is placed in.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+stats.chart.HeatmapChart.Position
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 444
+stats.chart.HeatmapChart: property Position
+The position of the grid of cells in its parent, as
+[left, bottom, width, height] in Units. While
+PositionConstraint is 'outerposition' the chart places
+the cells within OuterPosition itself, leaving room for the
+labels and the colour bar, [0.13, 0.11, 0.732143, 0.815] of it
+at least; setting Position fixes the cells there and turns
+PositionConstraint to 'innerposition'.
+InnerPosition is the same.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 91
+The position of the grid of cells in its parent, as [left, bottom, width, height] in Units.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.chart.HeatmapChart.PositionConstraint
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 158
+stats.chart.HeatmapChart: property PositionConstraint
+Which position the chart keeps when its labels change:
+'outerposition', the default, or 'innerposition'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 104
+Which position the chart keeps when its labels change: 'outerposition', the default, or 'innerposition'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+stats.chart.HeatmapChart.SourceTable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 101
+stats.chart.HeatmapChart: property SourceTable
+The table the chart was drawn from, or an empty table.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+The table the chart was drawn from, or an empty table.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+stats.chart.HeatmapChart.Title
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 216
+stats.chart.HeatmapChart: property Title
+The title, a character vector or a cell array of them, one for each
+line. From a table it says what the cells hold, such as
+'Count of Y vs. X' or 'Mean of V', until it is set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 73
+The title, a character vector or a cell array of them, one for each line.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+stats.chart.HeatmapChart.Units
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 93
+stats.chart.HeatmapChart: property Units
+The units of the positions, 'normalized' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 52
+The units of the positions, 'normalized' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+stats.chart.HeatmapChart.Visible
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 96
+stats.chart.HeatmapChart: property Visible
+Whether the chart is shown, 'on' by default or 'off'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Whether the chart is shown, 'on' by default or 'off'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+stats.chart.HeatmapChart.XData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 223
+stats.chart.HeatmapChart: property XData
+The names of the columns of ColorData, a column cell array of
+distinct character vectors. By default they are '1',
+'2', ..., and they follow the size of ColorData until
+they are set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 89
+The names of the columns of ColorData, a column cell array of distinct character vectors.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+stats.chart.HeatmapChart.XDisplayData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 190
+stats.chart.HeatmapChart: property XDisplayData
+The columns shown and their order, as elements of XData; a value
+not in XData is shown as a column of missing values. All of
+XData by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 117
+The columns shown and their order, as elements of XData; a value not in XData is shown as a column of missing values.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.chart.HeatmapChart.XDisplayLabels
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 213
+stats.chart.HeatmapChart: property XDisplayLabels
+The labels of the columns shown, one for each element of
+XDisplayData, which they are by default. A label set stays with
+its column when XDisplayData is reordered.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 97
+The labels of the columns shown, one for each element of XDisplayData, which they are by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+stats.chart.HeatmapChart.XLabel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 128
+stats.chart.HeatmapChart: property XLabel
+The label of the horizontal axis; from a table the name of
+XVariable, until it is set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 86
+The label of the horizontal axis; from a table the name of XVariable, until it is set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+stats.chart.HeatmapChart.XLimits
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 221
+stats.chart.HeatmapChart: property XLimits
+The first and the last column shown, as a 1-by-2 cell array of elements
+of XDisplayData; the columns between them in
+XDisplayData are shown. The whole of XDisplayData by
+default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 140
+The first and the last column shown, as a 1-by-2 cell array of elements of XDisplayData; the columns between them in XDisplayData are shown.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+stats.chart.HeatmapChart.XVariable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 102
+stats.chart.HeatmapChart: property XVariable
+The variable of SourceTable whose values are the columns.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 57
+The variable of SourceTable whose values are the columns.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+stats.chart.HeatmapChart.YData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 104
+stats.chart.HeatmapChart: property YData
+The names of the rows of ColorData, as XData names its
+columns.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 63
+The names of the rows of ColorData, as XData names its columns.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+stats.chart.HeatmapChart.YDisplayData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 114
+stats.chart.HeatmapChart: property YDisplayData
+The rows shown and their order, as XDisplayData gives the
+columns.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 66
+The rows shown and their order, as XDisplayData gives the columns.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.chart.HeatmapChart.YDisplayLabels
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 117
+stats.chart.HeatmapChart: property YDisplayLabels
+The labels of the rows shown, as XDisplayLabels labels the
+columns.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 67
+The labels of the rows shown, as XDisplayLabels labels the columns.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+stats.chart.HeatmapChart.YLabel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 126
+stats.chart.HeatmapChart: property YLabel
+The label of the vertical axis; from a table the name of
+YVariable, until it is set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 84
+The label of the vertical axis; from a table the name of YVariable, until it is set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+stats.chart.HeatmapChart.YLimits
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 106
+stats.chart.HeatmapChart: property YLimits
+The first and the last row shown, as XLimits gives the columns.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 63
+The first and the last row shown, as XLimits gives the columns.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+stats.chart.HeatmapChart.YVariable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 99
+stats.chart.HeatmapChart: property YVariable
+The variable of SourceTable whose values are the rows.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+The variable of SourceTable whose values are the rows.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+stats.chart.HeatmapChart.delete
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 84
+stats.chart.HeatmapChart: delete (h)
+Delete the heatmap and the axes it is drawn in.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+Delete the heatmap and the axes it is drawn in.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+stats.chart.HeatmapChart.sortx
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 665
+stats.chart.HeatmapChart: sortx (h)
+stats.chart.HeatmapChart: sortx (h, row)
+stats.chart.HeatmapChart: sortx (h, row, direction)
+stats.chart.HeatmapChart: sortx (..., 'MissingPlacement', mp)
+Reorder the columns of a heatmap.
+
+sortx (h) puts the columns in the order of their names.
+sortx (h, row) puts them in the order of their values
+in the row named row, an element of YData; a cell array of
+rows sorts by the first, then by the next where the first ties.
+direction is 'ascend', the default, or 'descend'.
+Missing values go last when ascending and first when descending,
+unless mp, 'first', 'last' or 'auto', says
+otherwise. The new order is set as XDisplayData.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+Reorder the columns of a heatmap.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+stats.chart.HeatmapChart.sorty
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 300
+stats.chart.HeatmapChart: sorty (h)
+stats.chart.HeatmapChart: sorty (h, column)
+stats.chart.HeatmapChart: sorty (h, column, direction)
+stats.chart.HeatmapChart: sorty (..., 'MissingPlacement', mp)
+Reorder the rows of a heatmap, as sortx reorders its columns, by
+the values in the column named column.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 103
+Reorder the rows of a heatmap, as sortx reorders its columns, by the values in the column named column.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+stats.chart.HeatmapChart.xlim
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 166
+stats.chart.HeatmapChart: limits = xlim (h)
+stats.chart.HeatmapChart: xlim (h, limits)
+The first and last column shown, as XLimits holds them; given
+limits, set them.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 79
+The first and last column shown, as XLimits holds them; given limits, set them.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+stats.chart.HeatmapChart.ylim
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 163
+stats.chart.HeatmapChart: limits = ylim (h)
+stats.chart.HeatmapChart: ylim (h, limits)
+The first and last row shown, as YLimits holds them; given
+limits, set them.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 76
+The first and last row shown, as YLimits holds them; given limits, set them.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+stats.chart.ParallelCoordinatesPlot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1753
+statistics: stats.chart.ParallelCoordinatesPlot
+A parallel coordinates plot, as parallelplot draws it.
+
+A stats.chart.ParallelCoordinatesPlot holds observations of several
+variables, optionally split into groups, and the choices they are drawn
+with, and redraws itself whenever one of them is set. It is what
+parallelplot returns, and the documented way to reach it. Each
+variable is a vertical ruler, a coordinate, and each observation a line
+joining its values across the rulers.
+
+The observations come either from a numeric matrix, Data, whose
+columns CoordinateData chooses, or from a table,
+SourceTable, whose variables CoordinateVariables chooses,
+never from both. A table variable of categories, text or logical values
+places its distinct values evenly along its ruler, whatever
+DataNormalization says, and Jitter spreads the lines passing
+through each value. A missing value breaks its line. The groups take
+the colours of the colour order, in the order in which each first
+appears in GroupData.
+
+A chart takes the place of the current axes of its parent, keeping their
+outer position, and refuses axes on which hold is on; a later plot
+into the figure takes the place of the chart in turn. MATLAB's chart is
+a graphics object of its own; this one is a handle class drawing into
+axes of its own, made current, and it lets go of them when a later plot
+clears them. Octave's lines carry no transparency, so LineAlpha
+blends each line's colour toward the background of the axes instead,
+which matches MATLAB where lines do not cross. LegendVisible and
+Visible hold 'on' or 'off', and LineStyle
+and MarkerStyle a character vector or a cell array of them, where
+MATLAB holds an on-off state and a string array.
+
+See also:
+parallelplot,
+parallelcoords
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+A parallel coordinates plot, as parallelplot draws it.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.ParallelCoordinatesPlot.Color
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 156
+stats.chart.ParallelCoordinatesPlot: property Color
+The colour of each group, one row of an RGB matrix for each; by
+default the colours of the colour order.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 104
+The colour of each group, one row of an RGB matrix for each; by default the colours of the colour order.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 50
+stats.chart.ParallelCoordinatesPlot.CoordinateData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 231
+stats.chart.ParallelCoordinatesPlot: property CoordinateData
+The columns of Data drawn as coordinates, in the order drawn,
+as indices or a logical vector; all of them by default. Setting it on
+a chart drawn from a table is refused.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 117
+The columns of Data drawn as coordinates, in the order drawn, as indices or a logical vector; all of them by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+stats.chart.ParallelCoordinatesPlot.CoordinateLabel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 94
+stats.chart.ParallelCoordinatesPlot: property CoordinateLabel
+The label under the coordinates.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+The label under the coordinates.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 56
+stats.chart.ParallelCoordinatesPlot.CoordinateTickLabels
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 186
+stats.chart.ParallelCoordinatesPlot: property CoordinateTickLabels
+The label of each coordinate, a column cell array; by default the
+numbers of the columns or the names of the variables.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 119
+The label of each coordinate, a column cell array; by default the numbers of the columns or the names of the variables.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 55
+stats.chart.ParallelCoordinatesPlot.CoordinateVariables
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 277
+stats.chart.ParallelCoordinatesPlot: property CoordinateVariables
+The variables of SourceTable drawn as coordinates, in the order
+drawn, as names, indices or a logical vector, kept in the form given;
+all of them by default. Setting it on a chart drawn from a matrix is
+refused.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 157
+The variables of SourceTable drawn as coordinates, in the order drawn, as names, indices or a logical vector, kept in the form given; all of them by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+stats.chart.ParallelCoordinatesPlot.Data
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 199
+stats.chart.ParallelCoordinatesPlot: property Data
+The observations, a numeric matrix with one row for each observation
+and one column for each variable; empty where the chart was drawn from
+a table.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 148
+The observations, a numeric matrix with one row for each observation and one column for each variable; empty where the chart was drawn from a table.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ParallelCoordinatesPlot.DataLabel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 84
+stats.chart.ParallelCoordinatesPlot: property DataLabel
+The label beside the rulers.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+The label beside the rulers.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+stats.chart.ParallelCoordinatesPlot.DataNormalization
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 393
+stats.chart.ParallelCoordinatesPlot: property DataNormalization
+How the values are placed along the rulers: 'range', the
+default, as they are on rulers with limits of their own;
+'none' as they are on rulers sharing one scale;
+'zscore' as z-scores; 'scale' divided by the standard
+deviation; 'center' less the mean; 'norm' divided by
+the 2-norm of the variable. All but 'range' share one scale.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 296
+How the values are placed along the rulers: 'range', the default, as they are on rulers with limits of their own; 'none' as they are on rulers sharing one scale; 'zscore' as z-scores; 'scale' divided by the standard deviation; 'center' less the mean; 'norm' divided by the 2-norm of the variable.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+stats.chart.ParallelCoordinatesPlot.FontName
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 115
+stats.chart.ParallelCoordinatesPlot: property FontName
+The font of every text on the chart, 'Helvetica' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 60
+The font of every text on the chart, 'Helvetica' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+stats.chart.ParallelCoordinatesPlot.FontSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 117
+stats.chart.ParallelCoordinatesPlot: property FontSize
+The size of every text on the chart, in points, 10 by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+The size of every text on the chart, in points, 10 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ParallelCoordinatesPlot.GroupData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 205
+stats.chart.ParallelCoordinatesPlot: property GroupData
+The group of each observation: a vector with one element for each row
+of Data of categories, text, numbers or logical values, or
+empty for no groups.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 149
+The group of each observation: a vector with one element for each row of Data of categories, text, numbers or logical values, or empty for no groups.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+stats.chart.ParallelCoordinatesPlot.GroupVariable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 117
+stats.chart.ParallelCoordinatesPlot: property GroupVariable
+The variable of SourceTable holding the groups, or empty.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 57
+The variable of SourceTable holding the groups, or empty.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+stats.chart.ParallelCoordinatesPlot.InnerPosition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 81
+stats.chart.ParallelCoordinatesPlot: property InnerPosition
+The same as Position.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+The same as Position.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+stats.chart.ParallelCoordinatesPlot.Jitter
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 202
+stats.chart.ParallelCoordinatesPlot: property Jitter
+How far the lines through one value of a variable of categories are
+spread, from 0 to 1, where 1 fills the room up to the next value. 0.1
+by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 133
+How far the lines through one value of a variable of categories are spread, from 0 to 1, where 1 fills the room up to the next value.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+stats.chart.ParallelCoordinatesPlot.LegendTitle
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 133
+stats.chart.ParallelCoordinatesPlot: property LegendTitle
+The title of the legend; from a table the name of
+GroupVariable, until set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 75
+The title of the legend; from a table the name of GroupVariable, until set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+stats.chart.ParallelCoordinatesPlot.LegendVisible
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 155
+stats.chart.ParallelCoordinatesPlot: property LegendVisible
+Whether the legend of the groups is shown, 'on' or
+'off'; on where there are groups, until set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 95
+Whether the legend of the groups is shown, 'on' or 'off'; on where there are groups, until set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ParallelCoordinatesPlot.LineAlpha
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 142
+stats.chart.ParallelCoordinatesPlot: property LineAlpha
+How opaque the lines are, from 0 to 1, a scalar or one for each group,
+0.7 by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 86
+How opaque the lines are, from 0 to 1, a scalar or one for each group, 0.7 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ParallelCoordinatesPlot.LineStyle
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 145
+stats.chart.ParallelCoordinatesPlot: property LineStyle
+The line style of each group, a character vector or a cell array of
+them, '-' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 89
+The line style of each group, a character vector or a cell array of them, '-' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ParallelCoordinatesPlot.LineWidth
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 125
+stats.chart.ParallelCoordinatesPlot: property LineWidth
+The width of the lines, a scalar or one for each group, 1 by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 69
+The width of the lines, a scalar or one for each group, 1 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 46
+stats.chart.ParallelCoordinatesPlot.MarkerSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 137
+stats.chart.ParallelCoordinatesPlot: property MarkerSize
+The size of the markers in points, a scalar or one for each group, 6
+by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+The size of the markers in points, a scalar or one for each group, 6 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+stats.chart.ParallelCoordinatesPlot.MarkerStyle
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 118
+stats.chart.ParallelCoordinatesPlot: property MarkerStyle
+The marker at each value, for each group, 'none' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 60
+The marker at each value, for each group, 'none' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+stats.chart.ParallelCoordinatesPlot.OuterPosition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 204
+stats.chart.ParallelCoordinatesPlot: property OuterPosition
+The position of the whole chart in its parent, labels included,
+[0, 0, 1, 1] by default, or the outer position of the axes it
+took the place of.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 144
+The position of the whole chart in its parent, labels included, [0, 0, 1, 1] by default, or the outer position of the axes it took the place of.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 59
+stats.chart.ParallelCoordinatesPlot.ParallelCoordinatesPlot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 595
+stats.chart.ParallelCoordinatesPlot: obj = stats.chart.ParallelCoordinatesPlot (parent, spec, args)
+Create a stats.chart.ParallelCoordinatesPlot object.
+
+parent is the figure or panel to place the chart in, or empty for
+the current figure, which is resolved only once every value has been
+accepted. spec is a structure carrying the data as
+parallelplot resolved it, with the fields Data,
+SourceTable, CoordinateData,
+CoordinateVariables, GroupData and
+GroupVariable, and args the name-value pairs left to set.
+The documented way to reach this constructor is parallelplot.
+
+See also:
+parallelplot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 52
+Create a stats.chart.ParallelCoordinatesPlot object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+stats.chart.ParallelCoordinatesPlot.Parent
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 124
+stats.chart.ParallelCoordinatesPlot: property Parent
+The figure or panel the chart is placed in. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+The figure or panel the chart is placed in.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+stats.chart.ParallelCoordinatesPlot.Position
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 340
+stats.chart.ParallelCoordinatesPlot: property Position
+The position of the rulers in their parent, as
+[left, bottom, width, height] in Units. While
+PositionConstraint is 'outerposition' the chart places
+them within OuterPosition itself; setting it fixes them there
+and turns PositionConstraint to 'innerposition'.
+InnerPosition is the same.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 86
+The position of the rulers in their parent, as [left, bottom, width, height] in Units.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+stats.chart.ParallelCoordinatesPlot.PositionConstraint
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 146
+stats.chart.ParallelCoordinatesPlot: property PositionConstraint
+Which position the chart keeps: 'outerposition', the default,
+or 'innerposition'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 81
+Which position the chart keeps: 'outerposition', the default, or 'innerposition'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+stats.chart.ParallelCoordinatesPlot.SourceTable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 103
+stats.chart.ParallelCoordinatesPlot: property SourceTable
+The table the chart was drawn from, or empty.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+The table the chart was drawn from, or empty.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.ParallelCoordinatesPlot.Title
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 75
+stats.chart.ParallelCoordinatesPlot: property Title
+The title of the chart.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+The title of the chart.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.ParallelCoordinatesPlot.Units
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 104
+stats.chart.ParallelCoordinatesPlot: property Units
+The units of the positions, 'normalized' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 52
+The units of the positions, 'normalized' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.chart.ParallelCoordinatesPlot.Visible
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 107
+stats.chart.ParallelCoordinatesPlot: property Visible
+Whether the chart is shown, 'on' by default or 'off'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Whether the chart is shown, 'on' by default or 'off'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+stats.chart.ParallelCoordinatesPlot.delete
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 93
+stats.chart.ParallelCoordinatesPlot: delete (h)
+Delete the chart and the axes it is drawn in.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+Delete the chart and the axes it is drawn in.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+stats.chart.ScatterHistogramChart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1432
+statistics: stats.chart.ScatterHistogramChart
+A scatter plot with a histogram of each variable along its sides, as
+scatterhistogram draws it.
+
+A stats.chart.ScatterHistogramChart holds two samples, optionally
+split into groups, and the choices they are drawn with, and redraws itself
+whenever one of them is set. It is what scatterhistogram returns,
+and the documented way to reach it.
+
+The samples come either from vectors or from a table, never from both.
+The histograms are normalized as probability densities, one for each group,
+with the bins histcounts chooses for each group unless
+NumBins or BinWidths say otherwise. The groups take the
+colours of the colour order and the line styles '-', ':',
+'-.' and '--' in turn, in the order in which each first
+appears in GroupData.
+
+A chart takes the place of the current axes of its parent, keeping their
+outer position, and refuses axes on which hold is on; a later plot
+into the figure takes the place of the chart in turn. MATLAB's chart is
+a graphics object of its own; this one is a handle class drawing into
+three axes of its own, the scatter plot's being made current, and it lets
+go of them when a later plot clears them. LegendVisible,
+MarkerFilled and Visible hold 'on' or 'off',
+and LineStyle and MarkerStyle a character vector or a cell
+array of them, where MATLAB holds an on-off state and a string array.
+
+See also:
+scatterhistogram,
+scatterhist,
+histcounts,
+ksdensity
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 95
+A scatter plot with a histogram of each variable along its sides, as scatterhistogram draws it.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.chart.ScatterHistogramChart.BinWidths
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 165
+stats.chart.ScatterHistogramChart: property BinWidths
+The width of the bins, shaped as NumBins. Setting it takes
+precedence over NumBins, which then follows from it.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+The width of the bins, shaped as NumBins.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.chart.ScatterHistogramChart.Color
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 154
+stats.chart.ScatterHistogramChart: property Color
+The colour of each group, one row of an RGB matrix for each; by
+default the colours of the colour order.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 104
+The colour of each group, one row of an RGB matrix for each; by default the colours of the colour order.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+stats.chart.ScatterHistogramChart.FontName
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 113
+stats.chart.ScatterHistogramChart: property FontName
+The font of every text on the chart, 'Helvetica' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 60
+The font of every text on the chart, 'Helvetica' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+stats.chart.ScatterHistogramChart.FontSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 115
+stats.chart.ScatterHistogramChart: property FontSize
+The size of every text on the chart, in points, 10 by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+The size of every text on the chart, in points, 10 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.chart.ScatterHistogramChart.GroupData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 182
+stats.chart.ScatterHistogramChart: property GroupData
+The group of each observation: a vector as long as XData of
+categories, text, numbers or logical values, or empty for no groups.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 128
+The group of each observation: a vector as long as XData of categories, text, numbers or logical values, or empty for no groups.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+stats.chart.ScatterHistogramChart.GroupVariable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 114
+stats.chart.ScatterHistogramChart: property GroupVariable
+The variable of SourceTable holding GroupData, or empty.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 56
+The variable of SourceTable holding GroupData, or empty.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 55
+stats.chart.ScatterHistogramChart.HistogramDisplayStyle
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 216
+stats.chart.ScatterHistogramChart: property HistogramDisplayStyle
+How the histograms are drawn: 'stairs', the default, as their
+outline; 'bar' as bars; 'smooth' as a kernel density
+estimate, as ksdensity computes it.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 150
+How the histograms are drawn: 'stairs', the default, as their outline; 'bar' as bars; 'smooth' as a kernel density estimate, as ksdensity computes it.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+stats.chart.ScatterHistogramChart.InnerPosition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 79
+stats.chart.ScatterHistogramChart: property InnerPosition
+The same as Position.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+The same as Position.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ScatterHistogramChart.LegendTitle
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 131
+stats.chart.ScatterHistogramChart: property LegendTitle
+The title of the legend; from a table the name of
+GroupVariable, until set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 75
+The title of the legend; from a table the name of GroupVariable, until set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+stats.chart.ScatterHistogramChart.LegendVisible
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 153
+stats.chart.ScatterHistogramChart: property LegendVisible
+Whether the legend of the groups is shown, 'on' or
+'off'; on where there are groups, until set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 95
+Whether the legend of the groups is shown, 'on' or 'off'; on where there are groups, until set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.chart.ScatterHistogramChart.LineStyle
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 145
+stats.chart.ScatterHistogramChart: property LineStyle
+The line style of the histograms of each group, a character vector or
+a cell array of them.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 91
+The line style of the histograms of each group, a character vector or a cell array of them.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.chart.ScatterHistogramChart.LineWidth
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 135
+stats.chart.ScatterHistogramChart: property LineWidth
+The width of the histogram lines, a scalar or one for each group, 0.5
+by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 81
+The width of the histogram lines, a scalar or one for each group, 0.5 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ScatterHistogramChart.MarkerAlpha
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 110
+stats.chart.ScatterHistogramChart: property MarkerAlpha
+How opaque the markers are, from 0 to 1, 1 by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+How opaque the markers are, from 0 to 1, 1 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 46
+stats.chart.ScatterHistogramChart.MarkerFilled
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 114
+stats.chart.ScatterHistogramChart: property MarkerFilled
+Whether the markers are filled, 'on' by default or
+'off'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 57
+Whether the markers are filled, 'on' by default or 'off'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+stats.chart.ScatterHistogramChart.MarkerSize
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 143
+stats.chart.ScatterHistogramChart: property MarkerSize
+The area of the markers in square points, a scalar or one for each
+group, 36 by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 88
+The area of the markers in square points, a scalar or one for each group, 36 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ScatterHistogramChart.MarkerStyle
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 141
+stats.chart.ScatterHistogramChart: property MarkerStyle
+The marker of each group, a character vector or a cell array of them,
+'o' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 85
+The marker of each group, a character vector or a cell array of them, 'o' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.ScatterHistogramChart.NumBins
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 281
+stats.chart.ScatterHistogramChart: property NumBins
+The number of bins of each histogram, a 2-by-1 vector for the
+horizontal and the vertical variable, or a 2-by-N matrix with a column
+for each of N groups. Setting a scalar sets both. Empty where
+HistogramDisplayStyle is 'smooth'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 154
+The number of bins of each histogram, a 2-by-1 vector for the horizontal and the vertical variable, or a 2-by-N matrix with a column for each of N groups.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+stats.chart.ScatterHistogramChart.OuterPosition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 202
+stats.chart.ScatterHistogramChart: property OuterPosition
+The position of the whole chart in its parent, labels included,
+[0, 0, 1, 1] by default, or the outer position of the axes it
+took the place of.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 144
+The position of the whole chart in its parent, labels included, [0, 0, 1, 1] by default, or the outer position of the axes it took the place of.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+stats.chart.ScatterHistogramChart.Parent
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 122
+stats.chart.ScatterHistogramChart: property Parent
+The figure or panel the chart is placed in. This property is
+read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+The figure or panel the chart is placed in.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+stats.chart.ScatterHistogramChart.Position
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 352
+stats.chart.ScatterHistogramChart: property Position
+The position of the scatter plot in its parent, as
+[left, bottom, width, height] in Units. While
+PositionConstraint is 'outerposition' the chart places
+it within OuterPosition itself; setting it fixes the scatter
+plot there and turns PositionConstraint to
+'innerposition'. InnerPosition is the same.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 90
+The position of the scatter plot in its parent, as [left, bottom, width, height] in Units.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 52
+stats.chart.ScatterHistogramChart.PositionConstraint
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 144
+stats.chart.ScatterHistogramChart: property PositionConstraint
+Which position the chart keeps: 'outerposition', the default,
+or 'innerposition'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 81
+Which position the chart keeps: 'outerposition', the default, or 'innerposition'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 55
+stats.chart.ScatterHistogramChart.ScatterHistogramChart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 594
+stats.chart.ScatterHistogramChart: obj = stats.chart.ScatterHistogramChart (parent, spec, args)
+Create a stats.chart.ScatterHistogramChart object.
+
+parent is the figure or panel to place the chart in, or empty for
+the current figure, which is resolved only once every value has been
+accepted. spec is a structure carrying the data as
+scatterhistogram resolved it, with the fields XData,
+YData, GroupData, SourceTable,
+XVariable, YVariable and GroupVariable, and
+args the name-value pairs left to set. The documented way to
+reach this constructor is scatterhistogram.
+
+See also:
+scatterhistogram
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 50
+Create a stats.chart.ScatterHistogramChart object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+stats.chart.ScatterHistogramChart.ScatterPlotLocation
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 217
+stats.chart.ScatterHistogramChart: property ScatterPlotLocation
+Which corner the scatter plot takes, the histograms lining the two
+sides away from it: 'SouthWest', the default,
+'SouthEast', 'NorthEast' or 'NorthWest'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 153
+Which corner the scatter plot takes, the histograms lining the two sides away from it: 'SouthWest', the default, 'SouthEast', 'NorthEast' or 'NorthWest'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 55
+stats.chart.ScatterHistogramChart.ScatterPlotProportion
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 173
+stats.chart.ScatterHistogramChart: property ScatterPlotProportion
+The share of the width and of the height the scatter plot takes, a
+number between 0 and 1, 0.75 by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 107
+The share of the width and of the height the scatter plot takes, a number between 0 and 1, 0.75 by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+stats.chart.ScatterHistogramChart.SourceTable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 101
+stats.chart.ScatterHistogramChart: property SourceTable
+The table the chart was drawn from, or empty.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+The table the chart was drawn from, or empty.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.chart.ScatterHistogramChart.Title
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 73
+stats.chart.ScatterHistogramChart: property Title
+The title of the chart.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+The title of the chart.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.chart.ScatterHistogramChart.Units
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 102
+stats.chart.ScatterHistogramChart: property Units
+The units of the positions, 'normalized' by default.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 52
+The units of the positions, 'normalized' by default.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.ScatterHistogramChart.Visible
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 105
+stats.chart.ScatterHistogramChart: property Visible
+Whether the chart is shown, 'on' by default or 'off'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Whether the chart is shown, 'on' by default or 'off'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.chart.ScatterHistogramChart.XData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 204
+stats.chart.ScatterHistogramChart: property XData
+The values along the horizontal axis, a numeric column vector. Where
+the chart was drawn from a table it is read from the table and setting
+it is refused.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+The values along the horizontal axis, a numeric column vector.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+stats.chart.ScatterHistogramChart.XHistogramDirection
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 144
+stats.chart.ScatterHistogramChart: property XHistogramDirection
+Which way the bars of the histogram of XData rise:
+'up', the default, or 'down'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+Which way the bars of the histogram of XData rise: 'up', the default, or 'down'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+stats.chart.ScatterHistogramChart.XLabel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 131
+stats.chart.ScatterHistogramChart: property XLabel
+The label of the horizontal axis; from a table the name of
+XVariable, until set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+The label of the horizontal axis; from a table the name of XVariable, until set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.ScatterHistogramChart.XLimits
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 116
+stats.chart.ScatterHistogramChart: property XLimits
+The limits of the horizontal axis, the range of XData until
+set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 64
+The limits of the horizontal axis, the range of XData until set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.chart.ScatterHistogramChart.XVariable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 96
+stats.chart.ScatterHistogramChart: property XVariable
+The variable of SourceTable holding XData.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+The variable of SourceTable holding XData.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+stats.chart.ScatterHistogramChart.YData
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 127
+stats.chart.ScatterHistogramChart: property YData
+The values along the vertical axis, a numeric column vector as long as
+XData.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 77
+The values along the vertical axis, a numeric column vector as long as XData.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+stats.chart.ScatterHistogramChart.YHistogramDirection
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 147
+stats.chart.ScatterHistogramChart: property YHistogramDirection
+Which way the bars of the histogram of YData rise:
+'right', the default, or 'left'.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 83
+Which way the bars of the histogram of YData rise: 'right', the default, or 'left'.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+stats.chart.ScatterHistogramChart.YLabel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 129
+stats.chart.ScatterHistogramChart: property YLabel
+The label of the vertical axis; from a table the name of
+YVariable, until set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 78
+The label of the vertical axis; from a table the name of YVariable, until set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+stats.chart.ScatterHistogramChart.YLimits
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 114
+stats.chart.ScatterHistogramChart: property YLimits
+The limits of the vertical axis, the range of YData until set.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+The limits of the vertical axis, the range of YData until set.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+stats.chart.ScatterHistogramChart.YVariable
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 96
+stats.chart.ScatterHistogramChart: property YVariable
+The variable of SourceTable holding YData.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+The variable of SourceTable holding YData.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+stats.chart.ScatterHistogramChart.delete
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 91
+stats.chart.ScatterHistogramChart: delete (h)
+Delete the chart and the axes it is drawn in.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+Delete the chart and the axes it is drawn in.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+stats.chart.ScatterHistogramChart.xlim
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 186
+stats.chart.ScatterHistogramChart: limits = xlim (h)
+stats.chart.ScatterHistogramChart: xlim (h, limits)
+The limits of the horizontal axis, as XLimits holds them; given
+limits, set them.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 81
+The limits of the horizontal axis, as XLimits holds them; given limits, set them.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+stats.chart.ScatterHistogramChart.ylim
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 184
+stats.chart.ScatterHistogramChart: limits = ylim (h)
+stats.chart.ScatterHistogramChart: ylim (h, limits)
+The limits of the vertical axis, as YLimits holds them; given
+limits, set them.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 79
+The limits of the vertical axis, as YLimits holds them; given limits, set them.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 10
 swarmchart
 
@@ -2445,44 +5687,43 @@ swarmchart
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1756
-statistics: swarmchart ( x , y )
-statistics: swarmchart ( x , y , sz )
-statistics: swarmchart ( x , y , sz , c )
-statistics: swarmchart (&hellip;, 'filled' )
-statistics: swarmchart (&hellip;, name , value )
-statistics: swarmchart ( ax , &hellip;)
-statistics: s = swarmchart (&hellip;)
-
+# length: 1702
+statistics: swarmchart (x, y)
+statistics: swarmchart (x, y, sz)
+statistics: swarmchart (x, y, sz, c)
+statistics: swarmchart (..., 'filled')
+statistics: swarmchart (..., name, value)
+statistics: swarmchart (ax, ...)
+statistics: s = swarmchart (...)
 Draw a swarm chart.
 
-swarmchart ( x , y ) draws the points of y against
-x , spread sideways where they would otherwise sit on top of one
+swarmchart (x, y) draws the points of y against
+x, spread sideways where they would otherwise sit on top of one
 another, so that the shape of each column shows where its values gather.
 sz sets the marker area and c its colour, as they do for
-scatter , and 'filled' fills the markers.
+scatter, and 'filled' fills the markers.
 
-s is the scatter object drawn, and carries XJitter ,
-YJitter , XJitterWidth and YJitterWidth besides
+s is the scatter object drawn, and carries XJitter,
+YJitter, XJitterWidth and YJitterWidth besides
 everything a scatter object carries. Setting any of them spreads the
 points again and redraws.
 
 Name Value
 'XJitter' How the points are spread sideways:
-'density' , the default here, spreads each point by a uniform draw
+'density', the default here, spreads each point by a uniform draw
 weighted by how many of its neighbours share its value, so a crowded part
 of a column spreads wide and a lone point hardly moves;
 'rand' spreads every point alike; 'randn' draws the
 offsets from a normal distribution; 'none' leaves them in a line.
 'YJitter' The same, upwards. The default is
-'none' .
+'none'.
 'XJitterWidth' How far a point may be moved
 sideways, in the units of the axis. The default is nine tenths of the
-smallest gap between distinct values of x .
+smallest gap between distinct values of x.
 'YJitterWidth' The same, upwards.
 
 MATLAB leaves XData as it was given and spreads the points as it
-draws them. Octave&rsquo;s scatter object has no such step, so this moves the
+draws them. Octave's scatter object has no such step, so this moves the
 values themselves: XData holds where each point was drawn rather
 than where it came from. The difference shows in XData and
 nowhere else, the chart being the same.
@@ -2511,20 +5752,19 @@ violin
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2324
-statistics: violin ( x )
-statistics: h = violin ( x )
-statistics: h = violin (&hellip;, property , value , &hellip;)
-statistics: h = violin ( hax , &hellip;)
-statistics: h = violin (&hellip;, "horizontal" )
-
-Produce a Violin plot of the data x .
+# length: 2289
+statistics: violin (x)
+statistics: h = violin (x)
+statistics: h = violin (..., property, value, ...)
+statistics: h = violin (hax, ...)
+statistics: h = violin (..., "horizontal")
+Produce a Violin plot of the data x.
 
 The input data x can be a N-by-m array containing N observations of m
 variables. It can also be a cell with m elements, for the case in which the
 variables are not uniformly sampled.
 
-The following property can be set using property / value
+The following property can be set using property/value
 pairs (default values in parenthesis). The value of the property can be a
 scalar indicating that it applies to all the variables in the data. It can
 also be a cell/array, indicating the property for each variable. In this case
@@ -2539,7 +5779,7 @@ See help hist for more details.
 SmoothFactor
 (4) The function performs simple kernel density estimation and automatically
 finds the bandwidth of the kernel function that best approximates the
-histogram using optimization ( sqp ).
+histogram using optimization (sqp).
 The result is in general very noisy. To smooth the result the bandwidth is
 multiplied by the value of this property. The higher the value the smoother
 the violins, but values too high might remove features from the data
@@ -2590,36 +5830,35 @@ wblplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1647
-statistics: wblplot ( data , &hellip;)
-statistics: handle = wblplot ( data , &hellip;)
-statistics: [ handle , param ] = wblplot ( data )
-statistics: [ handle , param ] = wblplot ( data , censor )
-statistics: [ handle , param ] = wblplot ( data , censor , freq )
-statistics: [ handle , param ] = wblplot ( data , censor , freq , confint )
-statistics: [ handle , param ] = wblplot ( data , censor , freq , confint , fancygrid )
-statistics: [ handle , param ] = wblplot ( data , censor , freq , confint , fancygrid , showlegend )
-
+# length: 1582
+statistics: wblplot (data, ...)
+statistics: handle = wblplot (data, ...)
+statistics: [handle, param] = wblplot (data)
+statistics: [handle, param] = wblplot (data, censor)
+statistics: [handle, param] = wblplot (data, censor, freq)
+statistics: [handle, param] = wblplot (data, censor, freq, confint)
+statistics: [handle, param] = wblplot (data, censor, freq, confint, fancygrid)
+statistics: [handle, param] = wblplot (data, censor, freq, confint, fancygrid, showlegend)
 Plot a column vector data on a Weibull probability plot using rank
 regression.
 
-censor : optional parameter is a column vector of same size as
+censor: optional parameter is a column vector of same size as
 data with 1 for right censored data and 0 for exact observation.
 Pass [] when no censor data are available.
 
-freq : optional vector same size as data with the number of
+freq: optional vector same size as data with the number of
 occurrences for corresponding data.
 Pass [] when no frequency data are available.
 
-confint : optional confidence limits for plotting upper and lower
+confint: optional confidence limits for plotting upper and lower
 confidence bands using beta binomial confidence bounds. If a single
 value is given this will be used such as LOW = a and HIGH = 1 - a.
 Pass [] if confidence bounds is not requested.
 
-fancygrid : optional parameter which if set to anything but 1 will turn
+fancygrid: optional parameter which if set to anything but 1 will turn
 off the fancy gridlines.
 
-showlegend : optional parameter that when set to zero(0) turns off the
+showlegend: optional parameter that when set to zero(0) turns off the
 legend.
 
 If one output argument is given, a handle for the data marker and

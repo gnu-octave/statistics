@@ -15,139 +15,29 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{obj} =} RegressionNeuralNetwork (@var{X}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} RegressionNeuralNetwork (@dots{}, @var{name}, @var{value})
-##
-## Create a @qcode{RegressionNeuralNetwork} object containing a neural network
-## regression model.
-##
-## @code{@var{obj} = RegressionNeuralNetwork (@var{X}, @var{Y})} returns a
-## neural network regression model, @var{obj}, with @var{X} being the predictor
-## data and @var{Y} the continuous response of the observations in @var{X}.
-##
-## @itemize
-## @item
-## @var{X} must be an @math{NxP} numeric matrix of predictor data, where rows
-## correspond to observations and columns to features.
-## @item
-## @var{Y} must be an @math{Nx1} numeric vector holding the response of the
-## corresponding predictor data in @var{X}.  @var{Y} must have the same number
-## of rows as @var{X}.
-## @end itemize
-##
-## The network is trained against the mean squared error, and its output layer
-## applies the identity, so a prediction is an unrestricted real number rather
-## than a score over classes.  This is the only difference in the engine
-## between this class and @code{ClassificationNeuralNetwork}; everything else,
-## the layer sizes, the activations, the learning rate and the initialisation,
-## behaves identically.
-##
-## @code{@var{obj} = RegressionNeuralNetwork (@dots{}, @var{name},
-## @var{value})} returns a model with additional options specified by
-## @qcode{Name-Value} pair arguments listed below.
-##
-## @multitable @columnfractions 0.32 0.68
-## @headitem @var{Name} @tab @var{Value}
-##
-## @item @qcode{'Standardize'} @tab A logical scalar specifying whether the
-## predictor data should be centred and scaled before training.  The same
-## transformation is applied by @code{predict}.  The default is @qcode{false}.
-##
-## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values are
-## levels, as indices, as a logical vector with one element per predictor, or as
-## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros and
-## ones per level seen in training, named as in @qcode{'x1 == 2'} in
-## @code{ExpandedPredictorNames}, and the coded columns are not standardized.
-## An observation holding a level the training data did not is predicted as a
-## row missing a predictor, the lower median of the training response.
-## A predictor may be named rather than indexed, as a character matrix of one
-## padded name per row, a string array or a cellstr; a name must match an entry
-## of @qcode{'PredictorNames'} exactly, its case included.
-##
-## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
-## naming the predictors, in the order they appear in @var{X}.
-##
-## @item @qcode{'ResponseName'} @tab A character vector naming the response.
-## The default is @qcode{'Y'}.
-##
-## @item @qcode{'ResponseTransform'} @tab A character vector naming one of the
-## supported transformations, or a function handle, applied to the predicted
-## response by @code{predict} and @code{resubPredict}.  The default is
-## @qcode{'none'}.
-##
-## @item @qcode{'LayerSizes'} @tab A positive integer vector specifying the
-## number of units in each fully connected hidden layer.  The default is 10,
-## one hidden layer of ten units.
-##
-## @item @qcode{'Activations'} @tab A character vector or cell array of
-## character vectors specifying the activation of the hidden layers.  The
-## supported functions are @qcode{'linear'}, @qcode{'sigmoid'},
-## @qcode{'relu'}, @qcode{'tanh'}, @qcode{'lrelu'}, @qcode{'prelu'},
-## @qcode{'elu'}, @qcode{'gelu'} and @qcode{'none'}.  The default is
-## @qcode{'relu'}.
-##
-## @item @qcode{'OutputLayerActivation'} @tab A character vector specifying
-## the activation of the output layer.  The default is @qcode{'none'}, the
-## identity, which is what a regression output calls for.  The supported
-## values are the same as for @qcode{'Activations'}.
-##
-## @item @qcode{'LearningRate'} @tab A positive scalar specifying the learning
-## rate for gradient descent.  The default is 0.003.  A larger rate can drive
-## every unit of a hidden layer negative, after which a rectifier passes no
-## gradient and the network stops training.
-## Applies only when @qcode{'Solver'} is @qcode{'sgd'}.
-##
-## @item @qcode{'Solver'} @tab A character vector naming the solver that
-## trains the network, either @qcode{'lbfgs'} or @qcode{'sgd'}.  The
-## default is @qcode{'lbfgs'}, which minimizes the loss over the whole
-## training set at once by limited-memory BFGS, as MATLAB does.  It takes
-## no learning rate, stops on the three tolerances below, and reaches a
-## lower training loss in fewer passes over the data, though each of its
-## iterations costs several passes where an epoch costs one.
-## @qcode{'sgd'} visits the samples one at a time and steps down the
-## gradient of each, running for @qcode{'IterationLimit'} epochs; it was
-## the default before version 1.9.0.
-##
-## @item @qcode{'GradientTolerance'} @tab A nonnegative scalar.  Training
-## stops once the gradient's infinity norm falls to or below it, which is
-## the quantity MATLAB tests too.  The default is @qcode{1e-6}.  Applies
-## only when @qcode{'Solver'} is @qcode{'lbfgs'}.
-##
-## @item @qcode{'StepTolerance'} @tab A nonnegative scalar.  Training
-## stops once the step's infinity norm falls to or below it, which is the
-## quantity MATLAB tests too.  The default is @qcode{1e-6}.  Applies only
-## when @qcode{'Solver'} is @qcode{'lbfgs'}.
-##
-## @item @qcode{'LossTolerance'} @tab A real scalar.  Training stops once
-## the training loss falls to or below it.  The test is on the loss
-## itself and not on its change, matching MATLAB; pass @code{-Inf} to
-## switch it off.  The default is @qcode{1e-6}.  Applies only when
-## @qcode{'Solver'} is @qcode{'lbfgs'}.
-##
-## @item @qcode{'IterationLimit'} @tab A positive integer specifying the
-## maximum number of training iterations.  The default is 1000.
-## Under @qcode{'sgd'} this counts epochs, under
-## @qcode{'lbfgs'} solver iterations.
-##
-## @item @qcode{'DisplayInfo'} @tab A logical scalar specifying whether to
-## print information during training.  The default is @qcode{false}.
-## @end multitable
-##
-## The supported values for @qcode{'ResponseTransform'} are:
-##
-## @multitable @columnfractions 0.3 0.7
-## @headitem @var{Value} @tab @var{Description}
-## @item @qcode{'none'} @tab @math{x} (no transformation)
-## @item @qcode{'identity'} @tab @math{x} (no transformation)
-## @item @qcode{'exp'} @tab @math{exp (x)}
-## @item @qcode{'log'} @tab @math{log (x)}
-## @end multitable
-##
-## @seealso{fitrnet, ClassificationNeuralNetwork, fcnntrain, fcnnpredict}
-## @end deftypefn
-
 classdef RegressionNeuralNetwork < PredictiveModel
+  ## -*- texinfo -*-
+  ## @deftp {statistics} RegressionNeuralNetwork
+  ##
+  ## Neural network regression model.
+  ##
+  ## A @qcode{RegressionNeuralNetwork} object holds a fully connected
+  ## feedforward neural network fitted to a continuous response, and predicts
+  ## the response for new data with the @code{predict} method.  The network is
+  ## trained against the mean squared error and its output layer applies the
+  ## identity, so a prediction is an unrestricted real number; otherwise the
+  ## engine is the one @code{ClassificationNeuralNetwork} uses.
+  ##
+  ## The object keeps its training data, which @code{resubPredict},
+  ## @code{resubLoss} and @code{crossval} work on; @code{compact} drops it and
+  ## returns a @code{CompactRegressionNeuralNetwork}, which still predicts.
+  ##
+  ## Create a @qcode{RegressionNeuralNetwork} object with @code{fitrnet} or the
+  ## class constructor.
+  ##
+  ## @seealso{fitrnet, CompactRegressionNeuralNetwork,
+  ## ClassificationNeuralNetwork}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 
@@ -437,8 +327,10 @@ classdef RegressionNeuralNetwork < PredictiveModel
     ##
     ## Observation weights
     ##
-    ## A numeric column vector with one entry per training observation.  It
-    ## defaults to a uniform weight for every observation.  This property is
+    ## A numeric column vector with one entry per training observation,
+    ## summing to one, by which the training loss weighs each observation.  It
+    ## defaults to a uniform weight for every observation, and has the class of
+    ## the @qcode{'Weights'} given, single or double.  This property is
     ## read-only.
     ##
     ## @end deftp
@@ -535,15 +427,6 @@ classdef RegressionNeuralNetwork < PredictiveModel
     endfunction
 
     ## Custom display
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
-    ## Custom display
     function disp (this)
       fprintf ("\n  RegressionNeuralNetwork\n\n");
       ## Print selected properties
@@ -575,16 +458,138 @@ classdef RegressionNeuralNetwork < PredictiveModel
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionNeuralNetwork} {@var{obj} =} RegressionNeuralNetwork (@var{X}, @var{Y})
     ## @deftypefnx {RegressionNeuralNetwork} {@var{obj} =} RegressionNeuralNetwork (@var{Tbl}, @var{ResponseVarName})
-## @deftypefnx {RegressionNeuralNetwork} {@var{obj} =} RegressionNeuralNetwork (@var{Tbl}, @var{formula})
-## @deftypefnx {RegressionNeuralNetwork} {@var{obj} =} RegressionNeuralNetwork (@var{Tbl}, @var{Y})
-## @deftypefnx {RegressionNeuralNetwork} {@var{obj} =} RegressionNeuralNetwork (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {RegressionNeuralNetwork} {@var{obj} =} RegressionNeuralNetwork (@var{Tbl}, @var{formula})
+    ## @deftypefnx {RegressionNeuralNetwork} {@var{obj} =} RegressionNeuralNetwork (@var{Tbl}, @var{Y})
+    ## @deftypefnx {RegressionNeuralNetwork} {@var{obj} =} RegressionNeuralNetwork (@dots{}, @var{name}, @var{value})
     ##
-    ## Create a @qcode{RegressionNeuralNetwork} object containing a neural
-    ## network regression model.
+    ## Fit a neural network regression model.
     ##
-    ## See the class documentation for the accepted @qcode{Name-Value} pairs.
+    ## @code{@var{obj} = RegressionNeuralNetwork (@var{X}, @var{Y})} returns a
+    ## neural network regression model, @var{obj}, with @var{X} being the
+    ## predictor data and @var{Y} the continuous response of the observations in
+    ## @var{X}.
     ##
-    ## @seealso{fitrnet, RegressionNeuralNetwork}
+    ## @itemize
+    ## @item
+    ## @var{X} must be an @math{NxP} numeric matrix of predictor data, where
+    ## rows correspond to observations and columns to features.
+    ## @item
+    ## @var{Y} must be an @math{Nx1} numeric vector holding the response of the
+    ## corresponding predictor data in @var{X}.  @var{Y} must have the same
+    ## number of rows as @var{X}.
+    ## @end itemize
+    ##
+    ## The network is trained against the mean squared error, and its output
+    ## layer applies the identity, so a prediction is an unrestricted real
+    ## number rather than a score over classes.  This is the only difference in
+    ## the engine between this class and @code{ClassificationNeuralNetwork};
+    ## everything else, the layer sizes, the activations, the learning rate and
+    ## the initialisation, behaves identically.
+    ##
+    ## @code{@var{obj} = RegressionNeuralNetwork (@dots{}, @var{name},
+    ## @var{value})} returns a model with additional options specified by
+    ## @qcode{Name-Value} pair arguments listed below.
+    ##
+    ## @multitable @columnfractions 0.32 0.68
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'Standardize'} @tab A logical scalar specifying whether the
+    ## predictor data should be centred and scaled before training.  The same
+    ## transformation is applied by @code{predict}.  The default is
+    ## @qcode{false}.
+    ##
+    ## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values
+    ## are levels, as indices, as a logical vector with one element per
+    ## predictor, or as @qcode{'all'}.  Each is dummy coded in its place, one
+    ## column of zeros and ones per level seen in training, named as in
+    ## @qcode{'x1 == 2'} in @code{ExpandedPredictorNames}, and the coded columns
+    ## are not standardized.  An observation holding a level the training data
+    ## did not is predicted as a row missing a predictor, the lower median of
+    ## the training response.  A predictor may be named rather than indexed, as
+    ## a character matrix of one padded name per row, a string array or a
+    ## cellstr; a name must match an entry of @qcode{'PredictorNames'} exactly,
+    ## its case included.
+    ##
+    ## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
+    ## naming the predictors, in the order they appear in @var{X}.
+    ##
+    ## @item @qcode{'ResponseName'} @tab A character vector naming the response.
+    ## The default is @qcode{'Y'}.
+    ##
+    ## @item @qcode{'ResponseTransform'} @tab A character vector naming one of
+    ## the supported transformations, or a function handle, applied to the
+    ## predicted response by @code{predict} and @code{resubPredict}.  The
+    ## default is @qcode{'none'}.
+    ##
+    ## @item @qcode{'LayerSizes'} @tab A positive integer vector specifying the
+    ## number of units in each fully connected hidden layer.  The default is 10,
+    ## one hidden layer of ten units.
+    ##
+    ## @item @qcode{'Activations'} @tab A character vector or cell array of
+    ## character vectors specifying the activation of the hidden layers.  The
+    ## supported functions are @qcode{'linear'}, @qcode{'sigmoid'},
+    ## @qcode{'relu'}, @qcode{'tanh'}, @qcode{'lrelu'}, @qcode{'prelu'},
+    ## @qcode{'elu'}, @qcode{'gelu'} and @qcode{'none'}.  The default is
+    ## @qcode{'relu'}.
+    ##
+    ## @item @qcode{'OutputLayerActivation'} @tab A character vector specifying
+    ## the activation of the output layer.  The default is @qcode{'none'}, the
+    ## identity, which is what a regression output calls for.  The supported
+    ## values are the same as for @qcode{'Activations'}.
+    ##
+    ## @item @qcode{'LearningRate'} @tab A positive scalar specifying the
+    ## learning rate for gradient descent.  The default is 0.003.  A larger rate
+    ## can drive every unit of a hidden layer negative, after which a rectifier
+    ## passes no gradient and the network stops training.  Applies only when
+    ## @qcode{'Solver'} is @qcode{'sgd'}.
+    ##
+    ## @item @qcode{'Solver'} @tab A character vector naming the solver that
+    ## trains the network, either @qcode{'lbfgs'} or @qcode{'sgd'}.  The
+    ## default is @qcode{'lbfgs'}, which minimizes the loss over the whole
+    ## training set at once by limited-memory BFGS, as MATLAB does.  It takes
+    ## no learning rate, stops on the three tolerances below, and reaches a
+    ## lower training loss in fewer passes over the data, though each of its
+    ## iterations costs several passes where an epoch costs one.
+    ## @qcode{'sgd'} visits the samples one at a time and steps down the
+    ## gradient of each, running for @qcode{'IterationLimit'} epochs; it was
+    ## the default before version 1.9.0.
+    ##
+    ## @item @qcode{'GradientTolerance'} @tab A nonnegative scalar.  Training
+    ## stops once the gradient's infinity norm falls to or below it, which is
+    ## the quantity MATLAB tests too.  The default is @qcode{1e-6}.  Applies
+    ## only when @qcode{'Solver'} is @qcode{'lbfgs'}.
+    ##
+    ## @item @qcode{'StepTolerance'} @tab A nonnegative scalar.  Training
+    ## stops once the step's infinity norm falls to or below it, which is the
+    ## quantity MATLAB tests too.  The default is @qcode{1e-6}.  Applies only
+    ## when @qcode{'Solver'} is @qcode{'lbfgs'}.
+    ##
+    ## @item @qcode{'LossTolerance'} @tab A real scalar.  Training stops once
+    ## the training loss falls to or below it.  The test is on the loss
+    ## itself and not on its change, matching MATLAB; pass @code{-Inf} to
+    ## switch it off.  The default is @qcode{1e-6}.  Applies only when
+    ## @qcode{'Solver'} is @qcode{'lbfgs'}.
+    ##
+    ## @item @qcode{'IterationLimit'} @tab A positive integer specifying the
+    ## maximum number of training iterations.  The default is 1000.
+    ## Under @qcode{'sgd'} this counts epochs, under
+    ## @qcode{'lbfgs'} solver iterations.
+    ##
+    ## @item @qcode{'DisplayInfo'} @tab A logical scalar specifying whether to
+    ## print information during training.  The default is @qcode{false}.
+    ## @end multitable
+    ##
+    ## The supported values for @qcode{'ResponseTransform'} are:
+    ##
+    ## @multitable @columnfractions 0.3 0.7
+    ## @headitem @var{Value} @tab @var{Description}
+    ## @item @qcode{'none'} @tab @math{x} (no transformation)
+    ## @item @qcode{'identity'} @tab @math{x} (no transformation)
+    ## @item @qcode{'exp'} @tab @math{exp (x)}
+    ## @item @qcode{'log'} @tab @math{log (x)}
+    ## @end multitable
+    ##
+    ## @seealso{fitrnet, ClassificationNeuralNetwork, fcnntrain, fcnnpredict}
     ## @end deftypefn
     function this = RegressionNeuralNetwork (X, Y, varargin)
       ## Check for sufficient number of input arguments
@@ -617,177 +622,162 @@ classdef RegressionNeuralNetwork < PredictiveModel
       this.X = X;
       this.Y = Y;
 
-      ## Set default values before parsing optional parameters
-      Standardize             = false;
-      ResponseName            = [];
-      PredictorNames          = [];
-      LayerSizes              = 10;
-      Activations             = 'relu';
-      OutputLayerActivation   = 'none';
-      LearningRate            = 0.003;
-      IterationLimit          = 1000;
-      DisplayInfo             = false;
-      Solver                  = 'lbfgs';
-      GradientTolerance       = 1e-6;
-      LossTolerance           = 1e-6;
-      StepTolerance           = 1e-6;
-      ## Which of the solver-specific options the caller actually named, so
-      ## that one meant for the other solver can be refused by name.
-      GivenTols               = {};
-      LearningRateGiven       = false;
-
       ## Supported activation functions.  'none' is MATLAB's name for the
       ## identity and is what a regression output layer wants.
       acList = {'linear', 'none', 'sigmoid', 'relu', 'tanh', ...
                 'lrelu', 'prelu', 'elu', 'gelu'};
 
-      ## Parse extra parameters
-      CatPreds = [];
-      while (numel (varargin) > 0)
-        switch (tolower (varargin {1}))
+      ## Parse optional paired arguments
+      optNames = {'Standardize', 'PredictorNames', 'ResponseName', ...
+                  'ResponseTransform', 'LayerSizes', 'LearningRate', ...
+                  'Activations', 'OutputLayerActivation', 'IterationLimit', ...
+                  'Solver', 'GradientTolerance', 'LossTolerance', ...
+                  'StepTolerance', 'DisplayInfo', 'CategoricalPredictors', ...
+                  'Weights'};
+      ## An empty default stands for one resolved once the data are known:
+      ## 'PredictorNames' are x1, x2, ... and 'ResponseName' is 'Y'; no
+      ## 'ResponseTransform' leaves the response as it is; 'LearningRate' is
+      ## 0.003 and each tolerance 1e-6, empty so that giving one can be
+      ## refused by name when the solver cannot use it.
+      dfValues = {false, [], [], [], 10, [], 'relu', 'none', 1000, 'lbfgs', ...
+                  [], [], [], false, [], []};
+      [Standardize, PredictorNames, ResponseName, RTin, LayerSizes, ...
+       LearningRate, Activations, OutputLayerActivation, IterationLimit, ...
+       Solver, GradientTolerance, LossTolerance, StepTolerance, DisplayInfo, ...
+       CatPreds, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-          case 'standardize'
-            Standardize = varargin{2};
-            if (! (Standardize == true || Standardize == false))
-              error (strcat ("RegressionNeuralNetwork:", ...
-                             " 'Standardize' must be either true or false."));
-            endif
+      ## Validate optional paired arguments
+      if (! (Standardize == true || Standardize == false))
+        error (strcat ("RegressionNeuralNetwork: 'Standardize' must be", ...
+                       " either true or false."));
+      endif
+      if (! isempty (PredictorNames) && ! iscellstr (PredictorNames))
+        error (strcat ("RegressionNeuralNetwork: 'PredictorNames' must be", ...
+                       " supplied as a cellstring array."));
+      elseif (! isempty (PredictorNames)
+              && columns (PredictorNames) != columns (X))
+        error (strcat ("RegressionNeuralNetwork: 'PredictorNames' must", ...
+                       " have the same number of columns as X."));
+      endif
+      if (! isempty (ResponseName) && ! ischar (ResponseName))
+        error (strcat ("RegressionNeuralNetwork: 'ResponseName' must be a", ...
+                       " character vector."));
+      endif
+      if (! (isnumeric (LayerSizes) && isvector (LayerSizes)
+        && all (LayerSizes > 0) && all (mod (LayerSizes, 1) == 0)))
+        error (strcat ("RegressionNeuralNetwork: 'LayerSizes' must be a", ...
+                       " positive integer vector."));
+      endif
+      if (! isempty (LearningRate) &&
+          ! (isnumeric (LearningRate) && isscalar (LearningRate) &&
+             LearningRate > 0))
+        error (strcat ("RegressionNeuralNetwork: 'LearningRate' must be a", ...
+                       " positive scalar."));
+      endif
+      if (! (ischar (Activations) || iscellstr (Activations)))
+        error (strcat ("RegressionNeuralNetwork: 'Activations' must be a", ...
+                       " character vector or a cellstring vector."));
+      endif
+      if (ischar (Activations))
+        if (! any (strcmpi (Activations, acList)))
+          error ("RegressionNeuralNetwork: unsupported 'Activation' function.");
+        endif
+      else
+        if (! all (cell2mat (cellfun (@(x) any (strcmpi (x, acList)),
+                             Activations, 'UniformOutput', false))))
+          error (strcat ("RegressionNeuralNetwork: unsupported", ...
+                         " 'Activation' functions."));
+        endif
+      endif
+      Activations = tolower (Activations);
+      if (! (ischar (OutputLayerActivation)))
+        error (strcat ("RegressionNeuralNetwork: 'OutputLayerActivation'", ...
+                       " must be a character vector."));
+      endif
+      if (! any (strcmpi (OutputLayerActivation, acList)))
+        error (strcat ("RegressionNeuralNetwork: unsupported", ...
+                       " 'OutputLayerActivation' function."));
+      endif
+      OutputLayerActivation = tolower (OutputLayerActivation);
+      if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
+        && (IterationLimit > 0) && mod (IterationLimit, 1) == 0))
+        error (strcat ("RegressionNeuralNetwork: 'IterationLimit' must be", ...
+                       " a positive integer."));
+      endif
+      if (! (ischar (Solver) && any (strcmpi (Solver, {'sgd', ...
+                                                       'lbfgs'}))))
+        error (strcat ("RegressionNeuralNetwork: 'Solver' must be either", ...
+                       " 'sgd' or 'lbfgs'."));
+      endif
+      Solver = tolower (Solver);
+      if (! isempty (GradientTolerance) &&
+          ! (isnumeric (GradientTolerance)
+             && isscalar (GradientTolerance)
+             && GradientTolerance >= 0))
+        error (strcat ("RegressionNeuralNetwork: 'GradientTolerance' must", ...
+                       " be a nonnegative scalar."));
+      endif
+      if (! isempty (LossTolerance) &&
+          ! (isnumeric (LossTolerance) && isscalar (LossTolerance)
+             && ! isnan (LossTolerance)))
+        error (strcat ("RegressionNeuralNetwork: 'LossTolerance' must be a", ...
+                       " real scalar."));
+      endif
+      if (! isempty (StepTolerance) &&
+          ! (isnumeric (StepTolerance) && isscalar (StepTolerance)
+             && StepTolerance >= 0))
+        error (strcat ("RegressionNeuralNetwork: 'StepTolerance' must be a", ...
+                       " nonnegative scalar."));
+      endif
+      if (! (DisplayInfo == true || DisplayInfo == false))
+        error (strcat ("RegressionNeuralNetwork: 'DisplayInfo' must be", ...
+                       " either true or false."));
+      endif
 
-          case 'predictornames'
-            PredictorNames = varargin{2};
-            if (! iscellstr (PredictorNames))
-              error (strcat ("RegressionNeuralNetwork: 'PredictorNames'", ...
-                             " must be supplied as a cellstring array."));
-            elseif (columns (PredictorNames) != columns (X))
-              error (strcat ("RegressionNeuralNetwork: 'PredictorNames'", ...
-                             " must have the same number of columns as X."));
-            endif
+      if (! isempty (RTin))
+        [this.RTfun, this.ResponseTransform] = ...
+              parseResponseTransform (RTin, 'RegressionNeuralNetwork');
+      endif
 
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! ischar (ResponseName))
-              error (strcat ("RegressionNeuralNetwork: 'ResponseName'", ...
-                             " must be a character vector."));
-            endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionNeuralNetwork: %s", errmsg);
+      endif
+      if (! isempty (Weights)
+          && ! (isvector (Weights) && numel (Weights) == rows (X)))
+        error (strcat ("RegressionNeuralNetwork: 'Weights' must be a", ...
+                       " vector with one element per row of X."));
+      endif
+      if (! isempty (Weights) && (any (Weights < 0)
+                                  || ! (sum (Weights(! isnan (Weights))) > 0)))
+        error (strcat ("RegressionNeuralNetwork: 'Weights' must be", ...
+                       " nonnegative and must not be all zero."));
+      endif
 
-          case 'responsetransform'
-            name = 'RegressionNeuralNetwork';
-            [this.RTfun, this.ResponseTransform] = ...
-                  parseResponseTransform (varargin{2}, name);
+      if (! isempty (args))
+        error ("RegressionNeuralNetwork: invalid optional paired argument.");
+      endif
 
-          case 'layersizes'
-            LayerSizes = varargin{2};
-            if (! (isnumeric (LayerSizes) && isvector (LayerSizes)
-              && all (LayerSizes > 0) && all (mod (LayerSizes, 1) == 0)))
-              error (strcat ("RegressionNeuralNetwork: 'LayerSizes'", ...
-                             " must be a positive integer vector."));
-            endif
-
-          case 'learningrate'
-            LearningRate = varargin{2};
-            LearningRateGiven = true;
-            if (! (isnumeric (LearningRate) && isscalar (LearningRate) &&
-                   LearningRate > 0))
-              error (strcat ("RegressionNeuralNetwork:", ...
-                             " 'LearningRate' must be a positive scalar."));
-            endif
-
-          case 'activations'
-            Activations = varargin{2};
-            if (! (ischar (Activations) || iscellstr (Activations)))
-              error (strcat ("RegressionNeuralNetwork: 'Activations'", ...
-                        " must be a character vector or a cellstring vector."));
-            endif
-            if (ischar (Activations))
-              if (! any (strcmpi (Activations, acList)))
-                error (strcat ("RegressionNeuralNetwork: unsupported", ...
-                               " 'Activation' function."));
-              endif
-            else
-              if (! all (cell2mat (cellfun (@(x) any (strcmpi (x, acList)),
-                                   Activations, 'UniformOutput', false))))
-                error (strcat ("RegressionNeuralNetwork: unsupported", ...
-                               " 'Activation' functions."));
-              endif
-            endif
-            Activations = tolower (Activations);
-
-          case 'outputlayeractivation'
-            OutputLayerActivation = varargin{2};
-            if (! (ischar (OutputLayerActivation)))
-              error (strcat ("RegressionNeuralNetwork:", ...
-                       " 'OutputLayerActivation' must be a character vector."));
-            endif
-            if (! any (strcmpi (OutputLayerActivation, acList)))
-              error (strcat ("RegressionNeuralNetwork: unsupported", ...
-                             " 'OutputLayerActivation' function."));
-            endif
-            OutputLayerActivation = tolower (OutputLayerActivation);
-
-          case 'iterationlimit'
-            IterationLimit = varargin{2};
-            if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
-              && (IterationLimit > 0) && mod (IterationLimit, 1) == 0))
-              error (strcat ("RegressionNeuralNetwork:", ...
-                             " 'IterationLimit' must be a positive integer."));
-            endif
-
-          case 'solver'
-            Solver = varargin{2};
-            if (! (ischar (Solver) && any (strcmpi (Solver, {'sgd', ...
-                                                             'lbfgs'}))))
-              error (strcat ("RegressionNeuralNetwork: 'Solver' must", ...
-                             " be either 'sgd' or 'lbfgs'."));
-            endif
-            Solver = tolower (Solver);
-
-          case 'gradienttolerance'
-            GradientTolerance = varargin{2};
-            GivenTols{end+1} = 'GradientTolerance';
-            if (! (isnumeric (GradientTolerance)
-                   && isscalar (GradientTolerance)
-                   && GradientTolerance >= 0))
-              error (strcat ("RegressionNeuralNetwork:", ...
-                             " 'GradientTolerance' must be a nonnegative", ...
-                             " scalar."));
-            endif
-
-          case 'losstolerance'
-            LossTolerance = varargin{2};
-            GivenTols{end+1} = 'LossTolerance';
-            if (! (isnumeric (LossTolerance) && isscalar (LossTolerance)
-                   && ! isnan (LossTolerance)))
-              error (strcat ("RegressionNeuralNetwork:", ...
-                             " 'LossTolerance' must be a real scalar."));
-            endif
-
-          case 'steptolerance'
-            StepTolerance = varargin{2};
-            GivenTols{end+1} = 'StepTolerance';
-            if (! (isnumeric (StepTolerance) && isscalar (StepTolerance)
-                   && StepTolerance >= 0))
-              error (strcat ("RegressionNeuralNetwork:", ...
-                             " 'StepTolerance' must be a nonnegative", ...
-                             " scalar."));
-            endif
-
-          case 'displayinfo'
-            DisplayInfo = varargin{2};
-            if (! (DisplayInfo == true || DisplayInfo == false))
-              error (strcat ("RegressionNeuralNetwork: 'DisplayInfo'", ...
-                             " must be either true or false."));
-            endif
-
-          case 'categoricalpredictors'
-            CatPreds = varargin{2};
-
-          otherwise
-            error (strcat ("RegressionNeuralNetwork: invalid",...
-                           " parameter name in optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## The solver-specific options the caller named, so that one meant for
+      ## the other solver can be refused by name, then their defaults
+      tolNames = {'GradientTolerance', 'LossTolerance', 'StepTolerance'};
+      GivenTols = tolNames(! cellfun (@isempty, {GradientTolerance, ...
+                                                  LossTolerance, ...
+                                                  StepTolerance}));
+      LearningRateGiven = ! isempty (LearningRate);
+      if (isempty (LearningRate))
+        LearningRate = 0.003;
+      endif
+      if (isempty (GradientTolerance))
+        GradientTolerance = 1e-6;
+      endif
+      if (isempty (LossTolerance))
+        LossTolerance = 1e-6;
+      endif
+      if (isempty (StepTolerance))
+        StepTolerance = 1e-6;
+      endif
 
       ## Generate default predictors and response variable names (if necessary)
       NumPredictors = columns (X);
@@ -806,10 +796,19 @@ classdef RegressionNeuralNetwork < PredictiveModel
       this.ExpandedPredictorNames = PredictorNames;
       this.ResponseName   = ResponseName;
 
-      ## An observation is dropped only when its response is missing.  A row
+      ## An observation is dropped when its response is missing, or when its
+      ## weight is zero or missing, as R2024a drops it; the weights keep their
+      ## class in the model and every computation runs on them as double.  A row
       ## whose predictors hold missing values is kept and reported as used,
       ## while the fit below draws on the complete observations alone.
-      RowsUsed  = ! isnan (Y(:));
+      Wclass    = "double";
+      Wall      = ones (rows (Y), 1);
+      if (! isempty (Weights))
+        Wclass  = class (Weights);
+        Wall    = double (Weights(:));
+      endif
+      RowsUsed  = ! isnan (Y(:)) & ! isnan (Wall) & Wall > 0;
+      wret      = Wall(RowsUsed) / sum (Wall(RowsUsed));
       Yret      = Y(RowsUsed);
       Xret      = X(RowsUsed, :);
       this.X    = Xret;
@@ -817,6 +816,7 @@ classdef RegressionNeuralNetwork < PredictiveModel
       cobs      = ! any (isnan (Xret), 2);
       Y         = Yret(cobs);
       X         = Xret(cobs, :);
+      wfit      = wret(cobs);
 
       ## Dummy code the categorical predictors on the rows the fit draws on.
       ## X keeps the predictors as given; the fit and every prediction see
@@ -833,7 +833,7 @@ classdef RegressionNeuralNetwork < PredictiveModel
       ## What a row missing a predictor is predicted to be, as MATLAB R2024a
       ## predicts it: the lower median of the training response, every
       ## observation weighing the same here.
-      this.MissingResponse_ = missingResponse (Y, ones (rows (Y), 1));
+      this.MissingResponse_ = missingResponse (Y, wfit);
       X = dummyCoding (X, Coding);
       if (! isempty (Coding.Index))
         this.CategoricalPredictors = Coding.Index;
@@ -863,12 +863,24 @@ classdef RegressionNeuralNetwork < PredictiveModel
       endif
 
       ## Every observation carries the same weight
-      this.W = ones (this.NumObservations, 1) / this.NumObservations;
+      this.W = cast (wret, Wclass);
 
       ## Handle the Standardize option.  The network must be trained on the
       ## scale it predicts on, so X is transformed here as well as in
       ## predict.
-      if (Standardize)
+      if (Standardize && ! isempty (Weights))
+        ## Weighted means and deviations, the deviation unbiased for the
+        ## weights; a constant predictor is left unscaled.
+        sw = wfit / sum (wfit);
+        this.Mu = sum (sw .* X, 1);
+        this.Sigma = sqrt (sum (sw .* (X - this.Mu) .^ 2, 1) ...
+                           / (1 - sum (sw .^ 2)));
+        this.Sigma(this.Sigma == 0 | all (X == X(1,:), 1)) = 1;
+        ## A level's column is left as it is, as in MATLAB R2024a.
+        this.Mu(Coding.Dummy) = 0;
+        this.Sigma(Coding.Dummy) = 1;
+        X = (X - this.Mu) ./ this.Sigma;
+      elseif (Standardize)
         this.Sigma = std (X, [], 1);
         this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
         this.Mu = mean (X, 1);
@@ -917,6 +929,11 @@ classdef RegressionNeuralNetwork < PredictiveModel
                               'GradientTolerance', GradientTolerance, ...
                               'LossTolerance', LossTolerance, ...
                               'StepTolerance', StepTolerance);
+      ## The loss weighs each observation by its weight, as R2024a weighs
+      ## it; without weights it stays the plain mean.
+      if (! isempty (Weights) && max (wfit) - min (wfit) > 1e-12 * max (wfit))
+        SolverOptions.Weights = wfit;
+      endif
       ## The engine names the layers itself; this check stays here so the
       ## count is reported under the class rather than under fcnntrain.
       if (! ischar (Activations) && numel (LayerSizes) != numel (Activations))
@@ -1177,35 +1194,47 @@ classdef RegressionNeuralNetwork < PredictiveModel
 
       [X, Y] = checkXY_ (this, X, Y, 'loss');
 
-      ## Defaults, then the optional pairs
-      LossFun = 'mse';
-      W = [];
-      args = varargin;
-      keep = true (1, numel (args));
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("RegressionNeuralNetwork.loss: parameter name", ...
-                         " must be a character vector."));
-        endif
-        if (strcmpi (args{i}, 'lossfun'))
-          LossFun = args{i+1};
-          if (! (is_function_handle (LossFun) ||
-                 (ischar (LossFun) && isrow (LossFun))))
-            error (strcat ("RegressionNeuralNetwork.loss: 'LossFun' must", ...
-                           " be a character vector or a function handle."));
-          endif
-          if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
-            error (strcat ("RegressionNeuralNetwork.loss: unsupported", ...
-                           " 'LossFun' value."));
-          endif
-          keep(i:i+1) = false;
-        endif
-      endfor
-      W = getWeights_ (this, args(keep), rows (X), 'loss');
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mse', []};
+      [LossFun, W, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (is_function_handle (LossFun) ||
+             (ischar (LossFun) && isrow (LossFun))))
+        error (strcat ("RegressionNeuralNetwork.loss: 'LossFun' must be a", ...
+                       " character vector or a function handle."));
+      endif
+      if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
+        error ("RegressionNeuralNetwork.loss: unsupported 'LossFun' value.");
+      endif
+      errmsg = weightsClass (W);
+      if (! isempty (errmsg))
+        error ("RegressionNeuralNetwork.loss: %s", errmsg);
+      endif
+      if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
+        error (strcat ("RegressionNeuralNetwork.loss: 'Weights' must be a", ...
+                       " numeric vector."));
+      endif
+      if (! isempty (W) && numel (W) != rows (X))
+        error (strcat ("RegressionNeuralNetwork.loss: size of 'Weights'", ...
+                       " must equal the number of rows in X."));
+      endif
+
+      if (! isempty (args))
+        error (strcat ("RegressionNeuralNetwork.loss: invalid optional", ...
+                       " paired argument."));
+      endif
+      if (isempty (W))
+        W = ones (rows (X), 1);
+      endif
 
       ## Weights are normalized to sum to one, as MATLAB does, so a loss is
       ## a weighted average rather than a weighted sum.
-      W = W(:) / sum (W);
+      W = double (W(:));
+      W = W / sum (W);
       yFit = predict (this, X);
       Y = Y(:);
 
@@ -1239,10 +1268,11 @@ classdef RegressionNeuralNetwork < PredictiveModel
     ## @seealso{RegressionNeuralNetwork, fitrnet}
     ## @end deftypefn
     function L = resubLoss (this, varargin)
-      used = true (rows (this.X), 1);
-      X = this.X(used, :);
-      Y = this.Y(used);
-      L = loss (this, X, Y, varargin{:});
+      ## The model's own weights stand unless others are given, as in R2024a
+      if (! any (strcmpi (varargin(1:2:end), 'Weights')))
+        varargin = [varargin, {'Weights', this.W}];
+      endif
+      L = loss (this, this.X, this.Y, varargin{:});
     endfunction
 
     ## -*- texinfo -*-
@@ -1482,34 +1512,6 @@ classdef RegressionNeuralNetwork < PredictiveModel
         error (strcat ("RegressionNeuralNetwork.%s: Y must have the", ...
                        " same number of rows as X."), caller);
       endif
-    endfunction
-
-    ## Pull a "Weights" pair out of the optional arguments, defaulting to a
-    ## uniform weight, and reject any other name.
-    function W = getWeights_ (this, args, n, caller)
-      W = ones (n, 1);
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("RegressionNeuralNetwork.%s: parameter name", ...
-                         " must be a character vector."), caller);
-        endif
-        if (strcmpi (args{i}, 'weights'))
-          W = args{i+1};
-          if (! (isnumeric (W) && isvector (W)))
-            error (strcat ("RegressionNeuralNetwork.%s: 'Weights'", ...
-                           " must be a numeric vector."), caller);
-          endif
-          if (numel (W) != n)
-            error (strcat ("RegressionNeuralNetwork.%s: size of", ...
-                           " 'Weights' must equal the number of", ...
-                           " rows in X."), caller);
-          endif
-        else
-          error (strcat ("RegressionNeuralNetwork.%s: invalid", ...
-                         " parameter name in optional paired", ...
-                         " arguments."), caller);
-        endif
-      endfor
     endfunction
 
   endmethods
@@ -2033,7 +2035,7 @@ endfunction
 %! RegressionNeuralNetwork (ones (5, 2), ones (5, 1), 'IterationLimit', 2.5)
 %!error<RegressionNeuralNetwork: 'DisplayInfo' must be either true or false.> ...
 %! RegressionNeuralNetwork (ones (5, 2), ones (5, 1), 'DisplayInfo', 'yes')
-%!error<RegressionNeuralNetwork: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionNeuralNetwork: invalid optional paired argument.> ...
 %! RegressionNeuralNetwork (ones (5, 2), ones (5, 1), 'Prior', 1)
 %!error<RegressionNeuralNetwork: 'Activations' vector does not match the number of layers.> ...
 %! RegressionNeuralNetwork (ones (5, 2), ones (5, 1), 'LayerSizes', [4, 4], ...
@@ -2077,13 +2079,15 @@ endfunction
 %! loss (RNNMdl, [1; 2], [2; 4], 'LossFun', 'mae')
 %!error<RegressionNeuralNetwork.loss: 'LossFun' must return a numeric scalar.> ...
 %! loss (RNNMdl, [1; 2], [2; 4], 'LossFun', @(y, yf, w) [1, 2])
-%!error<RegressionNeuralNetwork.loss: 'Weights' must be a numeric vector.> ...
+%!error<RegressionNeuralNetwork.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (RNNMdl, [1; 2], [2; 4], 'Weights', {'a'})
+%!error<RegressionNeuralNetwork.loss: 'Weights' must be a numeric vector.> ...
+%! loss (RNNMdl, [1; 2], [2; 4], 'Weights', ones (2, 2))
 %!error<RegressionNeuralNetwork.loss: size of 'Weights' must equal the number of rows in X.> ...
 %! loss (RNNMdl, [1; 2], [2; 4], 'Weights', [1; 2; 3])
-%!error<RegressionNeuralNetwork.loss: invalid parameter name in optional paired arguments.> ...
+%!error<RegressionNeuralNetwork.loss: invalid optional paired argument.> ...
 %! loss (RNNMdl, [1; 2], [2; 4], 'Nope', 1)
-%!error<RegressionNeuralNetwork.loss: parameter name must be a character vector.> ...
+%!error<RegressionNeuralNetwork.loss: invalid optional paired argument.> ...
 %! loss (RNNMdl, [1; 2], [2; 4], 5, 1)
 
 ## Test input validation for savemodel
@@ -2324,3 +2328,55 @@ endfunction
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'SL'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## Observation weights
+%!error <RegressionNeuralNetwork: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionNeuralNetwork ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', ...
+%!                          'Weights', int8 ([1; 1; 1; 1]))
+%!error <RegressionNeuralNetwork: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionNeuralNetwork ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', ...
+%!                          'Weights', true (4, 1))
+%!error <RegressionNeuralNetwork: 'Weights' must be a vector with one element per row of X.> ...
+%! RegressionNeuralNetwork ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', ...
+%!                          'Weights', [1; 1])
+%!error <RegressionNeuralNetwork: 'Weights' must be nonnegative and must not be all zero.> ...
+%! RegressionNeuralNetwork ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', ...
+%!                          'Weights', [1; -1; 1; 1])
+%!test
+%! ## A weight of two fits as the observation given twice
+%! load fisheriris
+%! X = meas(51:130,2:4);
+%! y = meas(51:130,1);
+%! w = ones (80, 1);
+%! w(1:10) = 2;
+%! rand ('seed', 1);
+%! A = RegressionNeuralNetwork (X, y, 'LayerSizes', 1, 'Weights', w);
+%! rand ('seed', 1);
+%! B = RegressionNeuralNetwork ([X; X(1:10,:)], [y; y(1:10)], ...
+%!                              'LayerSizes', 1);
+%! assert_equal (predict (A, X), predict (B, X), 1e-10);
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! Mdl = RegressionNeuralNetwork (meas(:,2:4), meas(:,1), 'LayerSizes', 3, ...
+%!                                'Weights', single (1 + (1:150)' / 7));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Standardization weighs the observations, as R2024a does
+%! load fisheriris
+%! Mdl = RegressionNeuralNetwork (meas(:,2:4), meas(:,1), 'LayerSizes', 3, ...
+%!                                'Weights', 1 + (1:150)' / 7, ...
+%!                                'Standardize', true);
+%! assert_equal (Mdl.Mu, [2.965608080808081, 4.573050505050505, ...
+%!                        1.55819797979798], 1e-14);
+%! assert_equal (Mdl.Sigma, [0.3809861139391035, 1.433169957562235, ...
+%!                           0.6470320013330532], 1e-14);
+%!test
+%! ## resubLoss weighs the observations by W unless given weights
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = RegressionNeuralNetwork (meas(:,2:4), meas(:,1), 'LayerSizes', 3, ...
+%!                                'Weights', w);
+%! assert_equal (resubLoss (Mdl), ...
+%!               loss (Mdl, meas(:,2:4), meas(:,1), 'Weights', w), 1e-15);

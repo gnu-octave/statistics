@@ -49,7 +49,7 @@
 ## closest to the corresponding bin center; ties are assigned to the lower
 ## center.  Each bar height is that mass divided by the bin width.
 ##
-## @seealso{ecdf, cdfplot, hist, histogram}
+## @seealso{ecdf, cdfplot, hist}
 ## @end deftypefn
 
 function [nout, cout] = ecdfhist (varargin)

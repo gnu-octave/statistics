@@ -15,122 +15,28 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{obj} =} RegressionSVM (@var{X}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} RegressionSVM (@var{Tbl}, @var{ResponseVarName})
-## @deftypefnx {statistics} {@var{obj} =} RegressionSVM (@var{Tbl}, @var{formula})
-## @deftypefnx {statistics} {@var{obj} =} RegressionSVM (@var{Tbl}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} RegressionSVM (@dots{}, @var{name}, @var{value})
-##
-## Create a @qcode{RegressionSVM} object containing a support vector machine
-## regression model.
-##
-## @code{@var{obj} = RegressionSVM (@var{X}, @var{Y})} returns a support vector
-## regression model, @var{obj}, with @var{X} being the predictor data and
-## @var{Y} the continuous response of the observations in @var{X}.
-##
-## @itemize
-## @item
-## @var{X} must be an @math{NxP} numeric matrix of predictor data, where rows
-## correspond to observations and columns to features.
-## @item
-## @var{Y} must be an @math{Nx1} numeric vector holding the response of the
-## corresponding predictor data in @var{X}.  @var{Y} must have the same number
-## of rows as @var{X}.
-## @end itemize
-##
-## The model is fitted by @math{epsilon}-insensitive regression: errors smaller
-## than @qcode{Epsilon} cost nothing, so only the observations outside that
-## tube become support vectors.  @qcode{Epsilon} defaults to
-## @code{iqr (@var{Y}) / 13.49}, a robust estimate of a tenth of the response's
-## standard deviation, which is what MATLAB uses.
-##
-## @code{@var{obj} = RegressionSVM (@dots{}, @var{name}, @var{value})} returns
-## a model with additional options specified by @qcode{Name-Value} pair
-## arguments listed below.
-##
-## @multitable @columnfractions 0.32 0.68
-## @headitem @var{Name} @tab @var{Value}
-##
-## @item @qcode{'Standardize'} @tab A logical scalar specifying whether the
-## predictor data should be centred and scaled before training.  The same
-## transformation is applied by @code{predict}.  The default is @qcode{false}.
-##
-## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values are
-## levels, as indices, as a logical vector with one element per predictor, or as
-## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros and
-## ones per level seen in training, named as in @qcode{'x1 == 2'} in
-## @code{ExpandedPredictorNames}, and the coded columns are not standardized.
-## An observation holding a level the training data did not is predicted as a
-## row missing a predictor, the lower median of the training response.
-## A predictor may be named rather than indexed, as a character matrix of one
-## padded name per row, a string array or a cellstr; a name must match an entry
-## of @qcode{'PredictorNames'} exactly, its case included.
-##
-## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
-## naming the predictors, in the order they appear in @var{X}.
-##
-## @item @qcode{'ResponseName'} @tab A character vector naming the response.
-## The default is @qcode{'Y'}.
-##
-## @item @qcode{'ResponseTransform'} @tab A character vector naming one of the
-## supported transformations, or a function handle, applied to the predicted
-## response by @code{predict} and @code{resubPredict}.  The default is
-## @qcode{'none'}.
-##
-## @item @qcode{'Epsilon'} @tab A non-negative scalar, the half-width of the
-## insensitive tube.  The default is @code{iqr (@var{Y}) / 13.49}, or
-## @math{0.1} where that is zero.
-##
-## @item @qcode{'BoxConstraint'} @tab A positive scalar bounding the dual
-## coefficients, the cost of an error outside the tube.  The default is 1.
-##
-## @item @qcode{'KernelFunction'} @tab A character vector naming the kernel,
-## one of @qcode{'linear'}, the default, @qcode{'rbf'}, @qcode{'gaussian'},
-## @qcode{'polynomial'} or @qcode{'sigmoid'}.
-##
-## @item @qcode{'PolynomialOrder'} @tab A positive integer, the order of the
-## polynomial kernel.  The default is 3.  It is ignored by every other kernel.
-##
-## @item @qcode{'KernelScale'} @tab A positive scalar dividing the predictors
-## before the kernel is applied.  The default is 1.
-##
-## @item @qcode{'KernelOffset'} @tab A non-negative scalar added to the kernel
-## value.  The default is 0.
-##
-## @item @qcode{'SVMtype'} @tab A character vector selecting the formulation,
-## either @qcode{'eps_svr'}, the default, or @qcode{'nu_svr'}.  MATLAB fits
-## only the @math{epsilon} form; @qcode{'nu_svr'} is an Octave extension, in
-## which @qcode{Nu} bounds the fraction of support vectors and @qcode{Epsilon}
-## is determined by the fit rather than given.
-##
-## @item @qcode{'Nu'} @tab A scalar in @math{(0, 1]} used by
-## @qcode{'nu_svr'}.  The default is 0.5.
-##
-## @item @qcode{'CacheSize'} @tab A positive scalar, the kernel cache in
-## megabytes.  The default is 1000.
-##
-## @item @qcode{'Tolerance'} @tab A non-negative scalar, the tolerance of the
-## termination criterion.  The default is @math{1e-6}.
-##
-## @item @qcode{'Shrinking'} @tab Either 0 or 1, whether to use the shrinking
-## heuristic.  The default is 1.
-## @end multitable
-##
-## The supported values for @qcode{'ResponseTransform'} are:
-##
-## @multitable @columnfractions 0.3 0.7
-## @headitem @var{Value} @tab @var{Description}
-## @item @qcode{'none'} @tab @math{x} (no transformation)
-## @item @qcode{'identity'} @tab @math{x} (no transformation)
-## @item @qcode{'exp'} @tab @math{exp (x)}
-## @item @qcode{'log'} @tab @math{log (x)}
-## @end multitable
-##
-## @seealso{fitrsvm, ClassificationSVM, RegressionNeuralNetwork}
-## @end deftypefn
-
 classdef RegressionSVM < PredictiveModel
+  ## -*- texinfo -*-
+  ## @deftp {statistics} RegressionSVM
+  ##
+  ## Support vector machine regression model.
+  ##
+  ## A @qcode{RegressionSVM} object holds a support vector machine fitted to a
+  ## continuous response by @math{epsilon}-insensitive regression, and predicts
+  ## the response for new data with the @code{predict} method.  Errors smaller
+  ## than @qcode{Epsilon} cost nothing, so only the observations outside that
+  ## tube become support vectors, and a prediction is a weighted sum of kernel
+  ## evaluations against them.  The fit is carried out by LIBSVM.
+  ##
+  ## The object keeps its training data, which @code{resubPredict},
+  ## @code{resubLoss} and @code{crossval} work on; @code{compact} drops it and
+  ## returns a @code{CompactRegressionSVM}, which still predicts.
+  ##
+  ## Create a @qcode{RegressionSVM} object with @code{fitrsvm} or the class
+  ## constructor.
+  ##
+  ## @seealso{fitrsvm, CompactRegressionSVM, ClassificationSVM}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
@@ -292,9 +198,11 @@ classdef RegressionSVM < PredictiveModel
     ## Primal coefficients, one per predictor
     ##
     ## A numeric column vector, equal to
-    ## @code{obj.SupportVectors' * obj.Alpha}.  It exists only for a linear
-    ## kernel; for any other kernel there is no primal representation and this
-    ## is empty.  This property is read-only.
+    ## @code{(obj.SupportVectors / s)' * obj.Alpha}, where @math{s} is the
+    ## kernel scale, so that a prediction is @code{(@var{x} / s) * Beta + Bias},
+    ## as in MATLAB.  It exists only for a linear kernel; for any other kernel
+    ## there is no primal representation and this is empty.  This property is
+    ## read-only.
     ##
     ## @end deftp
     Beta                  = [];
@@ -354,9 +262,11 @@ classdef RegressionSVM < PredictiveModel
     ## Box constraints
     ##
     ## A numeric column vector with one entry per observation, holding the box
-    ## constraint the fit applied to it.  A regression has no classes to
-    ## reweight, so every entry is @qcode{BoxConstraint}.  This property is
-    ## read-only.
+    ## constraint the fit applied to it: @math{n} times @qcode{BoxConstraint}
+    ## times the observation's weight in @qcode{W}, which is
+    ## @qcode{BoxConstraint} for every observation when no weights were given.
+    ## An observation missing a predictor is not fitted and holds @code{NaN}.
+    ## This property is read-only.
     ##
     ## @end deftp
     BoxConstraints        = [];
@@ -388,8 +298,8 @@ classdef RegressionSVM < PredictiveModel
     ## Observation weights
     ##
     ## A numeric column vector with one entry per training observation,
-    ## normalized to sum to one, as MATLAB reports it.  This property is
-    ## read-only.
+    ## normalized to sum to one, as MATLAB reports it.  It has the class of the
+    ## @qcode{'Weights'} given, single or double.  This property is read-only.
     ##
     ## @end deftp
     W                     = [];
@@ -480,15 +390,6 @@ classdef RegressionSVM < PredictiveModel
     endfunction
 
     ## Custom display
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
-    ## Custom display
     function disp (this)
       fprintf ("\n  RegressionSVM\n\n");
       ## Print selected properties
@@ -516,14 +417,134 @@ classdef RegressionSVM < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionSVM} {@var{obj} =} RegressionSVM (@var{X}, @var{Y})
+    ## @deftypefnx {RegressionSVM} {@var{obj} =} RegressionSVM (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {RegressionSVM} {@var{obj} =} RegressionSVM (@var{Tbl}, @var{formula})
+    ## @deftypefnx {RegressionSVM} {@var{obj} =} RegressionSVM (@var{Tbl}, @var{Y})
     ## @deftypefnx {RegressionSVM} {@var{obj} =} RegressionSVM (@dots{}, @var{name}, @var{value})
     ##
-    ## Create a @qcode{RegressionSVM} object containing a support vector
-    ## machine regression model.
+    ## Fit a support vector machine regression model.
     ##
-    ## See the class documentation for the accepted @qcode{Name-Value} pairs.
+    ## @code{@var{obj} = RegressionSVM (@var{X}, @var{Y})} returns a support
+    ## vector regression model, @var{obj}, with @var{X} being the predictor data
+    ## and @var{Y} the continuous response of the observations in @var{X}.
     ##
-    ## @seealso{fitrsvm, RegressionSVM}
+    ## @itemize
+    ## @item
+    ## @var{X} must be an @math{NxP} numeric matrix of predictor data, where
+    ## rows correspond to observations and columns to features.
+    ## @item
+    ## @var{Y} must be an @math{Nx1} numeric vector holding the response of the
+    ## corresponding predictor data in @var{X}.  @var{Y} must have the same
+    ## number of rows as @var{X}.
+    ## @end itemize
+    ##
+    ## The model is fitted by @math{epsilon}-insensitive regression: errors
+    ## smaller than @qcode{Epsilon} cost nothing, so only the observations
+    ## outside that tube become support vectors.  @qcode{Epsilon} defaults to
+    ## @code{iqr (@var{Y}) / 13.49}, a robust estimate of a tenth of the
+    ## response's standard deviation, which is what MATLAB uses.
+    ##
+    ## @code{@var{obj} = RegressionSVM (@dots{}, @var{name}, @var{value})}
+    ## returns a model with additional options specified by @qcode{Name-Value}
+    ## pair arguments listed below.
+    ##
+    ## @multitable @columnfractions 0.32 0.68
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'Standardize'} @tab A logical scalar specifying whether the
+    ## predictor data should be centred and scaled before training.  The same
+    ## transformation is applied by @code{predict}.  The default is
+    ## @qcode{false}.
+    ##
+    ## @item @qcode{'CategoricalPredictors'} @tab The predictors whose values
+    ## are levels, as indices, as a logical vector with one element per
+    ## predictor, or as @qcode{'all'}.  Each is dummy coded in its place, one
+    ## column of zeros and ones per level seen in training, named as in
+    ## @qcode{'x1 == 2'} in @code{ExpandedPredictorNames}, and the coded columns
+    ## are not standardized.  An observation holding a level the training data
+    ## did not is predicted as a row missing a predictor, the weighted lower
+    ## median of the training response.  A predictor may be named rather than
+    ## indexed, as a character matrix of one padded name per row, a string
+    ## array or a cellstr; a name must match an entry of
+    ## @qcode{'PredictorNames'} exactly, its case included.
+    ##
+    ## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
+    ## naming the predictors, in the order they appear in @var{X}.
+    ##
+    ## @item @qcode{'ResponseName'} @tab A character vector naming the response.
+    ## The default is @qcode{'Y'}.
+    ##
+    ## @item @qcode{'ResponseTransform'} @tab A character vector naming one of
+    ## the supported transformations, or a function handle, applied to the
+    ## predicted response by @code{predict} and @code{resubPredict}.  The
+    ## default is @qcode{'none'}.
+    ##
+    ## @item @qcode{'Epsilon'} @tab A non-negative scalar, the half-width of the
+    ## insensitive tube.  The default is @code{iqr (@var{Y}) / 13.49}, or
+    ## @math{0.1} where that is zero.
+    ##
+    ## @item @qcode{'BoxConstraint'} @tab A positive scalar bounding the dual
+    ## coefficients, the cost of an error outside the tube.  The default is
+    ## @code{iqr (@var{Y}) / 1.349} for a Gaussian kernel, or 1 where that is
+    ## zero, and 1 for any other kernel.
+    ##
+    ## @item @qcode{'Weights'} @tab A nonnegative single or double vector of
+    ## observation weights, one per row of @var{X}.  An observation's box
+    ## constraint is @math{n} times @qcode{BoxConstraint} times its weight, the
+    ## weights scaled to sum to one; standardization uses weighted means and
+    ## standard deviations, and a row of zero or missing weight is left out.
+    ## The model's @code{W} keeps the class of the weights, while every
+    ## computation runs in double.  The default is uniform.
+    ##
+    ## @item @qcode{'KernelFunction'} @tab A character vector naming the kernel,
+    ## one of @qcode{'linear'}, the default, @qcode{'rbf'}, @qcode{'gaussian'},
+    ## @qcode{'polynomial'} or @qcode{'sigmoid'}.
+    ##
+    ## @item @qcode{'PolynomialOrder'} @tab A positive integer, the order of the
+    ## polynomial kernel.  The default is 3.  It is ignored by every other
+    ## kernel.
+    ##
+    ## @item @qcode{'KernelScale'} @tab A positive scalar dividing every
+    ## predictor before any kernel is applied, as MATLAB does, so that with
+    ## @math{u} and @math{v} the divided predictors the kernels are @math{u'v},
+    ## @math{exp (-||u - v||^2)}, @math{(1 + u'v)^q} and @math{tanh (u'v + c)},
+    ## @math{c} being @qcode{'KernelOffset'}.  The default is 1.
+    ##
+    ## @item @qcode{'KernelOffset'} @tab A non-negative scalar, the constant
+    ## @math{c} of the sigmoid kernel, which MATLAB does not have.  MATLAB adds
+    ## it to every element of the Gram matrix, which leaves the fitted model
+    ## unchanged, so it changes no other kernel here.  The default is 0.
+    ##
+    ## @item @qcode{'SVMtype'} @tab A character vector selecting the
+    ## formulation, either @qcode{'eps_svr'}, the default, or @qcode{'nu_svr'}.
+    ## MATLAB fits only the @math{epsilon} form; @qcode{'nu_svr'} is an Octave
+    ## extension, in which @qcode{Nu} bounds the fraction of support vectors and
+    ## @qcode{Epsilon} is determined by the fit rather than given.
+    ##
+    ## @item @qcode{'Nu'} @tab A scalar in @math{(0, 1]} used by
+    ## @qcode{'nu_svr'}.  The default is 0.5.
+    ##
+    ## @item @qcode{'CacheSize'} @tab A positive scalar, the kernel cache in
+    ## megabytes.  The default is 1000.
+    ##
+    ## @item @qcode{'Tolerance'} @tab A non-negative scalar, the tolerance of
+    ## the termination criterion.  The default is @math{1e-6}.
+    ##
+    ## @item @qcode{'Shrinking'} @tab Either 0 or 1, whether to use the
+    ## shrinking heuristic.  The default is 1.
+    ## @end multitable
+    ##
+    ## The supported values for @qcode{'ResponseTransform'} are:
+    ##
+    ## @multitable @columnfractions 0.3 0.7
+    ## @headitem @var{Value} @tab @var{Description}
+    ## @item @qcode{'none'} @tab @math{x} (no transformation)
+    ## @item @qcode{'identity'} @tab @math{x} (no transformation)
+    ## @item @qcode{'exp'} @tab @math{exp (x)}
+    ## @item @qcode{'log'} @tab @math{log (x)}
+    ## @end multitable
+    ##
+    ## @seealso{fitrsvm, ClassificationSVM, RegressionNeuralNetwork}
     ## @end deftypefn
     function this = RegressionSVM (X, Y, varargin)
       ## Check for sufficient number of input arguments
@@ -552,150 +573,112 @@ classdef RegressionSVM < PredictiveModel
       this.X = X;
       this.Y = Y;
 
-      ## Set default values before parsing optional parameters
-      SVMtype                 = 'eps_svr';
-      KernelFunction          = 'linear';
-      KernelScale             = 1;
-      KernelOffset            = 0;
-      PolynomialOrder         = 3;
-      BoxConstraint           = 1;
-      Epsilon                 = [];
-      Nu                      = 0.5;
-      CacheSize               = 1000;
-      Tolerance               = 1e-6;
-      Shrinking               = 1;
-      Standardize             = false;
-      ResponseName            = [];
-      PredictorNames          = [];
+      ## Parse optional paired arguments
+      optNames = {'Standardize', 'PredictorNames', 'ResponseName', ...
+                  'ResponseTransform', 'SVMtype', 'Epsilon', ...
+                  'KernelFunction', 'PolynomialOrder', 'KernelScale', ...
+                  'KernelOffset', 'BoxConstraint', 'Nu', 'CacheSize', ...
+                  'Tolerance', 'Shrinking', 'CategoricalPredictors', ...
+                  'Weights'};
+      ## An empty default stands for one resolved once the data are known:
+      ## 'Epsilon' is the interquartile range of the response over 13.49,
+      ## 'BoxConstraint' the same range over 1.349 for a Gaussian kernel and 1
+      ## for any other, 'PredictorNames' are x1, x2, ... and 'ResponseName' is
+      ## 'Y', and no 'ResponseTransform' leaves the response as it is.
+      dfValues = {false, [], [], [], 'eps_svr', [], 'linear', 3, 1, 0, [], ...
+                  0.5, 1000, 1e-6, 1, [], []};
+      [Standardize, PredictorNames, ResponseName, RTin, SVMtype, Epsilon, ...
+       KernelFunction, PolynomialOrder, KernelScale, KernelOffset, ...
+       BoxConstraint, Nu, CacheSize, Tolerance, Shrinking, CatPreds, ...
+       Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      ## Parse extra parameters
-      CatPreds = [];
-      while (numel (varargin) > 0)
-        switch (tolower (varargin {1}))
+      ## Validate optional paired arguments
+      if (! (Standardize == true || Standardize == false))
+        error ("RegressionSVM: 'Standardize' must be either true or false.");
+      endif
+      if (! isempty (PredictorNames) && ! iscellstr (PredictorNames))
+        error (strcat ("RegressionSVM: 'PredictorNames' must be supplied", ...
+                       " as a cellstring array."));
+      elseif (! isempty (PredictorNames)
+              && columns (PredictorNames) != columns (X))
+        error (strcat ("RegressionSVM: 'PredictorNames' must have the same", ...
+                       " number of columns as X."));
+      endif
+      if (! isempty (ResponseName) && ! ischar (ResponseName))
+        error ("RegressionSVM: 'ResponseName' must be a character vector.");
+      endif
+      if (! (ischar (SVMtype) && isrow (SVMtype)))
+        error ("RegressionSVM: 'SVMtype' must be a character vector.");
+      endif
+      SVMtype = tolower (SVMtype);
+      if (! any (strcmp (SVMtype, {'eps_svr', 'nu_svr'})))
+        error ("RegressionSVM: unsupported 'SVMtype'.");
+      endif
+      if (! isempty (Epsilon) &&
+          ! (isnumeric (Epsilon) && isscalar (Epsilon) && Epsilon >= 0))
+        error ("RegressionSVM: 'Epsilon' must be a non-negative scalar.");
+      endif
+      if (! ischar (KernelFunction))
+        error ("RegressionSVM: 'KernelFunction' must be a character vector.");
+      endif
+      KernelFunction = tolower (KernelFunction);
+      if (! any (strcmpi (KernelFunction, ...
+                 {'linear', 'rbf', 'gaussian', 'polynomial', 'sigmoid'})))
+        error ("RegressionSVM: unsupported Kernel function.");
+      endif
+      if (! (isnumeric (PolynomialOrder) && isscalar (PolynomialOrder)
+             && PolynomialOrder > 0 && mod (PolynomialOrder, 1) == 0))
+        error ("RegressionSVM: 'PolynomialOrder' must be a positive integer.");
+      endif
+      if (! (isscalar (KernelScale) && KernelScale > 0))
+        error ("RegressionSVM: 'KernelScale' must be a positive scalar.");
+      endif
+      if (! (isnumeric (KernelOffset) && isscalar (KernelOffset)
+                                      && KernelOffset >= 0))
+        error ("RegressionSVM: 'KernelOffset' must be a non-negative scalar.");
+      endif
+      if (! isempty (BoxConstraint)
+          && ! (isscalar (BoxConstraint) && BoxConstraint > 0))
+        error ("RegressionSVM: 'BoxConstraint' must be a positive scalar.");
+      endif
+      if (! (isscalar (Nu) && Nu > 0 && Nu <= 1))
+        error (strcat ("RegressionSVM: 'Nu' must be a positive scalar in", ...
+                       " the range 0 < Nu <= 1."));
+      endif
+      if (! (isscalar (CacheSize) && CacheSize > 0))
+        error ("RegressionSVM: 'CacheSize' must be a positive scalar.");
+      endif
+      if (! (isscalar (Tolerance) && Tolerance >= 0))
+        error ("RegressionSVM: 'Tolerance' must be a positive scalar.");
+      endif
+      if (! (ismember (Shrinking, [0, 1]) && isscalar (Shrinking)))
+        error ("RegressionSVM: 'Shrinking' must be either 0 or 1.");
+      endif
 
-          case 'standardize'
-            Standardize = varargin{2};
-            if (! (Standardize == true || Standardize == false))
-              error (strcat ("RegressionSVM: 'Standardize' must", ...
-                             " be either true or false."));
-            endif
+      if (! isempty (RTin))
+        [this.RTfun, this.ResponseTransform] = ...
+              parseResponseTransform (RTin, 'RegressionSVM');
+      endif
 
-          case 'predictornames'
-            PredictorNames = varargin{2};
-            if (! iscellstr (PredictorNames))
-              error (strcat ("RegressionSVM: 'PredictorNames' must", ...
-                             " be supplied as a cellstring array."));
-            elseif (columns (PredictorNames) != columns (X))
-              error (strcat ("RegressionSVM: 'PredictorNames' must", ...
-                             " have the same number of columns as X."));
-            endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionSVM: %s", errmsg);
+      endif
+      if (! isempty (Weights)
+          && ! (isvector (Weights) && numel (Weights) == rows (Y)))
+        error (strcat ("RegressionSVM: 'Weights' must be a vector with one", ...
+                       " element per row of X."));
+      endif
+      if (! isempty (Weights) && (any (Weights < 0)
+                                  || ! (sum (Weights(! isnan (Weights))) > 0)))
+        error (strcat ("RegressionSVM: 'Weights' must be nonnegative and", ...
+                       " must not be all zero."));
+      endif
 
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! ischar (ResponseName))
-              error (strcat ("RegressionSVM: 'ResponseName' must", ...
-                             " be a character vector."));
-            endif
-
-          case 'responsetransform'
-            name = 'RegressionSVM';
-            [this.RTfun, this.ResponseTransform] = ...
-                  parseResponseTransform (varargin{2}, name);
-
-          case 'svmtype'
-            SVMtype = varargin{2};
-            if (! (ischar (SVMtype) && isrow (SVMtype)))
-              error ("RegressionSVM: 'SVMtype' must be a character vector.");
-            endif
-            SVMtype = tolower (SVMtype);
-            if (! any (strcmp (SVMtype, {'eps_svr', 'nu_svr'})))
-              error ("RegressionSVM: unsupported 'SVMtype'.");
-            endif
-
-          case 'epsilon'
-            Epsilon = varargin{2};
-            if (! (isnumeric (Epsilon) && isscalar (Epsilon) && Epsilon >= 0))
-              error (strcat ("RegressionSVM: 'Epsilon' must be a", ...
-                             " non-negative scalar."));
-            endif
-
-          case 'kernelfunction'
-            KernelFunction = varargin{2};
-            if (! ischar (KernelFunction))
-              error (strcat ("RegressionSVM: 'KernelFunction' must", ...
-                             " be a character vector."));
-            endif
-            KernelFunction = tolower (KernelFunction);
-            if (! any (strcmpi (KernelFunction, ...
-                       {'linear', 'rbf', 'gaussian', 'polynomial', 'sigmoid'})))
-              error ("RegressionSVM: unsupported Kernel function.");
-            endif
-
-          case 'polynomialorder'
-            PolynomialOrder = varargin{2};
-            if (! (isnumeric (PolynomialOrder) && isscalar (PolynomialOrder)
-                   && PolynomialOrder > 0 && mod (PolynomialOrder, 1) == 0))
-              error (strcat ("RegressionSVM: 'PolynomialOrder' must", ...
-                             " be a positive integer."));
-            endif
-
-          case 'kernelscale'
-            KernelScale = varargin{2};
-            if (! (isscalar (KernelScale) && KernelScale > 0))
-              error (strcat ("RegressionSVM: 'KernelScale' must", ...
-                             " be a positive scalar."));
-            endif
-
-          case 'kerneloffset'
-            KernelOffset = varargin{2};
-            if (! (isnumeric (KernelOffset) && isscalar (KernelOffset)
-                                            && KernelOffset >= 0))
-              error (strcat ("RegressionSVM: 'KernelOffset' must", ...
-                             " be a non-negative scalar."));
-            endif
-
-          case 'boxconstraint'
-            BoxConstraint = varargin{2};
-            if (! (isscalar (BoxConstraint) && BoxConstraint > 0))
-              error (strcat ("RegressionSVM: 'BoxConstraint' must", ...
-                             " be a positive scalar."));
-            endif
-
-          case 'nu'
-            Nu = varargin{2};
-            if (! (isscalar (Nu) && Nu > 0 && Nu <= 1))
-              error (strcat ("RegressionSVM: 'Nu' must be a positive", ...
-                             " scalar in the range 0 < Nu <= 1."));
-            endif
-
-          case 'cachesize'
-            CacheSize = varargin{2};
-            if (! (isscalar (CacheSize) && CacheSize > 0))
-              error ("RegressionSVM: 'CacheSize' must be a positive scalar.");
-            endif
-
-          case 'tolerance'
-            Tolerance = varargin{2};
-            if (! (isscalar (Tolerance) && Tolerance >= 0))
-              error ("RegressionSVM: 'Tolerance' must be a positive scalar.");
-            endif
-
-          case 'shrinking'
-            Shrinking = varargin{2};
-            if (! (ismember (Shrinking, [0, 1]) && isscalar (Shrinking)))
-              error ("RegressionSVM: 'Shrinking' must be either 0 or 1.");
-            endif
-
-          case 'categoricalpredictors'
-            CatPreds = varargin{2};
-
-          otherwise
-            error (strcat ("RegressionSVM: invalid parameter name", ...
-                           " in optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("RegressionSVM: invalid optional paired argument.");
+      endif
 
       ## Get number of variables in training data
       ndims_X = columns (X);
@@ -715,17 +698,30 @@ classdef RegressionSVM < PredictiveModel
       this.ResponseName   = ResponseName;
       this.CategoricalPredictors = [];
 
-      ## An observation is dropped only when its response is missing.  A row
-      ## whose predictors hold missing values is kept and reported as used,
-      ## while the fit below draws on the complete observations alone.
-      RowsUsed  = ! isnan (Y(:));
+      ## The weights keep their class in the model; every computation runs on
+      ## them as double.
+      Wclass = "double";
+      if (isempty (Weights))
+        Wall = ones (rows (Y), 1);
+      else
+        Wclass = class (Weights);
+        Wall = double (Weights(:));
+      endif
+
+      ## An observation is dropped when its response is missing, or when its
+      ## weight is zero or missing, as R2024a drops it.  A row whose
+      ## predictors hold missing values is kept and reported as used, while
+      ## the fit below draws on the complete observations alone.
+      RowsUsed  = ! isnan (Y(:)) & ! isnan (Wall) & Wall > 0;
       Yret      = Y(RowsUsed);
       Xret      = X(RowsUsed, :);
+      Wret      = Wall(RowsUsed) / sum (Wall(RowsUsed));
       this.X    = Xret;
       this.Y    = Yret;
       cobs      = ! any (isnan (Xret), 2);
       Y         = Yret(cobs);
       X         = Xret(cobs, :);
+      wfit      = Wret(cobs);
 
       ## Dummy code the categorical predictors on the rows the fit draws on.
       ## X keeps the predictors as given; the fit and every prediction see
@@ -740,9 +736,8 @@ classdef RegressionSVM < PredictiveModel
         error ("RegressionSVM: %s", errmsg);
       endif
       ## What a row missing a predictor is predicted to be, as MATLAB R2024a
-      ## predicts it: the lower median of the training response, every
-      ## observation weighing the same here.
-      this.MissingResponse_ = missingResponse (Y, ones (rows (Y), 1));
+      ## predicts it: the weighted lower median of the training response.
+      this.MissingResponse_ = missingResponse (Y, wfit);
       X = dummyCoding (X, Coding);
       if (! isempty (Coding.Index))
         this.CategoricalPredictors = Coding.Index;
@@ -768,16 +763,22 @@ classdef RegressionSVM < PredictiveModel
       else
         this.RowsUsed = RowsUsed;
       endif
-      this.W = ones (this.NumObservations, 1) / this.NumObservations;
+      this.W = cast (Wret, Wclass);
 
       ## Handle the Standardize option.  The model must be fitted on the
       ## scale it predicts on: predict and resubPredict standardize their
       ## input from Mu and Sigma, so the training data is standardized here
       ## as well.
       if (Standardize)
-        this.Sigma = std (X, [], 1);
-        this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
-        this.Mu = mean (X, 1);
+        ## Mu and Sigma weigh the complete observations by their weights, the
+        ## deviation unbiased for those weights, as R2024a reports them.
+        sw = wfit / sum (wfit);
+        this.Mu = sum (sw .* X, 1);
+        this.Sigma = sqrt (sum (sw .* (X - this.Mu) .^ 2, 1) ...
+                           / (1 - sum (sw .^ 2)));
+        ## A constant predictor is left unscaled; its weighted mean can miss
+        ## the constant by one rounding, so its deviation need not be zero.
+        this.Sigma(this.Sigma == 0 | all (X == X(1,:), 1)) = 1;
         ## A level's column is left as it is, as in MATLAB R2024a.
         this.Mu(Coding.Dummy) = 0;
         this.Sigma(Coding.Dummy) = 1;
@@ -799,6 +800,16 @@ classdef RegressionSVM < PredictiveModel
       endif
       this.Epsilon = Epsilon;
 
+      ## BoxConstraint defaults to ten times that robust tenth for a Gaussian
+      ## kernel and to 1 for any other, as in MATLAB R2024a, which also falls
+      ## back to 1 on a zero interquartile range.
+      if (isempty (BoxConstraint))
+        BoxConstraint = 1;
+        if (any (strcmp (KernelFunction, {'rbf', 'gaussian'})) && iqr (Y) > 0)
+          BoxConstraint = iqr (Y) / 1.349;
+        endif
+      endif
+
       ## Set svmtrain parameters for SVMtype and KernelFunction
       switch (SVMtype)
         case 'eps_svr'
@@ -817,20 +828,41 @@ classdef RegressionSVM < PredictiveModel
           t = 3;
       endswitch
 
-      ## Set svmtrain parameters for gamma
-      g = KernelScale / ndims_X;
+      ## MATLAB divides the predictors by KernelScale for every kernel, so the
+      ## fit sees X / KernelScale with gamma 1.  Its polynomial kernel is
+      ## (1 + x'z) ^ q, and it adds KernelOffset to the Gram matrix, which
+      ## leaves the fitted model unchanged, so the offset reaches only the
+      ## sigmoid kernel, which is ours alone.
+      Xu = X;
+      X = X / KernelScale;
+      g = 1;
+      r = 0;
+      if (t == 1)
+        r = 1;
+      elseif (t == 3)
+        r = KernelOffset;
+      endif
 
       ## Build options string for svmtrain function
       str_options = strcat ("-s %d -t %d -g %.16g -d %d -r %.16g", ...
                             " -c %.16g -n %.16g -p %.16g -m %.16g", ...
-                            " -e %e -h %d -q");
+                            " -e %.16g -h %d -q");
       svm_options = sprintf (str_options, s, t, g, PolynomialOrder, ...
-                             KernelOffset, BoxConstraint, Nu, Epsilon, ...
+                             r, BoxConstraint, Nu, Epsilon, ...
                              CacheSize, Tolerance, Shrinking);
 
+      ## The weights enter the fit through one box constraint per
+      ## observation, n * C * w, with w summing to one over the observations
+      ## used, as R2024a sets them.  Without weights every constraint is C.
+      instW = this.NumObservations * wfit;
+
       ## Train the SVM model using svmtrain from libsvm
-      Model = svmtrain (Y, X, svm_options);
-      this.Model = Model;
+      [Model, converged] = svmtrain (Y, X, svm_options, instW);
+      if (! converged)
+        warning (strcat ("RegressionSVM: the solver stopped at its", ...
+                         " iteration limit without converging;", ...
+                         " standardizing the predictors may help."));
+      endif
 
       ## Populate the model properties.  For regression LIBSVM's sv_coef is
       ## already the difference of the two multipliers, so it is signed and
@@ -842,25 +874,39 @@ classdef RegressionSVM < PredictiveModel
       ## MATLAB reports is the negated rho.  Measured against svmpredict.
       this.Bias = -Model.rho;
 
+      this.IsSupportVector = false (this.NumObservations, 1);
+      ## LIBSVM counts the observations the fit saw, the complete ones
+      fitted = find (cobs);
+      this.IsSupportVector(fitted(Model.sv_indices)) = true;
+      this.SupportVectors = Xu(Model.sv_indices,:);
+
       ## BETA holds the primal coefficients, one per predictor, and exists
       ## only for a linear kernel; for any other there is no primal
-      ## representation and MATLAB leaves it empty.
+      ## representation and MATLAB leaves it empty.  It weighs the divided
+      ## predictors, as MATLAB's does.
       if (t == 0)
-        this.Beta = Model.SVs' * this.Alpha;
+        this.Beta = (this.SupportVectors / KernelScale)' * this.Alpha;
       else
         this.Beta = [];
       endif
 
-      this.IsSupportVector = false (this.NumObservations, 1);
-      this.IsSupportVector(Model.sv_indices) = true;
-      this.SupportVectors = Model.SVs;
+      ## Re-express the engine's model on the undivided predictors, which is
+      ## what every prediction hands it: the scale moves into gamma, or into
+      ## the coefficients of a linear kernel, which has no gamma.
+      Model.SVs = sparse (this.SupportVectors);
+      if (t == 0)
+        Model.sv_coef = Model.sv_coef / KernelScale ^ 2;
+      else
+        Model.Parameters(4) = 1 / KernelScale ^ 2;
+      endif
+      this.Model = Model;
 
       ## The kernel and the per-observation box constraints, in the shapes
-      ## MATLAB reports them.  A regression has no classes to reweight, so the
-      ## scalar applies to every observation.
+      ## MATLAB reports them: an observation missing a predictor has none.
       this.KernelParameters = svmKernelParams (KernelFunction, KernelScale, ...
                                                PolynomialOrder);
-      this.BoxConstraints = BoxConstraint * ones (this.NumObservations, 1);
+      this.BoxConstraints = BoxConstraint * this.NumObservations * Wret;
+      this.BoxConstraints(! cobs) = NaN;
 
       ## Populate ModelParameters structure.  The polynomial order belongs to
       ## the polynomial kernel alone and is reported under no other, as
@@ -1081,34 +1127,46 @@ classdef RegressionSVM < PredictiveModel
 
       [X, Y] = checkXY_ (this, X, Y, 'loss');
 
-      ## Defaults, then the optional pairs
-      LossFun = 'mse';
-      args = varargin;
-      keep = true (1, numel (args));
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("RegressionSVM.loss: parameter name must be", ...
-                         " a character vector."));
-        endif
-        if (strcmpi (args{i}, 'lossfun'))
-          LossFun = args{i+1};
-          if (! (is_function_handle (LossFun) ||
-                 (ischar (LossFun) && isrow (LossFun))))
-            error (strcat ("RegressionSVM.loss: 'LossFun' must be a", ...
-                           " character vector or a function handle."));
-          endif
-          if (ischar (LossFun) && ! any (strcmpi (LossFun, ...
-                                         {'mse', 'epsiloninsensitive'})))
-            error ("RegressionSVM.loss: unsupported 'LossFun' value.");
-          endif
-          keep(i:i+1) = false;
-        endif
-      endfor
-      W = getWeights_ (this, args(keep), rows (X), 'loss');
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mse', []};
+      [LossFun, W, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (is_function_handle (LossFun) ||
+             (ischar (LossFun) && isrow (LossFun))))
+        error (strcat ("RegressionSVM.loss: 'LossFun' must be a character", ...
+                       " vector or a function handle."));
+      endif
+      if (ischar (LossFun) && ! any (strcmpi (LossFun, ...
+                                     {'mse', 'epsiloninsensitive'})))
+        error ("RegressionSVM.loss: unsupported 'LossFun' value.");
+      endif
+      errmsg = weightsClass (W);
+      if (! isempty (errmsg))
+        error ("RegressionSVM.loss: %s", errmsg);
+      endif
+      if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
+        error ("RegressionSVM.loss: 'Weights' must be a numeric vector.");
+      endif
+      if (! isempty (W) && numel (W) != rows (X))
+        error (strcat ("RegressionSVM.loss: size of 'Weights' must equal", ...
+                       " the number of rows in X."));
+      endif
+
+      if (! isempty (args))
+        error ("RegressionSVM.loss: invalid optional paired argument.");
+      endif
+      if (isempty (W))
+        W = ones (rows (X), 1);
+      endif
 
       ## Weights are normalized to sum to one, as MATLAB does, so a loss is
       ## a weighted average rather than a weighted sum.
-      W = W(:) / sum (W);
+      W = double (W(:));
+      W = W / sum (W);
       yFit = predict (this, X);
       Y = Y(:);
 
@@ -1145,10 +1203,11 @@ classdef RegressionSVM < PredictiveModel
     ## @seealso{RegressionSVM, fitrsvm}
     ## @end deftypefn
     function L = resubLoss (this, varargin)
-      used = true (rows (this.X), 1);
-      X = this.X(used, :);
-      Y = this.Y(used);
-      L = loss (this, X, Y, varargin{:});
+      ## The model's own weights stand unless others are given, as in R2024a
+      if (! any (strcmpi (varargin(1:2:end), 'Weights')))
+        varargin = [varargin, {'Weights', this.W}];
+      endif
+      L = loss (this, this.X, this.Y, varargin{:});
     endfunction
 
     ## -*- texinfo -*-
@@ -1369,32 +1428,6 @@ classdef RegressionSVM < PredictiveModel
         error (strcat ("RegressionSVM.%s: Y must have the same number", ...
                        " of rows as X."), caller);
       endif
-    endfunction
-
-    ## Pull a "Weights" pair out of the optional arguments, defaulting to a
-    ## uniform weight, and reject any other name.
-    function W = getWeights_ (this, args, n, caller)
-      W = ones (n, 1);
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("RegressionSVM.%s: parameter name must be", ...
-                         " a character vector."), caller);
-        endif
-        if (strcmpi (args{i}, 'weights'))
-          W = args{i+1};
-          if (! (isnumeric (W) && isvector (W)))
-            error (strcat ("RegressionSVM.%s: 'Weights' must be a", ...
-                           " numeric vector."), caller);
-          endif
-          if (numel (W) != n)
-            error (strcat ("RegressionSVM.%s: size of 'Weights' must", ...
-                           " equal the number of rows in X."), caller);
-          endif
-        else
-          error (strcat ("RegressionSVM.%s: invalid parameter name in", ...
-                         " optional paired arguments."), caller);
-        endif
-      endfor
     endfunction
 
   endmethods
@@ -1717,6 +1750,10 @@ endclassdef
 %! Mdl = RegressionSVM (X, (1:10)');
 %! assert_equal (predict (Mdl, [NaN, 1]), 5);
 
+## A fit stopped at the solver's iteration limit says so.
+%!warning<RegressionSVM: the solver stopped at its iteration limit without converging; standardizing the predictors may help.> ...
+%! RegressionSVM ((1:20)' * 1000, (1:20)' * 10, 'KernelFunction', 'polynomial');
+
 %!error<RegressionSVM.discardSupportVectors: you cannot discard support vectors for a non-linear kernel.> ...
 %! load fisheriris
 %! keep = ! strcmp (species, "setosa");
@@ -1792,7 +1829,7 @@ endclassdef
 %! RegressionSVM (ones (5, 2), ones (5, 1), 'Tolerance', -1)
 %!error<RegressionSVM: 'Shrinking' must be either 0 or 1.> ...
 %! RegressionSVM (ones (5, 2), ones (5, 1), 'Shrinking', 2)
-%!error<RegressionSVM: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionSVM: invalid optional paired argument.> ...
 %! RegressionSVM (ones (5, 2), ones (5, 1), 'Prior', 1)
 
 ## Test input validation for predict and loss
@@ -1824,11 +1861,13 @@ endclassdef
 %! loss (RSVM, [1, 1; 2, 1], [2; 4], 'LossFun', 'mae')
 %!error<RegressionSVM.loss: 'LossFun' must return a numeric scalar.> ...
 %! loss (RSVM, [1, 1; 2, 1], [2; 4], 'LossFun', @(y, yf, w) [1, 2])
-%!error<RegressionSVM.loss: 'Weights' must be a numeric vector.> ...
+%!error<RegressionSVM.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (RSVM, [1, 1; 2, 1], [2; 4], 'Weights', {'a'})
+%!error<RegressionSVM.loss: 'Weights' must be a numeric vector.> ...
+%! loss (RSVM, [1, 1; 2, 1], [2; 4], 'Weights', ones (2, 2))
 %!error<RegressionSVM.loss: size of 'Weights' must equal the number of rows in X.> ...
 %! loss (RSVM, [1, 1; 2, 1], [2; 4], 'Weights', [1; 2; 3])
-%!error<RegressionSVM.loss: invalid parameter name in optional paired arguments.> ...
+%!error<RegressionSVM.loss: invalid optional paired argument.> ...
 %! loss (RSVM, [1, 1; 2, 1], [2; 4], 'Nope', 1)
 
 ## Test input validation for savemodel
@@ -1931,6 +1970,82 @@ endclassdef
 %!                'BoxConstraint', 2);
 %! assert_equal (Mdl.KernelParameters.Function, 'gaussian');
 %! assert_equal (unique (Mdl.BoxConstraints), 2);
+
+## The Gaussian kernel's default BoxConstraint, measured on MATLAB R2024a.
+%!test
+%! load carsmall
+%! X = [Horsepower, Weight];
+%! ok = ! any (isnan ([X, MPG]), 2);
+%! Mdl = fitrsvm (X(ok,:), MPG(ok), 'KernelFunction', 'gaussian');
+%! assert_equal (Mdl.ModelParameters.BoxConstraint, 9.266123054, 1e-9);
+%! assert_equal (Mdl.BoxConstraints(2), 9.266123054, 1e-9);
+
+%!test
+%! load carsmall
+%! X = [Horsepower, Weight];
+%! ok = ! any (isnan ([X, MPG]), 2);
+%! Mdl = fitrsvm (X(ok,:), MPG(ok), 'KernelFunction', 'rbf');
+%! assert_equal (Mdl.ModelParameters.BoxConstraint, 9.266123054, 1e-9);
+
+%!test
+%! load carsmall
+%! X = [Horsepower, Weight];
+%! ok = ! any (isnan ([X, MPG]), 2);
+%! w = (1:sum (ok))';
+%! Mdl = fitrsvm (X(ok,:), MPG(ok), 'KernelFunction', 'gaussian', ...
+%!                'Weights', w);
+%! assert_equal (Mdl.ModelParameters.BoxConstraint, 9.266123054, 1e-9);
+%! assert_equal (Mdl.BoxConstraints(2), 0.3943031087, 1e-9);
+
+%!test
+%! load carsmall
+%! X = [Horsepower, Weight];
+%! ok = ! any (isnan ([X, MPG]), 2);
+%! Y = MPG(ok);
+%! Y(1) = 100;
+%! w = [0; (2:numel(Y))'];
+%! Mdl = fitrsvm (X(ok,:), Y, 'KernelFunction', 'gaussian', 'Weights', w);
+%! assert_equal (Mdl.ModelParameters.BoxConstraint, 9.266123054, 1e-9);
+
+%!test
+%! load carsmall
+%! X = [Horsepower, Weight];
+%! ok = ! any (isnan ([X, MPG]), 2);
+%! Mdl = fitrsvm (X(ok,:), 5 * ones (sum (ok), 1), ...
+%!                'KernelFunction', 'gaussian');
+%! assert_equal (Mdl.ModelParameters.BoxConstraint, 1);
+
+%!test
+%! load carsmall
+%! X = [Horsepower, Weight];
+%! ok = ! any (isnan ([X, MPG]), 2);
+%! Mdl = fitrsvm (X(ok,:), MPG(ok), 'KernelFunction', 'polynomial', ...
+%!                'Standardize', true);
+%! assert_equal (Mdl.ModelParameters.BoxConstraint, 1);
+
+## KernelScale divides every predictor, as in MATLAB; expected values are
+## R2024a's.
+%!test
+%! load fisheriris
+%! Mdl = fitrsvm (meas(:,1:3), meas(:,4), 'KernelScale', 2);
+%! assert_equal (predict (Mdl, meas([1, 75, 150], 1:3)), ...
+%!               [0.222015641544; 1.35505851032; 1.83323561521], 2e-3);
+%!test
+%! load fisheriris
+%! Mdl = fitrsvm (meas(:,1:3), meas(:,4), 'KernelFunction', 'gaussian', ...
+%!                'KernelScale', 2);
+%! assert_equal (predict (Mdl, meas([1, 75, 150], 1:3)), ...
+%!               [0.220070671683; 1.2611886798; 1.9057640742], 3e-3);
+%!test
+%! load fisheriris
+%! Mdl = fitrsvm (meas(:,1:3), meas(:,4), 'KernelScale', 2);
+%! Q = meas([1, 75, 150], 1:3);
+%! assert_equal (predict (Mdl, Q), (Q / 2) * Mdl.Beta + Mdl.Bias, 1e-12);
+%!test
+%! load fisheriris
+%! Mdl = fitrsvm (meas(:,1:3), meas(:,4), 'KernelFunction', 'gaussian', ...
+%!                'KernelScale', 2);
+%! assert_equal (Mdl.SupportVectors, meas(Mdl.IsSupportVector, 1:3));
 
 %!test
 %! load fisheriris
@@ -2064,3 +2179,65 @@ endclassdef
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'SL'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## Observation weights
+%!error <RegressionSVM: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionSVM ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', int8 ([1; 1; 1; 1]))
+%!error <RegressionSVM: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionSVM ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', true (4, 1))
+%!error <RegressionSVM: 'Weights' must be a vector with one element per row of X.> ...
+%! RegressionSVM ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', [1; 1])
+%!error <RegressionSVM: 'Weights' must be nonnegative and must not be all zero.> ...
+%! RegressionSVM ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', [1; -1; 1; 1])
+%!error <RegressionSVM: 'Weights' must be nonnegative and must not be all zero.> ...
+%! RegressionSVM ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', zeros (4, 1))
+%!test
+%! ## Box constraints are n * C * W, as R2024a sets them
+%! load fisheriris
+%! Mdl = RegressionSVM (meas(:,2:4), meas(:,1), 'Weights', 1 + (1:150)' / 7);
+%! assert_equal (sum (Mdl.W), 1, 1e-15);
+%! assert_equal (Mdl.BoxConstraints([1, 150]), ...
+%!               [0.09696969696969696; 1.903030303030303], 1e-15);
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! Mdl = RegressionSVM (meas(:,2:4), meas(:,1), ...
+%!                      'Weights', single (1 + (1:150)' / 7));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (class (Mdl.BoxConstraints), 'double');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Rows of zero weight are left out, as R2024a leaves them
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! w(5) = 0;
+%! Mdl = RegressionSVM (meas(:,2:4), meas(:,1), 'Weights', w);
+%! assert_equal (Mdl.NumObservations, 149);
+%! assert_equal (Mdl.RowsUsed(5), false);
+%!test
+%! ## Standardization weighs the observations, as R2024a does
+%! load fisheriris
+%! Mdl = RegressionSVM (meas(:,2:4), meas(:,1), 'Standardize', true, ...
+%!                      'Weights', 1 + (1:150)' / 7);
+%! assert_equal (Mdl.Mu, [2.965608080808081, 4.573050505050505, ...
+%!                        1.55819797979798], 1e-14);
+%! assert_equal (Mdl.Sigma, [0.3809861139391035, 1.433169957562235, ...
+%!                           0.6470320013330532], 1e-14);
+%!test
+%! ## A row missing a predictor is predicted as the weighted lower median
+%! load fisheriris
+%! X = meas(:,2:4);
+%! X(7,2) = NaN;
+%! Mdl = RegressionSVM (X, meas(:,1), 'Weights', 1 + (1:150)' / 7);
+%! assert_equal (predict (Mdl, [NaN, 1, 1]), 6.2);
+%! assert_equal (isnan (Mdl.BoxConstraints(7)), true);
+%! assert_equal (Mdl.IsSupportVector(7), false);
+%! assert_equal (sum (Mdl.IsSupportVector), rows (Mdl.SupportVectors));
+%!test
+%! ## resubLoss weighs the observations by W unless given weights
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = RegressionSVM (meas(:,2:4), meas(:,1), 'Weights', w);
+%! assert_equal (resubLoss (Mdl), ...
+%!               loss (Mdl, meas(:,2:4), meas(:,1), 'Weights', w), 1e-15);
+

@@ -25,11 +25,14 @@
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
 ## at @var{x} of the Johnson SU distribution with shape parameters @var{alpha1}
-## and @var{alpha2}.  The size of @var{p} is the common size of the input
+## and @var{alpha2}, which is
+## @code{@var{alpha2} * normpdf (@var{alpha1} + @var{alpha2} * asinh (@var{x}))
+## / sqrt (@var{x}^2 + 1)}.  The size of @var{y} is the common size of the input
 ## arguments @var{x}, @var{alpha1}, and @var{alpha2}.  A scalar input functions
-## as a constant matrix of the same size as the other
+## as a constant matrix of the same size as the other inputs.
 ##
-## Default values are @var{alpha1} = 1, @var{alpha2} = 1.
+## Default values are @var{alpha1} = 1, @var{alpha2} = 1.  @var{alpha2} must be
+## positive; where it is not, the result is @qcode{NaN}.
 ##
 ## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
 ## and character arrays are rejected.  MATLAB accepts a character array and
@@ -65,12 +68,21 @@ function y = jsupdf (x, alpha1, alpha2)
     endif
   endif
 
-  one = ones (size (x));
-  sr = sqrt (x .* x + one);
-  y = (alpha2 ./ sr) .* ...
-      stdnormal_pdf (alpha1 .* one + alpha2 .* log (x + sr));
+  y = alpha2 ./ hypot (x, 1) .* normpdf (alpha1 + alpha2 .* asinh (x));
+  y((alpha2 <= 0) & true (size (y))) = NaN;
 
 endfunction
+
+%!assert_equal (jsupdf (0), normpdf (1), -1e-15)
+%!assert_equal (jsupdf (1, 0.5, 2), ...
+%!              sqrt (2) * normpdf (0.5 + 2 * log (1 + sqrt (2))), -1e-14)
+%!assert_equal (jsupdf ([-Inf, NaN, Inf]), [0, NaN, 0])
+%!assert_equal (integral (@(x) jsupdf (x, 0.5, 2), -Inf, 1), ...
+%!              jsucdf (1, 0.5, 2), -1e-9)
+%!assert_equal (jsupdf (single (0)), single (normpdf (1)), -eps ('single'))
+%!assert_equal (jsupdf (1, 0, 0), NaN)
+%!assert_equal (jsupdf ([1, 2], 1, -1), [NaN, NaN])
+%!assert_equal (jsupdf (1, 1, [1, 0]), [jsupdf(1), NaN])
 
 %!error<jsupdf: X, ALPHA1, and ALPHA2 must be double or single.> jsupdf (int32 (2), 1, 1)
 %!error<jsupdf: X, ALPHA1, and ALPHA2 must be double or single.> jsupdf (true, 1, 1)

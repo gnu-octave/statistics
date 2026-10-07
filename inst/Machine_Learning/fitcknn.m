@@ -73,12 +73,14 @@
 ## probabilities for each class.  The order of the elements in @qcode{Prior}
 ## corresponds to the order of the classes in @qcode{ClassNames}.
 ##
-## @item @qcode{'Weights'} @tab A numeric vector of nonnegative observation
-## weights, one per row of @var{X}.  Each class carries its prior, spread
-## over its observations in proportion to their weights, and a neighbour
+## @item @qcode{'Weights'} @tab A single or double vector of nonnegative
+## observation weights, one per row of @var{X}.  Each class carries its prior,
+## spread over its observations in proportion to their weights, and a neighbour
 ## votes with that weight.  An empirical prior sums the weights per class,
 ## standardization uses weighted means and standard deviations, and a row of
-## zero weight is left out.
+## zero weight is left out.  The model's @code{W} keeps the class of the
+## weights, while every computation runs in double, so @code{Prior} is double
+## where MATLAB returns single.
 ##
 ## @item @qcode{'Cost'} @tab A @math{N*R} numeric matrix containing
 ## misclassification cost for the corresponding instances in @var{X} where
@@ -341,7 +343,7 @@ function Mdl = fitcknn (X, Y, varargin)
         cv_opt = true;
 
       case 'leaveout'
-        Name = 'Holdout';
+        Name = 'Leaveout';
         Value = varargin{2};
         cv_arg += 1;
         cv_opt = true;
@@ -638,6 +640,11 @@ endfunction
 %! fitcknn (ones (4,2), ones (4, 1), 'CrossVal', 'a')
 %!error <fitcknn: You can use only one cross-validation name-value pair argument> ...
 %! fitcknn (ones (4,2), ones (4, 1), 'KFold', 10, 'Holdout', 0.3)
+
+%!test  # 'Leaveout' leaves one observation out of each fold
+%! load fisheriris
+%! CVMdl = fitcknn (meas, species, 'Leaveout', 'on');
+%! assert_equal (CVMdl.KFold, 150);
 
 %!test  # MATLAB parity: classes given as text are sorted
 %! load fisheriris

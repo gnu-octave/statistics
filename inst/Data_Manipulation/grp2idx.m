@@ -59,6 +59,13 @@
 ## Note that standard missing values in @var{s} appear as NaN in @var{g} and are
 ## not present on either @var{gn} and @var{gl}.
 ##
+## An empty @var{s} returns @var{g}, @var{gn} and @var{gl} as 0-by-1 arrays,
+## whereas MATLAB returns a 0-by-0 @var{gn} for an empty categorical @var{s}.
+## A character array without rows returns a 0-by-1 @var{g} and @var{gn}, and a
+## @var{gl} with no rows.  Each row of a character array is an observation, so a
+## row without characters, being unnamed, is indexed as @code{NaN}, whereas
+## MATLAB returns no index for any empty character array.
+##
 ## @seealso{grpstats}
 ## @end deftypefn
 
@@ -84,7 +91,14 @@ function [g, gn, gl] = grp2idx (s)
     is_categorical = true;
   elseif (ischar (s))
     is_char_array = true;
-    s = cellstr (s);
+    ## A character array without rows holds no observations
+    gl_cols = 0;
+    if (rows (s) == 0)
+      gl_cols = columns (s);
+      s = cell (0,1);
+    else
+      s = cellstr (s);
+    endif
   elseif (isdatetime (s))
     error ("grp2idx: 'datetime' grouping variable is not supported yet.");
   elseif (isduration (s))
@@ -121,7 +135,7 @@ function [g, gn, gl] = grp2idx (s)
     cats = categories (s);
     if (isempty (cats))
       gn = cell (0,1);
-      gl = categorical (cell (0,1));
+      gl = categorical (zeros (0,1));
     else
       gn = cellstr (cats);
       gl = categorical (cats, cats, 'Ordinal', isordinal (s), ...
@@ -131,8 +145,13 @@ function [g, gn, gl] = grp2idx (s)
   endif
 
   [gl, I, g] = unique (s(:));
+
+  if (isempty (g))
+    g = zeros (0, 1);
+  endif
+
   ## Fix order in here, since unique does not support this yet
-  if (iscellstr (s))
+  if (iscellstr (s) && ! isempty (s))
     I = sort (I);
     for i = 1:length (gl)
       gl_s(i) = gl(g(I(i)));
@@ -193,7 +212,7 @@ function [g, gn, gl] = grp2idx (s)
   if (nargout > 2)
     if (is_char_array)
       if (isempty (gl))
-        gl = char (cell (0,1));
+        gl = char (zeros (0, gl_cols));
       else
         gl = char (gn);
       endif
@@ -320,7 +339,8 @@ endfunction
 %! [g, gn, gl] = grp2idx (s);
 %! assert_equal (g, [NaN; NaN; NaN; NaN]);
 %! assert_equal (gn, cell (0,1));
-%! assert_equal (isequaln (gl, categorical (cell (0,1))), true);
+%! assert_equal (isequaln (gl, categorical (zeros (0,1))), true);
+%! assert_equal (size (gl), [0, 1]);
 
 %!test
 %! s = string ({missing, missing, missing});
@@ -469,6 +489,44 @@ endfunction
 %! assert_equal (gn, {'a'; 'b'; 'c'});
 %! assert_equal (isstring (gl), true);
 %! assert_equal (cellstr (gl), gn);
+
+%!test
+%! [g, gn, gl] = grp2idx (zeros (0, 1));
+%! assert_equal (size (g), [0, 1]);
+%! assert_equal (size (gn), [0, 1]);
+%! assert_equal (size (gl), [0, 1]);
+%!test
+%! [g, gn, gl] = grp2idx (cell (0, 1));
+%! assert_equal (g, zeros (0, 1));
+%! assert_equal (gn, cell (0, 1));
+%! assert_equal (gl, cell (0, 1));
+%!test
+%! [g, gn, gl] = grp2idx (string (cell (0, 1)));
+%! assert_equal (g, zeros (0, 1));
+%! assert_equal (gn, cell (0, 1));
+%! assert_equal (isstring (gl), true);
+%! assert_equal (size (gl), [0, 1]);
+%!test
+%! [g, gn, gl] = grp2idx (categorical (zeros (0, 1)));
+%! assert_equal (g, zeros (0, 1));
+%! assert_equal (gn, cell (0, 1));
+%! assert_equal (iscategorical (gl), true);
+%! assert_equal (size (gl), [0, 1]);
+%!test
+%! [g, gn, gl] = grp2idx (char (zeros (0, 3)));
+%! assert_equal (g, zeros (0, 1));
+%! assert_equal (gn, cell (0, 1));
+%! assert_equal (gl, char (zeros (0, 3)));
+%!test
+%! [g, gn, gl] = grp2idx ('');
+%! assert_equal (g, zeros (0, 1));
+%! assert_equal (gn, cell (0, 1));
+%! assert_equal (gl, '');
+%!test
+%! [g, gn, gl] = grp2idx (char (zeros (3, 0)));
+%! assert_equal (g, [NaN; NaN; NaN]);
+%! assert_equal (gn, cell (0, 1));
+%! assert_equal (gl, '');
 
 ## Test input validation
 %!error <grp2idx: S must be either a vector or a matrix.> grp2idx (ones (3, 3, 3))

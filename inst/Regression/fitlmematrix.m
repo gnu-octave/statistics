@@ -65,9 +65,9 @@
 ## The returned @var{lme} is a @code{LinearMixedModel} object describing the
 ## fitted model: the estimated fixed effects and their statistics
 ## (@code{lme.Coefficients}), the covariance parameters
-## (@code{covarianceParameters}), the random-effects BLUPs (@code{randomEffects}),
-## the log-likelihood, and methods for prediction, residuals, and hypothesis
-## tests.
+## (@code{covarianceParameters}), the random-effects BLUPs
+## (@code{randomEffects}), the log-likelihood, and methods for prediction,
+## residuals, and hypothesis tests.
 ##
 ## Only the full (unstructured) random-effects covariance is currently
 ## supported.

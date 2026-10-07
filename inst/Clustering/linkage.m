@@ -148,7 +148,7 @@ function dgram = linkage (d, method = 'single', distarg, savememory)
   d = squareform (d, 'tomatrix');       # dissimilarity NxN matrix
   n = rows (d);                         # the number of observations
   diagidx = sub2ind ([n,n], 1:n, 1:n);  # indices of diagonal elements
-  d(diagidx) = Inf;                     # consider a cluster as far from itself
+  d(diagidx) = NaN;                     # min passes over a cluster and itself
   ## For equal-distance nodes, the order in which clusters are
   ## merged is arbitrary.  Rotating the initial matrix produces an
   ## ordering similar to Matlab's.
@@ -159,8 +159,13 @@ function dgram = linkage (d, method = 'single', distarg, savememory)
   sz = n;                               # current matrix size (avoid size calls)
   mcase = find (mask);                  # pre-compute method case
   for cluster = n+1 : 2*n-1
-    ## Find the two nearest clusters
-    [~, midx] = min (d(:));
+    ## Find the two nearest clusters.  An infinite distance is merged like
+    ## any other; where every distance left is NaN, the two clusters first
+    ## in the original order are merged, as MATLAB does
+    [v, midx] = min (d(:));
+    if (isnan (v))
+      midx = (sz - 1) * sz;
+    endif
     ## Compute row/column indices directly (faster than ind2sub)
     c = ceil (midx / sz);
     r = midx - (c - 1) * sz;
@@ -181,7 +186,7 @@ function dgram = linkage (d, method = 'single', distarg, savememory)
         newd = dist(d_rc, r);
       otherwise
     endswitch
-    newd(r) = Inf;                      # Take care of the diagonal element
+    newd(r) = NaN;                      # Take care of the diagonal element
     ## Put distances in place of the first ones, remove the second ones
     d(r,:) = newd;
     d(:,r) = newd';
@@ -388,3 +393,19 @@ endfunction
 %! assert_equal (all (L(:,1) >= 1 & L(:,1) <= 11), true);  # valid cluster refs
 %! assert_equal (all (L(:,2) >= 1 & L(:,2) <= 11), true);
 %! assert_equal (all (L(:,1) < L(:,2)), true);  # sorted within rows
+%!assert_equal (linkage ([1, Inf, 2], 'average'), [1, 2, 1; 3, 4, Inf])
+%!assert_equal (linkage ([1, Inf, 2], 'complete'), [1, 2, 1; 3, 4, Inf])
+%!assert_equal (linkage ([1, Inf, 2], 'single'), [1, 2, 1; 3, 4, 2])
+%!assert_equal (linkage ([Inf, Inf, Inf], 'average'), [2, 3, Inf; 1, 4, Inf])
+%!assert_equal (linkage ([1, 2, 3, Inf, Inf, 4], 'average'), ...
+%!              [1, 2, 1; 3, 4, 4; 5, 6, Inf])
+%!assert_equal (linkage ([1, NaN, 2], 'average'), [1, 2, 1; 3, 4, NaN])
+%!assert_equal (linkage ([NaN, NaN, NaN], 'average'), [1, 2, NaN; 3, 4, NaN])
+%!assert_equal (linkage (NaN (1, 10), 'average'), ...
+%!              [1, 2, NaN; 3, 6, NaN; 4, 7, NaN; 5, 8, NaN])
+%!assert_equal (linkage ([NaN, NaN, NaN, NaN, NaN, 1], 'average'), ...
+%!              [3, 4, 1; 1, 2, NaN; 5, 6, NaN])
+%!assert_equal (linkage ([NaN, 1, NaN(1, 8)], 'average'), ...
+%!              [1, 3, 1; 2, 6, NaN; 4, 7, NaN; 5, 8, NaN])
+%!assert_equal (linkage ([Inf, NaN(1, 5)], 'average'), ...
+%!              [1, 2, Inf; 3, 5, NaN; 4, 6, NaN])

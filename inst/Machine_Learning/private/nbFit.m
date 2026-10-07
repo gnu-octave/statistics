@@ -61,7 +61,11 @@ function [DP, K, S, W, CL] = nbFit (X, gY, k, D, w, Kernel, Support, ...
   if (ischar (D))
     for i = 1:k
       xk = X(gY == i, :);
-      cnt = sum (xk, 1);
+      ## Weighted counts, the weights scaled to the class's size so that the
+      ## smoothing weighs as it does without them, as R2024a counts
+      wk = w(gY == i);
+      wk = wk(:) / sum (wk) * rows (xk);
+      cnt = sum (wk .* xk, 1);
       tot = sum (cnt) + p;
       for j = 1:p
         DP{i,j} = (cnt(j) + 1) / tot;
@@ -106,9 +110,12 @@ function [DP, K, S, W, CL] = nbFit (X, gY, k, D, w, Kernel, Support, ...
             CL{j} = nbLevels (X(:,j));
           endif
           nlev = numel (CL{j});
+          ## Weighted counts, the weights scaled to the class's size so that
+          ## the smoothing weighs as it does without them, as R2024a counts
+          wk = wij(:) / sum (wij) * numel (xij);
           cnt = zeros (nlev, 1);
           for l = 1:nlev
-            cnt(l) = sum (xij == CL{j}(l));
+            cnt(l) = sum (wk(xij == CL{j}(l)));
           endfor
           DP{i,j} = (cnt + 1) / (numel (xij) + nlev);
 
@@ -147,12 +154,20 @@ function [DP, K, S, W, CL] = nbFit (X, gY, k, D, w, Kernel, Support, ...
           ## The density fits itself, so the default bandwidth rule and the
           ## transform a bounded support needs are ksdensity's own, not a
           ## second copy of them here.
+          ## Weights shape the density but not its bandwidth, which R2024a
+          ## chooses from the observations alone.
           if (isempty (Wgiven))
-            pd = prob.KernelDistribution.fit (xij, Kname{j}, Sname{j});
+            bw = prob.KernelDistribution.fit (xij, Kname{j}, ...
+                                              Sname{j}).Bandwidth;
           else
-            pd = prob.KernelDistribution.fit (xij, Kname{j}, Sname{j}, ...
-                                              Wgiven(i,j));
+            bw = Wgiven(i,j);
           endif
+          freq = [];
+          if (any (wij != wij(1)))
+            freq = wij(:);
+          endif
+          pd = prob.KernelDistribution.fit (xij, Kname{j}, Sname{j}, bw, ...
+                                            freq);
           W(i,j) = pd.Bandwidth;
           DP{i,j} = pd;
           K{j} = Kname{j};

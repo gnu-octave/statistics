@@ -63,7 +63,8 @@ classdef ClassificationDiscriminant < PredictiveModel
     ##
     ## A numeric column vector with one entry per observation used for fitting:
     ## the @qcode{'Weights'} given, or equal weights, scaled to sum to one.  The
-    ## prior does not enter them.  This property is read-only.
+    ## prior does not enter them.  It has the class of the @qcode{'Weights'}
+    ## given, single or double.  This property is read-only.
     ##
     ## @end deftp
     W               = [];
@@ -626,7 +627,7 @@ classdef ClassificationDiscriminant < PredictiveModel
           if (isempty (this.RawWeights))
             pr(i) = sum (gY == i);
           else
-            pr(i) = sum (this.RawWeights(gY == i));
+            pr(i) = sum (double (this.RawWeights(gY == i)));
           endif
         endfor
         this.Prior = pr(:)' ./ sum (pr);
@@ -785,15 +786,6 @@ classdef ClassificationDiscriminant < PredictiveModel
     endfunction
 
     ## Custom display
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
-    ## Custom display
     function disp (this)
       fprintf ("\n  ClassificationDiscriminant\n\n");
       ## Print selected properties
@@ -827,11 +819,11 @@ classdef ClassificationDiscriminant < PredictiveModel
   methods (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {statistics} {@var{obj} =} ClassificationDiscriminant (@var{X}, @var{Y})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationDiscriminant (@var{Tbl}, @var{ResponseVarName})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationDiscriminant (@var{Tbl}, @var{formula})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationDiscriminant (@var{Tbl}, @var{Y})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationDiscriminant (@dots{}, @var{name}, @var{value})
+    ## @deftypefn  {ClassificationDiscriminant} {@var{obj} =} ClassificationDiscriminant (@var{X}, @var{Y})
+    ## @deftypefnx {ClassificationDiscriminant} {@var{obj} =} ClassificationDiscriminant (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationDiscriminant} {@var{obj} =} ClassificationDiscriminant (@var{Tbl}, @var{formula})
+    ## @deftypefnx {ClassificationDiscriminant} {@var{obj} =} ClassificationDiscriminant (@var{Tbl}, @var{Y})
+    ## @deftypefnx {ClassificationDiscriminant} {@var{obj} =} ClassificationDiscriminant (@dots{}, @var{name}, @var{value})
     ##
     ## Create a @qcode{ClassificationDiscriminant} class object containing a
     ## discriminant analysis model.
@@ -886,11 +878,13 @@ classdef ClassificationDiscriminant < PredictiveModel
     ## class probabilities or @qcode{'uniform'} to assume equal class
     ## probabilities.
     ##
-    ## @item @qcode{'Weights'} @tab A numeric vector of nonnegative observation
-    ## weights, one per row of @var{X}.  They weigh the class means and
-    ## covariances, the covariances being unbiased for them, and an empirical
-    ## prior sums them per class.  Only their proportions matter, and a row of
-    ## zero weight is left out of the fit.
+    ## @item @qcode{'Weights'} @tab A single or double vector of nonnegative
+    ## observation weights, one per row of @var{X}.  They weigh the class means
+    ## and covariances, the covariances being unbiased for them, and an
+    ## empirical prior sums them per class.  Only their proportions matter, and
+    ## a row of zero weight is left out of the fit.  The model's @code{W} keeps
+    ## the class of the weights, while every computation runs in double, so
+    ## @code{Prior} and the predictions are double where MATLAB returns single.
     ##
     ## @item @qcode{'ScoreTransform'} @tab A user-defined function handle
     ## or a character vector specifying one of the following builtin functions
@@ -952,141 +946,115 @@ classdef ClassificationDiscriminant < PredictiveModel
       ## Get groups in Y
       [gY, gnY, glY] = grp2idx (Y);
 
-      ## Set default values before parsing optional parameters
-      ClassNames     = [];
-      Cost           = [];
-      DiscrimType    = 'linear';
-      Gamma          = 0;
-      Delta          = 0;
-      NumPredictors  = [];
-      PredictorNames = {};
-      ResponseName   = 'Y';
-      Prior          = 'empirical';
-      FillCoeffs     = 'on';
-      Weights        = [];
+      ## Parse optional paired arguments
+      optNames = {'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', ...
+                  'Weights', 'Cost', 'ScoreTransform', 'DiscrimType', ...
+                  'FillCoeffs', 'Gamma', 'Delta', 'CategoricalPredictors'};
+      ## An empty default stands for one resolved once the data are known:
+      ## 'PredictorNames' are x1, x2, ...; the classes and 'Cost' come from
+      ## the response; 'Weights' are uniform; and no 'ScoreTransform' keeps
+      ## the one the class sets.
+      dfValues = {{}, 'Y', [], 'empirical', [], [], [], 'linear', 'on', 0, ...
+                  0, []};
+      [PredictorNames, ResponseName, ClassNames, Prior, Weights, Cost, STin, ...
+       DiscrimType, FillCoeffs, Gamma, Delta, CatPreds, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      ## Parse optional parameters
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
+      ## Validate optional paired arguments
+      if (! isempty (PredictorNames) && ! iscellstr (PredictorNames))
+        error (strcat ("ClassificationDiscriminant: 'PredictorNames' must", ...
+                       " be supplied as a cellstring array."));
+      elseif (! isempty (PredictorNames)
+              && numel (PredictorNames) != columns (X))
+        error (strcat ("ClassificationDiscriminant: 'PredictorNames' must", ...
+                       " equal the number of columns in X."));
+      endif
+      if (! ischar (ResponseName))
+        error (strcat ("ClassificationDiscriminant: 'ResponseName' must be", ...
+                       " a character vector."));
+      endif
+      if (! isempty (ClassNames) &&
+          ! (iscellstr (ClassNames) || isnumeric (ClassNames)
+             || islogical (ClassNames) || ischar (ClassNames)
+             || isa (ClassNames, 'categorical')
+             || isa (ClassNames, 'string')))
+        error (strcat ("ClassificationDiscriminant: 'ClassNames' must be a", ...
+                       " categorical array, a character array, a string", ...
+                       " array, a logical vector, a numeric vector, or a", ...
+                       " cell array of character vectors."));
+      endif
+      if (! isempty (ClassNames))
+        [~, errmsg] = namedClasses (glY, ClassNames);
+        if (! isempty (errmsg))
+          error ("ClassificationDiscriminant: %s", errmsg);
+        endif
+      endif
+      if (! (isstruct (Prior) || (isnumeric (Prior) && isvector (Prior))
+             || (ischar (Prior) && (strcmpi (Prior, 'empirical')
+                 || strcmpi (Prior, 'uniform')))))
+        error (strcat ("ClassificationDiscriminant: 'Prior' must be either", ...
+                       " a numeric or a character vector."));
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationDiscriminant: %s", errmsg);
+      endif
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isvector (Weights)
+             && isreal (Weights)))
+        error (strcat ("ClassificationDiscriminant: 'Weights' must be a", ...
+                       " real numeric vector."));
+      endif
+      if (! isempty (Weights) && numel (Weights) != rows (X))
+        error (strcat ("ClassificationDiscriminant: 'Weights' must have", ...
+                       " one element per row in X."));
+      endif
+      if (! isempty (Weights) && (any (Weights < 0) || ! (sum (Weights) > 0)))
+        error (strcat ("ClassificationDiscriminant: 'Weights' must be", ...
+                       " nonnegative and must not be all zero."));
+      endif
+      ## A struct carrying its own class order is a cost too,
+      ## and is resolved by the property's own set method.
+      if (! isempty (Cost) &&
+          ! (isstruct (Cost)
+             || (isnumeric (Cost) && issquare (Cost))))
+        error (strcat ("ClassificationDiscriminant: 'Cost' must be a", ...
+                       " numeric square matrix."));
+      endif
+      DiscrimType = discrimcanon (DiscrimType);
+      if (isempty (DiscrimType))
+        error (strcat ("ClassificationDiscriminant: 'DiscrimType' must be", ...
+                       " one of the following: linear, quadratic,", ...
+                       " diagLinear, diagQuadratic, pseudoLinear, or", ...
+                       " pseudoQuadratic."));
+      endif
+      FillCoeffs = tolower (FillCoeffs);
+      if (! any (strcmpi (FillCoeffs, {'on', 'off'})))
+        error (strcat ("ClassificationDiscriminant: 'FillCoeffs' must be", ...
+                       " 'on' or 'off'."));
+      endif
+      if (! (isnumeric (Gamma) && isscalar (Gamma)
+             && Gamma >= 0 && Gamma <= 1))
+        error (strcat ("ClassificationDiscriminant: 'Gamma' must be a", ...
+                       " scalar between 0 and 1."));
+      endif
+      if (! (isnumeric (Delta) && isscalar (Delta) && Delta >= 0))
+        error (strcat ("ClassificationDiscriminant: 'Delta' must be a", ...
+                       " nonnegative scalar."));
+      endif
+      ## Measured on R2024a, which refuses any categorical predictor.
+      if (! isempty (CatPreds))
+        error (strcat ("ClassificationDiscriminant: categorical predictors", ...
+                       " cannot be used for discriminant analysis."));
+      endif
 
-          case 'predictornames'
-            PredictorNames = varargin{2};
-            if (! iscellstr (PredictorNames))
-              error (strcat ("ClassificationDiscriminant: 'PredictorNames'", ...
-                             " must be supplied as a cellstring array."));
-            elseif (numel (PredictorNames) != columns (X))
-              error (strcat ("ClassificationDiscriminant: 'PredictorNames'", ...
-                             " must equal the number of columns in X."));
-            endif
+      if (! isempty (STin))
+        this.ScoreTransform = STin;
+      endif
 
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! ischar (ResponseName))
-              error (strcat ("ClassificationDiscriminant: 'ResponseName'", ...
-                             " must be a character vector."));
-            endif
-
-          case 'classnames'
-            ClassNames = varargin{2};
-            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
-                   || islogical (ClassNames) || ischar (ClassNames)
-                   || isa (ClassNames, 'categorical')
-                   || isa (ClassNames, 'string')))
-              error (strcat ("ClassificationDiscriminant: 'ClassNames'", ...
-                             " must be a categorical array, a character", ...
-                             " array, a string array, a logical vector, a", ...
-                             " numeric vector, or a cell array of", ...
-                             " character vectors."));
-            endif
-            [~, errmsg] = namedClasses (glY, ClassNames);
-            if (! isempty (errmsg))
-              error ("ClassificationDiscriminant: %s", errmsg);
-            endif
-
-          case 'prior'
-            Prior = varargin{2};
-            if (! (isstruct (Prior) || (isnumeric (Prior) && isvector (Prior))
-                   || (ischar (Prior) && (strcmpi (Prior, 'empirical')
-                       || strcmpi (Prior, 'uniform')))))
-              error (strcat ("ClassificationDiscriminant: 'Prior' must", ...
-                             " be either a numeric or a character vector."));
-            endif
-
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isvector (Weights)
-                   && isreal (Weights)))
-              error (strcat ("ClassificationDiscriminant: 'Weights' must", ...
-                             " be a real numeric vector."));
-            endif
-            if (numel (Weights) != rows (X))
-              error (strcat ("ClassificationDiscriminant: 'Weights' must", ...
-                             " have one element per row in X."));
-            endif
-            if (any (Weights < 0) || ! (sum (Weights) > 0))
-              error (strcat ("ClassificationDiscriminant: 'Weights' must", ...
-                             " be nonnegative and must not be all zero."));
-            endif
-
-          case 'cost'
-            Cost = varargin{2};
-            ## A struct carrying its own class order is a cost too,
-            ## and is resolved by the property's own set method.
-            if (! (isstruct (Cost)
-                   || (isnumeric (Cost) && issquare (Cost))))
-              error (strcat ("ClassificationDiscriminant: 'Cost'", ...
-                             " must be a numeric square matrix."));
-            endif
-
-          case 'scoretransform'
-            this.ScoreTransform = varargin{2};
-
-          case 'discrimtype'
-            DiscrimType = discrimcanon (varargin{2});
-            if (isempty (DiscrimType))
-              error (strcat ("ClassificationDiscriminant: 'DiscrimType'", ...
-                             " must be one of the following: linear,", ...
-                             " quadratic, diagLinear, diagQuadratic,", ...
-                             " pseudoLinear, or pseudoQuadratic."));
-            endif
-
-          case 'fillcoeffs'
-            FillCoeffs = tolower (varargin{2});
-            if (! any (strcmpi (FillCoeffs, {'on', 'off'})))
-              error (strcat ("ClassificationDiscriminant: 'FillCoeffs'", ...
-                             " must be 'on' or 'off'."));
-            endif
-
-          case 'gamma'
-            Gamma = varargin{2};
-            if (! (isnumeric (Gamma) && isscalar (Gamma)
-                   && Gamma >= 0 && Gamma <= 1))
-              error (strcat ("ClassificationDiscriminant: 'Gamma'", ...
-                             " must be a scalar between 0 and 1."));
-            endif
-
-          case 'delta'
-            Delta = varargin{2};
-            if (! (isnumeric (Delta) && isscalar (Delta) && Delta >= 0))
-              error (strcat ("ClassificationDiscriminant: 'Delta'", ...
-                             " must be a nonnegative scalar."));
-            endif
-
-
-          case 'categoricalpredictors'
-            ## Measured on R2024a, which refuses any categorical predictor.
-            if (! isempty (varargin{2}))
-              error (strcat ("ClassificationDiscriminant: categorical", ...
-                             " predictors cannot be used for discriminant", ...
-                             " analysis."));
-            endif
-
-          otherwise
-            error (strcat ("ClassificationDiscriminant: invalid", ...
-                           " parameter name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("ClassificationDiscriminant: invalid optional paired argument.");
+      endif
 
       ## Generate default predictors and response variable names (if necessary)
       NumPredictors = columns (X);
@@ -1125,14 +1093,16 @@ classdef ClassificationDiscriminant < PredictiveModel
       if (isempty (Weights))
         RawWeights = ones (rows (X), 1);
       else
-        RawWeights = double (Weights(RowsUsed));
+        RawWeights = Weights(RowsUsed);
         RawWeights = RawWeights(:);
       endif
 
-      ## Store the retained observations
+      ## Store the retained observations; the weights keep their class in the
+      ## model, and every computation runs on them as double
       this.X = X;
       this.Y = Y;
       this.RawWeights = RawWeights;
+      RawWeights = double (RawWeights);
 
       ## Renew groups in Y: the classes keep the type of Y, sorted or in the
       ## order ClassNames gives them
@@ -1160,7 +1130,7 @@ classdef ClassificationDiscriminant < PredictiveModel
       ## The weights scaled to sum to one.  The prior enters prediction rather
       ## than the weights: measured on R2024a, W is the same under an
       ## empirical, a uniform, a given or a reassigned prior.
-      this.W = RawWeights / sum (RawWeights);
+      this.W = cast (RawWeights / sum (RawWeights), class (this.RawWeights));
 
       ## Assign DiscrimType
       ## Reconcile the type with the regularization before anything is
@@ -1592,8 +1562,6 @@ classdef ClassificationDiscriminant < PredictiveModel
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("ClassificationDiscriminant.loss: name-value", ...
                        " arguments must be in pairs."));
-      elseif (numel (varargin) > 4)
-        error ("ClassificationDiscriminant.loss: too many input arguments.");
       endif
 
       ## Check for valid X
@@ -1603,10 +1571,6 @@ classdef ClassificationDiscriminant < PredictiveModel
         error (strcat ("ClassificationDiscriminant.loss: X must have the", ...
                        " same number of predictors as the trained model."));
       endif
-
-      ## Default values
-      LossFun = 'mincost';
-      Weights = [];
 
       ## Validate Y
       valid_types = {'char', 'string', 'logical', 'single', 'double', ...
@@ -1621,64 +1585,60 @@ classdef ClassificationDiscriminant < PredictiveModel
                        " have the same number of rows as X."));
       endif
 
-      ## Parse name-value arguments
-      while (numel (varargin) > 0)
-        Value = varargin{2};
-        switch (tolower (varargin{1}))
-          case 'lossfun'
-            lf_opt = {'binodeviance', 'classifcost', 'classiferror', ...
-                      'exponential', 'hinge','logit', 'mincost', 'quadratic'};
-            if (isa (Value, 'function_handle'))
-              ## Check if the loss function is valid
-              if (nargin (Value) != 4)
-                error (strcat ("ClassificationDiscriminant.loss: custom", ...
-                               " loss function must accept exactly four", ...
-                               " input arguments."));
-              endif
-              try
-                n = 1;
-                K = 2;
-                C_test = false (n, K);
-                S_test = zeros (n, K);
-                W_test = ones (n, 1);
-                Cost_test = ones (K) - eye (K);
-                test_output = Value(C_test, S_test, W_test, Cost_test);
-                if (! isscalar (test_output))
-                  error (strcat ("ClassificationDiscriminant.loss:", ...
-                                 " custom loss function must return", ...
-                                 " a scalar value."));
-                endif
-              catch
-                error (strcat ("ClassificationDiscriminant.loss: custom", ...
-                               " loss function is not valid or does not", ...
-                               " produce correct output."));
-              end_try_catch
-              LossFun = Value;
-            elseif (ischar (Value) && any (strcmpi (Value, lf_opt)))
-              LossFun = Value;
-            else
-              error ("ClassificationDiscriminant.loss: invalid loss function.");
-            endif
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mincost', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-          case 'weights'
-            if (isnumeric (Value) && isvector (Value))
-              if (numel (Value) != size (X ,1))
-                error (strcat ("ClassificationDiscriminant.loss: number", ...
-                               " of 'Weights' must be equal to the", ...
-                               " number of rows in X."));
-              elseif (numel (Value) == size (X, 1))
-                Weights = Value;
-              endif
-            else
-              error ("ClassificationDiscriminant.loss: invalid 'Weights'.");
-            endif
+      ## Validate optional paired arguments
+      lf_opt = {'binodeviance', 'classifcost', 'classiferror', ...
+                'exponential', 'hinge','logit', 'mincost', 'quadratic'};
+      if (isa (LossFun, 'function_handle'))
+        ## Check if the loss function is valid
+        if (nargin (LossFun) != 4)
+          error (strcat ("ClassificationDiscriminant.loss: custom loss", ...
+                         " function must accept exactly four input", ...
+                         " arguments."));
+        endif
+        try
+          n = 1;
+          K = 2;
+          C_test = false (n, K);
+          S_test = zeros (n, K);
+          W_test = ones (n, 1);
+          Cost_test = ones (K) - eye (K);
+          test_output = LossFun(C_test, S_test, W_test, Cost_test);
+          if (! isscalar (test_output))
+            error (strcat ("ClassificationDiscriminant.loss: custom loss", ...
+                           " function must return a scalar value."));
+          endif
+        catch
+          error (strcat ("ClassificationDiscriminant.loss: custom loss", ...
+                         " function is not valid or does not produce", ...
+                         " correct output."));
+        end_try_catch
+      elseif (! (ischar (LossFun) && any (strcmpi (LossFun, lf_opt))))
+        error ("ClassificationDiscriminant.loss: invalid loss function.");
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationDiscriminant.loss: %s", errmsg);
+      endif
+      if (! isempty (Weights) && ! (isnumeric (Weights) && isvector (Weights)))
+        error ("ClassificationDiscriminant.loss: invalid 'Weights'.");
+      endif
+      if (! isempty (Weights) && numel (Weights) != rows (X))
+        error (strcat ("ClassificationDiscriminant.loss: number of", ...
+                       " 'Weights' must be equal to the number of rows in", ...
+                       " X."));
+      endif
 
-          otherwise
-            error (strcat ("ClassificationDiscriminant.loss: invalid", ...
-                           " parameter name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("ClassificationDiscriminant.loss: invalid optional", ...
+                       " paired argument."));
+      endif
 
       ## Check for missing values in X
       if (! isa (LossFun, 'function_handle'))
@@ -1708,6 +1668,7 @@ classdef ClassificationDiscriminant < PredictiveModel
       if (isempty (Weights))
         Weights = ones (size (X, 1), 1);
       endif
+      Weights = double (Weights(:));
 
       ## Normalize Weights
       K = classCount (classes);
@@ -2116,10 +2077,6 @@ classdef ClassificationDiscriminant < PredictiveModel
       endif
       [X, Y, varargin] = tableResponse (this, 'edge', X, Y, varargin, ...
                                         nargin > 2);
-      if (mod (numel (varargin), 2) != 0)
-        error (strcat ("ClassificationDiscriminant.edge: Name-Value", ...
-                       " arguments must be in pairs."));
-      endif
 
       ## The weights are parsed before anything is computed, so a bad
       ## Name-Value pair is reported as such rather than after a margin.
@@ -2150,7 +2107,7 @@ classdef ClassificationDiscriminant < PredictiveModel
     ## @var{obj} must be a @qcode{ClassificationDiscriminant} object.
     ## @item
     ## @var{X} must be an @math{NxP} numeric matrix with one column per
-    ## predictor of the trained model.
+    ## predictor of the trained model, or a table holding them.
     ## @end itemize
     ##
     ## @code{@var{M} = mahal (@dots{}, @qcode{'ClassLabels'}, @var{labels})}
@@ -2163,6 +2120,11 @@ classdef ClassificationDiscriminant < PredictiveModel
     ## a regularized model is measured against its regularized covariance.
     ## The prior does not enter it.
     ##
+    ## A table's variables are matched to the predictors the model was
+    ## fitted on by name and not by position: one the model was not fitted on
+    ## is passed over, one it needs and cannot find is named, and a value
+    ## holding a level is coded as that level was coded at fitting.
+    ##
     ## @end deftypefn
     function M = mahal (this, X, varargin)
 
@@ -2171,6 +2133,9 @@ classdef ClassificationDiscriminant < PredictiveModel
         error (strcat ("ClassificationDiscriminant.mahal:", ...
                        " too few input arguments."));
       endif
+
+      ## A table is read by the names the model was fitted on
+      X = tableColumns (this, 'ClassificationDiscriminant.mahal', X);
 
       ## Check for valid X
       if (isempty (X))
@@ -2190,22 +2155,14 @@ classdef ClassificationDiscriminant < PredictiveModel
                        " Name-Value arguments must be in pairs."));
       endif
 
-      labels = [];
-      while (numel (varargin) > 0)
-        if (! (ischar (varargin{1}) && isrow (varargin{1})))
-          error (strcat ("ClassificationDiscriminant.mahal:", ...
-                         " parameter name must be a character vector."));
-        endif
-        switch (tolower (varargin{1}))
-          case 'classlabels'
-            labels = varargin{2};
-          otherwise
-            error (strcat ("ClassificationDiscriminant.mahal:", ...
-                           " invalid parameter name in optional paired", ...
-                           " arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments; without 'ClassLabels' every class
+      ## mean is measured
+      [labels, args] = parsePairedArguments ({'ClassLabels'}, {[]}, ...
+                                             varargin(:));
+      if (! isempty (args))
+        error (strcat ("ClassificationDiscriminant.mahal: invalid optional", ...
+                       " paired argument."));
+      endif
 
       M = discrimmahal (X, this.Mu, this.Sigma, this.DiscrimType);
 
@@ -2213,27 +2170,25 @@ classdef ClassificationDiscriminant < PredictiveModel
         return;
       endif
 
-      ## One distance per observation, to the mean of the class named for it
-      if (ischar (labels))
-        labels = cellstr (labels);
-      elseif (isnumeric (labels) || islogical (labels))
-        labels = cellstr (num2str (labels(:)));
-      elseif (! iscellstr (labels))
+      ## One distance per observation, to the mean of the class named for it,
+      ## the labels matched to the classes as every other method matches them
+      if (! (isnumeric (labels) || islogical (labels) || ischar (labels)
+             || iscellstr (labels) || isa (labels, 'categorical')
+             || isa (labels, 'string')))
         error (strcat ("ClassificationDiscriminant.mahal:", ...
                        " 'ClassLabels' must be of a valid type."));
       endif
-      if (numel (labels) != rows (X))
+      if (ischar (labels))
+        nL = rows (labels);
+      else
+        nL = numel (labels);
+      endif
+      if (nL != rows (X))
         error (strcat ("ClassificationDiscriminant.mahal:", ...
                        " 'ClassLabels' must have one entry per row of X."));
       endif
-      classes = this.ClassNames;
-      if (isnumeric (classes) || islogical (classes))
-        classes = cellstr (num2str (classes(:)));
-      elseif (ischar (classes))
-        classes = cellstr (classes);
-      endif
-      [tf, idx] = ismember (strtrim (labels(:)), strtrim (classes));
-      if (! all (tf))
+      [idx, errmsg] = labelIndices (this.ClassNames, labels);
+      if (! isempty (errmsg))
         error (strcat ("ClassificationDiscriminant.mahal:", ...
                        " every 'ClassLabels' entry must be one of", ...
                        " ClassNames."));
@@ -2259,12 +2214,17 @@ classdef ClassificationDiscriminant < PredictiveModel
     ## @var{obj} must be a @qcode{ClassificationDiscriminant} object.
     ## @item
     ## @var{X} must be an @math{NxP} numeric matrix with one column per
-    ## predictor of the trained model.
+    ## predictor of the trained model, or a table holding them.
     ## @end itemize
     ##
     ## An unusually low value marks an observation the model finds unlikely
     ## under every class, which is what makes this an outlier test rather
     ## than a classification.
+    ##
+    ## A table's variables are matched to the predictors the model was
+    ## fitted on by name and not by position: one the model was not fitted on
+    ## is passed over, one it needs and cannot find is named, and a value
+    ## holding a level is coded as that level was coded at fitting.
     ##
     ## @end deftypefn
     function lp = logp (this, X)
@@ -2274,6 +2234,9 @@ classdef ClassificationDiscriminant < PredictiveModel
         error (strcat ("ClassificationDiscriminant.logp:", ...
                        " too few input arguments."));
       endif
+
+      ## A table is read by the names the model was fitted on
+      X = tableColumns (this, 'ClassificationDiscriminant.logp', X);
 
       ## Check for valid X
       if (isempty (X))
@@ -2492,45 +2455,39 @@ classdef ClassificationDiscriminant < PredictiveModel
                        " arguments must be given in pairs."));
       endif
 
-      NumGamma = 10;
-      NumDelta = 0;
-      Gamma = [];
-      Delta = [];
-      for k = 1:2:numel (varargin)
-        switch (lower (varargin{k}))
-          case 'numgamma'
-            NumGamma = varargin{k+1};
-            if (! (isnumeric (NumGamma) && isscalar (NumGamma)
-                   && NumGamma >= 1 && fix (NumGamma) == NumGamma))
-              error (strcat ("ClassificationDiscriminant.cvshrink:", ...
-                             " 'NumGamma' must be a positive integer."));
-            endif
-          case 'numdelta'
-            NumDelta = varargin{k+1};
-            if (! (isnumeric (NumDelta) && isscalar (NumDelta)
-                   && NumDelta >= 0 && fix (NumDelta) == NumDelta))
-              error (strcat ("ClassificationDiscriminant.cvshrink:", ...
-                             " 'NumDelta' must be a non-negative integer."));
-            endif
-          case 'gamma'
-            Gamma = varargin{k+1};
-            if (! (isnumeric (Gamma) && isvector (Gamma) && ! isempty (Gamma)
-                   && all (Gamma >= 0) && all (Gamma <= 1)))
-              error (strcat ("ClassificationDiscriminant.cvshrink:", ...
-                             " 'Gamma' must be a vector of values between", ...
-                             " 0 and 1."));
-            endif
-          case 'delta'
-            Delta = varargin{k+1};
-            if (! (isnumeric (Delta) && ! isempty (Delta) && all (Delta(:) >= 0)))
-              error (strcat ("ClassificationDiscriminant.cvshrink:", ...
-                             " 'Delta' must be non-negative."));
-            endif
-          otherwise
-            error (strcat ("ClassificationDiscriminant.cvshrink: unknown", ...
-                           " parameter name '%s'."), varargin{k});
-        endswitch
-      endfor
+      ## Parse optional paired arguments; empty 'Gamma' and 'Delta' stand
+      ## for the grids 'NumGamma' and 'NumDelta' describe
+      optNames = {'NumGamma', 'NumDelta', 'Gamma', 'Delta'};
+      dfValues = {10, 0, [], []};
+      [NumGamma, NumDelta, Gamma, Delta, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (isnumeric (NumGamma) && isscalar (NumGamma)
+             && NumGamma >= 1 && fix (NumGamma) == NumGamma))
+        error (strcat ("ClassificationDiscriminant.cvshrink: 'NumGamma'", ...
+                       " must be a positive integer."));
+      endif
+      if (! (isnumeric (NumDelta) && isscalar (NumDelta)
+             && NumDelta >= 0 && fix (NumDelta) == NumDelta))
+        error (strcat ("ClassificationDiscriminant.cvshrink: 'NumDelta'", ...
+                       " must be a non-negative integer."));
+      endif
+      if (! isempty (Gamma) &&
+          ! (isnumeric (Gamma) && isvector (Gamma)
+             && all (Gamma >= 0) && all (Gamma <= 1)))
+        error (strcat ("ClassificationDiscriminant.cvshrink: 'Gamma' must", ...
+                       " be a vector of values between 0 and 1."));
+      endif
+      if (! isempty (Delta) && ! (isnumeric (Delta) && all (Delta(:) >= 0)))
+        error (strcat ("ClassificationDiscriminant.cvshrink: 'Delta' must", ...
+                       " be non-negative."));
+      endif
+
+      if (! isempty (args))
+        error (strcat ("ClassificationDiscriminant.cvshrink: invalid", ...
+                       " optional paired argument."));
+      endif
 
       if (isempty (Gamma))
         gamma = linspace (0, 1, NumGamma + 1)';
@@ -2888,8 +2845,10 @@ endclassdef
 %! load fisheriris
 %! nLinearCoeffs (fitcdiscr (meas, species), "a")
 
-%!error<ClassificationDiscriminant: 'Weights' must be a real numeric vector.> ...
+%!error<ClassificationDiscriminant: 'Weights' must be a real vector of class single or double.> ...
 %! fitcdiscr ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', 'a')
+%!error<ClassificationDiscriminant: 'Weights' must be a real numeric vector.> ...
+%! fitcdiscr ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ones (2, 2))
 %!error<ClassificationDiscriminant: 'Weights' must have one element per row in X.> ...
 %! fitcdiscr ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', [1, 2])
 %!error<ClassificationDiscriminant: 'Weights' must be nonnegative and must not be all zero.> ...
@@ -2905,6 +2864,8 @@ endclassdef
 %! ClassificationDiscriminant (X, Y, 'PredictorNames', ['A'])
 %!error<ClassificationDiscriminant: 'PredictorNames' must be supplied as a cellstring array.> ...
 %! ClassificationDiscriminant (X, Y, 'PredictorNames', 'A')
+%!error<ClassificationDiscriminant: invalid optional paired argument.> ...
+%! ClassificationDiscriminant (X, Y, 'Bogus', 1)
 %!error<ClassificationDiscriminant: 'PredictorNames' must equal the number of columns in X.> ...
 %! ClassificationDiscriminant (X, Y, 'PredictorNames', {'A', 'B', 'C'})
 %!error<ClassificationDiscriminant: 'ResponseName' must be a character vector.> ...
@@ -3190,8 +3151,12 @@ endclassdef
 %! loss (MODEL, ones (4,2), ones (3,1))
 %!error<ClassificationDiscriminant.loss: invalid loss function.> ...
 %! loss (MODEL, ones (4,2), ones (4,1), 'LossFun', 'a')
-%!error<ClassificationDiscriminant.loss: invalid 'Weights'.> ...
+%!error<ClassificationDiscriminant.loss: invalid optional paired argument.> ...
+%! loss (MODEL, ones (4,2), ones (4,1), 'Bogus', 1)
+%!error<ClassificationDiscriminant.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (MODEL, ones (4,2), ones (4,1), 'Weights', 'w')
+%!error<ClassificationDiscriminant.loss: invalid 'Weights'.> ...
+%! loss (MODEL, ones (4,2), ones (4,1), 'Weights', ones (2, 2))
 
 ## Test margin method
 %! load fisheriris
@@ -3905,13 +3870,13 @@ endclassdef
 
 %!error<ClassificationDiscriminant.edge: too few input arguments.> ...
 %! load fisheriris; edge (fitcdiscr (meas, species), meas)
-%!error<ClassificationDiscriminant.edge: Name-Value arguments must be in pairs.> ...
+%!error<ClassificationDiscriminant.edge: optional arguments must be given in Name-Value pairs.> ...
 %! load fisheriris; ...
 %! edge (fitcdiscr (meas, species), meas, species, 'Weights')
 %!error<ClassificationDiscriminant.edge: size of 'Weights' must equal the number of rows in X.> ...
 %! load fisheriris; ...
 %! edge (fitcdiscr (meas, species), meas, species, 'Weights', ones (3, 1))
-%!error<ClassificationDiscriminant.edge: invalid parameter name in optional paired arguments.> ...
+%!error<ClassificationDiscriminant.edge: invalid optional paired argument.> ...
 %! load fisheriris; ...
 %! edge (fitcdiscr (meas, species), meas, species, 'Nope', 1)
 
@@ -4027,6 +3992,35 @@ endclassdef
 %!                   0.553281423559203; 2.086697905677364; ...
 %!                   0.595630039171744], 1e-12);
 
+## 'ClassLabels' of any label type, whatever type the classes are.
+%!test
+%! load fisheriris
+%! idx = [1; 51; 101];
+%! D = diag (mahal (fitcdiscr (meas, species), meas(idx,:)));
+%! Mdl = fitcdiscr (meas, categorical (species));
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', species(idx)), D);
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', ...
+%!                      categorical (species(idx))), D);
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', ...
+%!                      string (species(idx))), D);
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', ...
+%!                      char (species(idx))), D);
+%!test
+%! load fisheriris
+%! idx = [1; 51; 101];
+%! D = diag (mahal (fitcdiscr (meas, species), meas(idx,:)));
+%! Mdl = fitcdiscr (meas, species);
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', ...
+%!                      categorical (species(idx))), D);
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', ...
+%!                      string (species(idx))), D);
+%!test
+%! load fisheriris
+%! idx = [1; 51; 101];
+%! Mdl = fitcdiscr (meas, grp2idx (species));
+%! D = diag (mahal (Mdl, meas(idx,:)));
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', [1; 2; 3]), D);
+
 ## A quadratic model measures against each class's own covariance.
 %!test
 %! load fisheriris
@@ -4094,14 +4088,18 @@ endclassdef
 %! load fisheriris
 %! Mdl = fitcdiscr (meas, species);
 %! mahal (Mdl, meas(1:5,:), 'ClassLabels')
-%!error<ClassificationDiscriminant.mahal: parameter name must be a character vector.> ...
+%!error<ClassificationDiscriminant.mahal: invalid optional paired argument.> ...
 %! load fisheriris
 %! Mdl = fitcdiscr (meas, species);
 %! mahal (Mdl, meas(1:5,:), 5, 1)
-%!error<ClassificationDiscriminant.mahal: invalid parameter name in optional paired arguments.> ...
+%!error<ClassificationDiscriminant.mahal: invalid optional paired argument.> ...
 %! load fisheriris
 %! Mdl = fitcdiscr (meas, species);
 %! mahal (Mdl, meas(1:5,:), 'bogus', 1)
+%!error<ClassificationDiscriminant.mahal: 'ClassLabels' must be of a valid type.> ...
+%! load fisheriris
+%! Mdl = fitcdiscr (meas, species);
+%! mahal (Mdl, meas(1:2,:), 'ClassLabels', {1; 2})
 %!error<ClassificationDiscriminant.mahal: 'ClassLabels' must have one entry per row of X.> ...
 %! load fisheriris
 %! Mdl = fitcdiscr (meas, species);
@@ -4199,7 +4197,7 @@ endclassdef
 %! cvshrink (fitcdiscr (ones (6, 2) + [1;2;3;4;5;6], [1;1;1;2;2;2]), "NumDelta", -1)
 %!error<ClassificationDiscriminant.cvshrink: 'Gamma' must be a vector of values between 0 and 1.> ...
 %! cvshrink (fitcdiscr (ones (6, 2) + [1;2;3;4;5;6], [1;1;1;2;2;2]), "Gamma", 2)
-%!error<ClassificationDiscriminant.cvshrink: unknown parameter name 'bogus'.> ...
+%!error<ClassificationDiscriminant.cvshrink: invalid optional paired argument.> ...
 %! cvshrink (fitcdiscr (ones (6, 2) + [1;2;3;4;5;6], [1;1;1;2;2;2]), "bogus", 1)
 
 ## HyperparameterOptimizationResults is declared for MATLAB compatibility and
@@ -4347,3 +4345,55 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## A table at mahal and logp
+%!test  # a table is matched to the predictors by name
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!           'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%! Mdl = fitcdiscr (T, 'Species');
+%! a = mahal (Mdl, meas);
+%! assert_equal (mahal (Mdl, T(:,1:4)), a);
+%! assert_equal (mahal (Mdl, T(:,[5, 4, 2, 3, 1])), a);
+%!test  # a table is matched to the predictors by name
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!           'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%! Mdl = fitcdiscr (T, 'Species');
+%! a = logp (Mdl, meas);
+%! assert_equal (logp (Mdl, T(:,1:4)), a);
+%! assert_equal (logp (Mdl, T(:,[5, 4, 2, 3, 1])), a);
+
+## resubLoss takes a loss function and weights together, the weights given
+## replacing the ones the model was fitted with
+%!test
+%! load fisheriris
+%! w = (1:150)';
+%! Mdl = fitcdiscr (meas, species);
+%! assert_equal (resubLoss (Mdl, 'LossFun', 'classiferror', 'Weights', w), ...
+%!               loss (Mdl, meas, species, 'LossFun', 'classiferror', ...
+%!                     'Weights', w));
+
+## Observation weights of class single or double
+%!error <ClassificationDiscriminant: 'Weights' must be a real vector of class single or double.> ...
+%! fitcdiscr ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ...
+%!            int8 ([1; 1; 1; 1]))
+%!error <ClassificationDiscriminant: 'Weights' must be a real vector of class single or double.> ...
+%! fitcdiscr ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', true (4, 1))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = fitcdiscr (meas, species, 'Weights', single (w));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Single weights compute as double
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! A = fitcdiscr (meas, species, 'Weights', single (w));
+%! B = fitcdiscr (meas, species, 'Weights', double (single (w)));
+%! assert_equal (nthargout (2, @predict, A, meas), nthargout (2, @predict, ...
+%!               B, meas));

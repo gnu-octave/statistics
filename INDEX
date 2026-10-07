@@ -45,25 +45,27 @@ Hypothesis Testing
  anova2
  anovan
  ansaribradley
- bartlett_test
  barttest
  binotest
  chi2gof
  chi2test
  correlation_test
+ detectdrift
  dwtest
  fishertest
  friedman
  hotelling_t2test
  hotelling_t2test2
  jbtest
+ knntest
  kruskalwallis
  kstest
  kstest2
- levene_test
  lillietest
  manova1
  mcnemar_test
+ meanEffectSize
+ mmdtest
  multcompare
  ranksum
  regression_ftest
@@ -71,6 +73,7 @@ Hypothesis Testing
  runstest
  signrank
  signtest
+ stats.drift.DriftDiagnostics
  swtest
  ttest
  ttest2
@@ -97,6 +100,7 @@ Regression
  fitlme
  fitlmematrix
  fitnlm
+ fitrm
  GeneralizedLinearMixedModel
  GeneralizedLinearModel
  glmfit
@@ -120,6 +124,7 @@ Regression
  plsregress
  regress
  regress_gp
+ RepeatedMeasuresModel
  ridge
  robustfit
  stepwisefit
@@ -244,6 +249,8 @@ Nearest Neighbors
  KDTreeSearcher
  knnsearch
  mahal
+ nomdist
+ nomdist2
  pdist
  pdist2
  rangesearch
@@ -397,6 +404,7 @@ Distribution Functions
  raylcdf raylinv raylpdf raylrnd
  ricecdf riceinv ricepdf ricernd
  stblcdf stblinv stblpdf stblrnd
+ stdrcdf stdrinv stdrpdf stdrrnd
  tcdf tinv tpdf trnd
  tlscdf tlsinv tlspdf tlsrnd
  tricdf triinv tripdf trirnd
@@ -421,6 +429,7 @@ Distribution Statistics
  geostat
  gevstat
  gpstat
+ gumbelstat
  hnstat
  hygestat
  invgstat
@@ -437,6 +446,7 @@ Distribution Statistics
  poisstat
  raylstat
  ricestat
+ stdrstat
  tlsstat
  tristat
  tstat
@@ -463,20 +473,27 @@ Plotting
  dendrogram
  ecdfhist
  einstein
+ gardnerAltmanPlot
  glyphplot
  gplotmatrix
  gscatter
+ heatmap
  hist3
  histfit
  manovacluster
  normplot
  parallelcoords
+ parallelplot
  ppplot
  probplot
  qqplot
  scatterhist
+ scatterhistogram
  silhouette
  stats.chart.BoxChart
+ stats.chart.HeatmapChart
+ stats.chart.ParallelCoordinatesPlot
+ stats.chart.ScatterHistogramChart
  swarmchart
  violin
  wblplot

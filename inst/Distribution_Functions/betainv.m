@@ -78,55 +78,115 @@ function x = betainv (p, a, b)
 
   k = find ((p > 0) & (p < 1) & (a > 0) & (b > 0));
   if (! isempty (k))
-    if (! isscalar (a) || ! isscalar (b))
+    if (isscalar (a))
+      a = a * ones (size (k));
+    else
       a = a(k);
+    endif
+    if (isscalar (b))
+      b = b * ones (size (k));
+    else
       b = b(k);
-      y = a ./ (a + b);
-    else
-      y = a / (a + b) * ones (size (k));
     endif
-    p = p(k);
-
-    if (isa (y, 'single'))
-      myeps = eps ('single');
-    else
-      myeps = eps;
-    endif
-
-    l = find (y < myeps);
-    if (any (l))
-      y(l) = sqrt (myeps) * ones (length (l), 1);
-    endif
-    l = find (y > 1 - myeps);
-    if (any (l))
-      y(l) = 1 - sqrt (myeps) * ones (length (l), 1);
-    endif
-
-    y_new = y;
-    loopcnt = 0;
-    do
-      y_old = y_new;
-      h     = (betacdf (y_old, a, b) - p) ./ betapdf (y_old, a, b);
-      y_new = y_old - h;
-      ind   = find (y_new <= myeps);
-      if (any (ind))
-        y_new(ind) = y_old(ind) / 10;
-      endif
-      ind = find (y_new >= 1 - myeps);
-      if (any (ind))
-        y_new(ind) = 1 - (1 - y_old(ind)) / 10;
-      endif
-      h = y_old - y_new;
-    until (max (abs (h)) < sqrt (myeps) || ++loopcnt == 40)
-
-    if (loopcnt == 40)
-      warning ("betainv: calculation failed to converge for some values.");
-    endif
-
-    x(k) = y_new;
+    x(k) = bInverse (double (p(k)(:)), double (a(:)), double (b(:)));
   endif
 
 endfunction
+
+## The quantiles, solved by Newton's method on betainc kept inside a bracket.
+## Below the median the lower tail is matched to P, above it the upper tail
+## to 1 - P, which is exact there, so neither tail loses its digits to a
+## subtraction from 1.  The steps stop on a relative tolerance, so a
+## quantile of 1e-20 is resolved as closely as one of 0.5.
+function x = bInverse (p, a, b)
+
+  up = p > 0.5;
+  q = p;
+  q(up) = 1 - p(up);
+  lbeta = betaln (a, b);
+
+  ## Start from the leading term of the tail: x^a / (a B) below the median,
+  ## (1 - x)^b / (b B) above it, and from the mean where that falls outside
+  x = exp ((log (q) + log (a) + lbeta) ./ a);
+  x(up) = -expm1 ((log (q(up)) + log (b(up)) + lbeta(up)) ./ b(up));
+  bad = ! (x > 0 & x < 1);
+  x(bad) = a(bad) ./ (a(bad) + b(bad));
+
+  lo = zeros (size (x));
+  hi = ones (size (x));
+  todo = true (size (x));
+  for iter = 1:200
+    i = find (todo);
+    if (isempty (i))
+      break;
+    endif
+    xi = x(i);
+    ## The tail matched, signed so that it grows with x
+    g = betainc (xi, a(i), b(i)) - q(i);
+    u = up(i);
+    g(u) = q(i)(u) - betainc (xi(u), a(i)(u), b(i)(u), 'upper');
+    ## The root lies below where the tail is too large
+    over = g > 0;
+    hi(i(over)) = xi(over);
+    lo(i(! over)) = xi(! over);
+    ## Newton's step, and bisection where it leaves the bracket; geometric
+    ## bisection where the bracket spans more than a factor of 4
+    dens = exp ((a(i) - 1) .* log (xi) + (b(i) - 1) .* log1p (-xi) - lbeta(i));
+    xn = xi - g ./ dens;
+    xn(g == 0) = xi(g == 0);
+    out = ! (xn >= lo(i) & xn <= hi(i));
+    geo = out & lo(i) > 0 & hi(i) > 4 * lo(i);
+    xn(geo) = sqrt (lo(i)(geo) .* hi(i)(geo));
+    fromzero = out & lo(i) == 0;
+    xn(fromzero) = hi(i)(fromzero) / 16;
+    mid = out & ! geo & ! fromzero;
+    xn(mid) = (lo(i)(mid) + hi(i)(mid)) / 2;
+    x(i) = xn;
+    ## Near a root betainc is noisy by some tens of units in the last place
+    ## of its value, below which no step can improve the answer
+    done = abs (g) <= 64 * eps (q(i)) | abs (xn - xi) <= 8 * eps (xn) ...
+           | (hi(i) - lo(i)) <= 64 * eps (lo(i));
+    todo(i(done)) = false;
+  endfor
+
+  ## Values still stepping have reached betainc's own noise; only a residual
+  ## well above it means the solution was not found
+  if (any (todo))
+    j = find (todo);
+    if (any (abs (bResidual (x(j), q(j), a(j), b(j), up(j))) > 1e-10 * q(j)))
+      warning ("betainv: calculation failed to converge for some values.");
+    endif
+  endif
+
+  ## Step to a neighbouring double for as long as it matches its tail better
+  i = (1:numel (x))';
+  for step = 1:64
+    gx = abs (bResidual (x(i), q(i), a(i), b(i), up(i)));
+    moved = false (size (i));
+    for d = [-1, 1]
+      y = x(i) + d * eps (x(i));
+      ok = y >= 0 & y <= 1;
+      y = min (max (y, 0), 1);
+      gy = abs (bResidual (y, q(i), a(i), b(i), up(i)));
+      better = ok & gy < gx;
+      x(i(better)) = y(better);
+      gx(better) = gy(better);
+      moved |= better;
+    endfor
+    i = i(moved);
+    if (isempty (i))
+      break;
+    endif
+  endfor
+
+endfunction
+
+## How far the tail matched at X is from its target.
+function g = bResidual (x, q, a, b, up)
+  g = betainc (x, a, b) - q;
+  g(up) = q(up) - betainc (x(up), a(up), b(up), 'upper');
+endfunction
+
 
 %!demo
 %! ## Plot various iCDFs from the Beta distribution
@@ -153,6 +213,24 @@ endfunction
 %!assert_equal (betainv (p, [1 0 NaN 1 1], 2), [NaN NaN NaN 1 NaN])
 %!assert_equal (betainv (p, 1, 2*[1 0 NaN 1 1]), [NaN NaN NaN 1 NaN])
 %!assert_equal (betainv ([p(1:2) NaN p(4:5)], 1, 2), [NaN 0 NaN 1 NaN])
+
+## Closed forms, deep into both tails
+%!test
+%! pp = [1e-300, 1e-20, 0.025, 0.5, 1 - 1e-12];
+%! assert_equal (betainv (pp, 1, 1000), -expm1 (log1p (-pp) / 1000), -1e-14);
+%!assert_equal (betainv ([1e-300, 1e-20, 0.3], 30, 1), ...
+%!              [1e-300, 1e-20, 0.3] .^ (1/30), -1e-14)
+%!assert_equal (betainv (2e-10, 0.5, 0.5), sin (pi * 1e-10) ^ 2, -1e-14)
+## Expected values from MATLAB R2024a, among them the upper tail of a small
+## first shape, where core's betaincinv misses
+%!assert_equal (betainv (1e-10, 0.5, 50), 1.578669844608891e-22, -1e-12)
+%!assert_equal (betainv (0.999, 0.5, 50), 0.103102263418713, -1e-13)
+%!assert_equal (betainv (1 - 1e-9, 0.5, 1000), 0.018493954158234, -1e-13)
+%!assert_equal (betainv (0.3, 2.5, 7.3), 0.170751332194546, -1e-14)
+%!assert_equal (betainv (1e-6, 30, 200), 0.048760009765902, -5e-14)
+%!assert_equal (betainv (1e-20, 2, 3), 4.082482904749744e-11, -1e-14)
+%!assert_equal (betainv (0.975, 0.5, 0.5), 0.998458666866564, -1e-14)
+%!assert_equal (size (betainv (0.3 * ones (2, 3), 2, 5)), [2, 3])
 
 ## Test class of input preserved
 %!assert_equal (betainv ([p, NaN], 1, 2), [NaN 0 0.5 1 NaN NaN], eps)

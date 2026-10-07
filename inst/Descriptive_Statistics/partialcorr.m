@@ -25,11 +25,12 @@
 ## Linear or rank partial correlation coefficients.
 ##
 ## @code{@var{rho} = partialcorr (@var{x})} returns the sample linear partial
-## correlation coefficients between pairs of variables in the @math{n}-by-@math{p}
-## matrix @var{x}, controlling for the remaining columns of @var{x}.  Each element
-## @code{@var{rho}(i,j)} is the partial correlation between @code{@var{x}(:,i)}
-## and @code{@var{x}(:,j)}, adjusted for the other @math{p-2} columns.  @var{rho}
-## is a symmetric @math{p}-by-@math{p} matrix with ones on the diagonal.
+## correlation coefficients between pairs of variables in the
+## @math{n}-by-@math{p} matrix @var{x}, controlling for the remaining columns of
+## @var{x}.  Each element @code{@var{rho}(i,j)} is the partial correlation
+## between @code{@var{x}(:,i)} and @code{@var{x}(:,j)}, adjusted for the other
+## @math{p-2} columns.  @var{rho} is a symmetric @math{p}-by-@math{p} matrix
+## with ones on the diagonal.
 ##
 ## @code{@var{rho} = partialcorr (@var{x}, @var{z})} controls instead for the
 ## variables in the @math{n}-by-@math{q} matrix @var{z}, returning the
@@ -38,12 +39,12 @@
 ## @code{@var{rho} = partialcorr (@var{x}, @var{y}, @var{z})} returns the
 ## @math{p1}-by-@math{p2} matrix of partial correlations between the columns of
 ## the @math{n}-by-@math{p1} matrix @var{x} and the @math{n}-by-@math{p2} matrix
-## @var{y}, controlling for @var{z}.  Element @code{@var{rho}(i,j)} is the partial
-## correlation between @code{@var{x}(:,i)} and @code{@var{y}(:,j)}.
+## @var{y}, controlling for @var{z}.  Element @code{@var{rho}(i,j)} is the
+## partial correlation between @code{@var{x}(:,i)} and @code{@var{y}(:,j)}.
 ##
-## @code{[@var{rho}, @var{pval}] = partialcorr (@dots{})} also returns @var{pval},
-## a matrix of p-values for testing the hypothesis of no partial correlation
-## against the alternative selected by @qcode{'Tail'}.
+## @code{[@var{rho}, @var{pval}] = partialcorr (@dots{})} also returns
+## @var{pval}, a matrix of p-values for testing the hypothesis of no partial
+## correlation against the alternative selected by @qcode{'Tail'}.
 ##
 ## A coefficient is @code{NaN} where the controlling variables explain either
 ## of the two variables completely, since the partial correlation is then
@@ -62,21 +63,21 @@
 ## @item @qcode{'Rows'}
 ## @qcode{'all'} (default) uses all rows regardless of missing values (any
 ## @code{NaN} yields a @code{NaN} result); @qcode{'complete'} uses only the rows
-## with no missing values across all supplied variables; @qcode{'pairwise'} uses,
-## for each computed coefficient, the rows with no missing values among just the
-## variables involved in that coefficient.
+## with no missing values across all supplied variables; @qcode{'pairwise'}
+## uses, for each computed coefficient, the rows with no missing values among
+## just the variables involved in that coefficient.
 ##
 ## @item @qcode{'Tail'}
 ## The alternative hypothesis for @var{pval}: @qcode{'both'} (default, nonzero
-## correlation), @qcode{'right'} (greater than zero), or @qcode{'left'} (less than
-## zero).
+## correlation), @qcode{'right'} (greater than zero), or @qcode{'left'} (less
+## than zero).
 ## @end table
 ##
-## The partial correlation is computed by regressing each of the two variables on
-## the controlling variables (with an intercept) and correlating the residuals.
-## The p-value uses a Student's @math{t} statistic with @math{n - 2 - k} degrees
-## of freedom, where @math{k} is the number of controlling variables and @math{n}
-## the number of observations used.
+## The partial correlation is computed by regressing each of the two variables
+## on the controlling variables (with an intercept) and correlating the
+## residuals.  The p-value uses a Student's @math{t} statistic with
+## @math{n - 2 - k} degrees of freedom, where @math{k} is the number of
+## controlling variables and @math{n} the number of observations used.
 ##
 ## The data are centered, and the controlling variables rescaled, before the
 ## regression, which leaves the result unchanged in exact arithmetic and keeps

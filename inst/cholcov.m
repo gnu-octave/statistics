@@ -49,7 +49,7 @@
 ## @code{[@dots{}] = cholcov (@var{sigma}, 1)} is equivalent to
 ## @code{ [@dots{}] = cholcov (@var{sigma})}.
 ##
-## @seealso{chov}
+## @seealso{chol}
 ## @end deftypefn
 
 function [T, p] = cholcov (sigma, flag)

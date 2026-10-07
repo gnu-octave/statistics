@@ -32,9 +32,9 @@
 ## The Lilliefors statistic is the Kolmogorov-Smirnov statistic --- the maximum
 ## absolute difference between the empirical cumulative distribution function of
 ## @var{x} and the cumulative distribution function of the hypothesized family
-## with parameters estimated from @var{x}.  Because the parameters are estimated,
-## the null distribution of the statistic differs from that of the ordinary
-## Kolmogorov-Smirnov test.
+## with parameters estimated from @var{x}.  Because the parameters are
+## estimated, the null distribution of the statistic differs from that of the
+## ordinary Kolmogorov-Smirnov test.
 ##
 ## The following @qcode{Name-Value} pairs are supported:
 ##
@@ -48,8 +48,8 @@
 ## scale for the extreme value distribution.
 ##
 ## @item @qcode{'Alpha'} @tab The significance level, a scalar.  Without
-## @qcode{'MCTol'} it must lie in @math{[0.001, 0.5]} (the tabulated range); with
-## @qcode{'MCTol'} it may be any value in @math{(0, 1)}.  The default is
+## @qcode{'MCTol'} it must lie in @math{[0.001, 0.5]} (the tabulated range);
+## with @qcode{'MCTol'} it may be any value in @math{(0, 1)}.  The default is
 ## @math{0.05}.
 ##
 ## @item @qcode{'MCTol'} @tab Maximum Monte-Carlo standard error for the

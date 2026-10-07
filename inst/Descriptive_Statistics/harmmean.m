@@ -159,7 +159,7 @@ function m = harmmean (x, varargin)
     ## Two numeric input arguments, dimensions given.  Note scalar is vector!
     vecdim = varargin{1};
     if (isempty (vecdim) || ! (isvector (vecdim) && all (vecdim > 0)) ...
-          || any (rem (vecdim, 1)))
+          || any (rem (vecdim, 1)) || any (! isfinite (vecdim)))
       error ("harmmean: DIM must be a positive integer scalar or vector.");
     endif
 
@@ -332,3 +332,11 @@ endfunction
 %! harmmean ([1, 2; 3, 4], 1, 'all')
 %!error <harmmean: dimension and 'all' flag are mutually exclusive.> ...
 %! harmmean ([1, 2; 3, 4], [1, 2], 'all')
+%!error <harmmean: DIM must be a positive integer scalar or vector.> ...
+%! harmmean ([1 2 4], Inf)
+%!error <harmmean: DIM must be a positive integer scalar or vector.> ...
+%! harmmean ([1 2 4], [1 Inf])
+%!error <harmmean: DIM must be a positive integer scalar or vector.> ...
+%! harmmean ([1 2 4], [Inf 1])
+%!error <harmmean: DIM must be a positive integer scalar or vector.> ...
+%! harmmean ([1 2 4], [Inf Inf])

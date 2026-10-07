@@ -92,7 +92,7 @@
 ## the test statistic in place of @qcode{chisqstat}, and @qcode{df} holds two
 ## elements, the numerator and the denominator degrees of freedom.
 ##
-## @seealso{vartest, vartest2, anova1, bartlett_test, levene_test}
+## @seealso{vartest, vartest2, anova1}
 ## @end deftypefn
 
 function [p, stats] = vartestn (x, group, varargin)
@@ -107,7 +107,8 @@ function [p, stats] = vartestn (x, group, varargin)
   if (nargin < 2)
     group = [];
   endif
-  if (nargin > 1 && any (strcmpi (group, {'display', 'testtype'})))
+  if (nargin > 1 && ischar (group) && rows (group) == 1
+      && any (strcmpi (group, {'display', 'testtype'})))
     varargin = [{group} varargin];
     group = [];
   endif
@@ -218,7 +219,7 @@ function [p, stats] = vartestn (x, group, varargin)
       ## Compute p-value.  Fewer than two groups leaves nothing to compare,
       ## so the test is undefined rather than significant.
       if (Bdf > 0)
-        p = 1 - chi2cdf (F, Bdf);
+        p = chi2cdf (F, Bdf, 'upper');
       else
         p = NaN;
       endif
@@ -372,6 +373,44 @@ endfunction
 %!
 %! load examgrades
 %! [p, stats] = vartestn (grades, 'TestType', 'BrownForsythe', 'Display', 'off')
+%!test
+%! ## Below the resolution of 1 - chi2cdf, values from MATLAB R2024a
+%! s = sin (1:50)';
+%! p = vartestn ([0.01 * s; 100 * s], [ones(50, 1); 2 * ones(50, 1)], ...
+%!               'Display', 'off');
+%! assert_equal (p, 1.05713927539863e-181, -1e-10);
+%!test
+%! ## Group labels as text labels in a cell array
+%! v = [sin(1:12)'; 3 * cos(1:17)'; 0.5 * sin(2 * (1:9))'];
+%! g = [ones(12, 1); 2 * ones(17, 1); 3 * ones(9, 1)];
+%! gc = cellstr (char ('a' + g - 1));
+%! [~, s0] = vartestn (v, g, 'Display', 'off');
+%! [~, s] = vartestn (v, gc, 'Display', 'off');
+%! assert_equal (s.chisqstat, s0.chisqstat);
+%!test
+%! ## Group labels as a character matrix
+%! v = [sin(1:12)'; 3 * cos(1:17)'; 0.5 * sin(2 * (1:9))'];
+%! g = [ones(12, 1); 2 * ones(17, 1); 3 * ones(9, 1)];
+%! gc = cellstr (char ('a' + g - 1));
+%! [~, s0] = vartestn (v, g, 'Display', 'off');
+%! [~, s] = vartestn (v, char (gc), 'Display', 'off');
+%! assert_equal (s.chisqstat, s0.chisqstat);
+%!test
+%! ## Group labels as categorical labels
+%! v = [sin(1:12)'; 3 * cos(1:17)'; 0.5 * sin(2 * (1:9))'];
+%! g = [ones(12, 1); 2 * ones(17, 1); 3 * ones(9, 1)];
+%! gc = cellstr (char ('a' + g - 1));
+%! [~, s0] = vartestn (v, g, 'Display', 'off');
+%! [~, s] = vartestn (v, categorical (gc), 'Display', 'off');
+%! assert_equal (s.chisqstat, s0.chisqstat);
+%!test
+%! ## Group labels as string labels
+%! v = [sin(1:12)'; 3 * cos(1:17)'; 0.5 * sin(2 * (1:9))'];
+%! g = [ones(12, 1); 2 * ones(17, 1); 3 * ones(9, 1)];
+%! gc = cellstr (char ('a' + g - 1));
+%! [~, s0] = vartestn (v, g, 'Display', 'off');
+%! [~, s] = vartestn (v, string (gc), 'Display', 'off');
+%! assert_equal (s.chisqstat, s0.chisqstat);
 
 ## Test input validation
 %!error<vartestn: too few input arguments.> vartestn ();

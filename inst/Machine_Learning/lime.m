@@ -437,9 +437,13 @@ classdef lime
     ## @qcode{'euclidean'}, the default, @qcode{'squaredeuclidean'},
     ## @qcode{'seuclidean'}, @qcode{'mahalanobis'}, @qcode{'cityblock'},
     ## @qcode{'minkowski'}, @qcode{'chebychev'}, @qcode{'cosine'},
-    ## @qcode{'correlation'} and @qcode{'spearman'}; where they hold levels
-    ## it is @qcode{'goodall3'}, the default, or @qcode{'ofd'}.  A function
-    ## handle is also taken, which MATLAB does not; see below.
+    ## @qcode{'correlation'} and @qcode{'spearman'}; where some hold levels
+    ## it is @qcode{'goodall3'}, the default, or @qcode{'ofd'}.  Both count
+    ## level frequencies over the drawn observations and the query point
+    ## together.  @qcode{'goodall3'} is the @qcode{'goodall3'} measure of
+    ## @code{nomdist}; @qcode{'ofd'} is one less the mean similarity of its
+    ## @qcode{'of'} measure, @math{D / (1 + D)} of the @math{D} it returns.
+    ## A function handle is also taken, which MATLAB does not; see below.
     ##
     ## @item @qcode{'KernelWidth'} @tab @tab How sharply the weight falls
     ## away with distance, from just above 0 to 1.  The default is 0.75.
@@ -455,8 +459,27 @@ classdef lime
     ## @end multitable
     ##
     ## The weight of a drawn observation is
-    ## @math{exp (-0.5 (d / max (d) / w)^2)}, with @math{d} its distance
-    ## from the query point and @math{w} the kernel width.
+    ## @math{exp (-0.5 (d / D / w)^2)}, with @math{d} its distance from the
+    ## query point and @math{w} the kernel width.  @math{D} is the square
+    ## root of the number of predictors for @qcode{'goodall3'} and
+    ## @qcode{'ofd'}, and otherwise the largest distance between two drawn
+    ## observations.
+    ##
+    ## A predictor holding levels enters a linear simple model as one column
+    ## for each level other than the query point's, saying whether an
+    ## observation holds that level, so each coefficient is read against the
+    ## query point's level.
+    ##
+    ## Where the predictors mix numbers and levels, @qcode{'goodall3'} and
+    ## @qcode{'ofd'} score a predictor holding numbers by one less its
+    ## absolute difference over its range, the query point included, and
+    ## average that with the similarities of the predictors holding levels.
+    ## MATLAB does so by a rule it does not document, which none of the
+    ## constructions tried here reproduces, so on such data the explanation
+    ## differs from MATLAB's.  On levels alone @qcode{'goodall3'} agrees with
+    ## MATLAB; MATLAB does not document @qcode{'ofd'} beyond scoring a match
+    ## 0, and its coefficients differ from those here by up to @math{0.006}
+    ## on the fixture measured.
     ##
     ## @seealso{lime, lime.plot}
     ## @end deftypefn
@@ -508,9 +531,9 @@ classdef lime
       ## Nearness to the query point, and the weight it carries
       d = limeDistance (this.SyntheticData, QueryPoint, opts, ...
                         this.CategoricalPredictors, 'lime.fit');
-      spread = limeSpread (this.SyntheticData, opts, ...
-                           this.CategoricalPredictors, 'lime.fit');
-      w = limeWeights (d, spread, opts.KernelWidth);
+      scale = limeScale (this.SyntheticData, opts, ...
+                         this.CategoricalPredictors, 'lime.fit');
+      w = limeWeights (d, scale, opts.KernelWidth);
 
       ## A classifier is explained one class at a time: the simple model
       ## separates the class the explained model predicted from every other
@@ -525,10 +548,18 @@ classdef lime
       ## The predictors the simple model is fitted on, chosen a group at a
       ## time so that the levels of one predictor are taken or left together
       [A, grp] = limeExpand (this.SyntheticData, ...
-                             this.CategoricalPredictors, this.SyntheticData);
+                             this.CategoricalPredictors, this.SyntheticData, ...
+                             QueryPoint);
       sel = limeOMP (A, y, w, grp, NumImportant);
       if (isempty (sel))
-        sel = 1;
+        ## A predictor whose every drawn level is the query point's has no
+        ## column, and cannot be the one taken
+        if (isempty (grp))
+          error (strcat ("lime.fit: every drawn observation holds the", ...
+                         " query point's levels, so nothing can be", ...
+                         " explained."));
+        endif
+        sel = grp(1);
       endif
       this.ImportantPredictors = sel(:);
 
@@ -642,10 +673,10 @@ classdef lime
       endif
 
       ## A predictor holding levels is coded here rather than by the
-      ## learner, which gives a column to every level where one is left out
-      ## as the level the others are read against, as MATLAB leaves it
+      ## learner: a column to every level but the query point's, which the
+      ## others are read against, as MATLAB reads them
       [A, grp] = limeExpand (this.SyntheticData(:,sel), catsel, ...
-                             this.SyntheticData(:,sel));
+                             this.SyntheticData(:,sel), this.QueryPoint(sel));
       enames = cell (1, columns (A));
       for k = 1:columns (A)
         enames{k} = names{grp(k)};
@@ -677,7 +708,7 @@ classdef lime
       [~, grp] = limeExpand (this.SyntheticData(:,sel), ...
                              find (ismember (sel, ...
                                    this.CategoricalPredictors)), ...
-                             this.SyntheticData(:,sel));
+                             this.SyntheticData(:,sel), this.QueryPoint(sel));
       lab = cell (1, numel (val));
       for k = 1:numel (val)
         lab{k} = this.PredictorNames_{sel(grp(k))};
@@ -1035,9 +1066,9 @@ function d = limeDistance (S, q, opts, cat, caller)
   endif
   switch (Dist)
     case 'goodall3'
-      d = limeGoodall3 (S, q);
+      d = limeNominal (S, q, cat, 'goodall3');
     case 'ofd'
-      d = limeOFD (S, q);
+      d = limeNominal (S, q, cat, 'of');
     case 'seuclidean'
       d = limeNamed (S, q, 'seuclidean', opts.Scale);
     case 'mahalanobis'
@@ -1062,59 +1093,35 @@ function d = limeNamed (S, q, name, par)
 
 endfunction
 
-## The Goodall 3 measure of Boriah, Chandola and Kumar (2008): a match on a
-## rare level says more than a match on a common one, and a mismatch says
-## nothing at all.  MATLAB's own values differ from the published measure.
-function d = limeGoodall3 (S, q)
+## The two measures for levels, those of nomdist with the query point
+## counted into the frequencies, as MATLAB counts it.  A predictor holding
+## numbers scores one less its difference over its range, the query point
+## included.  The distance is one less the mean similarity, which for OF is
+## D / (1 + D) of nomdist's own 1 / S - 1, as MATLAB describes it.
+function d = limeNominal (S, q, cat, name)
 
-  n = rows (S);
   K = columns (S);
-  s = zeros (n, 1);
-  for k = 1:K
-    m = (S(:,k) == q(k));
-    f = sum (m);
-    if (n > 1)
-      p2 = f * (f - 1) / (n * (n - 1));
+  s = zeros (rows (S), 1);
+  if (! isempty (cat))
+    D = nomdist2 (S(:,cat), q(cat), name, 'CountQuery', true);
+    if (strcmp (name, 'goodall3'))
+      s = numel (cat) * (1 - D);
     else
-      p2 = 0;
+      s = numel (cat) ./ (1 + D);
     endif
-    s += m * (1 - p2);
-  endfor
+  endif
+  num = setdiff (1:K, cat);
+  if (! isempty (num))
+    R = range ([S(:,num); q(num)], 1);
+    R(R == 0) = 1;
+    s += sum (1 - abs (S(:,num) - q(num)) ./ R, 2);
+  endif
   d = 1 - s / K;
 
 endfunction
 
-## The occurrence frequency measure: a mismatch between two rare levels
-## says less than one between two common ones.  The dissimilarity is the
-## reciprocal of the similarity less one, not one less the similarity.
-function d = limeOFD (S, q)
-
-  n = rows (S);
-  K = columns (S);
-  s = zeros (n, 1);
-  for k = 1:K
-    v = S(:,k);
-    m = (v == q(k));
-    fq = sum (m);
-    cnt = zeros (n, 1);
-    lev = unique (v);
-    for l = lev(:)'
-      cnt(v == l) = sum (v == l);
-    endfor
-    sk = ones (n, 1);
-    off = ! m;
-    sk(off) = 1 ./ (1 + log (n / fq) * log (n ./ cnt(off)));
-    s += sk;
-  endfor
-  d = 1 ./ (s / K) - 1;
-
-endfunction
-
 ## The weight a drawn observation carries, which falls away with distance
-## once the distances are put on a common scale.  The scale is how far apart
-## the two furthest drawn observations lie, which belongs to the draw and
-## not to the query point, so moving the query point does not rescale the
-## weights of everything around it.
+## once the distances are put on a common scale.
 function w = limeWeights (d, scale, kw)
 
   if (! (scale > 0))
@@ -1122,6 +1129,24 @@ function w = limeWeights (d, scale, kw)
     return;
   endif
   w = exp (-0.5 * (d ./ scale ./ kw) .^ 2);
+
+endfunction
+
+## The scale distances are put on: the square root of the number of
+## predictors for the two measures for levels, as MATLAB takes it, and
+## otherwise how far apart the two furthest drawn observations lie, which
+## belongs to the draw and not to the query point.
+function m = limeScale (S, opts, cat, caller)
+
+  Dist = opts.Distance;
+  if (isempty (Dist) && ! isempty (cat))
+    Dist = 'goodall3';
+  endif
+  if (ischar (Dist) && any (strcmp (Dist, {'goodall3', 'ofd'})))
+    m = sqrt (columns (S));
+  else
+    m = limeSpread (S, opts, cat, caller);
+  endif
 
 endfunction
 
@@ -1174,17 +1199,18 @@ function m = limeSpread (S, opts, cat, caller)
 endfunction
 
 ## The observations as the columns a linear model is fitted on: a predictor
-## holding levels becomes one column per level beyond the first, each
-## saying whether the observation carries that level rather than the first.
-function [A, grp] = limeExpand (Z, cat, ref)
+## holding levels becomes one column per level of REF other than the query
+## point's, each saying whether the observation carries that level.
+function [A, grp] = limeExpand (Z, cat, ref, q)
 
   M = columns (Z);
-  A = [];
+  A = zeros (rows (Z), 0);
   grp = [];
   for j = 1:M
     if (any (cat == j))
       lev = unique (ref(:,j));
-      for l = lev(2:end)'
+      lev(lev == q(j)) = [];
+      for l = lev(:)'
         A = [A, double(Z(:,j) == l)];
         grp = [grp, j];
       endfor
@@ -1252,7 +1278,7 @@ function v = limeSimpleFitted (this, sel, q, bbf)
     z = q(sel);
   else
     catsel = find (ismember (sel, this.CategoricalPredictors));
-    z = limeExpand (q(sel), catsel, this.SyntheticData(:,sel));
+    z = limeExpand (q(sel), catsel, this.SyntheticData(:,sel), q(sel));
   endif
   v = predict (this.SimpleModel, z);
   if (strcmp (this.Type, 'regression'))
@@ -1470,7 +1496,7 @@ endfunction
 %! assert_equal (L.NumSyntheticData, 3);
 %! assert_equal (L.Fitted, S(:,1));
 
-%!test  # a predictor holding levels becomes one column per level beyond one
+%!test  # a predictor holding levels becomes one column per level but one
 %! C = [1, 1; 1, 2; 2, 1; 2, 2; 3, 1; 3, 2; 1, 1; 2, 2];
 %! f = @(Z) 5 * (Z(:,1) == 3) + Z(:,2);
 %! L = lime (f, C, 'Type', 'regression', 'CategoricalPredictors', [1, 2], ...
@@ -1504,7 +1530,10 @@ endfunction
 %! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2);
 %! L = lime (f, X, 'Type', 'regression', 'CustomSyntheticData', X);
 %! a = fit (L, [3, 28], 2);
-%! hf = figure ('visible', 'off');
+%! ## plot opens a figure of its own, kept off screen through the default
+%! vis = get (0, 'DefaultFigureVisible');
+%! set (0, 'DefaultFigureVisible', 'off');
+%! h = [];
 %! unwind_protect
 %!   h = plot (a);
 %!   assert_equal (strcmp (get (h, 'type'), 'figure'), true);
@@ -1513,9 +1542,9 @@ endfunction
 %!                 'LIME with Linear Model');
 %!   assert_equal (get (get (ax, 'xlabel'), 'string'), 'Coefficient');
 %!   assert_equal (get (get (ax, 'ylabel'), 'string'), 'Predictor');
-%!   close (h);
 %! unwind_protect_cleanup
-%!   close (hf);
+%!   close (h);
+%!   set (0, 'DefaultFigureVisible', vis);
 %! end_unwind_protect
 
 %!test  # a tree is titled after what it is, over its predictor importance
@@ -1523,16 +1552,19 @@ endfunction
 %! f = @(Z) 2 * Z(:,1) - 3 * Z(:,2);
 %! L = lime (f, X, 'Type', 'regression', 'CustomSyntheticData', X);
 %! a = fit (L, [3, 28], 2, 'SimpleModelType', 'tree');
-%! hf = figure ('visible', 'off');
+%! ## plot opens a figure of its own, kept off screen through the default
+%! vis = get (0, 'DefaultFigureVisible');
+%! set (0, 'DefaultFigureVisible', 'off');
+%! h = [];
 %! unwind_protect
 %!   h = plot (a);
 %!   ax = findobj (h, 'type', 'axes');
 %!   assert_equal (get (get (ax, 'title'), 'string'), ...
 %!                 'LIME with Decision Tree Model');
 %!   assert_equal (get (get (ax, 'xlabel'), 'string'), 'Predictor Importance');
-%!   close (h);
 %! unwind_protect_cleanup
-%!   close (hf);
+%!   close (h);
+%!   set (0, 'DefaultFigureVisible', vis);
 %! end_unwind_protect
 
 %!test  # 'P' reaches the distance that takes it
@@ -1596,7 +1628,10 @@ endfunction
 %! Mdl = fitcknn (meas, species);
 %! S = [meas(1:8,:); meas(51:58,:); meas(101:108,:)];
 %! a = fit (lime (Mdl, 'CustomSyntheticData', S), meas(1,:), 2);
-%! hf = figure ('visible', 'off');
+%! ## plot opens a figure of its own, kept off screen through the default
+%! vis = get (0, 'DefaultFigureVisible');
+%! set (0, 'DefaultFigureVisible', 'off');
+%! h = [];
 %! unwind_protect
 %!   h = plot (a);
 %!   ax = findobj (h, 'type', 'axes');
@@ -1604,9 +1639,9 @@ endfunction
 %!                 'LIME with Linear Model');
 %!   assert_equal (numel (get (ax, 'yticklabel')), ...
 %!                 numel (a.SimpleModel.Beta));
-%!   close (h);
 %! unwind_protect_cleanup
-%!   close (hf);
+%!   close (h);
+%!   set (0, 'DefaultFigureVisible', vis);
 %! end_unwind_protect
 
 ## Input validation
@@ -1737,3 +1772,67 @@ endfunction
 %!error<lime.fit: the table holds no predictor 'PL'.> ...
 %! fit (lime (ltM, ltT(:,[1, 2, 3, 5]), 'NumSyntheticData', 50), ...
 %!      ltT(1,[1, 3, 5]), 2)
+
+## Predictors holding levels, measured on R2024a 2026-09-29: a function
+## handle as the model and the same drawn observations in both engines
+%!shared lgX, lgS, lgf
+%! lgX = [1, 1, 1; 1, 3, 2; 1, 2, 2; 1, 2, 1; 2, 2, 3; 1, 2, 3; 1, 2, 3; ...
+%!        2, 2, 1; 1, 1, 3; 1, 2, 1; 1, 3, 1; 1, 3, 3; 2, 2, 1; 1, 3, 3; ...
+%!        1, 2, 1; 1, 2, 3; 1, 3, 1; 1, 1, 3; 2, 3, 1; 2, 2, 1; 3, 2, 3; ...
+%!        1, 2, 3; 1, 3, 3; 1, 2, 3; 1, 2, 3; 1, 2, 1; 3, 2, 3; 1, 3, 3; ...
+%!        3, 2, 3; 1, 3, 1; 1, 2, 1; 1, 3, 1; 2, 2, 1; 1, 2, 3; 1, 2, 1; ...
+%!        2, 3, 1; 1, 2, 1; 3, 1, 3; 3, 3, 3; 1, 2, 3];
+%! lgS = [2, 3, 2; 2, 1, 2; 1, 1, 2; 1, 3, 3; 2, 1, 1; 1, 1, 1; 3, 2, 2; ...
+%!        3, 3, 1; 3, 3, 2; 3, 3, 2; 3, 1, 1; 3, 2, 3; 3, 1, 1; 3, 3, 1; ...
+%!        1, 1, 2; 2, 3, 2; 1, 1, 2; 2, 1, 2; 2, 1, 3; 1, 3, 2; 2, 1, 2; ...
+%!        2, 1, 2; 1, 3, 1; 2, 1, 1; 2, 1, 2; 1, 3, 2; 1, 1, 2; 1, 1, 2; ...
+%!        1, 1, 2; 1, 2, 3; 2, 2, 3; 3, 1, 2; 3, 3, 1; 2, 1, 3; 2, 1, 2; ...
+%!        3, 1, 1; 3, 3, 2; 1, 2, 2; 1, 3, 2; 2, 1, 2; 1, 3, 3; 1, 3, 2; ...
+%!        3, 1, 3; 2, 1, 2; 2, 1, 1; 2, 1, 2; 3, 3, 2; 2, 1, 2; 1, 3, 2; ...
+%!        2, 1, 2; 2, 1, 2; 2, 3, 2; 3, 2, 1; 1, 3, 2; 3, 1, 3; 3, 1, 3; ...
+%!        1, 3, 2; 3, 2, 3; 3, 2, 2; 3, 3, 1];
+%! lgf = @(Z) 3 * (Z(:,1) == 1) .* (Z(:,2) == 2) + (Z(:,3) == 3) ...
+%!           + 0.5 * Z(:,1) .* (Z(:,3) == 1);
+%!test
+%! L = lime (lgf, lgX, 'Type', 'regression', 'CategoricalPredictors', ...
+%!           [1, 2, 3], 'CustomSyntheticData', lgS);
+%! a = fit (L, [3, 1, 2], 3, 'Distance', 'goodall3', 'KernelWidth', 0.25);
+%! assert_equal (a.SimpleModel.Beta', [0.121118041142843, ...
+%!               -0.000600506617868, 0.398788365579973, 0.021938631288382, ...
+%!               1.340450289008853, 1.006911791276333], 1e-4);
+%!test
+%! L = lime (lgf, lgX, 'Type', 'regression', 'CategoricalPredictors', ...
+%!           [1, 2, 3], 'CustomSyntheticData', lgS);
+%! a = fit (L, [3, 1, 2], 3, 'KernelWidth', 0.75);
+%! assert_equal (a.SimpleModel.Beta', [0.228175170664997, ...
+%!               0.013506333846389, 0.753704128127034, -0.009766750012839, ...
+%!               1.230617170587539, 0.995575992275549], 1e-4);
+%!test
+%! ## Ours; MATLAB's undocumented rule gives [0.177564664766370,
+%! ## 0.005664618556746, 0.676928812402028, 0.004396374156961,
+%! ## 1.246265361445370, 0.993126581893467]
+%! L = lime (lgf, lgX, 'Type', 'regression', 'CategoricalPredictors', ...
+%!           [1, 2, 3], 'CustomSyntheticData', lgS);
+%! a = fit (L, [3, 1, 2], 3, 'Distance', 'ofd', 'KernelWidth', 0.25);
+%! assert_equal (a.SimpleModel.Beta', [0.174628345510863, ...
+%!               0.00526956351961691, 0.671359079482785, ...
+%!               0.0052078819336837, 1.24767221788603, ...
+%!               0.993112744621723], 1e-6);
+%!test  # each coefficient is read against the query point's level
+%! C = [1, 1; 2, 1; 3, 1; 1, 2; 2, 2; 3, 2; 3, 1; 1, 2];
+%! f = @(Z) 5 * (Z(:,1) == 3);
+%! L = lime (f, C, 'Type', 'regression', 'CategoricalPredictors', [1, 2], ...
+%!           'CustomSyntheticData', C);
+%! a = fit (L, [3, 1], 1);
+%! assert_equal (a.ImportantPredictors, 1);
+%! assert_equal (a.SimpleModel.Beta', [-5, -5], 1e-3);
+%!test  # a predictor held at the query point's level throughout is not taken
+%! C = [2, 1; 2, 2; 2, 3; 2, 1; 2, 2; 2, 3];
+%! f = @(Z) Z(:,2);
+%! L = lime (f, C, 'Type', 'regression', 'CategoricalPredictors', [1, 2], ...
+%!           'CustomSyntheticData', C);
+%! a = fit (L, [2, 1], 2);
+%! assert_equal (a.ImportantPredictors, 2);
+%!error<lime.fit: every drawn observation holds the query point's levels, so nothing can be explained.> ...
+%! fit (lime (@(Z) Z(:,1), [1, 1; 1, 1], 'Type', 'regression', ...
+%!            'CategoricalPredictors', [1, 2]), [1, 1], 1)

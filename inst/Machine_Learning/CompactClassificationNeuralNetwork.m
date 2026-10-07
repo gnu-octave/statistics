@@ -379,15 +379,6 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
     endfunction
 
     ## Custom display
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
-    ## Custom display
     function disp (this)
       fprintf ("\n  CompactClassificationNeuralNetwork\n\n");
       ## Print selected properties
@@ -542,7 +533,7 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
     ## fitted on.  The response may also be given beside the table as
     ## @var{Y}.
     ##
-    ## @seealso{CompactClassificationNeuralNetwork, ##
+    ## @seealso{CompactClassificationNeuralNetwork,
     ## ClassificationNeuralNetwork, CompactClassificationNeuralNetwork.edge,
     ## CompactClassificationNeuralNetwork.loss,
     ## CompactClassificationNeuralNetwork.predict}
@@ -606,7 +597,7 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
     ## fitted on.  The response may also be given beside the table as
     ## @var{Y}.
     ##
-    ## @seealso{CompactClassificationNeuralNetwork, ##
+    ## @seealso{CompactClassificationNeuralNetwork,
     ## ClassificationNeuralNetwork, CompactClassificationNeuralNetwork.margin,
     ## CompactClassificationNeuralNetwork.loss,
     ## CompactClassificationNeuralNetwork.predict}
@@ -626,10 +617,6 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
       endif
       [X, Y, varargin] = tableResponse (this, 'edge', X, Y, varargin, ...
                                         nargin > 2);
-      if (mod (numel (varargin), 2) != 0)
-        error (strcat ("CompactClassificationNeuralNetwork.edge:", ...
-                       " Name-Value arguments must be in pairs."));
-      endif
 
       [X, Y] = checkXY_ (this, X, Y, "edge");
 
@@ -686,7 +673,7 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
     ## sum to one before it is applied.
     ## @end itemize
     ##
-    ## @seealso{CompactClassificationNeuralNetwork, ##
+    ## @seealso{CompactClassificationNeuralNetwork,
     ## ClassificationNeuralNetwork, CompactClassificationNeuralNetwork.margin,
     ## CompactClassificationNeuralNetwork.edge,
     ## CompactClassificationNeuralNetwork.predict}
@@ -713,30 +700,48 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
 
       [X, Y] = checkXY_ (this, X, Y, "loss");
 
-      ## Parse optional arguments
-      LossFun = 'mincost';
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mincost', []};
+      [LossFun, W, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
       lossnames = {'binodeviance', 'classifcost', 'classiferror', ...
                    'crossentropy', 'exponential', 'hinge', 'logit', ...
                    'mincost', 'quadratic'};
-      args = varargin;
-      keep = true (1, numel (args));
-      for i = 1:2:numel (args)
-        if (strcmpi (args{i}, 'lossfun'))
-          LossFun = args{i+1};
-          if (! (ischar (LossFun) && isrow (LossFun)))
-            error (strcat ("CompactClassificationNeuralNetwork.loss:", ...
-                           " 'LossFun' must be a character vector."));
-          endif
-          LossFun = tolower (LossFun);
-          if (! any (strcmpi (LossFun, lossnames)))
-            error (strcat ("CompactClassificationNeuralNetwork.loss:", ...
-                           " unsupported Loss function."));
-          endif
-          keep(i:i+1) = false;
-        endif
-      endfor
-      W = getWeights_ (this, args(keep), rows (X), "loss");
-      W = W(:) / sum (W);
+      if (! (ischar (LossFun) && isrow (LossFun)))
+        error (strcat ("CompactClassificationNeuralNetwork.loss: 'LossFun'", ...
+                       " must be a character vector."));
+      endif
+      LossFun = tolower (LossFun);
+      if (! any (strcmpi (LossFun, lossnames)))
+        error (strcat ("CompactClassificationNeuralNetwork.loss:", ...
+                       " unsupported Loss function."));
+      endif
+      errmsg = weightsClass (W);
+      if (! isempty (errmsg))
+        error ("CompactClassificationNeuralNetwork.loss: %s", errmsg);
+      endif
+      if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
+        error (strcat ("CompactClassificationNeuralNetwork.loss: 'Weights'", ...
+                       " must be a numeric vector."));
+      endif
+      if (! isempty (W) && numel (W) != rows (X))
+        error (strcat ("CompactClassificationNeuralNetwork.loss: size of", ...
+                       " 'Weights' must equal the number of rows in X."));
+      endif
+
+      if (! isempty (args))
+        error (strcat ("CompactClassificationNeuralNetwork.loss: invalid", ...
+                       " optional paired argument."));
+      endif
+      if (isempty (W))
+        W = ones (rows (X), 1);
+      endif
+      W = double (W(:));
+      W = W / sum (W);
 
       [label, scores] = predict (this, X);
       classes = this.ClassNames;
@@ -886,34 +891,6 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
         error (strcat ("CompactClassificationNeuralNetwork.%s: Y must have", ...
                        " the same number of rows as X."), caller);
       endif
-    endfunction
-
-    ## Pull a "Weights" pair out of the optional arguments, defaulting to a
-    ## uniform weight, and reject any other name.
-    function W = getWeights_ (this, args, n, caller)
-      W = ones (n, 1);
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("CompactClassificationNeuralNetwork.%s: parameter", ...
-                         " name must be a character vector."), caller);
-        endif
-        if (strcmpi (args{i}, 'weights'))
-          W = args{i+1};
-          if (! (isnumeric (W) && isvector (W)))
-            error (strcat ("CompactClassificationNeuralNetwork.%s:", ...
-                           " 'Weights' must be a numeric vector."), caller);
-          endif
-          if (numel (W) != n)
-            error (strcat ("CompactClassificationNeuralNetwork.%s: size of", ...
-                           " 'Weights' must equal the number of", ...
-                           " rows in X."), caller);
-          endif
-        else
-          error (strcat ("CompactClassificationNeuralNetwork.%s: invalid", ...
-                         " parameter name in optional paired", ...
-                         " arguments."), caller);
-        endif
-      endfor
     endfunction
 
   endmethods
@@ -1085,12 +1062,14 @@ endclassdef
 ## Test input validation for edge method
 %!error<CompactClassificationNeuralNetwork.edge: too few input arguments.> ...
 %! edge (CMdl, x)
-%!error<CompactClassificationNeuralNetwork.edge: Name-Value arguments must be in pairs.> ...
+%!error<CompactClassificationNeuralNetwork.edge: optional arguments must be given in Name-Value pairs.> ...
 %! edge (CMdl, x, y, 'Weights')
-%!error<CompactClassificationNeuralNetwork.edge: invalid parameter name in optional paired arguments.> ...
+%!error<CompactClassificationNeuralNetwork.edge: invalid optional paired argument.> ...
 %! edge (CMdl, x, y, 'LossFun', 'hinge')
-%!error<CompactClassificationNeuralNetwork.edge: 'Weights' must be a numeric vector.> ...
+%!error<CompactClassificationNeuralNetwork.edge: 'Weights' must be a real vector of class single or double.> ...
 %! edge (CMdl, x, y, 'Weights', 'a')
+%!error<CompactClassificationNeuralNetwork.edge: 'Weights' must be a numeric vector.> ...
+%! edge (CMdl, x, y, 'Weights', ones (2, 2))
 %!error<CompactClassificationNeuralNetwork.edge: size of 'Weights' must equal the number of rows in X.> ...
 %! edge (CMdl, x, y, 'Weights', [1, 2, 3])
 
@@ -1103,6 +1082,8 @@ endclassdef
 %! loss (CMdl, x, y, 'LossFun', 1)
 %!error<CompactClassificationNeuralNetwork.loss: unsupported Loss function.> ...
 %! loss (CMdl, x, y, 'LossFun', 'nonsense')
+%!error<CompactClassificationNeuralNetwork.loss: invalid optional paired argument.> ...
+%! loss (CMdl, x, y, 'Bogus', 1)
 
 ## A saved and reloaded compact model carries every property it holds.
 %!test
@@ -1309,3 +1290,8 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <CompactClassificationNeuralNetwork.loss: 'Weights' must be a real vector of class single or double.> ...
+%! loss (compact (fitcnet ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2])), ...
+%!       [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))

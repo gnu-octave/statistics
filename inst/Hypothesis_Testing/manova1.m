@@ -177,7 +177,7 @@ function [d, p, stats] = manova1 (x, group, alpha)
   lambda = lambda(1 + dims);
   chistat = -(nsample - 1 - (nrgroups + nvar) / 2) .* log (lambda);
   chisqdf = ((nvar - dims) .* (nrgroups - 1 - dims))';
-  pp = 1 - chi2cdf (chistat, chisqdf);
+  pp = chi2cdf (chistat, chisqdf, 'upper');
 
   ## Get dimension where we can reject the null hypothesis
   d = dims(pp>alpha);
@@ -257,3 +257,9 @@ endfunction
 %! assert_equal (d, 2);
 %! assert_equal (p, [0, 0.00516082975137544, 0.1206528056514453]', ...
 %!            [1e-12, 1e-12, 1e-12]');
+%!test
+%! ## Below the resolution of 1 - chi2cdf, values from MATLAB R2024a
+%! w = [1:10, 101:110, 201:210]';
+%! g = kron ((1:3)', ones (10, 1));
+%! [~, p] = manova1 ([w, sin(1:30)'], g);
+%! assert_equal (p(1), 2.48250847911811e-37, -1e-10);

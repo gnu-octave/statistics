@@ -15,30 +15,29 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftp {statistics} CompactRegressionNeuralNetwork
-##
-## Compact neural network regression
-##
-## A @code{CompactRegressionNeuralNetwork} object holds a neural network
-## regression model that has dropped its training data.
-##
-## Create a @code{CompactRegressionNeuralNetwork} object by using the
-## @code{compact} method of a @code{RegressionNeuralNetwork} object.
-##
-## The compact model keeps what is needed to answer about new data, the layer
-## weights and biases, the activations, the standardization and the response
-## transform, and drops what only describes the fit: the predictor and response
-## data, the observation weights, the rows used, the number of observations and
-## the iteration by iteration training history.  @code{predict} and
-## @code{loss} therefore agree with the full model to the last digit, while
-## @code{resubPredict} and @code{resubLoss} do not exist here, there being no
-## training data left to resubstitute.
-##
-## @seealso{RegressionNeuralNetwork, fitrnet}
-## @end deftp
-
 classdef CompactRegressionNeuralNetwork < PredictiveModel
+  ## -*- texinfo -*-
+  ## @deftp {statistics} CompactRegressionNeuralNetwork
+  ##
+  ## Compact neural network regression
+  ##
+  ## A @code{CompactRegressionNeuralNetwork} object holds a neural network
+  ## regression model that has dropped its training data.
+  ##
+  ## Create a @code{CompactRegressionNeuralNetwork} object by using the
+  ## @code{compact} method of a @code{RegressionNeuralNetwork} object.
+  ##
+  ## The compact model keeps what is needed to answer about new data, the layer
+  ## weights and biases, the activations, the standardization and the response
+  ## transform, and drops what only describes the fit: the predictor and
+  ## response data, the observation weights, the rows used, the number of
+  ## observations and the iteration by iteration training history.
+  ## @code{predict} and @code{loss} therefore agree with the full model to the
+  ## last digit, while @code{resubPredict} and @code{resubLoss} do not exist
+  ## here, there being no training data left to resubstitute.
+  ##
+  ## @seealso{RegressionNeuralNetwork, fitrnet}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 
@@ -267,15 +266,6 @@ classdef CompactRegressionNeuralNetwork < PredictiveModel
     endfunction
 
     ## Custom display
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
-    ## Custom display
     function disp (this)
       fprintf ("\n  CompactRegressionNeuralNetwork\n\n");
       ## Print selected properties
@@ -441,35 +431,48 @@ classdef CompactRegressionNeuralNetwork < PredictiveModel
 
       [X, Y] = checkXY_ (this, X, Y, 'loss');
 
-      ## Defaults, then the optional pairs
-      LossFun = 'mse';
-      args = varargin;
-      keep = true (1, numel (args));
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("CompactRegressionNeuralNetwork.loss: parameter", ...
-                         " name must be a character vector."));
-        endif
-        if (strcmpi (args{i}, 'lossfun'))
-          LossFun = args{i+1};
-          if (! (is_function_handle (LossFun) ||
-                 (ischar (LossFun) && isrow (LossFun))))
-            error (strcat ("CompactRegressionNeuralNetwork.loss: 'LossFun'", ...
-                           " must be a character vector or a function", ...
-                           " handle."));
-          endif
-          if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
-            error (strcat ("CompactRegressionNeuralNetwork.loss:", ...
-                           " unsupported 'LossFun' value."));
-          endif
-          keep(i:i+1) = false;
-        endif
-      endfor
-      W = getWeights_ (this, args(keep), rows (X), 'loss');
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mse', []};
+      [LossFun, W, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (is_function_handle (LossFun) ||
+             (ischar (LossFun) && isrow (LossFun))))
+        error (strcat ("CompactRegressionNeuralNetwork.loss: 'LossFun'", ...
+                       " must be a character vector or a function handle."));
+      endif
+      if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
+        error (strcat ("CompactRegressionNeuralNetwork.loss: unsupported", ...
+                       " 'LossFun' value."));
+      endif
+      errmsg = weightsClass (W);
+      if (! isempty (errmsg))
+        error ("CompactRegressionNeuralNetwork.loss: %s", errmsg);
+      endif
+      if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
+        error (strcat ("CompactRegressionNeuralNetwork.loss: 'Weights'", ...
+                       " must be a numeric vector."));
+      endif
+      if (! isempty (W) && numel (W) != rows (X))
+        error (strcat ("CompactRegressionNeuralNetwork.loss: size of", ...
+                       " 'Weights' must equal the number of rows in X."));
+      endif
+
+      if (! isempty (args))
+        error (strcat ("CompactRegressionNeuralNetwork.loss: invalid", ...
+                       " optional paired argument."));
+      endif
+      if (isempty (W))
+        W = ones (rows (X), 1);
+      endif
 
       ## Weights are normalized to sum to one, as MATLAB does, so a loss is
       ## a weighted average rather than a weighted sum.
-      W = W(:) / sum (W);
+      W = double (W(:));
+      W = W / sum (W);
       yFit = predict (this, X);
       Y = Y(:);
 
@@ -562,34 +565,6 @@ classdef CompactRegressionNeuralNetwork < PredictiveModel
         error (strcat ("CompactRegressionNeuralNetwork.%s: Y must have the", ...
                        " same number of rows as X."), caller);
       endif
-    endfunction
-
-    ## Pull a "Weights" pair out of the optional arguments, defaulting to a
-    ## uniform weight, and reject any other name.
-    function W = getWeights_ (this, args, n, caller)
-      W = ones (n, 1);
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("CompactRegressionNeuralNetwork.%s: parameter", ...
-                         " name must be a character vector."), caller);
-        endif
-        if (strcmpi (args{i}, 'weights'))
-          W = args{i+1};
-          if (! (isnumeric (W) && isvector (W)))
-            error (strcat ("CompactRegressionNeuralNetwork.%s: 'Weights'", ...
-                           " must be a numeric vector."), caller);
-          endif
-          if (numel (W) != n)
-            error (strcat ("CompactRegressionNeuralNetwork.%s: size of", ...
-                           " 'Weights' must equal the number of", ...
-                           " rows in X."), caller);
-          endif
-        else
-          error (strcat ("CompactRegressionNeuralNetwork.%s: invalid", ...
-                         " parameter name in optional paired", ...
-                         " arguments."), caller);
-        endif
-      endfor
     endfunction
 
   endmethods
@@ -752,11 +727,13 @@ endclassdef
 %! loss (CRNN, [1; 2], [2; 4], 'LossFun', 'mae')
 %!error<CompactRegressionNeuralNetwork.loss: 'LossFun' must return a numeric scalar.> ...
 %! loss (CRNN, [1; 2], [2; 4], 'LossFun', @(y, yf, w) [1, 2])
-%!error<CompactRegressionNeuralNetwork.loss: 'Weights' must be a numeric vector.> ...
+%!error<CompactRegressionNeuralNetwork.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (CRNN, [1; 2], [2; 4], 'Weights', {'a'})
+%!error<CompactRegressionNeuralNetwork.loss: 'Weights' must be a numeric vector.> ...
+%! loss (CRNN, [1; 2], [2; 4], 'Weights', ones (2, 2))
 %!error<CompactRegressionNeuralNetwork.loss: size of 'Weights' must equal the number of rows in X.> ...
 %! loss (CRNN, [1; 2], [2; 4], 'Weights', [1; 2; 3])
-%!error<CompactRegressionNeuralNetwork.loss: invalid parameter name in optional paired arguments.> ...
+%!error<CompactRegressionNeuralNetwork.loss: invalid optional paired argument.> ...
 %! loss (CRNN, [1; 2], [2; 4], 'Nope', 1)
 
 ## Test input validation for savemodel

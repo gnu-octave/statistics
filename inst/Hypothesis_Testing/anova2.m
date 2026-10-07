@@ -34,7 +34,8 @@
 ## @item
 ## @var{x} contains the data and it must be a matrix of at least two columns and
 ## two rows.  @code{NaN} values are not accepted, since @code{anova2} requires a
-## balanced design; use @code{anovan} for data with missing observations.
+## balanced design; use @code{anovan} for data with missing observations.  An
+## empty @var{x} is an error, whereas MATLAB returns @code{NaN} p-values.
 ##
 ## @item
 ## @var{reps} is the number of replicates for each combination of factor groups.
@@ -104,6 +105,10 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   ## Check for valid number of input arguments
   if (nargin < 1 || nargin >4)
     error ("anova2: invalid number of input arguments.");
+  endif
+  ## Check for empty X
+  if (isempty (x))
+    error ("anova2: X must not be empty.");
   endif
   ## Check for NaN values in X
   if (any (isnan ( x(:))))
@@ -243,21 +248,21 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
 
   ## Calculate F statistics and p values
   F_MSR = MSR / MSE;            ## F statistic for Row Factor
-  p_MSR = 1 - fcdf (F_MSR, df_SSR, df_SSE);
+  p_MSR = fcdf (F_MSR, df_SSR, df_SSE, 'upper');
   MSC = SSC / df_SSC;           ## Mean Square for Column Factor
   F_MSC = MSC / MS_DENOM;       ## F statistic for Column Factor
   if (isempty (epsilonhat))
-    p_MSC = 1 - fcdf (F_MSC, df_SSC, df_DENOM);
+    p_MSC = fcdf (F_MSC, df_SSC, df_DENOM, 'upper');
   else
     ## Apply correction for sphericity to the p-value of the column factor
-    p_MSC = 1 - fcdf (F_MSC, dfN_GG, dfD_GG);
+    p_MSC = fcdf (F_MSC, dfN_GG, dfD_GG, 'upper');
   endif
 
   ## With replication
   if (reps > 1)
     MSI = SSI / df_SSI;         ## Mean Square for Interaction
     F_MSI = MSI / MSE;          ## F statistic for Interaction
-    p_MSI = 1 - fcdf (F_MSI, df_SSI, df_SSE);
+    p_MSI = fcdf (F_MSI, df_SSI, df_SSE, 'upper');
   else
     MSI = 0;
     F_MSI = 0;
@@ -426,5 +431,14 @@ endfunction
 %! assert_equal (atab{3,5}, 9.25800729165627, 1e-10);
 %! assert_equal (atab{2,6}, 0.141597630656771, 1e-10);
 %! assert_equal (atab{3,6}, 0.000636643812875719, 1e-10);
+%!test
+%! ## Below the resolution of 1 - fcdf, values from MATLAB R2024a
+%! q = (1:6)';
+%! p = anova2 ([q, q + 100, q + 200] + 0.1 * sin (reshape (1:18, 6, 3)), 1, ...
+%!            'off');
+%! assert_equal (p, [6.92646657901359e-38, 7.28337250041466e-20], -1e-6);
 
-
+## Test input validation
+%!error <anova2: X must not be empty.> anova2 ([], 1, 'off')
+%!error <anova2: X must not be empty.> anova2 (zeros (0, 3), 2, 'off')
+%!error <anova2: X must not be empty.> anova2 (zeros (3, 0), 1, 'off')

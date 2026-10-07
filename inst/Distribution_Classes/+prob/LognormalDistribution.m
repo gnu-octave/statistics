@@ -30,7 +30,8 @@ classdef LognormalDistribution < prob.ProbabilityDistribution
   ## @var{mu} and standard deviation parameter @var{sigma} of the logarithmic
   ## values.
   ##
-  ## There are several ways to create a @code{prob.LognormalDistribution} object.
+  ## There are several ways to create a @code{prob.LognormalDistribution}
+  ## object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.

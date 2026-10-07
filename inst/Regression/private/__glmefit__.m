@@ -60,11 +60,13 @@ function M = __glmefit__ (X, y, Z, G, distr, link, method)
     w = dmu .^ 2 ./ v;                          ## iterative weights (disp = 1)
     zt = eta + (y - mu) ./ dmu;                 ## working response
 
-    ## inner weighted (RE)ML fit of the pseudo-response zt, Var(e)=disp/w
+    ## inner weighted (RE)ML fit of the pseudo-response zt, Var(e)=disp/w;
+    ## theta is relative to the dispersion, so scale it back to absolute
     [theta, disp0] = inner_fit (theta, X, zt, Zx, qk, nlev, w, isreml, ...
                                 fixed_disp);
-    [beta_n, b, Psi, covbeta] = inner_solve (theta, X, zt, Zx, qk, nlev, ...
-                                             w, disp0);
+    theta_abs = sqrt (disp0) * theta;
+    [beta_n, b, Psi, covbeta] = inner_solve (theta_abs, X, zt, Zx, qk, ...
+                                             nlev, w, disp0);
     if (max (abs (beta_n - beta)) < 1e-8)
       beta = beta_n;
       break;
@@ -83,10 +85,11 @@ function M = __glmefit__ (X, y, Z, G, distr, link, method)
   ## (REML uses n - p in place of n in the constant term).
   if (isreml), ndf = n - p; else, ndf = n; endif
   pll = -0.5 * (ndf * log (2*pi) ...
-                + weighted_dev (theta, weighted_cross (X, zt, Zx, w), qk, ...
-                                nlev, n, p, isreml, disp0));
+                + weighted_dev (theta_abs, weighted_cross (X, zt, Zx, w), ...
+                                qk, nlev, n, p, isreml, disp0, false));
   if (any (strcmp (method, {"laplace", "approximatelaplace"})))
-    loglik = laplace_loglik (X, y, beta, Zx, qk, nlev, gidx, Psi, distr, link);
+    loglik = laplace_loglik (X, y, beta, Zx, qk, nlev, gidx, Psi, distr, ...
+                             link, disp0);
   else
     loglik = pll;
   endif
@@ -165,7 +168,10 @@ function [theta, disp0] = inner_fit (theta0, X, z, Zx, qk, nlev, w, ...
   CP = weighted_cross (X, z, Zx, w);
   n = rows (X);
   p = columns (X);
-  obj = @(th) weighted_dev (th, CP, qk, nlev, n, p, isreml, 1);
+  ## Where the dispersion is estimated, theta is relative to it and the
+  ## dispersion is profiled out of the objective, as in __lmefit__; where it is
+  ## fixed at one, relative and absolute coincide.
+  obj = @(th) weighted_dev (th, CP, qk, nlev, n, p, isreml, 1, ! fixed_disp);
   ## The weighted deviance is differentiable in theta and its gradient is
   ## closed form, so hand it over rather than let the optimiser difference an
   ## objective whose curvature in the variance components is far below the
@@ -185,9 +191,12 @@ endfunction
 ## gradient.  Only Zx*D*Zx' in V depends on theta, so dV/dtheta is
 ## Zx*(dD/dtheta)*Zx'; beta drops out because it is the GLS minimiser, and
 ## D = L*L' gives dD = E_ij*L' + L*E_ij', so every entry is 2*(S*L)(i,j) for
-## the matching accumulated S.  The dispersion is held at one here and
-## profiled afterwards, so there is no scale term to differentiate through.
-function [dev, grad] = weighted_dev (theta, CP, qk, nlev, n, p, isreml, disp0)
+## the matching accumulated S.  With PROF, V = disp*V0 with theta giving V0
+## and the dispersion replaced by its estimate r'*inv (V0)*r / ndf, so the
+## residual term becomes ndf*log (r'*inv (V0)*r / ndf) + ndf and its
+## gradient is scaled by ndf / (r'*inv (V0)*r).
+function [dev, grad] = weighted_dev (theta, CP, qk, nlev, n, p, isreml, ...
+                                     disp0, prof)
   S = wquad (theta, CP, qk, nlev, n, disp0);
   if (! S.ok)
     dev = Inf;
@@ -195,7 +204,15 @@ function [dev, grad] = weighted_dev (theta, CP, qk, nlev, n, p, isreml, disp0)
     return;
   endif
   beta = S.XtViX \ S.XtViz;
-  dev = S.logdetV + (S.ztViz - S.XtViz' * beta);
+  rVir = S.ztViz - S.XtViz' * beta;
+  if (prof)
+    if (isreml), ndf = n - p; else, ndf = n; endif
+    dev = S.logdetV + ndf * log (rVir / ndf) + ndf;
+    sc = ndf / rVir;
+  else
+    dev = S.logdetV + rVir;
+    sc = 1;
+  endif
   if (isreml)
     Rx = chol (S.XtViX);
     dev += 2 * sum (log (diag (Rx)));
@@ -255,7 +272,7 @@ function [dev, grad] = weighted_dev (theta, CP, qk, nlev, n, p, isreml, disp0)
     for j = 1:q
       for i = j:q
         idx += 1;
-        grad(off+idx) = Ga(i,j) - Gc(i,j) - Gp(i,j);
+        grad(off+idx) = Ga(i,j) - sc * Gc(i,j) - Gp(i,j);
       endfor
     endfor
     off += m;
@@ -358,9 +375,11 @@ endfunction
 ## ---- Laplace-approximated marginal log-likelihood (single grouping term) ----
 ## Per group: logL_g = log p(y_g | b_hat) - 0.5*b_hat'*inv(P)*b_hat
 ##                     - 0.5*log|I + P*(Z_g'*W*Z_g)|,  with W the GLM weights at
-## the mode b_hat.  The last two terms are combined into a single log-det that
-## stays finite as the random-effect variance goes to zero.
-function ll = laplace_loglik (X, y, beta, Zx, qk, nlev, gidx, Psi, distr, link)
+## the mode b_hat, divided by the dispersion.  The last two terms are combined
+## into a single log-det that stays finite as the random-effect variance goes
+## to zero.
+function ll = laplace_loglik (X, y, beta, Zx, qk, nlev, gidx, Psi, distr, ...
+                              link, disp0)
   if (numel (qk) != 1)
     ll = NaN;                                   ## only single-term supported
     return;
@@ -383,8 +402,8 @@ function ll = laplace_loglik (X, y, beta, Zx, qk, nlev, gidx, Psi, distr, link)
       for it = 1:100                            ## Newton for the group mode
         eta = Xg * beta + Zg * bg;
         [mu, dmu] = inv_link (eta, link);
-        W = dmu .^ 2 ./ var_fun (mu, distr);
-        gr = Zg' * (yg - mu) - Pi * bg;         ## canonical-link score
+        W = dmu .^ 2 ./ (disp0 * var_fun (mu, distr));
+        gr = Zg' * (yg - mu) / disp0 - Pi * bg;  ## canonical-link score
         H = -(Zg' * (W .* Zg)) - Pi;
         step = H \ gr;
         bg = bg - step;
@@ -393,25 +412,25 @@ function ll = laplace_loglik (X, y, beta, Zx, qk, nlev, gidx, Psi, distr, link)
     endif
     eta = Xg * beta + Zg * bg;
     [mu, dmu] = inv_link (eta, link);
-    W = dmu .^ 2 ./ var_fun (mu, distr);
+    W = dmu .^ 2 ./ (disp0 * var_fun (mu, distr));
     if (degenerate)
       pen = 0;
     else
       pen = 0.5 * (bg' * (P \ bg));
     endif
-    ll += log_pmf (yg, mu, distr) - pen ...
+    ll += log_pmf (yg, mu, distr, disp0) - pen ...
           - 0.5 * logdet_spd (eye (q) + P * (Zg' * (W .* Zg)));
   endfor
 endfunction
 
-function lp = log_pmf (y, mu, distr)
+function lp = log_pmf (y, mu, distr, disp0)
   switch (distr)
     case "binomial"
       lp = sum (y .* log (mu) + (1 - y) .* log (1 - mu));
     case "poisson"
       lp = sum (y .* log (mu) - mu - gammaln (y + 1));
     case "normal"
-      lp = sum (-0.5 * (y - mu) .^ 2 - 0.5 * log (2*pi));
+      lp = sum (-0.5 * (y - mu) .^ 2 / disp0 - 0.5 * log (2*pi*disp0));
     otherwise
       lp = NaN;
   endswitch

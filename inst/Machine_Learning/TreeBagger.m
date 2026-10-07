@@ -111,7 +111,8 @@ classdef TreeBagger < PredictiveModel
     ## A column of weights summing to one, one per observation.  For
     ## classification each class's weights sum to its prior.  The bootstrap
     ## draws observations in proportion to these weights, and the out-of-bag
-    ## error is weighted by them.  This property is read-only.
+    ## error is weighted by them.  It has the class of the @qcode{'Weights'}
+    ## given, single or double.  This property is read-only.
     ##
     ## @end deftp
     W = [];
@@ -434,7 +435,7 @@ classdef TreeBagger < PredictiveModel
 
   properties (GetAccess = public, SetAccess = protected, Hidden)
     ResponseName = 'Y';  # name the table gave the response, which
-                         # margin looks up; hidden because MATLAB's
+                         # a table call looks up; hidden as MATLAB's
                          # TreeBagger carries no ResponseName
     TreeClassIdx = {};   # columns of ClassNames each tree's scores fill
     DefaultIndex = 0;    # index of DefaultYfit into ClassNames
@@ -475,14 +476,6 @@ classdef TreeBagger < PredictiveModel
   endmethods
 
   methods (Hidden)
-
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
 
     function disp (this)
       fprintf ('\n  TreeBagger\n\n');
@@ -555,8 +548,10 @@ classdef TreeBagger < PredictiveModel
     ## or @qcode{'on'}, to estimate the importance of each predictor by
     ## permuting it among each tree's out-of-bag observations.  It turns
     ## @qcode{'OOBPrediction'} on.
-    ## @item @qcode{'Weights'} @tab @tab A nonnegative vector with one weight
-    ## per observation.  The default is uniform.
+    ## @item @qcode{'Weights'} @tab @tab A nonnegative single or double vector
+    ## with one weight per observation.  The default is uniform.  The model's
+    ## @code{W} keeps the class of the weights, while every computation runs in
+    ## double.
     ## @item @qcode{'Prior'} @tab @tab @qcode{'empirical'} (default),
     ## @qcode{'uniform'}, a vector with one probability per class, or a
     ## structure with fields @qcode{ClassNames} and @qcode{ClassProbs}.
@@ -813,9 +808,17 @@ classdef TreeBagger < PredictiveModel
 
       ## Observation weights, before any row is left out
       N = rows (X);
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("TreeBagger: %s", errmsg);
+      endif
+      ## The weights keep their class in the model; every computation runs on
+      ## them as double.
+      Wclass = "double";
       if (isempty (Weights))
         RawW = ones (N, 1);
       else
+        Wclass = class (Weights);
         if (! (isnumeric (Weights) && isvector (Weights) && isreal (Weights)
                && numel (Weights) == N && all (Weights >= 0)))
           error (strcat ("TreeBagger: 'Weights' must be a nonnegative", ...
@@ -891,7 +894,7 @@ classdef TreeBagger < PredictiveModel
         this.Prior = P / sum (P);
         this.Cost = Cost;
         this.ClassNames = C;
-        this.W = priorNormalize (RawW, gY, this.Prior);
+        this.W = cast (priorNormalize (RawW, gY, this.Prior), Wclass);
         this.gY = gY;
         [~, this.DefaultIndex] = max (this.Prior);
         this.DefaultYfit = labelsFromIndex (C, this.DefaultIndex);
@@ -915,8 +918,8 @@ classdef TreeBagger < PredictiveModel
           error (strcat ("TreeBagger: 'Weights' must not be zero for", ...
                          " every observation used."));
         endif
-        this.W = RawW / sum (RawW);
-        this.DefaultYfit = sum (this.W .* Y);
+        this.W = cast (RawW / sum (RawW), Wclass);
+        this.DefaultYfit = sum (RawW .* Y) / sum (RawW);
 
       endif
 
@@ -1031,19 +1034,37 @@ classdef TreeBagger < PredictiveModel
     ## -*- texinfo -*-
     ## @deftypefn  {TreeBagger} {@var{err} =} error (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {TreeBagger} {@var{err} =} error (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {TreeBagger} {@var{err} =} error (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {TreeBagger} {@var{err} =} error (@var{obj}, @var{Tbl})
     ##
     ## Misclassification probability or mean squared error of the ensemble.
     ##
     ## Behaves as @code{CompactTreeBagger.error} and takes the same Name-Value
     ## arguments.
     ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{error (@var{obj}, @var{Tbl}, @var{ResponseVarName})} takes the
+    ## response from the variable @var{ResponseVarName} names, and
+    ## @code{error (@var{obj}, @var{Tbl})} from the variable the model was
+    ## fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
+    ##
     ## @seealso{TreeBagger, TreeBagger.oobError, CompactTreeBagger.error}
     ## @end deftypefn
     function err = error (this, X, Y, varargin)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("TreeBagger.error: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'error', X, Y, ...
+                                        varargin, nargin > 2);
       err = bagLoss ('error', this, X, Y, varargin, 'TreeBagger.error', ...
                      [], []);
 
@@ -1136,20 +1157,38 @@ classdef TreeBagger < PredictiveModel
     ## -*- texinfo -*-
     ## @deftypefn  {TreeBagger} {@var{mm} =} meanMargin (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {TreeBagger} {@var{mm} =} meanMargin (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {TreeBagger} {@var{mm} =} meanMargin (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {TreeBagger} {@var{mm} =} meanMargin (@var{obj}, @var{Tbl})
     ##
     ## Weighted mean classification margin.
     ##
     ## Behaves as @code{CompactTreeBagger.meanMargin} and takes the same
     ## Name-Value arguments.
     ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{meanMargin (@var{obj}, @var{Tbl}, @var{ResponseVarName})}
+    ## takes the response from the variable @var{ResponseVarName} names, and
+    ## @code{meanMargin (@var{obj}, @var{Tbl})} from the variable the model
+    ## was fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
+    ##
     ## @seealso{TreeBagger, TreeBagger.oobMeanMargin,
     ## CompactTreeBagger.meanMargin}
     ## @end deftypefn
     function mm = meanMargin (this, X, Y, varargin)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("TreeBagger.meanMargin: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'meanMargin', X, Y, ...
+                                        varargin, nargin > 2);
       mm = bagLoss ('meanMargin', this, X, Y, varargin, ...
                     'TreeBagger.meanMargin', [], []);
 
@@ -1214,6 +1253,12 @@ classdef TreeBagger < PredictiveModel
     ## logical matrix saying which tree may answer for which row.
     ## @end multitable
     ##
+    ## @var{X} may also be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position: one
+    ## the model was not fitted on is passed over, one it needs and cannot
+    ## find is named, and a value holding a level is coded as that level was
+    ## coded at fitting.
+    ##
     ## @seealso{TreeBagger, TreeBagger.oobQuantilePredict,
     ## TreeBagger.quantileError, TreeBagger.predict}
     ## @end deftypefn
@@ -1222,6 +1267,10 @@ classdef TreeBagger < PredictiveModel
       if (nargin < 2)
         error ("TreeBagger.quantilePredict: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      X = tableColumns (this, 'TreeBagger.quantilePredict', X);
+
       [tau, o] = quantileArgs (this, X, varargin, ...
                                {'Trees', 'TreeWeights', ...
                                 'UseInstanceForTree'}, ...
@@ -1264,6 +1313,8 @@ classdef TreeBagger < PredictiveModel
     ## -*- texinfo -*-
     ## @deftypefn  {TreeBagger} {@var{err} =} quantileError (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {TreeBagger} {@var{err} =} quantileError (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {TreeBagger} {@var{err} =} quantileError (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {TreeBagger} {@var{err} =} quantileError (@var{obj}, @var{Tbl})
     ##
     ## Quantile loss of a regression ensemble.
     ##
@@ -1294,14 +1345,30 @@ classdef TreeBagger < PredictiveModel
     ## are taken as by @code{TreeBagger.quantilePredict}, and
     ## @qcode{'TreeWeights'} may not be given in @qcode{'individual'} mode.
     ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## @code{quantileError (@var{obj}, @var{Tbl}, @var{ResponseVarName})}
+    ## takes the response from the variable @var{ResponseVarName} names, and
+    ## @code{quantileError (@var{obj}, @var{Tbl})} from the variable the model
+    ## was fitted on.  The response may also be given beside the table as
+    ## @var{Y}.
+    ##
     ## @seealso{TreeBagger, TreeBagger.quantilePredict,
     ## TreeBagger.oobQuantileError, TreeBagger.error}
     ## @end deftypefn
     function err = quantileError (this, X, Y, varargin)
 
-      if (nargin < 3)
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
         error ("TreeBagger.quantileError: too few input arguments.");
       endif
+
+      ## A table carries the response: named in the call, given beside
+      ## the table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y, varargin] = tableResponse (this, 'quantileError', X, Y, ...
+                                        varargin, nargin > 2);
       [tau, o] = quantileArgs (this, X, varargin, ...
                                {'Mode', 'Trees', 'TreeWeights', ...
                                 'UseInstanceForTree', 'Weights'}, ...
@@ -1353,10 +1420,11 @@ classdef TreeBagger < PredictiveModel
       if (strcmp (o.mode, 'individual'))
         err = zeros (numel (o.trees), numel (tau));
         for j = 1:numel (o.trees)
-          err(j,:) = pinballLoss (this.Y, q(:,:,j), tau, this.W .* use(:,j));
+          err(j,:) = pinballLoss (this.Y, q(:,:,j), tau, ...
+                                  double (this.W) .* use(:,j));
         endfor
       else
-        err = pinballLoss (this.Y, q, tau, this.W);
+        err = pinballLoss (this.Y, q, tau, double (this.W));
       endif
 
     endfunction
@@ -1432,39 +1500,30 @@ classdef TreeBagger < PredictiveModel
         error ("TreeBagger.mdsprox: name-value arguments must be in pairs.");
       endif
       N = rows (this.X);
-      keep = 1:N;
-      colors = '';
-      coords = [1, 2];
-      for i = 1:2:numel (varargin)
-        name = varargin{i};
-        val = varargin{i+1};
-        if (! (ischar (name)
-               && any (strcmpi (name, {'Keep', 'Colors', 'MDSCoordinates'}))))
-          error (strcat ("TreeBagger.mdsprox: invalid parameter name in", ...
-                         " optional pair arguments."));
-        endif
-        switch (tolower (name))
-          case 'keep'
-            if (ischar (val) && strcmpi (val, 'all'))
-              keep = 1:N;
-            elseif (islogical (val) && isvector (val) && numel (val) == N)
-              keep = find (val);
-            elseif (isnumeric (val) && isvector (val) && isreal (val)
-                    && all (val >= 1) && all (val <= N)
-                    && all (val == fix (val)))
-              keep = double (val(:)');
-            else
-              error (strcat ("TreeBagger.mdsprox: 'Keep' must be 'all',", ...
-                             " a vector of indices of observations, or a", ...
-                             " logical vector with one element per", ...
-                             " observation."));
-            endif
-          case 'colors'
-            colors = val;
-          case 'mdscoordinates'
-            coords = val;
-        endswitch
-      endfor
+      ## Parse optional paired arguments
+      optNames = {'Keep', 'Colors', 'MDSCoordinates'};
+      dfValues = {'all', '', [1, 2]};
+      [Keep, colors, coords, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (ischar (Keep) && strcmpi (Keep, 'all'))
+        keep = 1:N;
+      elseif (islogical (Keep) && isvector (Keep) && numel (Keep) == N)
+        keep = find (Keep);
+      elseif (isnumeric (Keep) && isvector (Keep) && isreal (Keep)
+              && all (Keep >= 1) && all (Keep <= N)
+              && all (Keep == fix (Keep)))
+        keep = double (Keep(:)');
+      else
+        error (strcat ("TreeBagger.mdsprox: 'Keep' must be 'all', a", ...
+                       " vector of indices of observations, or a logical", ...
+                       " vector with one element per observation."));
+      endif
+
+      if (! isempty (args))
+        error ("TreeBagger.mdsprox: invalid optional paired argument.");
+      endif
       g = [];
       if (strcmp (this.Method, 'classification'))
         g = this.gY(keep);
@@ -1522,24 +1581,25 @@ classdef TreeBagger < PredictiveModel
         error (strcat ("TreeBagger.growTrees: name-value arguments must", ...
                        " be in pairs."));
       endif
-      NumPrint = 0;
-      for i = 1:2:numel (varargin)
-        name = varargin{i};
-        if (ischar (name) && strcmpi (name, 'numprint'))
-          NumPrint = varargin{i+1};
-          if (! (isnumeric (NumPrint) && isscalar (NumPrint)
-                 && isreal (NumPrint) && NumPrint >= 0
-                 && NumPrint == fix (NumPrint)))
-            error (strcat ("TreeBagger.growTrees: 'NumPrint' must be a", ...
-                           " nonnegative integer."));
-          endif
-        elseif (ischar (name) && strcmpi (name, 'options'))
-          error ("TreeBagger.growTrees: 'Options' is not implemented.");
-        else
-          error (strcat ("TreeBagger.growTrees: invalid parameter name", ...
-                         " in optional pair arguments."));
-        endif
-      endfor
+      ## Parse optional paired arguments
+      [NumPrint, Options, args] = ...
+             parsePairedArguments ({'NumPrint', 'Options'}, {0, []}, ...
+                                   varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (isnumeric (NumPrint) && isscalar (NumPrint)
+             && isreal (NumPrint) && NumPrint >= 0
+             && NumPrint == fix (NumPrint)))
+        error (strcat ("TreeBagger.growTrees: 'NumPrint' must be a", ...
+                       " nonnegative integer."));
+      endif
+      if (! isempty (Options))
+        error ("TreeBagger.growTrees: 'Options' is not implemented.");
+      endif
+
+      if (! isempty (args))
+        error ("TreeBagger.growTrees: invalid optional paired argument.");
+      endif
       this = growForest (this, NumTrees, NumPrint);
 
     endfunction
@@ -1618,14 +1678,15 @@ classdef TreeBagger < PredictiveModel
       m = ceil (this.InBagFraction * N);
       isclass = strcmp (this.Method, 'classification');
       if (this.SampleWithReplacement)
-        c = cumsum (this.W);
+        c = cumsum (double (this.W));
         c = [0; c / c(end)];
       endif
       for t = 1:n
         if (this.SampleWithReplacement)
           idx = lookup (c, rand (m, 1));
         else
-          [~, order] = sort (rand (N, 1) .^ (1 ./ this.W), 'descend');
+          [~, order] = sort (rand (N, 1) .^ (1 ./ double (this.W)), ...
+                             'descend');
           idx = order(1:m);
         endif
         if (isclass)
@@ -1675,7 +1736,7 @@ classdef TreeBagger < PredictiveModel
       p = columns (this.X);
       d = zeros (1, p, 3);
       r = find (oob);
-      w = this.W(r);
+      w = double (this.W(r));
       if (isempty (r) || ! (sum (w) > 0))
         return;
       endif
@@ -2701,7 +2762,7 @@ endfunction
 %! growTrees (B, 1, 'NumPrint', -1)
 %!error<TreeBagger.growTrees: 'Options' is not implemented.> ...
 %! growTrees (B, 1, 'Options', 1)
-%!error<TreeBagger.growTrees: invalid parameter name in optional pair arguments.> ...
+%!error<TreeBagger.growTrees: invalid optional paired argument.> ...
 %! growTrees (B, 1, 'Foo', 1)
 %!error<TreeBagger.append: too few input arguments.> append (B)
 %!error<TreeBagger.append: B2 must be a TreeBagger object.> append (B, C)
@@ -2772,7 +2833,7 @@ endfunction
 %! mdsprox (B)
 %!error<TreeBagger.mdsprox: name-value arguments must be in pairs.> ...
 %! mdsprox (fillprox (B), 'Keep')
-%!error<TreeBagger.mdsprox: invalid parameter name in optional pair arguments.> ...
+%!error<TreeBagger.mdsprox: invalid optional paired argument.> ...
 %! mdsprox (fillprox (B), 'Data', 'proximity')
 %!error<TreeBagger.mdsprox: 'Keep' must be 'all', a vector of indices of observations, or a logical vector with one element per observation.> ...
 %! mdsprox (fillprox (B), 'Keep', 0)
@@ -2881,3 +2942,70 @@ endfunction
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## A table at error, meanMargin and quantileError
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,1:2);
+%! y = categorical (species);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = TreeBagger (20, T, 'Species');
+%! a = error (Mdl, X, y);
+%! assert_equal (error (Mdl, T(:,1:2), y), a);
+%! assert_equal (error (Mdl, T, 'Species'), a);
+%! assert_equal (error (Mdl, T), a);
+%! assert_equal (error (Mdl, T, 'Mode', 'ensemble'), a(end));
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,1:2);
+%! y = categorical (species);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SL', 'SW'});
+%! T.Species = y;
+%! Mdl = TreeBagger (20, T, 'Species');
+%! a = meanMargin (Mdl, X, y);
+%! assert_equal (meanMargin (Mdl, T(:,1:2), y), a);
+%! assert_equal (meanMargin (Mdl, T, 'Species'), a);
+%! assert_equal (meanMargin (Mdl, T), a);
+%!test  # the response is named, left out, or given beside the table
+%! load fisheriris
+%! X = meas(:,2:4);
+%! y = meas(:,1);
+%! T = table (X(:,1), X(:,2), X(:,3), y, ...
+%!            'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! Mdl = TreeBagger (20, T, 'SL', 'Method', 'regression');
+%! a = quantileError (Mdl, X, y);
+%! assert_equal (quantileError (Mdl, T(:,1:3), y), a);
+%! assert_equal (quantileError (Mdl, T, 'SL'), a);
+%! assert_equal (quantileError (Mdl, T), a);
+%! assert_equal (quantileError (Mdl, T(:,[3, 1, 2, 4])), a);
+
+## A table at quantilePredict
+%!test  # a table is matched to the predictors by name
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,4), meas(:,1), ...
+%!           'VariableNames', {'SW', 'PL', 'PW', 'SL'});
+%! Mdl = TreeBagger (20, T, 'SL', 'Method', 'regression');
+%! a = quantilePredict (Mdl, meas(:,2:4), 'Quantile', [0.25, 0.75]);
+%! assert_equal (quantilePredict (Mdl, T(:,1:3), 'Quantile', [0.25, 0.75]), a);
+%! assert_equal (quantilePredict (Mdl, T(:,[4, 3, 1, 2]), ...
+%!                                'Quantile', [0.25, 0.75]), a);
+
+## Observation weights of class single or double
+%!error <TreeBagger: 'Weights' must be a real vector of class single or double.> ...
+%! TreeBagger (3, [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!             'Weights', int8 ([1; 1; 1; 1]))
+%!error <TreeBagger: 'Weights' must be a real vector of class single or double.> ...
+%! TreeBagger (3, [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!             'Weights', true (4, 1))
+%!error <'Weights' must be a real vector of class single or double.> ...
+%! error (TreeBagger (3, [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2]), ...
+%!        [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ...
+%!   int8 ([1; 1; 1; 1]))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = TreeBagger (5, meas, species, 'Weights', single (w));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);

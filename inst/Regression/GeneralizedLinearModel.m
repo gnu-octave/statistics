@@ -652,15 +652,6 @@ classdef GeneralizedLinearModel < PredictiveModel
 
   methods (Hidden)
 
-    ## Custom display of the object name.
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ("%s =\n", in_name);
-      endif
-      disp (this);
-    endfunction
-
     ## Custom display of the model summary.
     function disp (this)
       fprintf ("\n  Generalized linear regression model:\n");
@@ -692,11 +683,11 @@ classdef GeneralizedLinearModel < PredictiveModel
         drop = this.nulldev_ - this.Deviance;
         if (this.DispersionEstimated)
           Fstat = (drop / df1) / this.Dispersion;
-          pval  = 1 - fcdf (Fstat, df1, this.DFE);
+          pval  = fcdf (Fstat, df1, this.DFE, 'upper');
           fprintf ("F-statistic vs. constant model: %g, p-value = %g\n", ...
                    Fstat, pval);
         else
-          pval = 1 - chi2cdf (drop, df1);
+          pval = chi2cdf (drop, df1, 'upper');
           fprintf (strcat ("Chi^2-statistic vs. constant model: %g,", ...
                            " p-value = %g\n"), drop, pval);
         endif
@@ -1440,7 +1431,7 @@ classdef GeneralizedLinearModel < PredictiveModel
       HVH = H * mdl.CoefficientCovariance * H';
       ## Wald F statistic (MATLAB uses the F distribution for coefTest).
       stat = (Hb' * (HVH \ Hb)) / df;
-      p = 1 - fcdf (stat, df, mdl.DFE);
+      p = fcdf (stat, df, mdl.DFE, 'upper');
     endfunction
 
     ## -*- texinfo -*-
@@ -1448,26 +1439,38 @@ classdef GeneralizedLinearModel < PredictiveModel
     ##
     ## Likelihood-ratio (deviance) test of the fitted model against the
     ## intercept-only model.  Returns a table with the deviance, degrees of
-    ## freedom, and p-value of each model, the last row giving the chi-square
-    ## statistic (the drop in deviance) and its p-value.  Each row is named by
-    ## the formula of the model it describes.
+    ## freedom, and p-value of each model, the last row giving the test
+    ## statistic and its p-value.  Where the dispersion is fixed, the statistic
+    ## is the drop in deviance, @qcode{chi2Stat}, referred to the chi-square
+    ## distribution; where it is estimated, it is the drop per degree of
+    ## freedom over the dispersion, @qcode{FStat}, referred to the
+    ## @math{F}-distribution.  Each row is named by the formula of the model it
+    ## describes.
     ##
     ## @end deftypefn
     function tbl = devianceTest (mdl)
       dev_full = mdl.Deviance;
       dev_null = mdl.nulldev_;
       df_diff  = mdl.NumCoefficients - 1;
-      chi2stat = dev_null - dev_full;
-      pval     = 1 - chi2cdf (chi2stat, df_diff);
+      drop     = dev_null - dev_full;
+      if (mdl.DispersionEstimated)
+        stat = (drop / df_diff) / mdl.Dispersion;
+        pval = fcdf (stat, df_diff, mdl.DFE, 'upper');
+        statname = 'FStat';
+      else
+        stat = drop;
+        pval = chi2cdf (stat, df_diff, 'upper');
+        statname = 'chi2Stat';
+      endif
       Deviance   = [dev_null; dev_full];
       DFE        = [mdl.DFE + df_diff; mdl.DFE];
-      chi2Stat   = [NaN; chi2stat];
+      Stat       = [NaN; stat];
       pValue     = [NaN; pval];
       ## Both rows are named by their formula, as MATLAB renders them: the null
       ## model is the same linked response against an intercept alone.
       nullstr = sprintf ("%s ~ 1", strtrim (strtok (mdl.formulastr_, "~")));
-      tbl = table (Deviance, DFE, chi2Stat, pValue, ...
-        'VariableNames', {'Deviance', 'DFE', 'chi2Stat', 'pValue'}, ...
+      tbl = table (Deviance, DFE, Stat, pValue, ...
+        'VariableNames', {'Deviance', 'DFE', statname, 'pValue'}, ...
         'RowNames', {nullstr, mdl.formulastr_});
     endfunction
 
@@ -1958,6 +1961,21 @@ endfunction
 %! assert_equal (class (mdl), "GeneralizedLinearModel");
 %! assert_equal (mdl.Distribution.Name, "Poisson");
 %! assert_equal (mdl.Link.Name, "log");
+%!test
+%! ## Below the resolution of 1 - fcdf, values from MATLAB R2024a
+%! u = (1:30)';
+%! m = fitglm (u, 2 * u + 0.01 * sin (u));
+%! assert_equal (coefTest (m), 2.48569519842047e-96, -1e-8);
+%!test
+%! ## Below the resolution of 1 - chi2cdf
+%! u = (1:20)';
+%! N = 30 * ones (20, 1);
+%! m = fitglm (u, [round(N ./ (1 + exp (5 - 0.5 * u))), N], ...
+%!             'Distribution', 'binomial');
+%! D = devianceTest (m);
+%! assert_equal (D.pValue(2), gammainc (D.chi2Stat(2) / 2, 1/2, 'upper'), ...
+%!               -1e-12);
+
 %!error<DATA, RESP, and MODELSPEC are required> GeneralizedLinearModel (1)
 %!error<X must be a real matrix.> ...
 %! GeneralizedLinearModel ("a", [1;2], "linear")
@@ -2064,6 +2082,53 @@ endfunction
 %! assert_equal (p, 0.04331745, 1e-7);
 %! assert_equal (df, 3);
 
+%!test
+%! ## devianceTest, gamma, the dispersion estimated; values from MATLAB R2024a
+%! u = (1:30)';
+%! yg = exp (0.1 * u) .* (1 + 0.2 * sin (u));
+%! D = devianceTest (fitglm (u, yg, 'Distribution', 'gamma'));
+%! assert_equal ([D.FStat(2), D.pValue(2)], ...
+%!               [165.431140860884, 2.85011734507204e-13], -1e-12);
+%!test
+%! ## devianceTest, inverse Gaussian with a log link
+%! u = (1:30)';
+%! yg = exp (0.1 * u) .* (1 + 0.2 * sin (u));
+%! D = devianceTest (fitglm (u, yg, 'Distribution', 'inverse gaussian', ...
+%!                           'Link', 'log'));
+%! assert_equal ([D.FStat(2), D.pValue(2)], ...
+%!               [704.235449350226, 2.17509777893856e-21], -1e-12);
+%!test
+%! ## devianceTest, Poisson with an estimated dispersion
+%! u = (1:30)';
+%! yc = round (5 * exp (0.05 * u) .* (1 + 0.3 * sin (u)));
+%! D = devianceTest (fitglm (u, yc, 'Distribution', 'poisson', ...
+%!                           'DispersionFlag', true));
+%! assert_equal ([D.FStat(2), D.pValue(2)], ...
+%!               [91.127051941481, 2.65696346522055e-10], -1e-12);
+%!test
+%! ## devianceTest, binomial with an estimated dispersion
+%! u = (1:30)';
+%! N = 40 * ones (30, 1);
+%! ybn = round (N ./ (1 + exp (3 - 0.15 * u + 0.8 * sin (u))));
+%! D = devianceTest (fitglm (u, [ybn, N], 'Distribution', 'binomial', ...
+%!                           'DispersionFlag', true));
+%! assert_equal ([D.FStat(2), D.pValue(2)], ...
+%!               [144.333237422448, 1.44965237553984e-12], -1e-12);
+%!test
+%! ## devianceTest, Poisson, the dispersion fixed
+%! u = (1:30)';
+%! yc = round (5 * exp (0.05 * u) .* (1 + 0.3 * sin (u)));
+%! D = devianceTest (fitglm (u, yc, 'Distribution', 'poisson'));
+%! assert_equal ([D.chi2Stat(2), D.pValue(2)], ...
+%!               [54.3584716312125, 1.67056245094831e-13], -1e-12);
+%!test
+%! ## devianceTest, normal with the dispersion fixed
+%! u = (1:30)';
+%! yg = exp (0.1 * u) .* (1 + 0.2 * sin (u));
+%! D = devianceTest (fitglm (u, yg, 'Distribution', 'normal', ...
+%!                           'DispersionFlag', false));
+%! assert_equal ([D.chi2Stat(2), D.pValue(2)], ...
+%!               [713.497289579326, 3.47271763963398e-157], -1e-12);
 %!test  # devianceTest chi-square equals the drop from the null deviance
 %! mdl = fitglm (X, yp, "Distribution", "poisson");
 %! dt = devianceTest (mdl);

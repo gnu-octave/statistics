@@ -344,7 +344,7 @@ classdef cvpartition
     ## @code{@var{C} = cvpartition (@var{X}, @qcode{'KFold'})} creates a
     ## @qcode{cvpartition} object @var{C}, which defines a stratified random
     ## partition for k-fold cross-validation according to the class proportions
-    ## in @var{Χ}.  @var{X} can be a numeric, logical, categorical, or string
+    ## in @var{X}.  @var{X} can be a numeric, logical, categorical, or string
     ## vector, or a character array or a cell array of character vectors.
     ## Missing values in @var{X} are discarded.  The default number of folds is
     ## 10 for @code{numel (@var{X}) >= 10} or equal to @code{numel (@var{X})}
@@ -363,7 +363,7 @@ classdef cvpartition
     ## @code{@var{C} = cvpartition (@var{X}, @qcode{'Holdout'})} creates a
     ## @qcode{cvpartition} object @var{C}, which defines a stratified random
     ## partition for holdout validation while maintaining the class proportions
-    ## in @var{Χ}.  90% of the observations are assigned to the training set and
+    ## in @var{X}.  90% of the observations are assigned to the training set and
     ## the remaining 10% to the test set.
     ##
     ## @code{@var{C} = cvpartition (@var{X}, @qcode{'Holdout'}, @var{p})} also

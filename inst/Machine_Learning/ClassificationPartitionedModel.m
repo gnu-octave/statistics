@@ -611,7 +611,7 @@ classdef ClassificationPartitionedModel
           nclass = numel (this.Prior);
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            pf = gamFoldPrior (this.W, gY, nclass, idx);
+            pf = gamFoldPrior (double (this.W), gY, nclass, idx);
             fargs = [args, {'Prior', pf}];
             ## A boosted-tree fold also keeps the weights of the rows it holds.
             if (strcmp (Mdl.FitMethod, 'boostedtrees'))
@@ -722,9 +722,26 @@ classdef ClassificationPartitionedModel
           ## fitted densities and needs none of the observations it was fitted
           ## on.  Measured on R2024a, where Trained{k} is a
           ## CompactClassificationNaiveBayes.
+          ## A model fitted with weights passes each fold the weights of its
+          ## rows: W on the rows the model used and zero on those it left out,
+          ## which fitcnb leaves out in turn.  Within a class W is in
+          ## proportion to the weights given, which is all a fold reads.
+          wAll = [];
+          if (! isempty (Mdl.RawWeights))
+            wAll = zeros (rows (this.X), 1);
+            used = Mdl.RowsUsed;
+            if (isempty (used))
+              used = true (rows (this.X), 1);
+            endif
+            wAll(used) = Mdl.W;
+          endif
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            tmp = fitcnb (this.X(idx, :), this.Y(idx,:), args{:});
+            fargs = args;
+            if (! isempty (wAll))
+              fargs = [fargs, {'Weights', wAll(idx)}];
+            endif
+            tmp = fitcnb (this.X(idx, :), this.Y(idx,:), fargs{:});
             this.Trained{k} = compact (tmp);
           endfor
 
@@ -760,10 +777,27 @@ classdef ClassificationPartitionedModel
           stdz = ! isempty (Mdl.Mu);
           args = [args, {'Standardize', stdz}];
 
+          ## A model fitted with weights passes each fold the weights of its
+          ## rows.  Weights given vary within a class, which a prior alone
+          ## never makes them do; a model without them leaves each fold to its
+          ## own empirical prior, as before.
+          wAll = [];
+          gW = labelIndices (Mdl.ClassNames, this.Y);
+          for c = 1:max (gW)
+            wc = double (this.W(gW == c));
+            if (numel (wc) > 1 && max (wc) - min (wc) > 1e-12 * max (wc))
+              wAll = this.W;
+            endif
+          endfor
+
           ## Train model according to partition object
           for k = 1:this.KFold
             idx = training (this.Partition, k);
-            tmp = fitcnet (this.X(idx, :), this.Y(idx,:), args{:});
+            fargs = args;
+            if (! isempty (wAll))
+              fargs = [fargs, {'Weights', wAll(idx)}];
+            endif
+            tmp = fitcnet (this.X(idx, :), this.Y(idx,:), fargs{:});
             this.Trained{k} = compact (tmp);
           endfor
 
@@ -1059,10 +1093,6 @@ classdef ClassificationPartitionedModel
                        " Name-Value arguments must be in pairs."));
       endif
 
-      ## Defaults, then the optional pairs
-      LossFun = 'classiferror';
-      Mode    = 'average';
-      Folds   = 1:this.KFold;
       ## Only the losses whose value has been measured against R2024a are
       ## offered.  The margin-based ones are not: ours came out 2x MATLAB's
       ## for hinge and 4x for quadratic, the square of the same factor, which
@@ -1070,56 +1100,44 @@ classdef ClassificationPartitionedModel
       ## a number that close to right and not right is worse than not
       ## shipping it.
       names   = {'classifcost', 'classiferror', 'mincost'};
-      while (numel (varargin) > 0)
-        if (! (ischar (varargin{1}) && isrow (varargin{1})))
+
+      ## Parse optional paired arguments
+      optNames = {'LossFun', 'Mode', 'Folds'};
+      dfValues = {'classiferror', 'average', 1:this.KFold};
+      [LossFun, Mode, Folds, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (is_function_handle (LossFun) ||
+             (ischar (LossFun) && isrow (LossFun))))
+        error (strcat ("ClassificationPartitionedModel.kfoldLoss:", ...
+                       " 'LossFun' must be a character vector or a", ...
+                       " function handle."));
+      endif
+      if (ischar (LossFun))
+        LossFun = tolower (LossFun);
+        if (! any (strcmp (LossFun, names)))
           error (strcat ("ClassificationPartitionedModel.kfoldLoss:", ...
-                         " parameter name must be a character vector."));
+                         " unsupported 'LossFun' value."));
         endif
-        switch (tolower (varargin{1}))
+      endif
+      if (! (ischar (Mode) && isrow (Mode) &&
+             any (strcmpi (Mode, {'average', 'individual'}))))
+        error (strcat ("ClassificationPartitionedModel.kfoldLoss: 'Mode'", ...
+                       " must be either 'average' or 'individual'."));
+      endif
+      if (! (isnumeric (Folds) && isvector (Folds)
+             && all (Folds == fix (Folds))
+             && all (Folds >= 1) && all (Folds <= this.KFold)))
+        error (strcat ("ClassificationPartitionedModel.kfoldLoss: 'Folds'", ...
+                       " must be a vector of fold indices between 1 and", ...
+                       " KFold."));
+      endif
 
-          case 'lossfun'
-            LossFun = varargin{2};
-            if (! (is_function_handle (LossFun) ||
-                   (ischar (LossFun) && isrow (LossFun))))
-              error (strcat ("ClassificationPartitionedModel.kfoldLoss:", ...
-                             " 'LossFun' must be a character vector or a", ...
-                             " function handle."));
-            endif
-            if (ischar (LossFun))
-              LossFun = tolower (LossFun);
-              if (! any (strcmp (LossFun, names)))
-                error (strcat ("ClassificationPartitionedModel.kfoldLoss:", ...
-                               " unsupported 'LossFun' value."));
-              endif
-            endif
-
-          case 'mode'
-            Mode = varargin{2};
-            if (! (ischar (Mode) && isrow (Mode) &&
-                   any (strcmpi (Mode, {'average', 'individual'}))))
-              error (strcat ("ClassificationPartitionedModel.kfoldLoss:", ...
-                             " 'Mode' must be either 'average' or", ...
-                             " 'individual'."));
-            endif
-
-          case 'folds'
-            Folds = varargin{2};
-            if (! (isnumeric (Folds) && isvector (Folds)
-                   && all (Folds == fix (Folds))
-                   && all (Folds >= 1) && all (Folds <= this.KFold)))
-              error (strcat ("ClassificationPartitionedModel.kfoldLoss:", ...
-                             " 'Folds' must be a vector of fold indices", ...
-                             " between 1 and KFold."));
-            endif
-
-          otherwise
-            error (strcat ("ClassificationPartitionedModel.kfoldLoss:", ...
-                           " invalid parameter name in optional paired", ...
-                           " arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("ClassificationPartitionedModel.kfoldLoss: invalid", ...
+                       " optional paired argument."));
+      endif
 
       ## Every observation answered for by the fold that held it out
       [label, Score] = kfoldPredict (this);
@@ -1228,43 +1246,30 @@ classdef ClassificationPartitionedModel
                        " Name-Value arguments must be in pairs."));
       endif
 
-      ## Defaults, then the optional pairs
-      Mode  = 'average';
-      Folds = 1:this.KFold;
-      while (numel (varargin) > 0)
-        if (! (ischar (varargin{1}) && isrow (varargin{1})))
-          error (strcat ("ClassificationPartitionedModel.kfoldEdge:", ...
-                         " parameter name must be a character vector."));
-        endif
-        switch (tolower (varargin{1}))
+      ## Parse optional paired arguments
+      optNames = {'Mode', 'Folds'};
+      dfValues = {'average', 1:this.KFold};
+      [Mode, Folds, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-          case 'mode'
-            Mode = varargin{2};
-            if (! (ischar (Mode) && isrow (Mode) &&
-                   any (strcmpi (Mode, {'average', 'individual'}))))
-              error (strcat ("ClassificationPartitionedModel.kfoldEdge:", ...
-                             " 'Mode' must be either 'average' or", ...
-                             " 'individual'."));
-            endif
+      ## Validate optional paired arguments
+      if (! (ischar (Mode) && isrow (Mode) &&
+             any (strcmpi (Mode, {'average', 'individual'}))))
+        error (strcat ("ClassificationPartitionedModel.kfoldEdge: 'Mode'", ...
+                       " must be either 'average' or 'individual'."));
+      endif
+      if (! (isnumeric (Folds) && isvector (Folds)
+             && all (Folds == fix (Folds))
+             && all (Folds >= 1) && all (Folds <= this.KFold)))
+        error (strcat ("ClassificationPartitionedModel.kfoldEdge: 'Folds'", ...
+                       " must be a vector of fold indices between 1 and", ...
+                       " KFold."));
+      endif
 
-          case 'folds'
-            Folds = varargin{2};
-            if (! (isnumeric (Folds) && isvector (Folds)
-                   && all (Folds == fix (Folds))
-                   && all (Folds >= 1) && all (Folds <= this.KFold)))
-              error (strcat ("ClassificationPartitionedModel.kfoldEdge:", ...
-                             " 'Folds' must be a vector of fold indices", ...
-                             " between 1 and KFold."));
-            endif
-
-          otherwise
-            error (strcat ("ClassificationPartitionedModel.kfoldEdge:", ...
-                           " invalid parameter name in optional paired", ...
-                           " arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("ClassificationPartitionedModel.kfoldEdge: invalid", ...
+                       " optional paired argument."));
+      endif
 
       m = foldMargin_ (this);
       n = rows (this.X);
@@ -1298,8 +1303,8 @@ classdef ClassificationPartitionedModel
     ## numeric vector of the same length every time it is called:
     ##
     ## @example
-    ## @var{testvals} = @var{fun} (@var{M}, @var{Xtrain}, @var{Ytrain}, @var{Wtrain}, @dots{}
-    ##                @var{Xtest}, @var{Ytest}, @var{Wtest})
+    ## @var{testvals} = @var{fun} (@var{M}, @var{Xtrain}, @var{Ytrain}, @dots{}
+    ##                @var{Wtrain}, @var{Xtest}, @var{Ytest}, @var{Wtest})
     ## @end example
     ##
     ## @var{M} is the model the fold was fitted with, taken from
@@ -1909,7 +1914,7 @@ endfunction
 %! CVK = crossval (fitcsvm (meas(51:150,:), species(51:150)), 'KFold', 4);
 %!error<ClassificationPartitionedModel.kfoldLoss: Name-Value arguments must be in pairs.> ...
 %! kfoldLoss (CVK, 'Mode')
-%!error<ClassificationPartitionedModel.kfoldLoss: parameter name must be a character vector.> ...
+%!error<ClassificationPartitionedModel.kfoldLoss: invalid optional paired argument.> ...
 %! kfoldLoss (CVK, 5, 1)
 %!error<ClassificationPartitionedModel.kfoldLoss: 'LossFun' must be a character vector or a function handle.> ...
 %! kfoldLoss (CVK, 'LossFun', 5)
@@ -1921,7 +1926,7 @@ endfunction
 %! kfoldLoss (CVK, 'Mode', 'nope')
 %!error<ClassificationPartitionedModel.kfoldLoss: 'Folds' must be a vector of fold indices between 1 and KFold.> ...
 %! kfoldLoss (CVK, 'Folds', 0)
-%!error<ClassificationPartitionedModel.kfoldLoss: invalid parameter name in optional paired arguments.> ...
+%!error<ClassificationPartitionedModel.kfoldLoss: invalid optional paired argument.> ...
 %! kfoldLoss (CVK, 'Nope', 1)
 
 ## Standardization reaches the folds.  It did not for the KNN, whose refit
@@ -2187,7 +2192,7 @@ endfunction
 %!error<ClassificationPartitionedModel.kfoldEdge: Name-Value arguments must be in pairs.> ...
 %! load fisheriris
 %! kfoldEdge (crossval (fitcdiscr (meas, species), 'KFold', 3), 'Mode')
-%!error<ClassificationPartitionedModel.kfoldEdge: parameter name must be a character vector.> ...
+%!error<ClassificationPartitionedModel.kfoldEdge: invalid optional paired argument.> ...
 %! load fisheriris
 %! kfoldEdge (crossval (fitcdiscr (meas, species), 'KFold', 3), 5, 'average')
 %!error<ClassificationPartitionedModel.kfoldEdge: 'Mode' must be either 'average' or 'individual'.> ...
@@ -2197,7 +2202,7 @@ endfunction
 %!error<ClassificationPartitionedModel.kfoldEdge: 'Folds' must be a vector of fold indices between 1 and KFold.> ...
 %! load fisheriris
 %! kfoldEdge (crossval (fitcdiscr (meas, species), 'KFold', 3), 'Folds', 7)
-%!error<ClassificationPartitionedModel.kfoldEdge: invalid parameter name in optional paired arguments.> ...
+%!error<ClassificationPartitionedModel.kfoldEdge: invalid optional paired argument.> ...
 %! load fisheriris
 %! kfoldEdge (crossval (fitcdiscr (meas, species), 'KFold', 3), 'bogus', 1)
 
@@ -2554,3 +2559,26 @@ endfunction
 %! load fisheriris
 %! CVMdl = crossval (fitctree (meas, species), 'KFold', 3);
 %! CVMdl.Cost = [0, 2, 8; 3, 0, 1; 5, 4, 0];
+%!test
+%! ## A naive Bayes fold is fitted with its rows' weights
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! CVMdl = crossval (fitcnb (meas, species, 'Weights', w), 'KFold', 3);
+%! idx = training (CVMdl.Partition, 1);
+%! Mdl = fitcnb (meas(idx,:), species(idx), 'Weights', w(idx));
+%! assert_equal (CVMdl.Trained{1}.DistributionParameters, ...
+%!               Mdl.DistributionParameters, 1e-12);
+%!test
+%! ## A neural network fold is fitted with its rows' weights
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = fitcnet (meas, species, 'LayerSizes', 3, 'Weights', w);
+%! rand ('seed', 7);
+%! CVMdl = crossval (Mdl, 'KFold', 3);
+%! idx = training (CVMdl.Partition, 1);
+%! rand ('seed', 7);
+%! cvpartition (150, 'KFold', 3);
+%! F = fitcnet (meas(idx,:), species(idx), 'LayerSizes', 3, ...
+%!              'Weights', Mdl.W(idx), 'Prior', Mdl.Prior);
+%! assert_equal (nthargout (2, @predict, CVMdl.Trained{1}, meas), ...
+%!               nthargout (2, @predict, F, meas), 1e-10);

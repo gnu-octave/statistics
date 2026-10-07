@@ -25,11 +25,14 @@
 ##
 ## For each element of @var{x}, return the cumulative distribution functions
 ## (CDF) at @var{x} of the Johnson SU distribution with shape parameters
-## @var{alpha1} and @var{alpha2}.  The size of @var{p} is the common size of the
-## input arguments @var{x}, @var{alpha1}, and @var{alpha2}.  A scalar input
-## functions as a constant matrix of the same size as the other
+## @var{alpha1} and @var{alpha2}, which is
+## @code{normcdf (@var{alpha1} + @var{alpha2} * asinh (@var{x}))}.  The size of
+## @var{p} is the common size of the input arguments @var{x}, @var{alpha1}, and
+## @var{alpha2}.  A scalar input functions as a constant matrix of the same size
+## as the other inputs.
 ##
-## Default values are @var{alpha1} = 1, @var{alpha2} = 1.
+## Default values are @var{alpha1} = 1, @var{alpha2} = 1.  @var{alpha2} must be
+## positive; where it is not, the result is @qcode{NaN}.
 ##
 ## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
 ## and character arrays are rejected.  MATLAB accepts a character array and
@@ -65,10 +68,21 @@ function p = jsucdf (x, alpha1, alpha2)
     endif
   endif
 
-  one = ones (size (x));
-  p = stdnormal_cdf (alpha1 .* one + alpha2 .* log (x + sqrt (x .* x + one)));
+  p = normcdf (alpha1 + alpha2 .* asinh (x));
+  p((alpha2 <= 0) & true (size (p))) = NaN;
 
 endfunction
+
+%!assert_equal (jsucdf (0), normcdf (1), -1e-15)
+%!assert_equal (jsucdf (1, 0.5, 2), ...
+%!              normcdf (0.5 + 2 * log (1 + sqrt (2))), -1e-14)
+%!assert_equal (jsucdf (sinh (-2), 0, 1), normcdf (-2), -1e-14)
+%!assert_equal (jsucdf (-1e8, 0, 1), normcdf (-log (2e8)), -1e-12)
+%!assert_equal (jsucdf ([-Inf, NaN, Inf]), [0, NaN, 1])
+%!assert_equal (jsucdf (single (0)), single (normcdf (1)), -eps ('single'))
+%!assert_equal (jsucdf (1, 0, 0), NaN)
+%!assert_equal (jsucdf ([1, 2], 1, -1), [NaN, NaN])
+%!assert_equal (jsucdf (1, 1, [1, 0]), [jsucdf(1), NaN])
 
 %!error<jsucdf: X, ALPHA1, and ALPHA2 must be double or single.> jsucdf (int32 (2), 1, 1)
 %!error<jsucdf: X, ALPHA1, and ALPHA2 must be double or single.> jsucdf (true, 1, 1)

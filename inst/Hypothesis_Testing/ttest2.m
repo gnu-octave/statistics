@@ -142,7 +142,7 @@ function [h, p, ci, stats] = ttest2 (x, y, varargin)
   ## and the confidence interval.
   switch lower (tail)
     case 'both'
-      p = 2 * (1 - tcdf (abs (stats.tstat), stats.df));
+      p = 2 * tcdf (-abs (stats.tstat), stats.df);
       tcrit = - tinv (alpha / 2, stats.df);
       ci = [x_bar-tcrit.*x_bar_std; x_bar+tcrit.*x_bar_std];
     case 'left'
@@ -150,7 +150,7 @@ function [h, p, ci, stats] = ttest2 (x, y, varargin)
       tcrit = - tinv (alpha, stats.df);
       ci = [-inf*ones(size(x_bar)); x_bar+tcrit.*x_bar_std];
     case 'right'
-      p = 1 - tcdf (stats.tstat, stats.df);
+      p = tcdf (stats.tstat, stats.df, 'upper');
       tcrit = - tinv (alpha, stats.df);
       ci = [x_bar-tcrit.*x_bar_std; inf*ones(size(x_bar))];
     otherwise
@@ -183,6 +183,16 @@ endfunction
 %! assert_equal (stats.tstat, -4.582575694955839, 1e-14);
 %! assert_equal (stats.df, 7);
 %! assert_equal (stats.sd, 1.4638501094228, 1e-13);
+%!test
+%! ## Below the resolution of 1 - tcdf, values from MATLAB R2024a
+%! x = 10 + sin (1:30)';
+%! [~, pval] = ttest2 (x, x - 20);
+%! assert_equal (pval, 4.62837535481253e-68, -1e-13);
+%!test
+%! x = 10 + sin (1:30)';
+%! [~, pval] = ttest2 (x, x - 20, 'tail', 'right');
+%! assert_equal (pval, 2.31418767740626e-68, -1e-13);
+
 %!error ttest2 ([8:0.1:12], [8:0.1:12], 'tail', 'invalid');
 %!error ttest2 ([8:0.1:12], [8:0.1:12], 'tail', 25);
 

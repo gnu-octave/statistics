@@ -166,8 +166,8 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
   endif
 
   ## Get number of censored and uncensored elements
-  n_censored = sum (freq.*censor); % a scalar in all cases
-  n_uncensored = n - n_censored; % a scalar in all cases
+  n_censored = sum (freq.*censor); # a scalar in all cases
+  n_uncensored = n - n_censored; # a scalar in all cases
 
   ## Compute total sum in X
   totalsum = sum (freq.*x);

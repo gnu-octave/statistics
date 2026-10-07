@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -164,9 +173,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Supervised Learning">
+                  <a class="nav-link" href="index.html#Machine Learning">
                     <i class="fas fa-list-alt"></i>
-                    Supervised Learning
+                    Machine Learning
                   </a>
                 </li>
                 <li class="nav-item">
@@ -267,25 +276,27 @@
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
 					<li><a href="ansaribradley.html" class="text-decoration-none font-monospace"><small>ansaribradley</small></a></li>
-					<li><a href="bartlett_test.html" class="text-decoration-none font-monospace"><small>bartlett_test</small></a></li>
 					<li><a href="barttest.html" class="text-decoration-none font-monospace"><small>barttest</small></a></li>
 					<li><a href="binotest.html" class="text-decoration-none font-monospace"><small>binotest</small></a></li>
 					<li><a href="chi2gof.html" class="text-decoration-none font-monospace"><small>chi2gof</small></a></li>
 					<li><a href="chi2test.html" class="text-decoration-none font-monospace"><small>chi2test</small></a></li>
 					<li><a href="correlation_test.html" class="text-decoration-none font-monospace"><small>correlation_test</small></a></li>
+					<li><a href="detectdrift.html" class="text-decoration-none font-monospace"><small>detectdrift</small></a></li>
 					<li><a href="dwtest.html" class="text-decoration-none font-monospace"><small>dwtest</small></a></li>
 					<li><a href="fishertest.html" class="text-decoration-none font-monospace"><small>fishertest</small></a></li>
 					<li><a href="friedman.html" class="text-decoration-none font-monospace"><small>friedman</small></a></li>
 					<li><a href="hotelling_t2test.html" class="text-decoration-none font-monospace"><small>hotelling_t2test</small></a></li>
 					<li><a href="hotelling_t2test2.html" class="text-decoration-none font-monospace"><small>hotelling_t2test2</small></a></li>
 					<li><a href="jbtest.html" class="text-decoration-none font-monospace"><small>jbtest</small></a></li>
+					<li><a href="knntest.html" class="text-decoration-none font-monospace"><small>knntest</small></a></li>
 					<li><a href="kruskalwallis.html" class="text-decoration-none font-monospace"><small>kruskalwallis</small></a></li>
 					<li><a href="kstest.html" class="text-decoration-none font-monospace"><small>kstest</small></a></li>
 					<li><a href="kstest2.html" class="text-decoration-none font-monospace"><small>kstest2</small></a></li>
-					<li><a href="levene_test.html" class="text-decoration-none font-monospace"><small>levene_test</small></a></li>
 					<li><a href="lillietest.html" class="text-decoration-none font-monospace"><small>lillietest</small></a></li>
 					<li><a href="manova1.html" class="text-decoration-none font-monospace"><small>manova1</small></a></li>
 					<li><a href="mcnemar_test.html" class="text-decoration-none font-monospace"><small>mcnemar_test</small></a></li>
+					<li><a href="meanEffectSize.html" class="text-decoration-none font-monospace"><small>meanEffectSize</small></a></li>
+					<li><a href="mmdtest.html" class="text-decoration-none font-monospace"><small>mmdtest</small></a></li>
 					<li><a href="multcompare.html" class="text-decoration-none font-monospace"><small>multcompare</small></a></li>
 					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
 					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
@@ -293,6 +304,7 @@
 					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
 					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
 					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
+					<li><a href="stats.drift.DriftDiagnostics.html" class="text-decoration-none font-monospace"><small>stats.drift.DriftDiagnostics</small></a></li>
 					<li><a href="swtest.html" class="text-decoration-none font-monospace"><small>swtest</small></a></li>
 					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
 					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
@@ -339,6 +351,7 @@
 					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
 					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
 					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
+					<li><a href="fitrm.html" class="text-decoration-none font-monospace"><small>fitrm</small></a></li>
 					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
 					<li><a href="GeneralizedLinearModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearModel</small></a></li>
 					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
@@ -362,6 +375,7 @@
 					<li><a href="plsregress.html" class="text-decoration-none font-monospace"><small>plsregress</small></a></li>
 					<li><a href="regress.html" class="text-decoration-none font-monospace"><small>regress</small></a></li>
 					<li><a href="regress_gp.html" class="text-decoration-none font-monospace"><small>regress_gp</small></a></li>
+					<li><a href="RepeatedMeasuresModel.html" class="text-decoration-none font-monospace"><small>RepeatedMeasuresModel</small></a></li>
 					<li><a href="ridge.html" class="text-decoration-none font-monospace"><small>ridge</small></a></li>
 					<li><a href="robustfit.html" class="text-decoration-none font-monospace"><small>robustfit</small></a></li>
 					<li><a href="stepwisefit.html" class="text-decoration-none font-monospace"><small>stepwisefit</small></a></li>
@@ -373,8 +387,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox" checked>
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +452,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +468,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -511,6 +530,8 @@
 					<li><a href="KDTreeSearcher.html" class="text-decoration-none font-monospace"><small>KDTreeSearcher</small></a></li>
 					<li><a href="knnsearch.html" class="text-decoration-none font-monospace"><small>knnsearch</small></a></li>
 					<li><a href="mahal.html" class="text-decoration-none font-monospace"><small>mahal</small></a></li>
+					<li><a href="nomdist.html" class="text-decoration-none font-monospace"><small>nomdist</small></a></li>
+					<li><a href="nomdist2.html" class="text-decoration-none font-monospace"><small>nomdist2</small></a></li>
 					<li><a href="pdist.html" class="text-decoration-none font-monospace"><small>pdist</small></a></li>
 					<li><a href="pdist2.html" class="text-decoration-none font-monospace"><small>pdist2</small></a></li>
 					<li><a href="rangesearch.html" class="text-decoration-none font-monospace"><small>rangesearch</small></a></li>
@@ -873,6 +894,10 @@
 					<li><a href="stblinv.html" class="text-decoration-none font-monospace"><small>stblinv</small></a></li>
 					<li><a href="stblpdf.html" class="text-decoration-none font-monospace"><small>stblpdf</small></a></li>
 					<li><a href="stblrnd.html" class="text-decoration-none font-monospace"><small>stblrnd</small></a></li>
+					<li><a href="stdrcdf.html" class="text-decoration-none font-monospace"><small>stdrcdf</small></a></li>
+					<li><a href="stdrinv.html" class="text-decoration-none font-monospace"><small>stdrinv</small></a></li>
+					<li><a href="stdrpdf.html" class="text-decoration-none font-monospace"><small>stdrpdf</small></a></li>
+					<li><a href="stdrrnd.html" class="text-decoration-none font-monospace"><small>stdrrnd</small></a></li>
 					<li><a href="tcdf.html" class="text-decoration-none font-monospace"><small>tcdf</small></a></li>
 					<li><a href="tinv.html" class="text-decoration-none font-monospace"><small>tinv</small></a></li>
 					<li><a href="tpdf.html" class="text-decoration-none font-monospace"><small>tpdf</small></a></li>
@@ -929,6 +954,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -945,6 +971,7 @@
 					<li><a href="poisstat.html" class="text-decoration-none font-monospace"><small>poisstat</small></a></li>
 					<li><a href="raylstat.html" class="text-decoration-none font-monospace"><small>raylstat</small></a></li>
 					<li><a href="ricestat.html" class="text-decoration-none font-monospace"><small>ricestat</small></a></li>
+					<li><a href="stdrstat.html" class="text-decoration-none font-monospace"><small>stdrstat</small></a></li>
 					<li><a href="tlsstat.html" class="text-decoration-none font-monospace"><small>tlsstat</small></a></li>
 					<li><a href="tristat.html" class="text-decoration-none font-monospace"><small>tristat</small></a></li>
 					<li><a href="tstat.html" class="text-decoration-none font-monospace"><small>tstat</small></a></li>
@@ -985,24 +1012,34 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
 					<li><a href="ecdfhist.html" class="text-decoration-none font-monospace"><small>ecdfhist</small></a></li>
 					<li><a href="einstein.html" class="text-decoration-none font-monospace"><small>einstein</small></a></li>
+					<li><a href="gardnerAltmanPlot.html" class="text-decoration-none font-monospace"><small>gardnerAltmanPlot</small></a></li>
 					<li><a href="glyphplot.html" class="text-decoration-none font-monospace"><small>glyphplot</small></a></li>
 					<li><a href="gplotmatrix.html" class="text-decoration-none font-monospace"><small>gplotmatrix</small></a></li>
 					<li><a href="gscatter.html" class="text-decoration-none font-monospace"><small>gscatter</small></a></li>
+					<li><a href="heatmap.html" class="text-decoration-none font-monospace"><small>heatmap</small></a></li>
 					<li><a href="hist3.html" class="text-decoration-none font-monospace"><small>hist3</small></a></li>
 					<li><a href="histfit.html" class="text-decoration-none font-monospace"><small>histfit</small></a></li>
 					<li><a href="manovacluster.html" class="text-decoration-none font-monospace"><small>manovacluster</small></a></li>
 					<li><a href="normplot.html" class="text-decoration-none font-monospace"><small>normplot</small></a></li>
 					<li><a href="parallelcoords.html" class="text-decoration-none font-monospace"><small>parallelcoords</small></a></li>
+					<li><a href="parallelplot.html" class="text-decoration-none font-monospace"><small>parallelplot</small></a></li>
 					<li><a href="ppplot.html" class="text-decoration-none font-monospace"><small>ppplot</small></a></li>
 					<li><a href="probplot.html" class="text-decoration-none font-monospace"><small>probplot</small></a></li>
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
+					<li><a href="scatterhistogram.html" class="text-decoration-none font-monospace"><small>scatterhistogram</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="stats.chart.HeatmapChart.html" class="text-decoration-none font-monospace"><small>stats.chart.HeatmapChart</small></a></li>
+					<li><a href="stats.chart.ParallelCoordinatesPlot.html" class="text-decoration-none font-monospace"><small>stats.chart.ParallelCoordinatesPlot</small></a></li>
+					<li><a href="stats.chart.ScatterHistogramChart.html" class="text-decoration-none font-monospace"><small>stats.chart.ScatterHistogramChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1088,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: CompactTreeBagger</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: CompactTreeBagger</code></p>
 <p> Compact ensemble of bagged decision trees
 </p>
 <div class="ms-5">
@@ -1071,7 +1108,7 @@
   <a href="CompactRegressionTree.html">CompactRegressionTree</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Supervised_Learning/CompactTreeBagger.m">CompactTreeBagger</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Machine_Learning/CompactTreeBagger.m">CompactTreeBagger</a>
 </p>
 </div>
         <p class="lead my-3">The <code>CompactTreeBagger</code> class contains the following properties:</p>
@@ -1094,7 +1131,6 @@ Type of the ensemble
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_Method">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> <code>'classification'</code> or <code>'regression'</code>.  This property is
  read-only.
@@ -1153,7 +1189,6 @@ Number of trees
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_NumTrees">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A nonnegative integer, the number of trees in the ensemble.  This
  property is read-only.
@@ -1212,7 +1247,6 @@ The trees of the ensemble
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_Trees">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A column cell array holding one <code>CompactClassificationTree</code> or
  <code>CompactRegressionTree</code> object per tree.  This property is
@@ -1272,7 +1306,6 @@ Names of the classes
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_ClassNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> The classes of a classification ensemble, in the type of the response
  it was fitted on and in the order its scores are laid out.  Empty for a
@@ -1332,7 +1365,6 @@ Prediction for an observation no tree may answer for
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_DefaultYfit">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> For classification, the class of greatest prior probability, in the
  type of the class names, or the missing label of that type after
@@ -1394,7 +1426,6 @@ Names of the predictors
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_PredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors naming the columns of the predictor
  data.  This property is read-only.
@@ -1438,6 +1469,65 @@ Names of the predictors
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#CompactTreeBagger_CategoricalPredictors"
+              aria-expanded="false" aria-controls="CompactTreeBagger_CategoricalPredictors">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>CategoricalPredictors</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Indices of the categorical predictors
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="CompactTreeBagger_CategoricalPredictors">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A row vector of column indices into <var>X</var>, naming the predictors
+ treated as categorical, empty when none is.  This property is
+ read-only.
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactTreeBagger_CategoricalPredictors-example1" aria-expanded="false"
+                  aria-controls="CompactTreeBagger_CategoricalPredictors-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactTreeBagger_CategoricalPredictors-example1">
+            <div class="card-body">
+                <p>Compact a random forest and classify new flowers with it.  The compact ensemble keeps the trees but not the training data.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ rng (42);
+ C = compact (TreeBagger (30, meas, species));
+ label = predict (C, [5.0, 3.4, 1.5, 0.2; 6.7, 3.0, 5.2, 2.3])</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">label =
+  2x1 cell array
+
+    {'setosa'   }    
+    {'virginica'}</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#CompactTreeBagger_DeltaCriterionDecisionSplit"
               aria-expanded="false" aria-controls="CompactTreeBagger_DeltaCriterionDecisionSplit">
               <div class="row align-items-center">
@@ -1453,7 +1543,6 @@ Split criterion contributions of the predictors
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_DeltaCriterionDecisionSplit">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A row vector with one element per predictor, the mean over the trees
  of each tree&rsquo;s <code>predictorImportance</code>.  This property is read-only.
@@ -1512,7 +1601,6 @@ Decision splits on each predictor
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_NumPredictorSplit">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A row vector with one element per predictor, the sum over the trees of
  the share of each tree&rsquo;s branch nodes that split on the predictor.  A
@@ -1572,7 +1660,6 @@ Predictive association between the predictors
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_SurrogateAssociation">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A square matrix with one row and one column per predictor.  The trees
  grow no surrogate splits, so it is the identity matrix.  This property
@@ -1634,13 +1721,11 @@ Predict responses with a compact bagged ensemble.
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_predict">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactTreeBagger: <var>label</var> = <b>predict</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactTreeBagger: [<var>label</var>, <var>scores</var>] = <b>predict</b> (&hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">CompactTreeBagger: [<var>label</var>, <var>scores</var>, <var>stdevs</var>] = <b>predict</b> (&hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">CompactTreeBagger: [<var>Yfit</var>, <var>stdevs</var>] = <b>predict</b> (&hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">CompactTreeBagger: &hellip; = <b>predict</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactTreeBagger: <var>label</var> = <b>predict</b> (<var>obj</var>, <var>X</var>)</code></p>
+<p class="h5 fs"><code>CompactTreeBagger: [<var>label</var>, <var>scores</var>] = <b>predict</b> (&hellip;)</code></p>
+<p class="h5 fs"><code>CompactTreeBagger: [<var>label</var>, <var>scores</var>, <var>stdevs</var>] = <b>predict</b> (&hellip;)</code></p>
+<p class="h5 fs"><code>CompactTreeBagger: [<var>Yfit</var>, <var>stdevs</var>] = <b>predict</b> (&hellip;)</code></p>
+<p class="h5 fs fs-last"><code>CompactTreeBagger: &hellip; = <b>predict</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> For a classification ensemble, <var>label</var> holds the predicted class of
  each row of <var>X</var>, in the type of <code>ClassNames</code>.  <var>scores</var> is
@@ -1675,6 +1760,12 @@ Predict responses with a compact bagged ensemble.
 <p> MATLAB returns the labels as a cell array of character vectors whatever
  the type of the response; they are returned here in the type of
  <code>ClassNames</code>, as by every other classifier in this package.
+</p>
+<p> The new data may be a table, whose variables are matched to the
+ predictors the model was fitted on by name and not by position:
+ one the model was not fitted on is passed over, one it needs and
+ cannot find is named, and a value holding a level is coded as that
+ level was coded at fitting.
 </p>
 <p> <strong>See also: </strong>
   <a href="CompactTreeBagger.html">CompactTreeBagger</a>, 
@@ -1735,10 +1826,10 @@ Misclassification probability or mean squared error of the ensemble.
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_error">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactTreeBagger: <var>err</var> = <b>error</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactTreeBagger: <var>err</var> = <b>error</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactTreeBagger: <var>err</var> = <b>error</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>CompactTreeBagger: <var>err</var> = <b>error</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
+<p class="h5 fs"><code>CompactTreeBagger: <var>err</var> = <b>error</b> (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactTreeBagger: <var>err</var> = <b>error</b> (<var>obj</var>, <var>Tbl</var>)</code></p>
 <p> </p>
 <p> For a classification ensemble <var>err</var> is the weighted share of the
  rows of <var>X</var> whose predicted class differs from <var>Y</var>; for a
@@ -1769,6 +1860,14 @@ Misclassification probability or mean squared error of the ensemble.
 </table>
 </div>
 
+<p> <var>X</var> may also be a table <var>Tbl</var>, whose variables are matched to
+ the predictors the model was fitted on by name and not by position.
+ <code>error (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code> takes the
+ response from the variable <var>ResponseVarName</var> names, and
+ <code>error (<var>obj</var>, <var>Tbl</var>)</code> from the variable the model was
+ fitted on.  The response may also be given beside the table as
+ <var>Y</var>.
+</p>
 <p> <strong>See also: </strong>
   <a href="CompactTreeBagger.html">CompactTreeBagger</a>, 
   <a href="CompactTreeBagger.html#CompactTreeBagger_predict">CompactTreeBagger.predict</a>, 
@@ -1829,10 +1928,10 @@ Classification margin of each observation.
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_margin">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactTreeBagger: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactTreeBagger: <var>m</var> = <b>margin</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactTreeBagger: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>CompactTreeBagger: <var>m</var> = <b>margin</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
+<p class="h5 fs"><code>CompactTreeBagger: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactTreeBagger: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>Tbl</var>)</code></p>
 <p> </p>
 <p> The margin is the score of the true class less the highest score among
  the other classes.  By default <var>m</var> has one row per observation and
@@ -1843,6 +1942,14 @@ Classification margin of each observation.
 <p> <code>'Mode'</code>, <code>'Trees'</code>, <code>'TreeWeights'</code> and
  <code>'UseInstanceForTree'</code> are taken as by
  <code>CompactTreeBagger.error</code>.  A regression ensemble has no margins.
+</p>
+<p> <var>X</var> may also be a table <var>Tbl</var>, whose variables are matched to
+ the predictors the model was fitted on by name and not by position.
+ <code>margin (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code> takes the
+ response from the variable <var>ResponseVarName</var> names, and
+ <code>margin (<var>obj</var>, <var>Tbl</var>)</code> from the variable the model was
+ fitted on.  The response may also be given beside the table as
+ <var>Y</var>.
 </p>
 <p> <strong>See also: </strong>
   <a href="CompactTreeBagger.html">CompactTreeBagger</a>, 
@@ -1903,15 +2010,23 @@ Weighted mean classification margin.
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_meanMargin">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactTreeBagger: <var>mm</var> = <b>meanMargin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactTreeBagger: <var>mm</var> = <b>meanMargin</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactTreeBagger: <var>mm</var> = <b>meanMargin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>CompactTreeBagger: <var>mm</var> = <b>meanMargin</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
+<p class="h5 fs"><code>CompactTreeBagger: <var>mm</var> = <b>meanMargin</b> (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactTreeBagger: <var>mm</var> = <b>meanMargin</b> (<var>obj</var>, <var>Tbl</var>)</code></p>
 <p> </p>
 <p> <var>mm</var> is the weighted mean over the observations of the margins
  <code>CompactTreeBagger.margin</code> returns, a row with one element per
  tree by default.  The Name-Value arguments are those of
  <code>CompactTreeBagger.error</code>, <code>'Weights'</code> included.
+</p>
+<p> <var>X</var> may also be a table <var>Tbl</var>, whose variables are matched to
+ the predictors the model was fitted on by name and not by position.
+ <code>meanMargin (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code>
+ takes the response from the variable <var>ResponseVarName</var> names, and
+ <code>meanMargin (<var>obj</var>, <var>Tbl</var>)</code> from the variable the model
+ was fitted on.  The response may also be given beside the table as
+ <var>Y</var>.
 </p>
 <p> <strong>See also: </strong>
   <a href="CompactTreeBagger.html">CompactTreeBagger</a>, 
@@ -1971,9 +2086,7 @@ Join two compact ensembles.
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_combine">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactTreeBagger: <var>C</var> = <b>combine</b> (<var>C1</var>, <var>C2</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>CompactTreeBagger: <var>C</var> = <b>combine</b> (<var>C1</var>, <var>C2</var>)</code></p>
 <p> </p>
 <p> <var>C</var> holds the trees of <var>C1</var> followed by those of <var>C2</var>.  The
  two must be of the same type and, for classification, have the same
@@ -2038,9 +2151,7 @@ Set the prediction for an observation no tree may answer for.
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_setDefaultYfit">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactTreeBagger: <var>C</var> = <b>setDefaultYfit</b> (<var>obj</var>, <var>Yfit</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>CompactTreeBagger: <var>C</var> = <b>setDefaultYfit</b> (<var>obj</var>, <var>Yfit</var>)</code></p>
 <p> </p>
 <p> For a classification ensemble <var>Yfit</var> is <code>'MostPopular'</code>, the
  class of greatest prior probability, or <code>''</code>, the missing label,
@@ -2106,14 +2217,18 @@ Proximity matrix of the observations.
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_proximity">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactTreeBagger: <var>prox</var> = <b>proximity</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>CompactTreeBagger: <var>prox</var> = <b>proximity</b> (<var>obj</var>, <var>X</var>)</code></p>
 <p> </p>
 <p> <var>prox</var> is a symmetric <em class="math">NxN</em> matrix, <em class="math">N</em> being the number
  of rows of <var>X</var>, whose element <em class="math">(i,j)</em> is the share of the
  trees that bring observations <em class="math">i</em> and <em class="math">j</em> to the same leaf.
  Its diagonal holds ones.
+</p>
+<p> <var>X</var> may also be a table, whose variables are matched to the
+ predictors the model was fitted on by name and not by position: one
+ the model was not fitted on is passed over, one it needs and cannot
+ find is named, and a value holding a level is coded as that level was
+ coded at fitting.
 </p>
 <p> <strong>See also: </strong>
   <a href="CompactTreeBagger.html">CompactTreeBagger</a>, 
@@ -2175,10 +2290,8 @@ Outlier measure of each observation.
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_outlierMeasure">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactTreeBagger: <var>out</var> = <b>outlierMeasure</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactTreeBagger: <var>out</var> = <b>outlierMeasure</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactTreeBagger: <var>out</var> = <b>outlierMeasure</b> (<var>obj</var>, <var>X</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactTreeBagger: <var>out</var> = <b>outlierMeasure</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> The raw measure of an observation is the size of its class divided by
  the sum of its squared proximities to the observations of the class,
@@ -2204,6 +2317,12 @@ Outlier measure of each observation.
 </table>
 </div>
 
+<p> <var>X</var> holding predictor data may also be a table, whose variables
+ are matched to the predictors the model was fitted on by name and not
+ by position: one the model was not fitted on is passed over, one it
+ needs and cannot find is named, and a value holding a level is coded as
+ that level was coded at fitting.
+</p>
 <p> <strong>See also: </strong>
   <a href="CompactTreeBagger.html">CompactTreeBagger</a>, 
   <a href="CompactTreeBagger.html#CompactTreeBagger_proximity">CompactTreeBagger.proximity</a>, 
@@ -2263,10 +2382,8 @@ Multidimensional scaling of the proximity matrix.
           </div>
           <div class="collapse multi-collapse" id="CompactTreeBagger_mdsprox">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactTreeBagger: [<var>S</var>, <var>E</var>] = <b>mdsprox</b> (<var>obj</var>, <var>X</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactTreeBagger: [<var>S</var>, <var>E</var>] = <b>mdsprox</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactTreeBagger: [<var>S</var>, <var>E</var>] = <b>mdsprox</b> (<var>obj</var>, <var>X</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactTreeBagger: [<var>S</var>, <var>E</var>] = <b>mdsprox</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> Applies classical multidimensional scaling, as <code>cmdscale</code> does, to
  the distances <code>1 - <var>prox</var></code>, <var>prox</var> being the proximity
@@ -2294,6 +2411,12 @@ Multidimensional scaling of the proximity matrix.
 </table>
 </div>
 
+<p> <var>X</var> holding predictor data may also be a table, whose variables
+ are matched to the predictors the model was fitted on by name and not
+ by position: one the model was not fitted on is passed over, one it
+ needs and cannot find is named, and a value holding a level is coded as
+ that level was coded at fitting.
+</p>
 <p> <strong>See also: </strong>
   <a href="CompactTreeBagger.html">CompactTreeBagger</a>, 
   <a href="CompactTreeBagger.html#CompactTreeBagger_proximity">CompactTreeBagger.proximity</a>, 

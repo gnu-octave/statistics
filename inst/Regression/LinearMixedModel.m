@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {} LinearMixedModel
+## @deftp {statistics} LinearMixedModel
 ##
 ## Linear mixed-effects model fitted to data.
 ##
@@ -41,7 +41,7 @@
 ## and @code{coefCI} methods.
 ##
 ## @seealso{fitlmematrix, fitlm}
-## @end deftypefn
+## @end deftp
 
 classdef LinearMixedModel < PredictiveModel
 
@@ -261,14 +261,6 @@ classdef LinearMixedModel < PredictiveModel
 
   methods (Hidden)
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ("%s =\n", in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       fprintf ("\n  Linear mixed-effects model fit by %s\n", this.FitMethod);
       if (! isempty (this.Formula))
@@ -388,7 +380,7 @@ classdef LinearMixedModel < PredictiveModel
       se = sqrt (diag (info.covbeta));
       tstat = info.beta ./ se;
       dfe = n - p;
-      pval = 2 * (1 - tcdf (abs (tstat), dfe));
+      pval = 2 * tcdf (-abs (tstat), dfe);
       tcrit = tinv (0.975, dfe);
       lower = info.beta - tcrit * se;
       upper = info.beta + tcrit * se;
@@ -611,7 +603,7 @@ classdef LinearMixedModel < PredictiveModel
       else
         error ("LinearMixedModel: unknown DFMethod '%s'.", dfmethod);
       endif
-      pValue = 1 - fcdf (Fstat, DF1, DF2);
+      pValue = fcdf (Fstat, DF1, DF2, 'upper');
       tbl = table (Fstat(:), DF1(:), DF2(:), pValue(:), ...
         "VariableNames", {"FStat", "DF1", "DF2", "pValue"}, ...
         "RowNames", this.CoefficientNames(:));
@@ -641,7 +633,7 @@ classdef LinearMixedModel < PredictiveModel
       df1 = rank (H);
       df2 = this.DFE;
       F = (Hb' * ((H * this.covbeta_ * H') \ Hb)) / df1;
-      pval = 1 - fcdf (F, df1, df2);
+      pval = fcdf (F, df1, df2, 'upper');
     endfunction
 
     ## -*- texinfo -*-
@@ -849,6 +841,29 @@ endclassdef
 %! assert_equal (lme.Rsquared.Adjusted, 0.8694885, 1e-6);
 %! assert_equal (lme.SST, lme.SSE + lme.SSR, 1e-10);
 %! assert_equal (lme.ModelCriterion.Deviance, -2 * lme.LogLikelihood, 1e-10);
+%!test
+%! ## Below the resolution of 1 - tcdf, value from MATLAB R2024a
+%! x = (1:30)';
+%! g = repmat ((1:5)', 6, 1);
+%! T = table (x, g, 2 * x + g + 0.01 * sin (x), ...
+%!            'VariableNames', {'x', 'g', 'y'});
+%! m = fitlme (T, 'y ~ x + (1|g)');
+%! assert_equal (m.Coefficients.pValue(2), 1.12646802753448e-95, -1e-3);
+%!test
+%! ## Below the resolution of 1 - fcdf, values from MATLAB R2024a
+%! u = (1:30)';
+%! g = repmat ((1:5)', 6, 1);
+%! T = table (u, g, 2 * u + g + 0.01 * sin (u), ...
+%!            'VariableNames', {'x', 'g', 'y'});
+%! m = fitlme (T, 'y ~ x + (1|g)');
+%! assert_equal (coefTest (m), 1.12646802753448e-95, -1e-3);
+%!test
+%! u = (1:30)';
+%! g = repmat ((1:5)', 6, 1);
+%! T = table (u, g, 2 * u + g + 0.01 * sin (u), ...
+%!            'VariableNames', {'x', 'g', 'y'});
+%! A = anova (fitlme (T, 'y ~ x + (1|g)'));
+%! assert_equal (A.pValue(2), 1.12646802753448e-95, -1e-3);
 
 ## Error handling
 %!error <unknown ResidualType> residuals (lme, "ResidualType", "xxx")

@@ -303,8 +303,11 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
       ngroups = rows (g_names);
       ## Convert logical to double
       c_names = convertvars (g_names, @islogical, 'double');
-      ## Create unique names for each group
-      cstrtbl = cellstr (string (table2cell (c_names)));
+      ## Create unique names for each group, one grouping variable at a time
+      cstrtbl = cell (ngroups, width (c_names));
+      for idx = 1:width (c_names)
+        cstrtbl(:,idx) = cellstr (string (c_names{:,idx}));
+      endfor
       r_names = cstrtbl(:,1);
       [cr, cc] = size (cstrtbl);
       tmp_tmp = repmat ({'_'}, cr, 1);

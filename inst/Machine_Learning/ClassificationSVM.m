@@ -232,8 +232,9 @@ classdef ClassificationSVM < PredictiveModel
     ## the primal representation of the fitted hyperplane and exists only when
     ## the SVM classifier was trained with a @qcode{'linear'} kernel function;
     ## for any other kernel there is no such representation and @qcode{Beta} is
-    ## empty.  It equals
-    ## @qcode{obj.SupportVectors' * (obj.Alpha .* obj.SupportVectorLabels)}.
+    ## empty.  It equals @qcode{(obj.SupportVectors / s)' * (obj.Alpha .*
+    ## obj.SupportVectorLabels)}, where @math{s} is the kernel scale, and a
+    ## score is @qcode{(@var{x} / s) * Beta + Bias}, as in MATLAB.
     ## This property is read-only.
     ##
     ## @end deftp
@@ -274,7 +275,8 @@ classdef ClassificationSVM < PredictiveModel
     ## vector
     ## belongs to the positive class @qcode{(ClassNames@{2@})}.  A value of -1
     ## indicates that the corresponding support vector belongs to the negative
-    ## class @qcode{(ClassNames@{1@})}.  This property is read-only.
+    ## class @qcode{(ClassNames@{1@})}.  A one-class model labels every support
+    ## vector +1.  This property is read-only.
     ##
     ## @end deftp
     SupportVectorLabels = [];
@@ -330,8 +332,8 @@ classdef ClassificationSVM < PredictiveModel
     ## Observation weights
     ##
     ## A numeric column vector with one entry per training observation,
-    ## normalized to sum to one, as MATLAB reports it.  This property is
-    ## read-only.
+    ## normalized to sum to one, as MATLAB reports it.  It has the class of the
+    ## @qcode{'Weights'} given, single or double.  This property is read-only.
     ##
     ## Each class carries its prior, spread over its own observations in
     ## proportion to the @qcode{'Weights'} given, or evenly when none were.
@@ -544,15 +546,6 @@ classdef ClassificationSVM < PredictiveModel
     endfunction
 
     ## Custom display
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
-    ## Custom display
     function disp (this)
       fprintf ("\n  ClassificationSVM\n\n");
       ## Print selected properties
@@ -600,11 +593,11 @@ classdef ClassificationSVM < PredictiveModel
   methods (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {statistics} {@var{obj} =} ClassificationSVM (@var{X}, @var{Y})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationSVM (@var{Tbl}, @var{ResponseVarName})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationSVM (@var{Tbl}, @var{formula})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationSVM (@var{Tbl}, @var{Y})
-    ## @deftypefnx {statistics} {@var{obj} =} ClassificationSVM (@dots{}, @var{name}, @var{value})
+    ## @deftypefn  {ClassificationSVM} {@var{obj} =} ClassificationSVM (@var{X}, @var{Y})
+    ## @deftypefnx {ClassificationSVM} {@var{obj} =} ClassificationSVM (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {ClassificationSVM} {@var{obj} =} ClassificationSVM (@var{Tbl}, @var{formula})
+    ## @deftypefnx {ClassificationSVM} {@var{obj} =} ClassificationSVM (@var{Tbl}, @var{Y})
+    ## @deftypefnx {ClassificationSVM} {@var{obj} =} ClassificationSVM (@dots{}, @var{name}, @var{value})
     ##
     ## Create a @qcode{ClassificationSVM} class object containing a Support
     ## Vector Machine classification model for one-class or two-class problems.
@@ -680,19 +673,26 @@ classdef ClassificationSVM < PredictiveModel
     ## @item @qcode{'PolynomialOrder'} @tab A positive integer specifying
     ## the order of the polynomial kernel function.  Default is 3.
     ##
-    ## @item @qcode{'KernelScale'} @tab A positive scalar specifying the
-    ## kernel scale parameter.  Default is 1.
+    ## @item @qcode{'KernelScale'} @tab A positive scalar dividing every
+    ## predictor before any kernel is applied, as MATLAB does, so that with
+    ## @math{u} and @math{v} the divided predictors the kernels are @math{u'v},
+    ## @math{exp (-||u - v||^2)}, @math{(1 + u'v)^q} and @math{tanh (u'v + c)},
+    ## @math{c} being @qcode{'KernelOffset'}.  The default is 1.
     ##
-    ## @item @qcode{'KernelOffset'} @tab A non-negative scalar specifying
-    ## the kernel offset parameter.  Default is 0.
+    ## @item @qcode{'KernelOffset'} @tab A non-negative scalar, the constant
+    ## @math{c} of the sigmoid kernel, which MATLAB does not have.  MATLAB adds
+    ## it to every element of the Gram matrix, which leaves the fitted model
+    ## unchanged, so it changes no other kernel here.  The default is 0.
     ##
-    ## @item @qcode{'Weights'} @tab A numeric vector of nonnegative observation
-    ## weights, one per row of @var{X}.  Each observation's box constraint is
-    ## @math{n} times @qcode{BoxConstraint} times its weight, the weights scaled
-    ## so that each class carries its prior times the cost of misclassifying it.
-    ## An empirical prior sums the weights per class, standardization uses
-    ## weighted means and standard deviations, and a row of zero weight is left
-    ## out.
+    ## @item @qcode{'Weights'} @tab A single or double vector of nonnegative
+    ## observation weights, one per row of @var{X}.  Each observation's box
+    ## constraint is @math{n} times @qcode{BoxConstraint} times its weight, the
+    ## weights scaled so that each class carries its prior times the cost of
+    ## misclassifying it.  An empirical prior sums the weights per class,
+    ## standardization uses weighted means and standard deviations, and a row of
+    ## zero weight is left out.  The model's @code{W} keeps the class of the
+    ## weights, while every computation runs in double, so @code{Prior} is
+    ## double where MATLAB returns single.
     ##
     ## @item @qcode{'BoxConstraint'} @tab A positive scalar specifying the
     ## box constraint parameter.  Default is 1.
@@ -737,217 +737,158 @@ classdef ClassificationSVM < PredictiveModel
       ## Get groups in Y
       [gY, gnY, glY] = grp2idx (Y);
 
-      ## Set default values before parsing optional parameters
-      SVMtype                 = 'c_svc';
-      KernelFunction          = [];
-      KernelScale             = 1;
-      KernelOffset            = 0;
-      PolynomialOrder         = 3;
-      BoxConstraint           = 1;
-      Nu                      = 0.5;
-      OutlierFraction         = 0;
-      CacheSize               = 1000;
-      Tolerance               = 1e-6;
-      Shrinking               = 1;
-      Standardize             = false;
-      ResponseName            = [];
-      PredictorNames          = [];
-      ClassNames              = [];
-      Prior                   = [];
-      Cost                    = [];
-      Weights                 = [];
+      ## Parse optional paired arguments
+      optNames = {'Weights', 'Standardize', 'PredictorNames', ...
+                  'ResponseName', 'ClassNames', 'Prior', 'Cost', ...
+                  'ScoreTransform', 'SVMtype', 'OutlierFraction', ...
+                  'KernelFunction', 'PolynomialOrder', 'KernelScale', ...
+                  'KernelOffset', 'BoxConstraint', 'Nu', 'CacheSize', ...
+                  'Tolerance', 'Shrinking', 'CategoricalPredictors'};
+      ## An empty default stands for one resolved once the classes are
+      ## known: 'SVMtype' is a one-class fit for one class and 'c_svc' for
+      ## two, 'Nu' is 0.5, 'OutlierFraction' 0, 'KernelFunction' 'rbf' for
+      ## one class and 'linear' for two, and the classes, prior, cost and
+      ## weights come from the response.
+      dfValues = {[], false, [], [], [], [], [], [], [], [], [], 3, 1, 0, 1, ...
+                  [], 1000, 1e-6, 1, []};
+      [Weights, Standardize, PredictorNames, ResponseName, ClassNames, ...
+       Prior, Cost, STin, SVMtype, OutlierFraction, KernelFunction, ...
+       PolynomialOrder, KernelScale, KernelOffset, BoxConstraint, Nu, ...
+       CacheSize, Tolerance, Shrinking, CatPreds, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      ## Parse extra parameters
-      SVMtype_override = true;
-      NuGiven = false;
-      CatPreds = [];
-      while (numel (varargin) > 0)
-        switch (tolower (varargin {1}))
+      ## Validate optional paired arguments
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationSVM: %s", errmsg);
+      endif
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isvector (Weights)
+             && isreal (Weights)))
+        error (strcat ("ClassificationSVM: 'Weights' must be a real", ...
+                       " numeric vector."));
+      endif
+      if (! isempty (Weights) && numel (Weights) != rows (X))
+        error (strcat ("ClassificationSVM: 'Weights' must have one", ...
+                       " element per row in X."));
+      endif
+      if (! isempty (Weights) && (any (Weights < 0) || ! (sum (Weights) > 0)))
+        error (strcat ("ClassificationSVM: 'Weights' must be", ...
+                       " nonnegative and must not be all zero."));
+      endif
+      if (! (Standardize == true || Standardize == false))
+        error (strcat ("ClassificationSVM: 'Standardize' must", ...
+                       " be either true or false."));
+      endif
+      if (! isempty (PredictorNames) && ! iscellstr (PredictorNames))
+        error (strcat ("ClassificationSVM: 'PredictorNames' must", ...
+                       " be supplied as a cellstring array."));
+      elseif (! isempty (PredictorNames)
+              && (columns (PredictorNames) != columns (X)))
+        error (strcat ("ClassificationSVM: 'PredictorNames' must", ...
+                       " have the same number of columns as X."));
+      endif
+      if (! isempty (ResponseName) && ! ischar (ResponseName))
+        error (strcat ("ClassificationSVM: 'ResponseName' must", ...
+                       " be a character vector."));
+      endif
+      if (! isempty (ClassNames) &&
+          ! (iscellstr (ClassNames) || isnumeric (ClassNames)
+             || islogical (ClassNames) || ischar (ClassNames)
+             || isa (ClassNames, 'categorical')
+             || isa (ClassNames, 'string')))
+        error (strcat ("ClassificationSVM: 'ClassNames' must be a", ...
+                       " categorical array, a character array, a", ...
+                       " string array, a logical vector, a numeric", ...
+                       " vector, or a cell array of character", ...
+                       " vectors."));
+      endif
+      if (! isempty (ClassNames))
+        [~, errmsg] = namedClasses (glY, ClassNames);
+        if (! isempty (errmsg))
+          error ("ClassificationSVM: %s", errmsg);
+        endif
+      endif
+      if (! isempty (Prior) &&
+          ! (isstruct (Prior)
+             || (isnumeric (Prior) && isvector (Prior) && all (Prior >= 0)
+                 && any (Prior > 0))
+             || (ischar (Prior)
+                 && any (strcmpi (Prior, {'empirical', 'uniform'})))))
+        error (strcat ("ClassificationSVM: 'Prior' must be a", ...
+                       " non-negative numeric vector, 'empirical'", ...
+                       " or 'uniform'."));
+      endif
+      if (! isempty (Cost) &&
+          ! (isnumeric (Cost) && issquare (Cost) && all (Cost(:) >= 0)))
+        error (strcat ("ClassificationSVM: 'Cost' must be a", ...
+                       " non-negative square matrix."));
+      endif
+      if (! isempty (SVMtype)
+          && (! any (strcmp (SVMtype, {'c_svc', 'nu_svc', 'one_class_svm'}))))
+        error (strcat ("ClassificationSVM: 'SVMtype' must be", ...
+                       " 'c_svc', 'nu_svc', or 'one_class_svm'."));
+      endif
+      if (! isempty (OutlierFraction) &&
+          ! (isscalar (OutlierFraction) && OutlierFraction >= 0
+             && OutlierFraction < 1))
+        error (strcat ("ClassificationSVM: 'OutlierFraction' must", ...
+                       " be a positive scalar in the range 0 =<", ...
+                       " OutlierFraction < 1."));
+      endif
+      if (! isempty (KernelFunction) && ! ischar (KernelFunction))
+        error (strcat ("ClassificationSVM: 'KernelFunction' must", ...
+                       " be a character vector."));
+      endif
+      KernelFunction = tolower (KernelFunction);
+      if (! isempty (KernelFunction)
+          && (! any (strcmpi (KernelFunction, ...
+                     {'linear', 'rbf', 'gaussian', 'polynomial', 'sigmoid'}))))
+        error ("ClassificationSVM: unsupported Kernel function.");
+      endif
+      if (! (isnumeric (PolynomialOrder) && isscalar (PolynomialOrder)
+             && PolynomialOrder > 0 && mod (PolynomialOrder, 1) == 0))
+        error (strcat ("ClassificationSVM: 'PolynomialOrder' must", ...
+                       " be a positive integer."));
+      endif
+      if (! (isscalar (KernelScale) && KernelScale > 0))
+        error (strcat ("ClassificationSVM: 'KernelScale'", ...
+                       " must be a positive scalar."));
+      endif
+      if (! (isnumeric (KernelOffset) && isscalar (KernelOffset)
+                                      && KernelOffset >= 0))
+        error (strcat ("ClassificationSVM: 'KernelOffset' must", ...
+                       " be a non-negative scalar."));
+      endif
+      if (! (isscalar (BoxConstraint) && BoxConstraint > 0))
+        error (strcat ("ClassificationSVM: 'BoxConstraint' must", ...
+                       " be a positive scalar."));
+      endif
+      if (! isempty (Nu) &&
+          ! (isscalar (Nu) && Nu > 0 && Nu <= 1))
+        error (strcat ("ClassificationSVM: 'Nu' must be a positive", ...
+                       " scalar in the range 0 < Nu <= 1."));
+      endif
+      if (! (isscalar (CacheSize) && CacheSize > 0))
+        error (strcat ("ClassificationSVM: 'CacheSize' must", ...
+                       " be a positive scalar."));
+      endif
+      if (! (isscalar (Tolerance) && Tolerance >= 0))
+        error (strcat ("ClassificationSVM: 'Tolerance' must", ...
+                       " be a positive scalar."));
+      endif
+      if (! (ismember (Shrinking, [0, 1]) && isscalar (Shrinking)))
+        error ("ClassificationSVM: 'Shrinking' must be either 0 or 1.");
+      endif
 
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isvector (Weights)
-                   && isreal (Weights)))
-              error (strcat ("ClassificationSVM: 'Weights' must be a real", ...
-                             " numeric vector."));
-            endif
-            if (numel (Weights) != rows (X))
-              error (strcat ("ClassificationSVM: 'Weights' must have one", ...
-                             " element per row in X."));
-            endif
-            if (any (Weights < 0) || ! (sum (Weights) > 0))
-              error (strcat ("ClassificationSVM: 'Weights' must be", ...
-                             " nonnegative and must not be all zero."));
-            endif
+      if (! isempty (STin))
+        [this.STfun, this.ScoreTransform] = ...
+              parseScoreTransform (STin, 'ClassificationSVM');
+      endif
 
-          case 'standardize'
-            Standardize = varargin{2};
-            if (! (Standardize == true || Standardize == false))
-              error (strcat ("ClassificationSVM: 'Standardize' must", ...
-                             " be either true or false."));
-            endif
-
-          case 'predictornames'
-            PredictorNames = varargin{2};
-            if (! iscellstr (PredictorNames))
-              error (strcat ("ClassificationSVM: 'PredictorNames' must", ...
-                             " be supplied as a cellstring array."));
-            elseif (columns (PredictorNames) != columns (X))
-              error (strcat ("ClassificationSVM: 'PredictorNames' must", ...
-                             " have the same number of columns as X."));
-            endif
-
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! ischar (ResponseName))
-              error (strcat ("ClassificationSVM: 'ResponseName' must", ...
-                             " be a character vector."));
-            endif
-
-          case 'classnames'
-            ClassNames = varargin{2};
-            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
-                   || islogical (ClassNames) || ischar (ClassNames)
-                   || isa (ClassNames, 'categorical')
-                   || isa (ClassNames, 'string')))
-              error (strcat ("ClassificationSVM: 'ClassNames' must be a", ...
-                             " categorical array, a character array, a", ...
-                             " string array, a logical vector, a numeric", ...
-                             " vector, or a cell array of character", ...
-                             " vectors."));
-            endif
-            [~, errmsg] = namedClasses (glY, ClassNames);
-            if (! isempty (errmsg))
-              error ("ClassificationSVM: %s", errmsg);
-            endif
-
-          case 'prior'
-            Prior = varargin{2};
-            if (! (isstruct (Prior)
-                   || (isnumeric (Prior) && isvector (Prior) && all (Prior >= 0)
-                       && any (Prior > 0))
-                   || (ischar (Prior)
-                       && any (strcmpi (Prior, {'empirical', 'uniform'})))))
-              error (strcat ("ClassificationSVM: 'Prior' must be a", ...
-                             " non-negative numeric vector, 'empirical'", ...
-                             " or 'uniform'."));
-            endif
-
-          case 'cost'
-            Cost = varargin{2};
-            if (! (isnumeric (Cost) && issquare (Cost) && all (Cost(:) >= 0)))
-              error (strcat ("ClassificationSVM: 'Cost' must be a", ...
-                             " non-negative square matrix."));
-            endif
-
-          case 'scoretransform'
-            name = 'ClassificationSVM';
-            [this.STfun, this.ScoreTransform] = parseScoreTransform ...
-                                                 (varargin{2}, name);
-
-          case 'svmtype'
-            SVMtype = varargin{2};
-            SVMtype_override = false;
-            if (! any (strcmp (SVMtype, {'c_svc', 'nu_svc', 'one_class_svm'})))
-              error (strcat ("ClassificationSVM: 'SVMtype' must be", ...
-                             " 'c_svc', 'nu_svc', or 'one_class_svm'."));
-            endif
-
-          case 'outlierfraction'
-            Nu = varargin{2};
-            OutlierFraction = Nu;
-            if (! (isscalar (Nu) && Nu >= 0 && Nu < 1))
-              error (strcat ("ClassificationSVM: 'OutlierFraction' must", ...
-                             " be a positive scalar in the range 0 =<", ...
-                             " OutlierFraction < 1."));
-            endif
-            if (Nu > 0)
-              SVMtype = 'nu_svc';
-            endif
-
-          case 'kernelfunction'
-            KernelFunction = varargin{2};
-            if (! ischar (KernelFunction))
-              error (strcat ("ClassificationSVM: 'KernelFunction' must", ...
-                             " be a character vector."));
-            endif
-            KernelFunction = tolower (KernelFunction);
-            if (! any (strcmpi (KernelFunction, ...
-                       {'linear', 'rbf', 'gaussian', 'polynomial', 'sigmoid'})))
-              error ("ClassificationSVM: unsupported Kernel function.");
-            endif
-
-          case 'polynomialorder'
-            PolynomialOrder = varargin{2};
-            if (! (isnumeric (PolynomialOrder) && isscalar (PolynomialOrder)
-                   && PolynomialOrder > 0 && mod (PolynomialOrder, 1) == 0))
-              error (strcat ("ClassificationSVM: 'PolynomialOrder' must", ...
-                             " be a positive integer."));
-            endif
-
-          case 'kernelscale'
-            KernelScale = varargin{2};
-            if (! (isscalar (KernelScale) && KernelScale > 0))
-              error (strcat ("ClassificationSVM: 'KernelScale'", ...
-                             " must be a positive scalar."));
-            endif
-
-          case 'kerneloffset'
-            KernelOffset = varargin{2};
-            if (! (isnumeric (KernelOffset) && isscalar (KernelOffset)
-                                            && KernelOffset >= 0))
-              error (strcat ("ClassificationSVM: 'KernelOffset' must", ...
-                             " be a non-negative scalar."));
-            endif
-
-          case 'boxconstraint'
-            BoxConstraint = varargin{2};
-            if (! (isscalar (BoxConstraint) && BoxConstraint > 0))
-              error (strcat ("ClassificationSVM: 'BoxConstraint' must", ...
-                             " be a positive scalar."));
-            endif
-
-          case 'nu'
-            Nu = varargin{2};
-            NuGiven = true;
-            if (SVMtype_override)
-              SVMtype = 'one_class_svm';
-            endif
-            if (! (isscalar (Nu) && Nu > 0 && Nu <= 1))
-              error (strcat ("ClassificationSVM: 'Nu' must be a positive", ...
-                             " scalar in the range 0 < Nu <= 1."));
-            endif
-
-          case 'cachesize'
-            CacheSize = varargin{2};
-            if (! (isscalar (CacheSize) && CacheSize > 0))
-              error (strcat ("ClassificationSVM: 'CacheSize' must", ...
-                             " be a positive scalar."));
-            endif
-
-          case 'tolerance'
-            Tolerance = varargin{2};
-            if (! (isscalar (Tolerance) && Tolerance >= 0))
-              error (strcat ("ClassificationSVM: 'Tolerance' must", ...
-                             " be a positive scalar."));
-            endif
-
-          case 'shrinking'
-            Shrinking = varargin{2};
-            if (! (ismember (Shrinking, [0, 1]) && isscalar (Shrinking)))
-              error ("ClassificationSVM: 'Shrinking' must be either 0 or 1.");
-            endif
-
-          case 'categoricalpredictors'
-            CatPreds = varargin{2};
-
-          otherwise
-            error (strcat ("ClassificationSVM: invalid parameter name", ...
-                           " in optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("ClassificationSVM: invalid optional paired argument.");
+      endif
 
       ## Get number of variables in training data
       ndims_X = columns (X);
@@ -984,10 +925,13 @@ classdef ClassificationSVM < PredictiveModel
       if (isempty (Weights))
         RawWeights = ones (rows (Xret), 1);
       else
-        RawWeights = double (Weights(RowsUsed));
+        RawWeights = Weights(RowsUsed);
         RawWeights = RawWeights(:);
       endif
+      ## The weights keep their class in the model; every computation runs on
+      ## them as double.
       this.RawWeights = RawWeights;
+      RawWeights = double (RawWeights);
       wc = RawWeights(cobs);
 
       ## Renew groups in Y over the retained observations, so a class held
@@ -1026,18 +970,31 @@ classdef ClassificationSVM < PredictiveModel
       this.Prior = Prior;
       this.Cost = Cost;
 
-      ## If only one class available, force 'SVMtype' to 'one_class_svm'
+      ## One class makes a one-class fit, and 'SVMtype' may only agree.  Two
+      ## classes make a C-SVM unless 'SVMtype' says otherwise.  'Nu' never
+      ## chooses the type: a C-SVM records it and does not use it, as R2024a
+      ## does.  'OutlierFraction' moves the bias of a one-class fit and
+      ## leaves its Nu alone; two-class robust learning is not implemented.
+      if (isempty (Nu))
+        Nu = 0.5;
+      endif
+      if (isempty (OutlierFraction))
+        OutlierFraction = 0;
+      endif
       if (nclasses == 1)
-        if (! SVMtype_override && ! strcmp (SVMtype, 'one_class_svm'))
+        if (! isempty (SVMtype) && ! strcmp (SVMtype, 'one_class_svm'))
           error (strcat ("ClassificationSVM: cannot train a binary", ...
                          " problem with only one class available."));
         endif
         SVMtype = 'one_class_svm';
-        ## A one-class fit keeps its Nu when OutlierFraction is given, the
-        ## fraction moving only the bias, as R2024a does.
-        if (OutlierFraction > 0 && ! NuGiven)
-          Nu = 0.5;
-        endif
+      elseif (isempty (SVMtype))
+        SVMtype = 'c_svc';
+      endif
+      if (OutlierFraction > 0 && ! strcmp (SVMtype, 'one_class_svm'))
+        error (strcat ("ClassificationSVM: 'OutlierFraction' is not", ...
+                       " implemented for two-class learning."));
+      endif
+      if (nclasses == 1)
         if (isempty (KernelFunction))
           KernelFunction = 'rbf';
         endif
@@ -1126,7 +1083,9 @@ classdef ClassificationSVM < PredictiveModel
         this.Mu = sum (sw .* X, 1);
         Zs = X - this.Mu;
         this.Sigma = sqrt (sum (sw .* Zs .^ 2, 1) / (1 - sum (sw .^ 2)));
-        this.Sigma(this.Sigma == 0) = 1;  # predictor is constant
+        ## A constant predictor is left unscaled; its weighted mean can miss
+        ## the constant by one rounding, so its deviation need not be zero.
+        this.Sigma(this.Sigma == 0 | all (X == X(1,:), 1)) = 1;
         ## A level's column is left as it is, as in MATLAB R2024a.
         this.Mu(Coding.Dummy) = 0;
         this.Sigma(Coding.Dummy) = 1;
@@ -1156,7 +1115,8 @@ classdef ClassificationSVM < PredictiveModel
       if (isempty (this.Coding_))
         this.ExpandedPredictorNames = PredictorNames;
       endif
-      this.W = priorNormalize (RawWeights, gret, this.Prior);
+      this.W = cast (priorNormalize (RawWeights, gret, this.Prior), ...
+                     class (this.RawWeights));
 
       ## Set svmtrain parameters for SVMtype and KernelFunction
       switch (SVMtype)
@@ -1178,15 +1138,27 @@ classdef ClassificationSVM < PredictiveModel
           t = 3;
       endswitch
 
-      ## Set svmtrain parameters for gamma
-      g = KernelScale / ndims_X;
+      ## MATLAB divides the predictors by KernelScale for every kernel, so the
+      ## fit sees X / KernelScale with gamma 1.  Its polynomial kernel is
+      ## (1 + x'z) ^ q, and it adds KernelOffset to the Gram matrix, which
+      ## leaves the fitted model unchanged, so the offset reaches only the
+      ## sigmoid kernel, which is ours alone.
+      Xu = X;
+      X = X / KernelScale;
+      g = 1;
+      r = 0;
+      if (t == 1)
+        r = 1;
+      elseif (t == 3)
+        r = KernelOffset;
+      endif
 
       ## svmpredict:
       ##    '-s':  SVMtype
       ##    '-t':  KernelFunction
       ##    '-g':  Gamma
       ##    '-d':  PolynomialOrder
-      ##    '-r':  KernelOffset
+      ##    '-r':  coef0
       ##    '-c':  BoxConstraint
       ##    '-n':  Nu
       ##    '-m':  CacheSize
@@ -1194,10 +1166,11 @@ classdef ClassificationSVM < PredictiveModel
       ##    '-h':  Shrinking
 
       ## Build options string for svmtrain function
-      str_options = strcat ("-s %d -t %d -g %f -d %d -r %f", ...
-                            " -c %f -n %f -m %f -e %e -h %d -q");
+      str_options = strcat ("-s %d -t %d -g %.16g -d %d -r %.16g", ...
+                            " -c %.16g -n %.16g -m %.16g -e %.16g", ...
+                            " -h %d -q");
       svm_options = sprintf (str_options, s, t, g, PolynomialOrder, ...
-                             KernelOffset, BoxConstraint, Nu, ...
+                             r, BoxConstraint, Nu, ...
                              CacheSize, Tolerance, Shrinking);
 
       ## Prior, Cost and the observation weights enter the fit through one
@@ -1221,7 +1194,12 @@ classdef ClassificationSVM < PredictiveModel
       endif
 
       ## Train the SVM model using svmtrain from libsvm
-      Model = svmtrain (Y, X, svm_options, instW);
+      [Model, converged] = svmtrain (Y, X, svm_options, instW);
+      if (! converged)
+        warning (strcat ("ClassificationSVM: the solver stopped at its", ...
+                         " iteration limit without converging;", ...
+                         " standardizing the predictors may help."));
+      endif
       ## A one-class model's bias puts its least supported support vector on
       ## the boundary: R2024a's bias is minus the smallest kernel sum over the
       ## support vectors, which reproduces it to 1e-13 for linear and gaussian
@@ -1240,7 +1218,6 @@ classdef ClassificationSVM < PredictiveModel
           Model.rho = min (dsv + Model.rho);
         endif
       endif
-      this.Model = Model;
 
       ## Populate ClassificationSVM object properties.  LIBSVM returns the
       ## dual coefficients already multiplied by the class sign, whereas
@@ -1255,20 +1232,38 @@ classdef ClassificationSVM < PredictiveModel
       ## One label per support vector, in the order of SupportVectors, taking
       ## the sign from the coefficients themselves.  LIBSVM's sign is opposite
       ## to the labelling MATLAB reports.
-      this.SupportVectorLabels = -sign (Model.sv_coef);
-
-      ## BETA holds the primal coefficients, one per predictor, and exists
-      ## only for a linear kernel; for any other kernel there is no primal
-      ## representation and MATLAB leaves it empty.
-      if (t == 0)
-        this.Beta = Model.SVs' * (this.Alpha .* this.SupportVectorLabels);
+      ## A one-class model labels every support vector +1, as MATLAB does.
+      if (strcmp (SVMtype, 'one_class_svm'))
+        this.SupportVectorLabels = ones (size (Model.sv_coef));
       else
-        this.Beta = [];
+        this.SupportVectorLabels = -sign (Model.sv_coef);
       endif
 
       this.IsSupportVector = false (this.NumObservations, 1);
       this.IsSupportVector(Model.sv_indices) = true;
-      this.SupportVectors = Model.SVs;
+      this.SupportVectors = Xu(Model.sv_indices,:);
+
+      ## BETA holds the primal coefficients, one per predictor, and exists
+      ## only for a linear kernel; for any other kernel there is no primal
+      ## representation and MATLAB leaves it empty.  It weighs the divided
+      ## predictors, as MATLAB's does.
+      if (t == 0)
+        this.Beta = (this.SupportVectors / KernelScale)' ...
+                    * (this.Alpha .* this.SupportVectorLabels);
+      else
+        this.Beta = [];
+      endif
+
+      ## Re-express the engine's model on the undivided predictors, which is
+      ## what every prediction hands it: the scale moves into gamma, or into
+      ## the coefficients of a linear kernel, which has no gamma.
+      Model.SVs = sparse (this.SupportVectors);
+      if (t == 0)
+        Model.sv_coef = Model.sv_coef / KernelScale ^ 2;
+      else
+        Model.Parameters(4) = 1 / KernelScale ^ 2;
+      endif
+      this.Model = Model;
 
       ## The kernel, the per-observation box constraints and the two
       ## one-class parameters, in the shapes MATLAB reports them.  The box
@@ -1484,10 +1479,10 @@ classdef ClassificationSVM < PredictiveModel
     ## @var{obj} must be a @qcode{ClassificationSVM} class object.
     ## @end itemize
     ##
-    ## @code{[@var{label}, @var{scores}] = resubPredict (@var{obj}} also
-    ## returns @var{scores}, which contains the decision values for each
-    ## prediction.  A @qcode{ScoreTransform} assigned to @var{obj} is applied
-    ## to them, so @var{scores} holds whatever that transform returns.  Posterior
+    ## @code{[@var{label}, @var{scores}] = resubPredict (@var{obj}} also returns
+    ## @var{scores}, which contains the decision values for each prediction.  A
+    ## @qcode{ScoreTransform} assigned to @var{obj} is applied to them, so
+    ## @var{scores} holds whatever that transform returns.  Posterior
     ## probabilities need a transform fitted to the model, which this package
     ## does not compute yet.
     ##
@@ -1748,48 +1743,39 @@ classdef ClassificationSVM < PredictiveModel
                        " number of rows as X."));
       endif
 
-      ## Set default values before parsing optional parameters
-      LossFun = 'classiferror';
-      Weights = ones (size (X, 1), 1);
+      ## Parse optional paired arguments; 'Weights' are uniform unless given
+      W0 = ones (rows (X), 1);
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'classiferror', W0};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      ## Parse extra parameters
-      while (numel (varargin) > 0)
-        switch (tolower (varargin {1}))
+      ## Validate optional paired arguments
+      if (! (ischar (LossFun)))
+        error ("ClassificationSVM.loss: 'LossFun' must be a character vector.");
+      endif
+      LossFun = tolower (LossFun);
+      if (! any (strcmpi (LossFun, {'binodeviance', 'classiferror', ...
+                                    'classifcost', 'exponential', ...
+                                    'hinge', 'logit', 'mincost', ...
+                                    'quadratic'})))
+        error ("ClassificationSVM.loss: unsupported Loss function.");
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationSVM.loss: %s", errmsg);
+      endif
+      if (! (isnumeric (Weights) && isvector (Weights)))
+        error ("ClassificationSVM.loss: 'Weights' must be a numeric vector.");
+      endif
+      if (numel (Weights) != size (X, 1))
+        error (strcat ("ClassificationSVM.loss: size of 'Weights' must be", ...
+                       " equal to the number of rows in X."));
+      endif
 
-          case 'lossfun'
-            LossFun = varargin{2};
-            if (! (ischar (LossFun)))
-              error (strcat ("ClassificationSVM.loss: 'LossFun'", ...
-                             " must be a character vector."));
-            endif
-            LossFun = tolower (LossFun);
-            if (! any (strcmpi (LossFun, {'binodeviance', 'classiferror', ...
-                                          'classifcost', 'exponential', ...
-                                          'hinge', 'logit', 'mincost', ...
-                                          'quadratic'})))
-              error ("ClassificationSVM.loss: unsupported Loss function.");
-            endif
-
-          case 'weights'
-            Weights = varargin{2};
-            ## Validate if weights is a numeric vector
-            if (! (isnumeric (Weights) && isvector (Weights)))
-              error (strcat ("ClassificationSVM.loss: 'Weights'", ...
-                             " must be a numeric vector."));
-            endif
-
-            ## Check if the size of weights matches the number of rows in X
-            if (numel (Weights) != size (X, 1))
-              error (strcat ("ClassificationSVM.loss: size of 'Weights'", ...
-                             " must be equal to the number of rows in X."));
-            endif
-
-          otherwise
-            error (strcat ("ClassificationSVM.loss: invalid parameter", ...
-                           " name in optional pair arguments."));
-          endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("ClassificationSVM.loss: invalid optional paired argument.");
+      endif
 
       ## Y may be the class labels, which is what this method documents and
       ## what MATLAB accepts, or already the +1/-1 coding the solver works in.
@@ -1801,7 +1787,8 @@ classdef ClassificationSVM < PredictiveModel
       ## loss is their weighted sum, as in MATLAB.  The prior of a model fitted
       ## with weights is the weighted class frequency, so counting every row
       ## alike, as this did, disagreed with it.
-      Weights = priorNormalize (Weights(:), 1 + (Ypm(:) == -1), this.Prior);
+      Weights = priorNormalize (double (Weights(:)), 1 + (Ypm(:) == -1), ...
+                                this.Prior);
 
       ## Compute the classification score
       ## The model scores the coded, standardized predictors, which is the
@@ -1939,54 +1926,46 @@ classdef ClassificationSVM < PredictiveModel
                        " arguments must be in pairs."));
       endif
 
-      ## Set default values before parsing optional parameters
-      LossFun = 'classiferror';
-      ## The training rows keep their weights unless others are given.
-      Weights = this.RawWeights;
-      if (isempty (Weights))
-        Weights = ones (size (this.X, 1), 1);
+      ## Parse optional paired arguments; the training rows keep the weights
+      ## they were fitted with unless others are given
+      W0 = this.RawWeights;
+      if (isempty (W0))
+        W0 = ones (rows (this.X), 1);
+      endif
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'classiferror', W0};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (ischar (LossFun)))
+        error (strcat ("ClassificationSVM.resubLoss: 'LossFun' must be a", ...
+                       " character vector."));
+      endif
+      LossFun = tolower (LossFun);
+      if (! any (strcmpi (LossFun, {'binodeviance', 'classiferror', ...
+                                    'classifcost', 'exponential', ...
+                                    'hinge', 'logit', 'mincost', ...
+                                    'quadratic'})))
+        error ("ClassificationSVM.resubLoss: unsupported Loss function.");
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationSVM.resubLoss: %s", errmsg);
+      endif
+      if (! (isnumeric (Weights) && isvector (Weights)))
+        error (strcat ("ClassificationSVM.resubLoss: 'Weights' must be a", ...
+                       " numeric vector."));
+      endif
+      if (numel (Weights) != size (this.X, 1))
+        error (strcat ("ClassificationSVM.resubLoss: size of 'Weights'", ...
+                       " must be equal to the number of rows in X."));
       endif
 
-      ## Parse extra parameters
-      while (numel (varargin) > 0)
-        switch (tolower (varargin{1}))
-
-          case 'lossfun'
-            LossFun = varargin{2};
-            if (! ischar (LossFun))
-              error (strcat ("ClassificationSVM.resubLoss: 'LossFun'", ...
-                             " must be a character vector."));
-            endif
-            LossFun = tolower (LossFun);
-            if (! any (strcmpi (LossFun, {'binodeviance', 'classiferror', ...
-                                          'classifcost', 'exponential', ...
-                                          'hinge', 'logit', 'mincost', ...
-                                          'quadratic'})))
-              error (strcat ("ClassificationSVM.resubLoss: unsupported", ...
-                             " Loss function."));
-            endif
-
-          case 'weights'
-            Weights = varargin{2};
-            ## Validate if weights is a numeric vector
-            if (! (isnumeric (Weights) && isvector (Weights)))
-              error (strcat ("ClassificationSVM.resubLoss: 'Weights'", ...
-                             " must be a numeric vector."));
-            endif
-
-            ## Check if the size of weights matches the number of rows in X
-            if (numel (Weights) != size (this.X, 1))
-              error (strcat ("ClassificationSVM.resubLoss: size", ...
-                             " of 'Weights' must be equal to the", ...
-                             " number of rows in X."));
-            endif
-
-          otherwise
-            error (strcat ("ClassificationSVM.resubLoss: invalid", ...
-                           " parameter name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("ClassificationSVM.resubLoss: invalid optional", ...
+                       " paired argument."));
+      endif
 
       ## The loss of the model on its own training data.  This used to
       ## recompute every loss here from this.Y, which holds the labels as
@@ -2183,10 +2162,6 @@ classdef ClassificationSVM < PredictiveModel
       endif
       [X, Y, varargin] = tableResponse (this, 'edge', X, Y, varargin, ...
                                         nargin > 2);
-      if (mod (numel (varargin), 2) != 0)
-        error (strcat ("ClassificationSVM.edge: Name-Value", ...
-                       " arguments must be in pairs."));
-      endif
 
       ## The weights are parsed before anything is computed, so a bad
       ## Name-Value pair is reported as such rather than after a margin.
@@ -2826,8 +2801,16 @@ endclassdef
 %! assert_equal (edge (M, Q, ones (5, 1)), NaN);
 %! assert_equal (resubEdge (M), NaN);
 %! assert_equal (margin (compact (M), Q, ones (5, 1)), NaN (5, 1));
-%!error<ClassificationSVM: 'Weights' must be a real numeric vector.> ...
+
+## A fit stopped at the solver's iteration limit says so.
+%!warning<ClassificationSVM: the solver stopped at its iteration limit without converging; standardizing the predictors may help.> ...
+%! ClassificationSVM ((1:20)' * 1000, repmat ([1; 2], 10, 1), ...
+%!                    'KernelFunction', 'polynomial');
+
+%!error<ClassificationSVM: 'Weights' must be a real vector of class single or double.> ...
 %! fitcsvm ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', 'a')
+%!error<ClassificationSVM: 'Weights' must be a real numeric vector.> ...
+%! fitcsvm ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ones (2, 2))
 %!error<ClassificationSVM: 'Weights' must have one element per row in X.> ...
 %! fitcsvm ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', [1, 2])
 %!error<ClassificationSVM: 'Weights' must be nonnegative and must not be all zero.> ...
@@ -3016,7 +2999,7 @@ endclassdef
 %! ClassificationSVM (ones (10,2), ones (10,1), 'shrinking', -1)
 %!error<ClassificationSVM: 'Shrinking' must be either 0 or 1.> ...
 %! ClassificationSVM (ones (10,2), ones (10,1), 'shrinking', [1 0])
-%!error<ClassificationSVM: invalid parameter name in optional pair arguments.> ...
+%!error<ClassificationSVM: invalid optional paired argument.> ...
 %! ClassificationSVM (ones (10,2), ones (10,1), 'invalid_name', 'c_svc')
 %!error<ClassificationSVM: cannot train a binary problem with only one class available.> ...
 %! ClassificationSVM (ones (10,2), ones (10,1), 'SVMtype', 'c_svc')
@@ -3038,7 +3021,9 @@ endclassdef
 %! assert_equal (sum (obj.IsSupportVector), numel (obj.Alpha))
 %! [label, score] = predict (obj, xc);
 %! assert_equal (label, [1; 2; 2]);
-%! assert_equal (score(:,1), [0.99285; -0.080296; -0.93694], 2e-5);
+%! ## R2024a's scores.
+%! assert_equal (score(:,1), [0.9813697204; -0.1752955874; ...
+%!                            -0.9410361822], 5e-4);
 %! assert_equal (score(:,1), -score(:,2), eps)
 %!test
 %! obj = fitcsvm (x, y);
@@ -3063,6 +3048,66 @@ endclassdef
 %! obj = fitcsvm (x, y, 'KernelFunction', 'rbf');
 %! assert_equal (isempty (obj.Beta), true);
 %! assert_equal (numel (obj.Alpha), sum (obj.IsSupportVector));
+
+## KernelScale divides every predictor, as in MATLAB; expected values are
+## R2024a's.
+%!test
+%! obj = fitcsvm (x, y, 'KernelScale', 2);
+%! assert_equal (obj.Beta, [3.19512195122; 2.55609756098], 1e-6);
+%!test
+%! obj = fitcsvm (x, y, 'KernelScale', 2);
+%! assert_equal (obj.Bias, -10.0870731707, 1e-6);
+%!test
+%! obj = fitcsvm (x, y, 'KernelScale', 2);
+%! Q = x([1, 30, 60, 90],:);
+%! [~, score] = predict (obj, Q);
+%! assert_equal (score(:,2), (Q / 2) * obj.Beta + obj.Bias, 1e-12);
+%!test
+%! obj = fitcsvm (x, y, 'KernelFunction', 'gaussian', 'KernelScale', 2);
+%! [~, score] = predict (obj, x([1, 30, 60, 90],:));
+%! assert_equal (score(:,2), [-0.827757529685; -2.17748767098; ...
+%!                            2.25809330158; 1.59440000202], 1e-6);
+%!test
+%! obj = fitcsvm (x, y, 'KernelFunction', 'polynomial', 'KernelScale', 2, ...
+%!                'PolynomialOrder', 2);
+%! [~, score] = predict (obj, x([1, 30, 60, 90],:));
+%! assert_equal (score(:,2), [-1.23481189405; -4.72633601992; ...
+%!                            6.48549554678; 2.83864647222], 2e-3);
+%!test
+%! obj = fitcsvm (x, y, 'KernelFunction', 'gaussian', 'KernelScale', 2);
+%! assert_equal (obj.SupportVectors, x(obj.IsSupportVector,:));
+%!test
+%! obj = fitcsvm (x, ones (100, 1), 'KernelFunction', 'gaussian', ...
+%!                'KernelScale', 2, 'Nu', 0.3);
+%! assert_equal (obj.Bias, -13.4656686131, 1e-6);
+%!test
+%! obj = fitcsvm (x, ones (100, 1), 'KernelFunction', 'linear', 'Nu', 0.3);
+%! assert_equal (unique (obj.SupportVectorLabels), 1);
+%!test
+%! obj = fitcsvm (x, ones (100, 1), 'KernelFunction', 'linear', 'Nu', 0.3);
+%! assert_equal (obj.Beta, [119.2; 36.4], 1e-9);
+%!test
+%! ## Parameters reach the engine at full precision.
+%! obj = fitcsvm (x, y, 'BoxConstraint', 1e-7);
+%! assert_equal (max (obj.Alpha), 1e-7, 1e-20);
+%!test
+%! obj = fitcsvm (x, y, 'BoxConstraint', 0.1234567891);
+%! assert_equal (max (obj.Alpha), 0.1234567891, 1e-15);
+%!test
+%! obj = fitcsvm (x, ones (100, 1), 'Nu', 1e-7);
+%! assert_equal (sum (obj.Alpha), 1e-5, 1e-18);
+%!test
+%! ## MATLAB adds KernelOffset to the Gram matrix, which changes no fit.
+%! A = fitcsvm (x, y, 'KernelFunction', 'polynomial');
+%! B = fitcsvm (x, y, 'KernelFunction', 'polynomial', 'KernelOffset', 0.5);
+%! [~, sA] = predict (A, x);
+%! [~, sB] = predict (B, x);
+%! assert_equal (sB, sA);
+%!test
+%! obj = fitcsvm (x, y, 'KernelScale', 2);
+%! [~, s1] = predict (obj, x);
+%! [~, s2] = predict (discardSupportVectors (obj), x);
+%! assert_equal (s2, s1, 1e-12);
 %!test
 %! ## the dual coefficients are magnitudes; their class is in the labels
 %! obj = fitcsvm (x, y);
@@ -3124,24 +3169,15 @@ endclassdef
 %!                       'Tolerance', 1e-7);
 %! obj = CVSVMModel.Trained{1};
 %! testInds = test (CVSVMModel.Partition);
-%! ## Every one of these fifteen is classified correctly, so every margin is
-%! ## positive.  They used to read -4.0000 downwards for the second class:
-%! ## the margin was formed from the response as given, so a 1/2 coding
-%! ## scaled that class by four instead of negating it, and the model looked
-%! ## as though it misclassified every observation of it.
-%! ##
-%! ## The values themselves are this engine's own and have no oracle: the
-%! ## partition comes from a seeded rand and the fit from LIBSVM, neither of
-%! ## which MATLAB can reproduce.  They moved in the third decimal when the
-%! ## folds began inheriting the model's prior, an 85-row training split of
-%! ## a balanced 100 not being exactly even; what the block asserts is
-%! ## unchanged.
-%! expected_margin = [2.000000;  0.856067;  1.666246;  3.419288; ...
-%!                    3.461257;  2.664258;  3.529112;  2.000000; ...
-%!                    3.168674;  3.223841;  1.528738;  3.744702; ...
-%!                    0.836534;  2.810381;  3.673740];
+%! ## R2024a's margins, fitted on the same training rows with the prior the
+%! ## fold inherits, [0.5 0.5].  Every one of the fifteen is classified
+%! ## correctly, so every margin is positive.
+%! expected_margin = [2.185059262; 0.993999246; 1.999333315; 3.078654435; ...
+%!                    2.977495193; 2.191955906; 3.269512295; 2.323010586; ...
+%!                    3.185859883; 3.140175181; 1.701291423; 3.210493533; ...
+%!                    1.034142171; 3.033060133; 2.799817759];
 %! computed_margin = margin (obj, x(testInds,:), y(testInds,:));
-%! assert_equal (computed_margin, expected_margin, 1e-4);
+%! assert_equal (computed_margin, expected_margin, 2e-3);
 %! assert (all (computed_margin > 0));
 
 ## Test input validation for margin method
@@ -3170,24 +3206,14 @@ endclassdef
 %! L4 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'hinge');
 %! L5 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'logit');
 %! L6 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'quadratic');
-%! ## These changed when loss stopped handing the response to LIBSVM
-%! ## unmapped: it used the labels 1 and 2 where the margin's sign wants +1
-%! ## and -1, so every loss but the error rate was scaled by the labels.
-%! ## margin had already been given svmPlusMinus and loss had been missed.
-%! ## Cross-checked against R2024a on a deterministic half-and-half split,
-%! ## where ours reads 0.1800, 0.0800, 0.3984, 0.1785, 0.3184, 0.2939 and
-%! ## MATLAB reads 0.1812, 0.0800, 0.4107, 0.1520, 0.3297, 0.1981: the
-%! ## error rate agrees exactly and the rest sit within the LIBSVM against
-%! ## SMO difference of section 1.  The old values were an order of
-%! ## magnitude out, a 53%% error rate among them.
-%! ## They moved again, by under 0.002, when loss began scaling the weights
-%! ## of each class to its prior, as MATLAB does.
-%! assert_equal (L1, 0.1125, 1e-4);
-%! assert_equal (L2, 0.0000, 1e-4);
-%! assert_equal (L3, 0.3140, 1e-4);
-%! assert_equal (L4, 0.1039, 1e-4);
-%! assert_equal (L5, 0.2656, 1e-4);
-%! assert_equal (L6, 0.3200, 1e-4);
+%! ## R2024a's losses, fitted on the same training rows with the prior the
+%! ## fold inherits, [0.5 0.5].
+%! assert_equal (L1, 0.1057769174, 5e-4);
+%! assert_equal (L2, 0, 5e-4);
+%! assert_equal (L3, 0.3138559104, 5e-4);
+%! assert_equal (L4, 0.07547010872, 5e-4);
+%! assert_equal (L5, 0.2681965038, 5e-4);
+%! assert_equal (L6, 0.1954123863, 5e-4);
 
 ## Test input validation for loss method
 %!error<ClassificationSVM.loss: too few input arguments.> ...
@@ -3211,10 +3237,13 @@ endclassdef
 %!error<ClassificationSVM.loss: unsupported Loss function.> ...
 %! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), zeros (2), ...
 %! ones (2,1), 'LossFun', 'some')
-%!error<ClassificationSVM.loss: 'Weights' must be a numeric vector.> ...
+%!error<ClassificationSVM.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), zeros (2), ...
 %! ones (2,1), 'Weights', ['a','b'])
 %!error<ClassificationSVM.loss: 'Weights' must be a numeric vector.> ...
+%! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), zeros (2), ...
+%! ones (2,1), 'Weights', ones (2, 2))
+%!error<ClassificationSVM.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), zeros (2), ...
 %! ones (2,1), 'Weights', 'a')
 %!error<ClassificationSVM.loss: size of 'Weights' must be equal to the number> ...
@@ -3223,7 +3252,7 @@ endclassdef
 %!error<ClassificationSVM.loss: size of 'Weights' must be equal to the number> ...
 %! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), zeros (2), ...
 %! ones (2,1), 'Weights', 3)
-%!error<ClassificationSVM.loss: invalid parameter name in optional pair arg> ...
+%!error<ClassificationSVM.loss: invalid optional paired argument.> ...
 %! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), zeros (2), ...
 %! ones (2,1), 'some', 'some')
 
@@ -3234,15 +3263,18 @@ endclassdef
 %! resubLoss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), 'LossFun', 1)
 %!error<ClassificationSVM.resubLoss: unsupported Loss function.> ...
 %! resubLoss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), 'LossFun', 'some')
-%!error<ClassificationSVM.resubLoss: 'Weights' must be a numeric vector.> ...
+%!error<ClassificationSVM.resubLoss: 'Weights' must be a real vector of class single or double.> ...
 %! resubLoss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), 'Weights', ['a','b'])
 %!error<ClassificationSVM.resubLoss: 'Weights' must be a numeric vector.> ...
+%! resubLoss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), ...
+%!            'Weights', ones (2, 2))
+%!error<ClassificationSVM.resubLoss: 'Weights' must be a real vector of class single or double.> ...
 %! resubLoss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), 'Weights', 'a')
 %!error<ClassificationSVM.resubLoss: size of 'Weights' must be equal to the n> ...
 %! resubLoss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), 'Weights', [1,2,3])
 %!error<ClassificationSVM.resubLoss: size of 'Weights' must be equal to the n> ...
 %! resubLoss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), 'Weights', 3)
-%!error<ClassificationSVM.resubLoss: invalid parameter name in optional pai> ...
+%!error<ClassificationSVM.resubLoss: invalid optional paired argument.> ...
 %! resubLoss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), 'some', 'some')
 
 ## Test output for crossval method
@@ -3511,11 +3543,10 @@ endclassdef
 %! assert_equal (Mdl.BoxConstraints(51), 0.4, 1e-12);
 %! assert_equal (mean (Mdl.BoxConstraints), 1, 1e-12);
 
-%!test
+%!error<ClassificationSVM: 'OutlierFraction' is not implemented for two-class learning.> ...
 %! load fisheriris
 %! b = ismember (species, {'setosa', 'versicolor'});
-%! Mdl = fitcsvm (meas(b,:), species(b), 'OutlierFraction', 0.05);
-%! assert_equal (Mdl.OutlierFraction, 0.05);
+%! fitcsvm (meas(b,:), species(b), 'OutlierFraction', 0.05);
 
 %!test
 %! load fisheriris
@@ -3569,7 +3600,7 @@ endclassdef
 
 %!test
 %! load fisheriris
-%! MP = fitcsvm (meas, strcmp (species, 'setosa'), 'Standardize', true, ...
+%! MP = fitcsvm (meas(1:50,:), ones (50, 1), 'Standardize', true, ...
 %!               'OutlierFraction', 0.05).ModelParameters;
 %! assert_equal (MP.StandardizeData, true);
 %! assert_equal (MP.OutlierFraction, 0.05);
@@ -3772,3 +3803,57 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## 'Nu' does not choose the model: a two-class C-SVM records it and fits as
+## if it were not given, as R2024a does
+%!test
+%! load fisheriris
+%! X = meas(51:150,1:2);
+%! Y = species(51:150);
+%! A = fitcsvm (X, Y);
+%! B = fitcsvm (X, Y, 'Nu', 0.3);
+%! assert_equal (B.ModelParameters.SVMtype, 'c_svc');
+%! assert_equal (B.ModelParameters.Nu, 0.3);
+%! assert_equal ([B.Bias; B.Alpha], [A.Bias; A.Alpha]);
+
+## A one-class fit keeps its 'Nu' whatever order 'OutlierFraction' comes in
+%!test
+%! load fisheriris
+%! X = meas(1:50,1:2);
+%! Y = ones (50, 1);
+%! A = fitcsvm (X, Y, 'Nu', 0.3, 'OutlierFraction', 0.1);
+%! B = fitcsvm (X, Y, 'OutlierFraction', 0.1, 'Nu', 0.3);
+%! assert_equal (A.ModelParameters.Nu, 0.3);
+%! assert_equal (sum (A.Alpha), 15, 1e-10);
+%! assert_equal ([A.Bias; A.Alpha], [B.Bias; B.Alpha]);
+
+## Observation weights of class single or double
+%!error <ClassificationSVM: 'Weights' must be a real vector of class single or double.> ...
+%! fitcsvm ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', ...
+%!          int8 ([1; 1; 1; 1]))
+%!error <ClassificationSVM: 'Weights' must be a real vector of class single or double.> ...
+%! fitcsvm ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', true (4, 1))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! X = meas(51:end,:);
+%! Y = species(51:end);
+%! w = 1 + (1:100)' / 7;
+%! Mdl = fitcsvm (X, Y, 'Weights', single (w));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Single weights compute as double
+%! load fisheriris
+%! X = meas(51:end,:);
+%! Y = species(51:end);
+%! w = 1 + (1:100)' / 7;
+%! A = fitcsvm (X, Y, 'Weights', single (w));
+%! B = fitcsvm (X, Y, 'Weights', double (single (w)));
+%! assert_equal (nthargout (2, @predict, A, X), nthargout (2, @predict, B, X));
+%!test
+%! ## A constant predictor is left unscaled by standardization
+%! X = [linspace(0, 1, 20)', ones(20, 1)];
+%! Mdl = ClassificationSVM (X, [ones(10, 1); 2 * ones(10, 1)], 'Standardize', true);
+%! assert_equal (Mdl.Sigma(2), 1);
+

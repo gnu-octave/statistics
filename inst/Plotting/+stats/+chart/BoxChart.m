@@ -56,7 +56,7 @@ classdef BoxChart < handle
   properties (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} BoxWidth
+    ## @deftp {stats.chart.BoxChart} {property} BoxWidth
     ##
     ## Width of each box, in the units of the horizontal axis.  The default
     ## is 0.5.
@@ -65,7 +65,7 @@ classdef BoxChart < handle
     BoxWidth = 0.5;
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} BoxFaceColor
+    ## @deftp {stats.chart.BoxChart} {property} BoxFaceColor
     ##
     ## Colour the boxes are filled with, as an RGB triplet.  Setting it puts
     ## @code{BoxFaceColorMode} at @qcode{'manual'}.
@@ -74,7 +74,7 @@ classdef BoxChart < handle
     BoxFaceColor = [0, 0.447, 0.741];
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} BoxFaceAlpha
+    ## @deftp {stats.chart.BoxChart} {property} BoxFaceAlpha
     ##
     ## How opaque the box fill is, from 0 to 1.  The default is 0.2.
     ##
@@ -82,7 +82,7 @@ classdef BoxChart < handle
     BoxFaceAlpha = 0.2;
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} BoxEdgeColor
+    ## @deftp {stats.chart.BoxChart} {property} BoxEdgeColor
     ##
     ## Colour of the box outline.  Setting it puts
     ## @code{BoxEdgeColorMode} at @qcode{'manual'}.
@@ -91,7 +91,7 @@ classdef BoxChart < handle
     BoxEdgeColor = [0, 0.447, 0.741];
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} BoxMedianLineColor
+    ## @deftp {stats.chart.BoxChart} {property} BoxMedianLineColor
     ##
     ## Colour of the line marking the median.  Setting it puts
     ## @code{BoxMedianLineColorMode} at @qcode{'manual'}.
@@ -100,7 +100,7 @@ classdef BoxChart < handle
     BoxMedianLineColor = [0, 0.447, 0.741];
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} WhiskerLineColor
+    ## @deftp {stats.chart.BoxChart} {property} WhiskerLineColor
     ##
     ## Colour of the whiskers and their caps.
     ##
@@ -108,7 +108,7 @@ classdef BoxChart < handle
     WhiskerLineColor = [0, 0.447, 0.741];
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} WhiskerLineStyle
+    ## @deftp {stats.chart.BoxChart} {property} WhiskerLineStyle
     ##
     ## Line style of the whiskers: @qcode{'-'} by default, or @qcode{'--'},
     ## @qcode{':'}, @qcode{'-.'} or @qcode{'none'}.
@@ -117,7 +117,7 @@ classdef BoxChart < handle
     WhiskerLineStyle = '-';
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} CapWidth
+    ## @deftp {stats.chart.BoxChart} {property} CapWidth
     ##
     ## Width of the cap at the end of each whisker, in the units of the
     ## horizontal axis.  The default is 0.25.
@@ -126,7 +126,7 @@ classdef BoxChart < handle
     CapWidth = 0.25;
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} LineWidth
+    ## @deftp {stats.chart.BoxChart} {property} LineWidth
     ##
     ## Width of the box and whisker lines.  The default is 1.
     ##
@@ -134,7 +134,7 @@ classdef BoxChart < handle
     LineWidth = 1;
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} MarkerStyle
+    ## @deftp {stats.chart.BoxChart} {property} MarkerStyle
     ##
     ## Marker an outlier is drawn with, @qcode{'o'} by default, or
     ## @qcode{'none'} to draw none.
@@ -143,7 +143,7 @@ classdef BoxChart < handle
     MarkerStyle = 'o';
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} MarkerSize
+    ## @deftp {stats.chart.BoxChart} {property} MarkerSize
     ##
     ## Size of an outlier marker.  The default is 6.
     ##
@@ -151,7 +151,7 @@ classdef BoxChart < handle
     MarkerSize = 6;
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} MarkerColor
+    ## @deftp {stats.chart.BoxChart} {property} MarkerColor
     ##
     ## Colour of an outlier marker.  Setting it puts
     ## @code{MarkerColorMode} at @qcode{'manual'}.
@@ -160,7 +160,7 @@ classdef BoxChart < handle
     MarkerColor = [0, 0.447, 0.741];
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} Notch
+    ## @deftp {stats.chart.BoxChart} {property} Notch
     ##
     ## Whether the box is notched about its median, @qcode{'off'} by default.
     ## A notch spans the median plus and minus
@@ -171,7 +171,7 @@ classdef BoxChart < handle
     Notch = 'off';
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} JitterOutliers
+    ## @deftp {stats.chart.BoxChart} {property} JitterOutliers
     ##
     ## Whether outlier markers are spread across the width of the box rather
     ## than drawn in a line, @qcode{'off'} by default.
@@ -180,7 +180,7 @@ classdef BoxChart < handle
     JitterOutliers = 'off';
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} Orientation
+    ## @deftp {stats.chart.BoxChart} {property} Orientation
     ##
     ## Whether the boxes stand @qcode{'vertical'}, the default, or lie
     ## @qcode{'horizontal'}.
@@ -193,7 +193,7 @@ classdef BoxChart < handle
   properties (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} XData
+    ## @deftp {stats.chart.BoxChart} {property} XData
     ##
     ## Where each observation's box stands, one value per observation: a
     ## grouping variable, numeric or categorical.  Where no grouping was
@@ -206,7 +206,7 @@ classdef BoxChart < handle
     XData = [];
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} YData
+    ## @deftp {stats.chart.BoxChart} {property} YData
     ##
     ## The observations themselves, one value per observation.  Setting it is
     ## refused while @code{YVariable} names a column.
@@ -215,7 +215,7 @@ classdef BoxChart < handle
     YData = [];
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} SourceTable
+    ## @deftp {stats.chart.BoxChart} {property} SourceTable
     ##
     ## The table the data is read from, empty where it came from vectors.
     ## Assigning it again re-reads the columns @code{XVariable} and
@@ -226,7 +226,7 @@ classdef BoxChart < handle
     SourceTable = [];
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} XVariable
+    ## @deftp {stats.chart.BoxChart} {property} XVariable
     ##
     ## The column of @code{SourceTable} the boxes are grouped by, empty where
     ## none was named.  Naming one is refused while the data came from
@@ -236,7 +236,7 @@ classdef BoxChart < handle
     XVariable = [];
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} YVariable
+    ## @deftp {stats.chart.BoxChart} {property} YVariable
     ##
     ## The column of @code{SourceTable} holding the observations.  Naming one
     ## is refused while the data came from vectors.
@@ -249,7 +249,7 @@ classdef BoxChart < handle
   properties (GetAccess = public, SetAccess = private)
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} XDataMode
+    ## @deftp {stats.chart.BoxChart} {property} XDataMode
     ##
     ## Where @code{XData} came from: @qcode{'manual'} where it was given as a
     ## grouping vector, and @qcode{'auto'} where the chart derived it, from a
@@ -260,7 +260,7 @@ classdef BoxChart < handle
     XDataMode = 'auto';
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} YDataMode
+    ## @deftp {stats.chart.BoxChart} {property} YDataMode
     ##
     ## Where @code{YData} came from: @qcode{'manual'} where it was given as a
     ## vector and @qcode{'auto'} where it was read from a table.  This
@@ -270,7 +270,7 @@ classdef BoxChart < handle
     YDataMode = 'manual';
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} BoxFaceColorMode
+    ## @deftp {stats.chart.BoxChart} {property} BoxFaceColorMode
     ##
     ## Whether @code{BoxFaceColor} was chosen, @qcode{'manual'}, or left to
     ## the chart, @qcode{'auto'}.  This property is read-only.
@@ -279,7 +279,7 @@ classdef BoxChart < handle
     BoxFaceColorMode = 'auto';
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} BoxEdgeColorMode
+    ## @deftp {stats.chart.BoxChart} {property} BoxEdgeColorMode
     ##
     ## Whether @code{BoxEdgeColor} was chosen.  This property is read-only.
     ##
@@ -287,7 +287,7 @@ classdef BoxChart < handle
     BoxEdgeColorMode = 'auto';
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} BoxMedianLineColorMode
+    ## @deftp {stats.chart.BoxChart} {property} BoxMedianLineColorMode
     ##
     ## Whether @code{BoxMedianLineColor} was chosen.  This property is
     ## read-only.
@@ -296,7 +296,7 @@ classdef BoxChart < handle
     BoxMedianLineColorMode = 'auto';
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} MarkerColorMode
+    ## @deftp {stats.chart.BoxChart} {property} MarkerColorMode
     ##
     ## Whether @code{MarkerColor} was chosen.  This property is read-only.
     ##
@@ -304,7 +304,7 @@ classdef BoxChart < handle
     MarkerColorMode = 'auto';
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} CapWidthMode
+    ## @deftp {stats.chart.BoxChart} {property} CapWidthMode
     ##
     ## Whether @code{CapWidth} was chosen.  This property is read-only.
     ##
@@ -312,7 +312,7 @@ classdef BoxChart < handle
     CapWidthMode = 'auto';
 
     ## -*- texinfo -*-
-    ## @deftp {BoxChart} {property} Parent
+    ## @deftp {stats.chart.BoxChart} {property} Parent
     ##
     ## The axes the chart is drawn into.  This property is read-only.
     ##

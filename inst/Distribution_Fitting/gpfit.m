@@ -76,9 +76,9 @@
 ##
 ## When @qcode{@var{k} = 0} and @qcode{@var{theta} = 0}, the Generalized Pareto
 ## is equivalent to the exponential distribution.  When @qcode{@var{k} > 0} and
-## @code{@var{theta} = @var{k} / @var{k}} the Generalized Pareto is equivalent
-## to the Pareto distribution.  The mean of the Generalized Pareto is not finite
-## when @qcode{@var{k} >= 1} and the variance is not finite when
+## @code{@var{theta} = @var{sigma} / @var{k}} the Generalized Pareto is
+## equivalent to the Pareto distribution.  The mean of the Generalized Pareto is
+## not finite when @qcode{@var{k} >= 1} and the variance is not finite when
 ## @qcode{@var{k} >= 1/2}.  When @qcode{@var{k} >= 0}, the Generalized Pareto
 ## has positive density for @qcode{@var{x} > @var{theta}}, or, when
 ## @qcode{@var{theta} < 0}, for

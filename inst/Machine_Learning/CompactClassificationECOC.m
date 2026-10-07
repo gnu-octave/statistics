@@ -16,23 +16,23 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef CompactClassificationECOC < PredictiveModel
-## -*- texinfo -*-
-## @deftypefn {statistics} CompactClassificationECOC
-##
-## A multiclass model built from binary learners, without its training data.
-##
-## A @code{CompactClassificationECOC} carries the binary learners of an error
-## correcting output codes model and the coding matrix that says what each of
-## them was trained to tell apart, and nothing else: the predictor data, the
-## labels and the weights are gone, so it predicts and scores new data but
-## cannot be refitted or cross validated.
-##
-## It comes from @code{compact} on a @code{ClassificationECOC}, and from
-## @code{fitcecoc} itself when the binary learners are linear or kernel
-## classifiers, which carry no training data of their own.
-##
-## @seealso{fitcecoc, ClassificationECOC, designecoc}
-## @end deftypefn
+  ## -*- texinfo -*-
+  ## @deftp {statistics} CompactClassificationECOC
+  ##
+  ## A multiclass model built from binary learners, without its training data.
+  ##
+  ## A @code{CompactClassificationECOC} carries the binary learners of an error
+  ## correcting output codes model and the coding matrix that says what each of
+  ## them was trained to tell apart, and nothing else: the predictor data, the
+  ## labels and the weights are gone, so it predicts and scores new data but
+  ## cannot be refitted or cross validated.
+  ##
+  ## It comes from @code{compact} on a @code{ClassificationECOC}, and from
+  ## @code{fitcecoc} itself when the binary learners are linear or kernel
+  ## classifiers, which carry no training data of their own.
+  ##
+  ## @seealso{fitcecoc, ClassificationECOC, designecoc}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 
@@ -259,14 +259,6 @@ classdef CompactClassificationECOC < PredictiveModel
 
     endfunction
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
     ## Custom display
     function disp (this)
       fprintf ("\n  CompactClassificationECOC\n\n");
@@ -336,8 +328,8 @@ classdef CompactClassificationECOC < PredictiveModel
       ## A table is read by the names the model was fitted on
       XC = tableColumns (this, 'CompactClassificationECOC.predict', XC);
       if (mod (numel (varargin), 2) != 0)
-        error (strcat ("CompactClassificationECOC.predict: name-value", ...
-                       " arguments must be in pairs."));
+        error (strcat ("CompactClassificationECOC.predict:", ...
+                       " name-value arguments must be in pairs."));
       endif
       if (isempty (XC))
         error ("CompactClassificationECOC.predict: XC is empty.");
@@ -348,31 +340,29 @@ classdef CompactClassificationECOC < PredictiveModel
                        " model."));
       endif
 
-      lossname = this.BinaryLoss;
-      decoding = 'lossweighted';
-      for i = 1:2:numel (varargin)
-        switch (tolower (varargin{i}))
-          case 'binaryloss'
-            lossname = varargin{i+1};
-            if (! (ischar (lossname) && isrow (lossname)))
-              error (strcat ("CompactClassificationECOC.predict:", ...
-                             " 'BinaryLoss' must be a character vector."));
-            endif
-            lossname = tolower (lossname);
-          case 'decoding'
-            decoding = varargin{i+1};
-            if (! (ischar (decoding) && isrow (decoding)
-                   && any (strcmpi (decoding, {'lossweighted', 'lossbased'}))))
-              error (strcat ("CompactClassificationECOC.predict:", ...
-                             " 'Decoding' must be 'lossweighted' or", ...
-                             " 'lossbased'."));
-            endif
-            decoding = tolower (decoding);
-          otherwise
-            error (strcat ("CompactClassificationECOC.predict: invalid", ...
-                           " parameter name in optional pair arguments."));
-        endswitch
-      endfor
+      ## Parse optional paired arguments
+      optNames = {'BinaryLoss', 'Decoding'};
+      dfValues = {this.BinaryLoss, 'lossweighted'};
+      [lossname, decoding, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (ischar (lossname) && isrow (lossname)))
+        error (strcat ("CompactClassificationECOC.predict:", ...
+                       " 'BinaryLoss' must be a character vector."));
+      endif
+      lossname = tolower (lossname);
+      if (! (ischar (decoding) && isrow (decoding)
+             && any (strcmpi (decoding, {'lossweighted', 'lossbased'}))))
+        error (strcat ("CompactClassificationECOC.predict:", ...
+                       " 'Decoding' must be 'lossweighted' or 'lossbased'."));
+      endif
+      decoding = tolower (decoding);
+
+      if (! isempty (args))
+        error (strcat ("CompactClassificationECOC.predict:", ...
+                       " invalid optional paired argument."));
+      endif
 
       PBScore = binaryScores (this, XC);
       [NegLoss, errmsg] = ecocDecode (PBScore, this.CodingMatrix, lossname, ...
@@ -695,13 +685,17 @@ classdef CompactClassificationECOC < PredictiveModel
       if (isempty (W))
         W = ones (n, 1);
       endif
+      errmsg = weightsClass (W);
+      if (! isempty (errmsg))
+        error ("CompactClassificationECOC.%s: %s", caller, errmsg);
+      endif
       if (! (isnumeric (W) && isvector (W) && numel (W) == n
              && all (W >= 0) && any (W > 0)))
         error (strcat ("CompactClassificationECOC.%s: 'Weights' must be a", ...
                        " nonnegative numeric vector with one element per", ...
                        " observation."), caller);
       endif
-      W = priorNormalize (W(:), gY, this.Prior);
+      W = priorNormalize (double (W(:)), gY, this.Prior);
 
     endfunction
 
@@ -837,6 +831,8 @@ endclassdef
 %! predict (CMdl, ones (1, 2), 'Decoding')
 %!error<CompactClassificationECOC.predict: 'Decoding' must be 'lossweighted' or 'lossbased'.> ...
 %! predict (CMdl, ones (1, 2), 'Decoding', 'nosuch')
+%!error<CompactClassificationECOC.predict: invalid optional paired argument.> ...
+%! predict (CMdl, ones (1, 2), 'Bogus', 1)
 %!error<CompactClassificationECOC.predict: you cannot use 'quadratic' loss for binary learners with response in the range \(-Inf,\+Inf\).> ...
 %! predict (CMdl, ones (1, 2), 'BinaryLoss', 'quadratic')
 %!error<CompactClassificationECOC.subsasgn: you cannot use 'quadratic' loss for binary learners with response in the range \(-Inf,\+Inf\).> ...
@@ -895,3 +891,8 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <CompactClassificationECOC.loss: 'Weights' must be a real vector of class single or double.> ...
+%! loss (compact (fitcecoc ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2])), ...
+%!       [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))

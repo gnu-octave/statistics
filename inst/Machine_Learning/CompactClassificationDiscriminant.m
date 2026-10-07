@@ -667,15 +667,6 @@ classdef CompactClassificationDiscriminant < PredictiveModel
     endfunction
 
     ## Custom display
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
-    ## Custom display
     function disp (this)
       fprintf ("\n  CompactClassificationDiscriminant\n\n");
       ## Print selected properties
@@ -961,14 +952,7 @@ classdef CompactClassificationDiscriminant < PredictiveModel
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("CompactClassificationDiscriminant.loss:", ...
                        " name-value arguments must be in pairs."));
-      elseif (numel (varargin) > 4)
-        error (strcat ("CompactClassificationDiscriminant.loss:", ...
-                       " too many input arguments."));
       endif
-
-      ## Default values
-      LossFun = 'mincost';
-      Weights = [];
 
       ## Validate Y
       valid_types = {'char', 'string', 'logical', 'single', 'double', ...
@@ -984,67 +968,61 @@ classdef CompactClassificationDiscriminant < PredictiveModel
                        " have the same number of rows as X."));
       endif
 
-      ## Parse name-value arguments
-      while (numel (varargin) > 0)
-        Value = varargin{2};
-        switch (tolower (varargin{1}))
-          case 'lossfun'
-            lf_opt = {'binodeviance', 'classifcost', 'classiferror', ...
-                      'exponential', 'hinge','logit', 'mincost', 'quadratic'};
-            if (isa (Value, 'function_handle'))
-              ## Check if the loss function is valid
-              if (nargin (Value) != 4)
-                error (strcat ("CompactClassificationDiscriminant.loss:", ...
-                               " custom loss function must accept", ...
-                               " exactly four input arguments."));
-              endif
-              try
-                n = 1;
-                K = 2;
-                C_test = false (n, K);
-                S_test = zeros (n, K);
-                W_test = ones (n, 1);
-                Cost_test = ones (K) - eye (K);
-                test_output = Value(C_test, S_test, W_test, Cost_test);
-                if (! isscalar (test_output))
-                  error (strcat ("CompactClassificationDiscriminant.loss:", ...
-                                 " custom loss function must return", ...
-                                 " a scalar value."));
-                endif
-              catch
-                error (strcat ("CompactClassificationDiscriminant.loss:", ...
-                               " custom loss function is not valid or", ...
-                               " does not produce correct output."));
-              end_try_catch
-              LossFun = Value;
-            elseif (ischar (Value) && any (strcmpi (Value, lf_opt)))
-              LossFun = Value;
-            else
-              error (strcat ("CompactClassificationDiscriminant.loss:", ...
-                             " invalid loss function."));
-            endif
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mincost', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-          case 'weights'
-            if (isnumeric (Value) && isvector (Value))
-              if (numel (Value) != size (X ,1))
-                error (strcat ("CompactClassificationDiscriminant.loss:", ...
-                               " number of 'Weights' must be equal to", ...
-                               " the number of rows in X."));
-              elseif (numel (Value) == size (X, 1))
-                Weights = Value;
-              endif
-            else
-              error (strcat ("CompactClassificationDiscriminant.loss:", ...
-                             " invalid 'Weights'."));
-            endif
+      ## Validate optional paired arguments
+      lf_opt = {'binodeviance', 'classifcost', 'classiferror', ...
+                'exponential', 'hinge','logit', 'mincost', 'quadratic'};
+      if (isa (LossFun, 'function_handle'))
+        ## Check if the loss function is valid
+        if (nargin (LossFun) != 4)
+          error (strcat ("CompactClassificationDiscriminant.loss: custom", ...
+                         " loss function must accept exactly four input", ...
+                         " arguments."));
+        endif
+        try
+          n = 1;
+          K = 2;
+          C_test = false (n, K);
+          S_test = zeros (n, K);
+          W_test = ones (n, 1);
+          Cost_test = ones (K) - eye (K);
+          test_output = LossFun(C_test, S_test, W_test, Cost_test);
+          if (! isscalar (test_output))
+            error (strcat ("CompactClassificationDiscriminant.loss: custom", ...
+                           " loss function must return a scalar value."));
+          endif
+        catch
+          error (strcat ("CompactClassificationDiscriminant.loss: custom", ...
+                         " loss function is not valid or does not produce", ...
+                         " correct output."));
+        end_try_catch
+      elseif (! (ischar (LossFun) && any (strcmpi (LossFun, lf_opt))))
+        error (strcat ("CompactClassificationDiscriminant.loss: invalid", ...
+                       " loss function."));
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("CompactClassificationDiscriminant.loss: %s", errmsg);
+      endif
+      if (! isempty (Weights) && ! (isnumeric (Weights) && isvector (Weights)))
+        error ("CompactClassificationDiscriminant.loss: invalid 'Weights'.");
+      endif
+      if (! isempty (Weights) && numel (Weights) != rows (X))
+        error (strcat ("CompactClassificationDiscriminant.loss: number of", ...
+                       " 'Weights' must be equal to the number of rows in", ...
+                       " X."));
+      endif
 
-          otherwise
-            error (strcat ("CompactClassificationDiscriminant.loss:", ...
-                           " invalid parameter name in optional pair", ...
-                           " arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("CompactClassificationDiscriminant.loss: invalid", ...
+                       " optional paired argument."));
+      endif
 
       ## Check for missing values in X
       if (! isa (LossFun, 'function_handle'))
@@ -1084,6 +1062,7 @@ classdef CompactClassificationDiscriminant < PredictiveModel
       if (isempty (Weights))
         Weights = ones (size (X, 1), 1);
       endif
+      Weights = double (Weights(:));
 
       ## Normalize Weights
       unique_classes = this.ClassNames;
@@ -1358,10 +1337,6 @@ classdef CompactClassificationDiscriminant < PredictiveModel
       endif
       [X, Y, varargin] = tableResponse (this, 'edge', X, Y, varargin, ...
                                         nargin > 2);
-      if (mod (numel (varargin), 2) != 0)
-        error (strcat ("CompactClassificationDiscriminant.edge: Name-Value", ...
-                       " arguments must be in pairs."));
-      endif
 
       ## The weights are parsed before anything is computed, so a bad
       ## Name-Value pair is reported as such rather than after a margin.
@@ -1392,7 +1367,7 @@ classdef CompactClassificationDiscriminant < PredictiveModel
     ## @var{obj} must be a @qcode{CompactClassificationDiscriminant} object.
     ## @item
     ## @var{X} must be an @math{NxP} numeric matrix with one column per
-    ## predictor of the trained model.
+    ## predictor of the trained model, or a table holding them.
     ## @end itemize
     ##
     ## @code{@var{M} = mahal (@dots{}, @qcode{'ClassLabels'}, @var{labels})}
@@ -1405,6 +1380,11 @@ classdef CompactClassificationDiscriminant < PredictiveModel
     ## a regularized model is measured against its regularized covariance.
     ## The prior does not enter it.
     ##
+    ## A table's variables are matched to the predictors the model was
+    ## fitted on by name and not by position: one the model was not fitted on
+    ## is passed over, one it needs and cannot find is named, and a value
+    ## holding a level is coded as that level was coded at fitting.
+    ##
     ## @end deftypefn
     function M = mahal (this, X, varargin)
 
@@ -1413,6 +1393,9 @@ classdef CompactClassificationDiscriminant < PredictiveModel
         error (strcat ("CompactClassificationDiscriminant.mahal:", ...
                        " too few input arguments."));
       endif
+
+      ## A table is read by the names the model was fitted on
+      X = tableColumns (this, 'CompactClassificationDiscriminant.mahal', X);
 
       ## Check for valid X
       if (isempty (X))
@@ -1432,22 +1415,14 @@ classdef CompactClassificationDiscriminant < PredictiveModel
                        " Name-Value arguments must be in pairs."));
       endif
 
-      labels = [];
-      while (numel (varargin) > 0)
-        if (! (ischar (varargin{1}) && isrow (varargin{1})))
-          error (strcat ("CompactClassificationDiscriminant.mahal:", ...
-                         " parameter name must be a character vector."));
-        endif
-        switch (tolower (varargin{1}))
-          case 'classlabels'
-            labels = varargin{2};
-          otherwise
-            error (strcat ("CompactClassificationDiscriminant.mahal:", ...
-                           " invalid parameter name in optional paired", ...
-                           " arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments; without 'ClassLabels' every class
+      ## mean is measured
+      [labels, args] = parsePairedArguments ({'ClassLabels'}, {[]}, ...
+                                             varargin(:));
+      if (! isempty (args))
+        error (strcat ("CompactClassificationDiscriminant.mahal: invalid optional", ...
+                       " paired argument."));
+      endif
 
       M = discrimmahal (X, this.Mu, this.Sigma, this.DiscrimType);
 
@@ -1455,27 +1430,25 @@ classdef CompactClassificationDiscriminant < PredictiveModel
         return;
       endif
 
-      ## One distance per observation, to the mean of the class named for it
-      if (ischar (labels))
-        labels = cellstr (labels);
-      elseif (isnumeric (labels) || islogical (labels))
-        labels = cellstr (num2str (labels(:)));
-      elseif (! iscellstr (labels))
+      ## One distance per observation, to the mean of the class named for it,
+      ## the labels matched to the classes as every other method matches them
+      if (! (isnumeric (labels) || islogical (labels) || ischar (labels)
+             || iscellstr (labels) || isa (labels, 'categorical')
+             || isa (labels, 'string')))
         error (strcat ("CompactClassificationDiscriminant.mahal:", ...
                        " 'ClassLabels' must be of a valid type."));
       endif
-      if (numel (labels) != rows (X))
+      if (ischar (labels))
+        nL = rows (labels);
+      else
+        nL = numel (labels);
+      endif
+      if (nL != rows (X))
         error (strcat ("CompactClassificationDiscriminant.mahal:", ...
                        " 'ClassLabels' must have one entry per row of X."));
       endif
-      classes = this.ClassNames;
-      if (isnumeric (classes) || islogical (classes))
-        classes = cellstr (num2str (classes(:)));
-      elseif (ischar (classes))
-        classes = cellstr (classes);
-      endif
-      [tf, idx] = ismember (strtrim (labels(:)), strtrim (classes));
-      if (! all (tf))
+      [idx, errmsg] = labelIndices (this.ClassNames, labels);
+      if (! isempty (errmsg))
         error (strcat ("CompactClassificationDiscriminant.mahal:", ...
                        " every 'ClassLabels' entry must be one of", ...
                        " ClassNames."));
@@ -1501,12 +1474,17 @@ classdef CompactClassificationDiscriminant < PredictiveModel
     ## @var{obj} must be a @qcode{CompactClassificationDiscriminant} object.
     ## @item
     ## @var{X} must be an @math{NxP} numeric matrix with one column per
-    ## predictor of the trained model.
+    ## predictor of the trained model, or a table holding them.
     ## @end itemize
     ##
     ## An unusually low value marks an observation the model finds unlikely
     ## under every class, which is what makes this an outlier test rather
     ## than a classification.
+    ##
+    ## A table's variables are matched to the predictors the model was
+    ## fitted on by name and not by position: one the model was not fitted on
+    ## is passed over, one it needs and cannot find is named, and a value
+    ## holding a level is coded as that level was coded at fitting.
     ##
     ## @end deftypefn
     function lp = logp (this, X)
@@ -1516,6 +1494,9 @@ classdef CompactClassificationDiscriminant < PredictiveModel
         error (strcat ("CompactClassificationDiscriminant.logp:", ...
                        " too few input arguments."));
       endif
+
+      ## A table is read by the names the model was fitted on
+      X = tableColumns (this, 'CompactClassificationDiscriminant.logp', X);
 
       ## Check for valid X
       if (isempty (X))
@@ -1904,12 +1885,16 @@ endclassdef
 %! loss (MODEL, ones (4,2))
 %!error<CompactClassificationDiscriminant.loss: name-value arguments must be in pairs.> ...
 %! loss (MODEL, ones (4,2), ones (4,1), 'LossFun')
+%!error<CompactClassificationDiscriminant.loss: invalid optional paired argument.> ...
+%! loss (MODEL, ones (4,2), ones (4,1), 'Bogus', 1)
 %!error<CompactClassificationDiscriminant.loss: Y must have the same number of rows as X.> ...
 %! loss (MODEL, ones (4,2), ones (3,1))
 %!error<CompactClassificationDiscriminant.loss: invalid loss function.> ...
 %! loss (MODEL, ones (4,2), ones (4,1), 'LossFun', 'a')
-%!error<CompactClassificationDiscriminant.loss: invalid 'Weights'.> ...
+%!error<CompactClassificationDiscriminant.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (MODEL, ones (4,2), ones (4,1), 'Weights', 'w')
+%!error<CompactClassificationDiscriminant.loss: invalid 'Weights'.> ...
+%! loss (MODEL, ones (4,2), ones (4,1), 'Weights', ones (2, 2))
 
 ## Test margin method
 %! load fisheriris
@@ -2121,6 +2106,35 @@ endclassdef
 %!                   0.553281423559203; 2.086697905677364; ...
 %!                   0.595630039171744], 1e-12);
 
+## 'ClassLabels' of any label type, whatever type the classes are.
+%!test
+%! load fisheriris
+%! idx = [1; 51; 101];
+%! D = diag (mahal (compact (fitcdiscr (meas, species)), meas(idx,:)));
+%! Mdl = compact (fitcdiscr (meas, categorical (species)));
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', species(idx)), D);
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', ...
+%!                      categorical (species(idx))), D);
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', ...
+%!                      string (species(idx))), D);
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', ...
+%!                      char (species(idx))), D);
+%!test
+%! load fisheriris
+%! idx = [1; 51; 101];
+%! D = diag (mahal (compact (fitcdiscr (meas, species)), meas(idx,:)));
+%! Mdl = compact (fitcdiscr (meas, species));
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', ...
+%!                      categorical (species(idx))), D);
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', ...
+%!                      string (species(idx))), D);
+%!test
+%! load fisheriris
+%! idx = [1; 51; 101];
+%! Mdl = compact (fitcdiscr (meas, grp2idx (species)));
+%! D = diag (mahal (Mdl, meas(idx,:)));
+%! assert_equal (mahal (Mdl, meas(idx,:), 'ClassLabels', [1; 2; 3]), D);
+
 ## A quadratic model measures against each class's own covariance.
 %!test
 %! load fisheriris
@@ -2188,14 +2202,18 @@ endclassdef
 %! load fisheriris
 %! Mdl = compact (fitcdiscr (meas, species));
 %! mahal (Mdl, meas(1:5,:), 'ClassLabels')
-%!error<CompactClassificationDiscriminant.mahal: parameter name must be a character vector.> ...
+%!error<CompactClassificationDiscriminant.mahal: invalid optional paired argument.> ...
 %! load fisheriris
 %! Mdl = compact (fitcdiscr (meas, species));
 %! mahal (Mdl, meas(1:5,:), 5, 1)
-%!error<CompactClassificationDiscriminant.mahal: invalid parameter name in optional paired arguments.> ...
+%!error<CompactClassificationDiscriminant.mahal: invalid optional paired argument.> ...
 %! load fisheriris
 %! Mdl = compact (fitcdiscr (meas, species));
 %! mahal (Mdl, meas(1:5,:), 'bogus', 1)
+%!error<CompactClassificationDiscriminant.mahal: 'ClassLabels' must be of a valid type.> ...
+%! load fisheriris
+%! Mdl = compact (fitcdiscr (meas, species));
+%! mahal (Mdl, meas(1:2,:), 'ClassLabels', {1; 2})
 %!error<CompactClassificationDiscriminant.mahal: 'ClassLabels' must have one entry per row of X.> ...
 %! load fisheriris
 %! Mdl = compact (fitcdiscr (meas, species));
@@ -2312,3 +2330,23 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## A table at mahal and logp
+%!test  # a table is matched to the predictors by name
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!           'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%! Mdl = compact (fitcdiscr (T, 'Species'));
+%! a = mahal (Mdl, meas);
+%! assert_equal (mahal (Mdl, T(:,1:4)), a);
+%! assert_equal (mahal (Mdl, T(:,[5, 4, 2, 3, 1])), a);
+%!test  # a table is matched to the predictors by name
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!           'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%! Mdl = compact (fitcdiscr (T, 'Species'));
+%! a = logp (Mdl, meas);
+%! assert_equal (logp (Mdl, T(:,1:4)), a);
+%! assert_equal (logp (Mdl, T(:,[5, 4, 2, 3, 1])), a);

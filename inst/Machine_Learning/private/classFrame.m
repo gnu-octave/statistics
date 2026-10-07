@@ -36,7 +36,8 @@
 ## logical over the rows as supplied; @qcode{gY}, the class index of each
 ## retained observation; @qcode{ClassNames}, in the type of @var{Y};
 ## @qcode{Prior} and @qcode{Cost}, as the model reports them;
-## @qcode{Weights}, the retained weights before normalization; @qcode{W},
+## @qcode{Weights}, the retained weights before normalization, as double;
+## @qcode{WeightsClass}, the class the weights were given in; @qcode{W},
 ## normalized within each class to that class's cost-adjusted prior and
 ## summing to one; @qcode{y}, @math{+1} for the second class and @math{-1}
 ## for the first; and @qcode{n} and @qcode{p}.
@@ -71,10 +72,16 @@ function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
 
   ## Weights are validated against the data as supplied, then follow it
   ## through the rows that are kept.
+  errmsg = weightsClass (Weights);
+  if (! isempty (errmsg))
+    error ("%s: %s", classname, errmsg);
+  endif
+  WeightsClass = "double";
   if (isempty (Weights))
     Weights = ones (rows (X), 1);
   else
-    Weights = Weights(:);
+    WeightsClass = class (Weights);
+    Weights = double (Weights(:));
     if (numel (Weights) != rows (X))
       error ("%s: 'Weights' must have one element per observation.", ...
              classname);
@@ -90,6 +97,7 @@ function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
   F.X = X(RowsUsed, :);
   F.Y = Y(RowsUsed, :);
   F.Weights = Weights(RowsUsed);
+  F.WeightsClass = WeightsClass;
   if (isempty (F.Y))
     error ("%s: no complete observations in the data.", classname);
   endif

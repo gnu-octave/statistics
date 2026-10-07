@@ -15,164 +15,30 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{obj} =} RegressionGP (@var{X}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} RegressionGP (@var{Tbl}, @var{ResponseVarName})
-## @deftypefnx {statistics} {@var{obj} =} RegressionGP (@var{Tbl}, @var{formula})
-## @deftypefnx {statistics} {@var{obj} =} RegressionGP (@var{Tbl}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} RegressionGP (@dots{}, @var{name}, @var{value})
-##
-## Create a @qcode{RegressionGP} object containing a Gaussian process
-## regression model.
-##
-## @code{@var{obj} = RegressionGP (@var{X}, @var{Y})} returns a Gaussian
-## process regression model, @var{obj}, with @var{X} being the predictor data
-## and @var{Y} the continuous response of the observations in @var{X}.
-##
-## @itemize
-## @item
-## @var{X} must be an @math{NxP} numeric matrix of predictor data, where rows
-## correspond to observations and columns to features.
-## @item
-## @var{Y} must be an @math{Nx1} numeric vector holding the response of the
-## corresponding predictor data in @var{X}.  @var{Y} must have the same number
-## of rows as @var{X}.
-## @end itemize
-##
-## A Gaussian process places a prior over functions, given by the covariance
-## function, and conditions it on the observations.  The response is modelled
-## as @math{H*Beta} plus a draw from that process plus independent noise of
-## standard deviation @qcode{Sigma}, where @math{H} is the explicit basis.  The
-## covariance parameters and @qcode{Sigma} are estimated by maximizing the log
-## marginal likelihood, and @qcode{Beta} follows from them in closed form as
-## the generalized least squares estimate.
-##
-## @code{@var{obj} = RegressionGP (@dots{}, @var{name}, @var{value})} returns a
-## model with additional options specified by @qcode{Name-Value} pair
-## arguments listed below.
-##
-## @multitable @columnfractions 0.32 0.68
-## @headitem @var{Name} @tab @var{Value}
-##
-## @item @qcode{'KernelFunction'} @tab A character vector naming the covariance
-## function, or a function handle taking two matrices of points and a parameter
-## vector.  The default is @qcode{'squaredexponential'}.  The supported names
-## are listed below.
-##
-## @item @qcode{'KernelParameters'} @tab A numeric vector of initial values for
-## the covariance parameters.  Its length depends on the covariance function.
-## These are starting values for the optimization, not fixed values.
-##
-## @item @qcode{'BasisFunction'} @tab A character vector naming the explicit
-## basis, one of @qcode{'none'}, @qcode{'constant'}, @qcode{'linear'} or
-## @qcode{'pureQuadratic'}, or a function handle taking @var{X} and returning
-## the basis matrix.  The default is @qcode{'constant'}.
-##
-## @item @qcode{'Beta'} @tab A numeric vector of basis coefficients.  These are
-## used as known values only when @qcode{'FitMethod'} is @qcode{'none'}.
-##
-## @item @qcode{'Sigma'} @tab A positive scalar, the initial value of the noise
-## standard deviation.  The default is @code{std (@var{Y}) / sqrt (2)}.
-##
-## @item @qcode{'ConstantSigma'} @tab A logical scalar.  When @qcode{true} the
-## noise standard deviation is held at its initial value instead of being
-## estimated.  The default is @qcode{false}.
-##
-## @item @qcode{'SigmaLowerBound'} @tab A positive scalar bounding the noise
-## standard deviation from below.  The default is
-## @code{1e-2 * std (@var{Y})}.
-##
-## @item @qcode{'FitMethod'} @tab A character vector, either @qcode{'exact'} to
-## estimate the parameters or @qcode{'none'} to keep them at their initial
-## values.  The default is @qcode{'exact'}.
-##
-## @item @qcode{'PredictMethod'} @tab A character vector.  Only @qcode{'exact'}
-## is implemented, which is also the only method under which a standard
-## deviation and a prediction interval are available.
-##
-## @item @qcode{'Optimizer'} @tab A character vector naming the optimizer used
-## to maximize the log marginal likelihood.  @qcode{'quasinewton'} and
-## @qcode{'fminunc'} name the same dense solver and are the default,
-## @qcode{'lbfgs'} selects limited-memory BFGS, which holds a fixed number of
-## curvature pairs rather than a full inverse Hessian and is the cheaper
-## choice when the kernel carries many parameters, and @qcode{'fminsearch'}
-## is derivative-free.
-##
-## @item @qcode{'Standardize'} @tab A logical scalar specifying whether the
-## predictor data should be centred and scaled before training.  The same
-## transformation is applied by @code{predict}.  The default is @qcode{false}.
-##
-## @item @qcode{'CategoricalPredictors'} @tab The categorical predictors, as
-## indices, as a logical vector with one element per predictor, or as
-## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros and
-## ones per distinct value it takes in the training data, named as in
-## @qcode{'x1 == 2'}, and the coded columns are not standardized.
-## @qcode{X} keeps the predictors as given.  A row holding a value the
-## training data did not is predicted as a row missing a predictor, the
-## weighted lower median of the training response.
-## A predictor may be named rather than indexed, as a character matrix of one
-## padded name per row, a string array or a cellstr; a name must match an entry
-## of @qcode{'PredictorNames'} exactly, its case included.
-##
-## @item @qcode{'Weights'} @tab An @math{Nx1} numeric vector of non-negative
-## observation weights.  The default is a vector of ones.
-##
-## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
-## naming the predictors, in the order they appear in @var{X}.
-##
-## @item @qcode{'ResponseName'} @tab A character vector naming the response.
-## The default is @qcode{'Y'}.
-##
-## @item @qcode{'ResponseTransform'} @tab A character vector or a function
-## handle applied to the response the model predicts.  The default is
-## @qcode{'none'}.
-## @end multitable
-##
-## The supported values for @qcode{'KernelFunction'} are:
-##
-## @multitable @columnfractions 0.4 0.6
-## @headitem @var{Value} @tab @var{Parameters}
-## @item @qcode{'exponential'} @tab @qcode{[SigmaL; SigmaF]}
-## @item @qcode{'squaredexponential'} @tab @qcode{[SigmaL; SigmaF]}
-## @item @qcode{'matern32'} @tab @qcode{[SigmaL; SigmaF]}
-## @item @qcode{'matern52'} @tab @qcode{[SigmaL; SigmaF]}
-## @item @qcode{'rationalquadratic'} @tab @qcode{[SigmaL; AlphaRQ; SigmaF]}
-## @item @qcode{'ardexponential'} @tab @qcode{[LengthScale1; @dots{}; SigmaF]}
-## @item @qcode{'ardsquaredexponential'} @tab
-## @qcode{[LengthScale1; @dots{}; SigmaF]}
-## @item @qcode{'ardmatern32'} @tab @qcode{[LengthScale1; @dots{}; SigmaF]}
-## @item @qcode{'ardmatern52'} @tab @qcode{[LengthScale1; @dots{}; SigmaF]}
-## @item @qcode{'ardrationalquadratic'} @tab
-## @qcode{[LengthScale1; @dots{}; AlphaRQ; SigmaF]}
-## @end multitable
-##
-## The automatic relevance determination kernels carry one length scale per
-## predictor, so a predictor the response does not depend on is given a large
-## length scale and stops contributing.
-##
-## The supported values for @qcode{'ResponseTransform'} are:
-##
-## @multitable @columnfractions 0.3 0.7
-## @headitem @var{Value} @tab @var{Description}
-## @item @qcode{'none'} @tab @math{x} (no transformation)
-## @item @qcode{'identity'} @tab @math{x} (no transformation)
-## @item @qcode{'exp'} @tab @math{exp (x)}
-## @item @qcode{'log'} @tab @math{log (x)}
-## @end multitable
-##
-## Two deviations from MATLAB are deliberate and documented.  The distance
-## between points is accumulated one predictor at a time instead of by the
-## expanded form MATLAB uses by default, because the expanded form does not
-## return exactly zero for a point against itself and the rough kernels
-## amplify that residue through their square root.  The approximate fitting
-## and prediction methods, @qcode{'sd'}, @qcode{'sr'}, @qcode{'fic'} and
-## @qcode{'bcd'}, together with the active set options that serve them, are
-## not implemented and are refused rather than silently ignored.
-##
-## @seealso{fitrgp, CompactRegressionGP, RegressionSVM, RegressionGAM}
-## @end deftypefn
-
 classdef RegressionGP < PredictiveModel
+  ## -*- texinfo -*-
+  ## @deftp {statistics} RegressionGP
+  ##
+  ## Gaussian process regression model.
+  ##
+  ## A @qcode{RegressionGP} object holds a Gaussian process fitted to a
+  ## continuous response, and predicts the response for new data with the
+  ## @code{predict} method, which also returns the standard deviation of each
+  ## prediction and a prediction interval.  The response is modelled as an
+  ## explicit basis times @qcode{Beta}, plus a draw from a process whose
+  ## covariance is given by the kernel function, plus independent noise of
+  ## standard deviation @qcode{Sigma}.  The kernel parameters and @qcode{Sigma}
+  ## are estimated by maximizing the log marginal likelihood.
+  ##
+  ## The object keeps its training data, which @code{resubPredict},
+  ## @code{resubLoss} and @code{crossval} work on; @code{compact} drops it and
+  ## returns a @code{CompactRegressionGP}, which still predicts.
+  ##
+  ## Create a @qcode{RegressionGP} object with @code{fitrgp} or the class
+  ## constructor.
+  ##
+  ## @seealso{fitrgp, CompactRegressionGP}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 
@@ -232,8 +98,9 @@ classdef RegressionGP < PredictiveModel
     ##
     ## Observation weights
     ##
-    ## An @math{Nx1} numeric vector, one weight per observation used to train
-    ## the model.  This property is read-only.
+    ## An @math{Nx1} vector, one weight per observation used to train the
+    ## model, scaled to sum to one and of the class of the @qcode{'Weights'}
+    ## given, single or double.  This property is read-only.
     ##
     ## @end deftp
     W                     = [];
@@ -568,20 +435,164 @@ classdef RegressionGP < PredictiveModel
 
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionGP} {@var{obj} =} RegressionGP (@var{X}, @var{Y})
+    ## @deftypefnx {RegressionGP} {@var{obj} =} RegressionGP (@var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {RegressionGP} {@var{obj} =} RegressionGP (@var{Tbl}, @var{formula})
+    ## @deftypefnx {RegressionGP} {@var{obj} =} RegressionGP (@var{Tbl}, @var{Y})
     ## @deftypefnx {RegressionGP} {@var{obj} =} RegressionGP (@dots{}, @var{name}, @var{value})
     ##
     ## Fit a Gaussian process regression model.
     ##
-    ## @var{X} is an @math{N*P} numeric matrix of predictor data, one
-    ## observation per row, and @var{Y} is the continuous response of those
-    ## @math{N} observations.  The fit runs at construction, so @var{obj}
-    ## arrives fitted.
+    ## @code{@var{obj} = RegressionGP (@var{X}, @var{Y})} returns a Gaussian
+    ## process regression model, @var{obj}, with @var{X} being the predictor
+    ## data and @var{Y} the continuous response of the observations in @var{X}.
     ##
-    ## The @var{name}/@var{value} pairs the fit accepts, and the validation
-    ## each one is held to, are listed in @code{help RegressionGP}.
-    ## @code{fitrgp} is the documented way to reach this constructor and
-    ## takes the same pairs.
+    ## @itemize
+    ## @item
+    ## @var{X} must be an @math{NxP} numeric matrix of predictor data, where
+    ## rows correspond to observations and columns to features.
+    ## @item
+    ## @var{Y} must be an @math{Nx1} numeric vector holding the response of the
+    ## corresponding predictor data in @var{X}.  @var{Y} must have the same
+    ## number of rows as @var{X}.
+    ## @end itemize
     ##
+    ## A Gaussian process places a prior over functions, given by the covariance
+    ## function, and conditions it on the observations.  The response is
+    ## modelled as @math{H*Beta} plus a draw from that process plus independent
+    ## noise of standard deviation @qcode{Sigma}, where @math{H} is the explicit
+    ## basis.  The covariance parameters and @qcode{Sigma} are estimated by
+    ## maximizing the log marginal likelihood, and @qcode{Beta} follows from
+    ## them in closed form as the generalized least squares estimate.
+    ##
+    ## @code{@var{obj} = RegressionGP (@dots{}, @var{name}, @var{value})}
+    ## returns a model with additional options specified by @qcode{Name-Value}
+    ## pair arguments listed below.
+    ##
+    ## @multitable @columnfractions 0.32 0.68
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'KernelFunction'} @tab A character vector naming the
+    ## covariance function, or a function handle taking two matrices of points
+    ## and a parameter vector.  The default is @qcode{'squaredexponential'}.
+    ## The supported names are listed below.
+    ##
+    ## @item @qcode{'KernelParameters'} @tab A numeric vector of initial values
+    ## for the covariance parameters.  Its length depends on the covariance
+    ## function.  These are starting values for the optimization, not fixed
+    ## values.
+    ##
+    ## @item @qcode{'BasisFunction'} @tab A character vector naming the explicit
+    ## basis, one of @qcode{'none'}, @qcode{'constant'}, @qcode{'linear'} or
+    ## @qcode{'pureQuadratic'}, or a function handle taking @var{X} and
+    ## returning the basis matrix.  The default is @qcode{'constant'}.
+    ##
+    ## @item @qcode{'Beta'} @tab A numeric vector of basis coefficients.  These
+    ## are used as known values only when @qcode{'FitMethod'} is @qcode{'none'}.
+    ##
+    ## @item @qcode{'Sigma'} @tab A positive scalar, the initial value of the
+    ## noise standard deviation.  The default is
+    ## @code{std (@var{Y}) / sqrt (2)}.
+    ##
+    ## @item @qcode{'ConstantSigma'} @tab A logical scalar.  When @qcode{true}
+    ## the noise standard deviation is held at its initial value instead of
+    ## being estimated.  The default is @qcode{false}.
+    ##
+    ## @item @qcode{'SigmaLowerBound'} @tab A positive scalar bounding the noise
+    ## standard deviation from below.  The default is
+    ## @code{1e-2 * std (@var{Y})}.
+    ##
+    ## @item @qcode{'FitMethod'} @tab A character vector, either @qcode{'exact'}
+    ## to estimate the parameters or @qcode{'none'} to keep them at their
+    ## initial values.  The default is @qcode{'exact'}.
+    ##
+    ## @item @qcode{'PredictMethod'} @tab A character vector.  Only
+    ## @qcode{'exact'} is implemented, which is also the only method under which
+    ## a standard deviation and a prediction interval are available.
+    ##
+    ## @item @qcode{'Optimizer'} @tab A character vector naming the optimizer
+    ## used to maximize the log marginal likelihood.  @qcode{'quasinewton'} and
+    ## @qcode{'fminunc'} name the same dense solver and are the default,
+    ## @qcode{'lbfgs'} selects limited-memory BFGS, which holds a fixed number
+    ## of curvature pairs rather than a full inverse Hessian and is the cheaper
+    ## choice when the kernel carries many parameters, and @qcode{'fminsearch'}
+    ## is derivative-free.
+    ##
+    ## @item @qcode{'Standardize'} @tab A logical scalar specifying whether the
+    ## predictor data should be centred and scaled before training.  The same
+    ## transformation is applied by @code{predict}.  The default is
+    ## @qcode{false}.
+    ##
+    ## @item @qcode{'CategoricalPredictors'} @tab The categorical predictors, as
+    ## indices, as a logical vector with one element per predictor, or as
+    ## @qcode{'all'}.  Each is dummy coded in its place, one column of zeros and
+    ## ones per distinct value it takes in the training data, named as in
+    ## @qcode{'x1 == 2'}, and the coded columns are not standardized.  @qcode{X}
+    ## keeps the predictors as given.  A row holding a value the training data
+    ## did not is predicted as a row missing a predictor, the weighted lower
+    ## median of the training response.  A predictor may be named rather than
+    ## indexed, as a character matrix of one padded name per row, a string array
+    ## or a cellstr; a name must match an entry of @qcode{'PredictorNames'}
+    ## exactly, its case included.
+    ##
+    ## @item @qcode{'Weights'} @tab An @math{Nx1} single or double vector of
+    ## non-negative observation weights.  The default is a vector of ones.  The
+    ## model's @code{W} keeps the class of the weights, while every computation
+    ## runs in double.
+    ##
+    ## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
+    ## naming the predictors, in the order they appear in @var{X}.
+    ##
+    ## @item @qcode{'ResponseName'} @tab A character vector naming the response.
+    ## The default is @qcode{'Y'}.
+    ##
+    ## @item @qcode{'ResponseTransform'} @tab A character vector or a function
+    ## handle applied to the response the model predicts.  The default is
+    ## @qcode{'none'}.
+    ## @end multitable
+    ##
+    ## The supported values for @qcode{'KernelFunction'} are:
+    ##
+    ## @multitable @columnfractions 0.4 0.6
+    ## @headitem @var{Value} @tab @var{Parameters}
+    ## @item @qcode{'exponential'} @tab @qcode{[SigmaL; SigmaF]}
+    ## @item @qcode{'squaredexponential'} @tab @qcode{[SigmaL; SigmaF]}
+    ## @item @qcode{'matern32'} @tab @qcode{[SigmaL; SigmaF]}
+    ## @item @qcode{'matern52'} @tab @qcode{[SigmaL; SigmaF]}
+    ## @item @qcode{'rationalquadratic'} @tab @qcode{[SigmaL; AlphaRQ; SigmaF]}
+    ## @item @qcode{'ardexponential'} @tab
+    ## @qcode{[LengthScale1; @dots{}; SigmaF]}
+    ## @item @qcode{'ardsquaredexponential'} @tab
+    ## @qcode{[LengthScale1; @dots{}; SigmaF]}
+    ## @item @qcode{'ardmatern32'} @tab @qcode{[LengthScale1; @dots{}; SigmaF]}
+    ## @item @qcode{'ardmatern52'} @tab @qcode{[LengthScale1; @dots{}; SigmaF]}
+    ## @item @qcode{'ardrationalquadratic'} @tab
+    ## @qcode{[LengthScale1; @dots{}; AlphaRQ; SigmaF]}
+    ## @end multitable
+    ##
+    ## The automatic relevance determination kernels carry one length scale per
+    ## predictor, so a predictor the response does not depend on is given a
+    ## large length scale and stops contributing.
+    ##
+    ## The supported values for @qcode{'ResponseTransform'} are:
+    ##
+    ## @multitable @columnfractions 0.3 0.7
+    ## @headitem @var{Value} @tab @var{Description}
+    ## @item @qcode{'none'} @tab @math{x} (no transformation)
+    ## @item @qcode{'identity'} @tab @math{x} (no transformation)
+    ## @item @qcode{'exp'} @tab @math{exp (x)}
+    ## @item @qcode{'log'} @tab @math{log (x)}
+    ## @end multitable
+    ##
+    ## Two deviations from MATLAB are deliberate and documented.  The distance
+    ## between points is accumulated one predictor at a time instead of by the
+    ## expanded form MATLAB uses by default, because the expanded form does not
+    ## return exactly zero for a point against itself and the rough kernels
+    ## amplify that residue through their square root.  The approximate fitting
+    ## and prediction methods, @qcode{'sd'}, @qcode{'sr'}, @qcode{'fic'} and
+    ## @qcode{'bcd'}, together with the active set options that serve them, are
+    ## not implemented and are refused rather than silently ignored.
+    ##
+    ## @seealso{fitrgp, CompactRegressionGP, RegressionSVM, RegressionGAM}
     ## @end deftypefn
     function this = RegressionGP (X, Y, varargin)
 
@@ -601,189 +612,145 @@ classdef RegressionGP < PredictiveModel
       [n, p] = size (X);
       fitRows = ! any (isnan (X), 2);
 
-      ## Defaults
-      KernelFunction   = 'squaredexponential';
-      KernelParameters = [];
-      BasisFunction    = 'constant';
-      BetaIn           = [];
-      SigmaIn          = [];
-      ConstantSigma    = false;
-      SigmaLowerBound  = [];
-      FitMethod        = 'exact';
-      PredictMethod    = 'exact';
-      Optimizer        = 'quasinewton';
-      Standardize      = false;
-      Weights          = [];
-      PredictorNames   = {};
-      ResponseName     = 'Y';
-      ResponseTransform = 'none';
-      CategoricalPredictors = [];
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("RegressionGP: optional arguments must be given", ...
+                       " in Name-Value pairs."));
+      endif
 
-      ## Parse optional parameters
-      while (numel (varargin) > 0)
-        if (numel (varargin) < 2)
-          error (strcat ("RegressionGP: optional arguments must be given", ...
-                         " in Name-Value pairs."));
-        endif
-        switch (lower (varargin{1}))
+      ## Parse optional paired arguments
+      optNames = {'KernelFunction', 'KernelParameters', 'BasisFunction', ...
+                  'Beta', 'Sigma', 'ConstantSigma', 'SigmaLowerBound', ...
+                  'FitMethod', 'PredictMethod', 'Optimizer', 'Standardize', ...
+                  'Weights', 'PredictorNames', 'ResponseName', ...
+                  'ResponseTransform', 'CategoricalPredictors'};
+      ## An empty default stands for one resolved once the data are known:
+      ## 'KernelParameters' take the documented defaults for the kernel,
+      ## 'Beta' starts at zero, 'Sigma' at the standard deviation of the
+      ## response over the root of two and 'SigmaLowerBound' at a hundredth
+      ## of it; 'Weights' are uniform and 'PredictorNames' are x1, x2, ...
+      dfValues = {'squaredexponential', [], 'constant', [], [], false, [], ...
+                  'exact', 'exact', 'quasinewton', false, [], {}, 'Y', ...
+                  'none', []};
+      [KernelFunction, KernelParameters, BasisFunction, BetaIn, SigmaIn, ...
+       ConstantSigma, SigmaLowerBound, FitMethod, PredictMethod, Optimizer, ...
+       Standardize, Weights, PredictorNames, ResponseName, ...
+       ResponseTransform, CategoricalPredictors, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-          case 'kernelfunction'
-            KernelFunction = varargin{2};
-            if (! (ischar (KernelFunction) || ...
-                   is_function_handle (KernelFunction)))
-              error (strcat ("RegressionGP: 'KernelFunction' must be a", ...
-                             " character vector or a function handle."));
-            endif
-            if (ischar (KernelFunction) && ...
-                ! any (strcmpi (KernelFunction, kernelNames ())))
-              error ("RegressionGP: unsupported 'KernelFunction' value.");
-            endif
+      ## Validate optional paired arguments
+      if (! (ischar (KernelFunction) || ...
+             is_function_handle (KernelFunction)))
+        error (strcat ("RegressionGP: 'KernelFunction' must be a character", ...
+                       " vector or a function handle."));
+      endif
+      if (ischar (KernelFunction) && ...
+          ! any (strcmpi (KernelFunction, kernelNames ())))
+        error ("RegressionGP: unsupported 'KernelFunction' value.");
+      endif
+      if (! isempty (KernelParameters) &&
+          ! (isnumeric (KernelParameters) && ...
+             isvector (KernelParameters) && ...
+             all (KernelParameters > 0)))
+        error (strcat ("RegressionGP: 'KernelParameters' must be a vector", ...
+                       " of positive values."));
+      endif
+      KernelParameters = KernelParameters(:);
+      if (! (ischar (BasisFunction) || ...
+             is_function_handle (BasisFunction)))
+        error (strcat ("RegressionGP: 'BasisFunction' must be a character", ...
+                       " vector or a function handle."));
+      endif
+      if (ischar (BasisFunction) && ...
+          ! any (strcmpi (BasisFunction, ...
+                          {'none', 'constant', 'linear', ...
+                           'purequadratic'})))
+        error ("RegressionGP: unsupported 'BasisFunction' value.");
+      endif
+      if (! isempty (BetaIn) &&
+          ! (isnumeric (BetaIn) && isvector (BetaIn)))
+        error ("RegressionGP: 'Beta' must be a numeric vector.");
+      endif
+      BetaIn = BetaIn(:);
+      if (! isempty (SigmaIn) &&
+          ! (isnumeric (SigmaIn) && isscalar (SigmaIn) && SigmaIn > 0))
+        error ("RegressionGP: 'Sigma' must be a positive scalar.");
+      endif
+      if (! (islogical (ConstantSigma) && isscalar (ConstantSigma)))
+        error ("RegressionGP: 'ConstantSigma' must be a logical scalar.");
+      endif
+      if (! isempty (SigmaLowerBound) &&
+          ! (isnumeric (SigmaLowerBound) && ...
+             isscalar (SigmaLowerBound) && SigmaLowerBound > 0))
+        error ("RegressionGP: 'SigmaLowerBound' must be a positive scalar.");
+      endif
+      if (! ischar (FitMethod))
+        error ("RegressionGP: 'FitMethod' must be a character vector.");
+      endif
+      if (any (strcmpi (FitMethod, {'sd', 'sr', 'fic'})))
+        error (strcat ("RegressionGP: the approximate fitting methods are", ...
+                       " not implemented; 'FitMethod' must be either", ...
+                       " 'exact' or 'none'."));
+      endif
+      if (! any (strcmpi (FitMethod, {'exact', 'none'})))
+        error ("RegressionGP: unsupported 'FitMethod' value.");
+      endif
+      if (! ischar (PredictMethod))
+        error ("RegressionGP: 'PredictMethod' must be a character vector.");
+      endif
+      if (any (strcmpi (PredictMethod, {'bcd', 'sd', 'sr', 'fic'})))
+        error (strcat ("RegressionGP: the approximate prediction methods", ...
+                       " are not implemented; 'PredictMethod' must be", ...
+                       " 'exact'."));
+      endif
+      if (! strcmpi (PredictMethod, 'exact'))
+        error ("RegressionGP: unsupported 'PredictMethod' value.");
+      endif
+      if (! ischar (Optimizer))
+        error ("RegressionGP: 'Optimizer' must be a character vector.");
+      endif
+      if (strcmpi (Optimizer, 'fmincon'))
+        error (strcat ("RegressionGP: 'fmincon' is not available in core", ...
+                       " Octave; use 'quasinewton' or 'fminsearch'."));
+      endif
+      if (! any (strcmpi (Optimizer, {'quasinewton', 'fminunc', ...
+                                      'lbfgs', 'fminsearch'})))
+        error ("RegressionGP: unsupported 'Optimizer' value.");
+      endif
+      if (! (islogical (Standardize) && isscalar (Standardize)))
+        error ("RegressionGP: 'Standardize' must be a logical scalar.");
+      endif
+      if (! isempty (PredictorNames) &&
+          ! (iscellstr (PredictorNames) && ...
+             numel (PredictorNames) == p))
+        error (strcat ("RegressionGP: 'PredictorNames' must be a cell", ...
+                       " array of character vectors with one name per", ...
+                       " column of X."));
+      endif
+      if (! ischar (ResponseName))
+        error ("RegressionGP: 'ResponseName' must be a character vector.");
+      endif
 
-          case 'kernelparameters'
-            KernelParameters = varargin{2};
-            if (! (isnumeric (KernelParameters) && ...
-                   isvector (KernelParameters) && ...
-                   all (KernelParameters > 0)))
-              error (strcat ("RegressionGP: 'KernelParameters' must be a", ...
-                             " vector of positive values."));
-            endif
-            KernelParameters = KernelParameters(:);
-
-          case 'basisfunction'
-            BasisFunction = varargin{2};
-            if (! (ischar (BasisFunction) || ...
-                   is_function_handle (BasisFunction)))
-              error (strcat ("RegressionGP: 'BasisFunction' must be a", ...
-                             " character vector or a function handle."));
-            endif
-            if (ischar (BasisFunction) && ...
-                ! any (strcmpi (BasisFunction, ...
-                                {'none', 'constant', 'linear', ...
-                                 'purequadratic'})))
-              error ("RegressionGP: unsupported 'BasisFunction' value.");
-            endif
-
-          case 'beta'
-            BetaIn = varargin{2};
-            if (! (isnumeric (BetaIn) && isvector (BetaIn)))
-              error ("RegressionGP: 'Beta' must be a numeric vector.");
-            endif
-            BetaIn = BetaIn(:);
-
-          case 'sigma'
-            SigmaIn = varargin{2};
-            if (! (isnumeric (SigmaIn) && isscalar (SigmaIn) && SigmaIn > 0))
-              error ("RegressionGP: 'Sigma' must be a positive scalar.");
-            endif
-
-          case 'constantsigma'
-            ConstantSigma = varargin{2};
-            if (! (islogical (ConstantSigma) && isscalar (ConstantSigma)))
-              error (strcat ("RegressionGP: 'ConstantSigma' must be a", ...
-                             " logical scalar."));
-            endif
-
-          case 'sigmalowerbound'
-            SigmaLowerBound = varargin{2};
-            if (! (isnumeric (SigmaLowerBound) && ...
-                   isscalar (SigmaLowerBound) && SigmaLowerBound > 0))
-              error (strcat ("RegressionGP: 'SigmaLowerBound' must be a", ...
-                             " positive scalar."));
-            endif
-
-          case 'fitmethod'
-            FitMethod = varargin{2};
-            if (! ischar (FitMethod))
-              error (strcat ("RegressionGP: 'FitMethod' must be a", ...
-                             " character vector."));
-            endif
-            if (any (strcmpi (FitMethod, {'sd', 'sr', 'fic'})))
-              error (strcat ("RegressionGP: the approximate fitting", ...
-                             " methods are not implemented; 'FitMethod'", ...
-                             " must be either 'exact' or 'none'."));
-            endif
-            if (! any (strcmpi (FitMethod, {'exact', 'none'})))
-              error ("RegressionGP: unsupported 'FitMethod' value.");
-            endif
-
-          case 'predictmethod'
-            PredictMethod = varargin{2};
-            if (! ischar (PredictMethod))
-              error (strcat ("RegressionGP: 'PredictMethod' must be a", ...
-                             " character vector."));
-            endif
-            if (any (strcmpi (PredictMethod, {'bcd', 'sd', 'sr', 'fic'})))
-              error (strcat ("RegressionGP: the approximate prediction", ...
-                             " methods are not implemented;", ...
-                             " 'PredictMethod' must be 'exact'."));
-            endif
-            if (! strcmpi (PredictMethod, 'exact'))
-              error ("RegressionGP: unsupported 'PredictMethod' value.");
-            endif
-
-          case 'optimizer'
-            Optimizer = varargin{2};
-            if (! ischar (Optimizer))
-              error (strcat ("RegressionGP: 'Optimizer' must be a", ...
-                             " character vector."));
-            endif
-            if (strcmpi (Optimizer, 'fmincon'))
-              error (strcat ("RegressionGP: 'fmincon' is not available in", ...
-                             " core Octave; use 'quasinewton' or", ...
-                             " 'fminsearch'."));
-            endif
-            if (! any (strcmpi (Optimizer, {'quasinewton', 'fminunc', ...
-                                            'lbfgs', 'fminsearch'})))
-              error ("RegressionGP: unsupported 'Optimizer' value.");
-            endif
-
-          case 'standardize'
-            Standardize = varargin{2};
-            if (! (islogical (Standardize) && isscalar (Standardize)))
-              error (strcat ("RegressionGP: 'Standardize' must be a", ...
-                             " logical scalar."));
-            endif
-
-          case 'weights'
-            Weights = varargin{2};
-
-          case 'predictornames'
-            PredictorNames = varargin{2};
-            if (! (iscellstr (PredictorNames) && ...
-                   numel (PredictorNames) == p))
-              error (strcat ("RegressionGP: 'PredictorNames' must be a", ...
-                             " cell array of character vectors with one", ...
-                             " name per column of X."));
-            endif
-
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! ischar (ResponseName))
-              error (strcat ("RegressionGP: 'ResponseName' must be a", ...
-                             " character vector."));
-            endif
-
-          case 'responsetransform'
-            ResponseTransform = varargin{2};
-
-          case 'categoricalpredictors'
-            CategoricalPredictors = varargin{2};
-
-          otherwise
-            error (strcat ("RegressionGP: invalid parameter name in", ...
-                           " optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("RegressionGP: invalid optional paired argument.");
+      endif
 
       ## Store the data and its description
       this.X = X;
       this.Y = Y;
       this.NumObservations = n;
       this.RowsUsed = RowsUsed;
-      this.W = this.getWeights_ (Weights, n, 'RegressionGP');
-      this.MissingResponse_ = missingResponse (Y(fitRows), this.W(fitRows));
+      ## The weights sum to one, as MATLAB reports them, and keep their class
+      ## in the model; every computation runs on them as double.
+      W = this.getWeights_ (Weights, n, 'RegressionGP');
+      if (sum (W) > 0)
+        W = W / sum (W);
+      endif
+      Wclass = "double";
+      if (! isempty (Weights))
+        Wclass = class (Weights);
+      endif
+      this.W = cast (W, Wclass);
+      this.MissingResponse_ = missingResponse (Y(fitRows), W(fitRows));
       if (isempty (PredictorNames))
         PredictorNames = arrayfun (@(k) sprintf ('x%d', k), 1:p, ...
                                    'UniformOutput', false);
@@ -965,26 +932,22 @@ classdef RegressionGP < PredictiveModel
                        " number of predictors as the trained model."));
       endif
 
-      CIAlpha = 0.05;
-      while (numel (varargin) > 0)
-        if (numel (varargin) < 2)
-          error (strcat ("RegressionGP.predict: optional arguments must", ...
-                         " be given in Name-Value pairs."));
-        endif
-        switch (lower (varargin{1}))
-          case 'alpha'
-            CIAlpha = varargin{2};
-            if (! (isnumeric (CIAlpha) && isscalar (CIAlpha) && ...
-                   CIAlpha >= 0 && CIAlpha <= 1))
-              error (strcat ("RegressionGP.predict: 'Alpha' must be a", ...
-                             " scalar between 0 and 1."));
-            endif
-          otherwise
-            error (strcat ("RegressionGP.predict: invalid NAME in optional", ...
-                           " pairs of arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments
+      optNames = {'Alpha'};
+      dfValues = {0.05};
+      [CIAlpha, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (isnumeric (CIAlpha) && isscalar (CIAlpha) && ...
+             CIAlpha >= 0 && CIAlpha <= 1))
+        error (strcat ("RegressionGP.predict: 'Alpha' must be a scalar", ...
+                       " between 0 and 1."));
+      endif
+
+      if (! isempty (args))
+        error ("RegressionGP.predict: invalid optional paired argument.");
+      endif
 
       if (! isempty (this.Coding_))
         XC = dummyCoding (XC, this.Coding_);
@@ -1070,43 +1033,42 @@ classdef RegressionGP < PredictiveModel
                                         nargin > 2);
       [X, Y] = this.checkXY_ (X, Y, 'RegressionGP.loss');
 
-      LossFun = 'mse';
-      Weights = ones (rows (X), 1);
-      Epsilon = 0;
-      while (numel (varargin) > 0)
-        if (numel (varargin) < 2)
-          error (strcat ("RegressionGP.loss: optional arguments must be", ...
-                         " given in Name-Value pairs."));
-        endif
-        switch (lower (varargin{1}))
-          case 'lossfun'
-            LossFun = varargin{2};
-            if (! (ischar (LossFun) || is_function_handle (LossFun)))
-              error (strcat ("RegressionGP.loss: 'LossFun' must be a", ...
-                             " character vector or a function handle."));
-            endif
-            if (ischar (LossFun) && ...
-                ! any (strcmpi (LossFun, {'mse', 'mae', ...
-                                          'epsiloninsensitive'})))
-              error ("RegressionGP.loss: unsupported 'LossFun' value.");
-            endif
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isvector (Weights) && ...
-                   numel (Weights) == rows (X) && all (Weights >= 0)))
-              error (strcat ("RegressionGP.loss: 'Weights' must be a", ...
-                             " vector of non-negative values with one", ...
-                             " element per observation."));
-            endif
-            Weights = Weights(:);
-          case 'epsilon'
-            Epsilon = varargin{2};
-          otherwise
-            error (strcat ("RegressionGP.loss: invalid NAME in optional", ...
-                           " pairs of arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights', 'Epsilon'};
+      dfValues = {'mse', [], 0};
+      [LossFun, Weights, Epsilon, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (ischar (LossFun) || is_function_handle (LossFun)))
+        error (strcat ("RegressionGP.loss: 'LossFun' must be a character", ...
+                       " vector or a function handle."));
+      endif
+      if (ischar (LossFun) && ...
+          ! any (strcmpi (LossFun, {'mse', 'mae', ...
+                                    'epsiloninsensitive'})))
+        error ("RegressionGP.loss: unsupported 'LossFun' value.");
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionGP.loss: %s", errmsg);
+      endif
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isvector (Weights) && ...
+             numel (Weights) == rows (X) && all (Weights >= 0)))
+        error (strcat ("RegressionGP.loss: 'Weights' must be a vector of", ...
+                       " non-negative values with one element per", ...
+                       " observation."));
+      endif
+      Weights = double (Weights(:));
+
+      if (! isempty (args))
+        error ("RegressionGP.loss: invalid optional paired argument.");
+      endif
+      if (isempty (Weights))
+        Weights = ones (rows (X), 1);
+      endif
 
       yFit = this.predict (X);
       if (is_function_handle (LossFun))
@@ -1355,14 +1317,6 @@ classdef RegressionGP < PredictiveModel
 
   methods (Access = public, Hidden)
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        printf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       printf ("\n  RegressionGP\n\n");
       printf ("%25s: '%s'\n", 'ResponseName', this.ResponseName);
@@ -1447,12 +1401,16 @@ classdef RegressionGP < PredictiveModel
         W = ones (n, 1);
         return;
       endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("%s: %s", caller, errmsg);
+      endif
       if (! (isnumeric (Weights) && isvector (Weights) && ...
              numel (Weights) == n && all (Weights >= 0)))
         error (strcat ("%s: 'Weights' must be a vector of non-negative", ...
                        " values with one element per observation."), caller);
       endif
-      W = Weights(:);
+      W = double (Weights(:));
     endfunction
 
   endmethods
@@ -2135,10 +2093,10 @@ endfunction
 %! assert_equal (Mdl.RowsUsed, []);
 
 %!test
-%! ## Observation weights default to one apiece
+%! ## Observation weights default to equal shares summing to one
 %! x = linspace (0, 1, 12)';
 %! Mdl = RegressionGP (x, cos (3*x));
-%! assert_equal (Mdl.W, ones (12, 1));
+%! assert_equal (Mdl.W, ones (12, 1) / 12);
 
 %!test
 %! ## A supplied covariance function is used, and reproduces the built-in one
@@ -2174,7 +2132,7 @@ endfunction
 %! RegressionGP (ones (5, 2), 'a')
 %!error<RegressionGP: optional arguments must be given in Name-Value pairs.> ...
 %! RegressionGP (ones (5, 2), ones (5, 1), 'Standardize')
-%!error<RegressionGP: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionGP: invalid optional paired argument.> ...
 %! RegressionGP (ones (5, 2), ones (5, 1), 'bogus', 1)
 %!error<RegressionGP: 'KernelFunction' must be a character vector or a function handle.> ...
 %! RegressionGP (ones (5, 2), ones (5, 1), 'KernelFunction', 5)
@@ -2218,7 +2176,7 @@ endfunction
 %! predict (RegressionGP (ones (5, 2), ones (5, 1)), ones (3, 3))
 %!error<RegressionGP.predict: 'Alpha' must be a scalar between 0 and 1.> ...
 %! predict (RegressionGP (ones (5, 2), ones (5, 1)), ones (3, 2), 'Alpha', 2)
-%!error<RegressionGP.predict: invalid NAME in optional pairs of arguments.> ...
+%!error<RegressionGP.predict: invalid optional paired argument.> ...
 %! predict (RegressionGP (ones (5, 2), ones (5, 1)), ones (3, 2), 'bogus', 1)
 
 ## Test input validation for the loss method
@@ -2227,7 +2185,7 @@ endfunction
 %!error<RegressionGP.loss: unsupported 'LossFun' value.> ...
 %! loss (RegressionGP (ones (5, 2), ones (5, 1)), ones (3, 2), ...
 %!       ones (3, 1), 'LossFun', 'bogus')
-%!error<RegressionGP.loss: invalid NAME in optional pairs of arguments.> ...
+%!error<RegressionGP.loss: invalid optional paired argument.> ...
 %! loss (RegressionGP (ones (5, 2), ones (5, 1)), ones (3, 2), ...
 %!       ones (3, 1), 'bogus', 1)
 
@@ -2397,3 +2355,23 @@ endfunction
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'SL'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <RegressionGP: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionGP ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', ...
+%!               int8 ([1; 1; 1; 1]))
+%!error <RegressionGP: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionGP ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', true (4, 1))
+%!error <RegressionGP.loss: 'Weights' must be a real vector of class single or double.>
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! y = (1:4)';
+%! loss (RegressionGP (X, y), X, y, 'Weights', int8 ([1; 1; 1; 1]))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! X = meas(:,2:4);
+%! y = meas(:,1);
+%! w = 1 + (1:150)' / 7;
+%! Mdl = RegressionGP (X, y, 'Weights', single (w));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);

@@ -44,7 +44,7 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
   methods(Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn {statistics} {@var{obj} =} DaviesBouldinEvaluation (@var{x}, @var{clust}, @var{KList})
+    ## @deftypefn {DaviesBouldinEvaluation} {@var{obj} =} DaviesBouldinEvaluation (@var{x}, @var{clust}, @var{KList})
     ##
     ## Construct a @code{DaviesBouldinEvaluation} object to evaluate clustering
     ## solutions with the Davies-Bouldin criterion.

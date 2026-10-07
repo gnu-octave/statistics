@@ -27,9 +27,9 @@
 ## @var{D} and returns a configuration @var{Y} of @var{n} points in @var{p}
 ## dimensions (an @math{@var{n} * @var{p} } matrix) whose interpoint distances
 ## approximate @var{D}, by minimizing a stress criterion.  @var{D} may be given
-## either as a full @math{@var{n} * @var{n}} symmetric matrix with zero diagonal,
-## or as the vector of the @math{@var{n} (@var{n} - 1) / 2} upper-triangle
-## dissimilarities returned by @code{pdist}.
+## either as a full @math{@var{n} * @var{n}} symmetric matrix with zero
+## diagonal, or as the vector of the @math{@var{n} (@var{n} - 1) / 2}
+## upper-triangle dissimilarities returned by @code{pdist}.
 ##
 ## @code{[@var{Y}, @var{stress}, @var{disparities}] = mdscale (@dots{})} also
 ## returns the final value of the @var{stress} criterion and the
@@ -68,21 +68,21 @@
 ## @end table
 ##
 ## @item @qcode{'Weights'}
-## A matrix or vector of nonnegative weights, the same size as @var{D}, weighting
-## each dissimilarity in the criterion.
+## A matrix or vector of nonnegative weights, the same size as @var{D},
+## weighting each dissimilarity in the criterion.
 ##
 ## @item @qcode{'Start'}
 ## The initial configuration: @qcode{'cmdscale'} (default, classical scaling),
 ## @qcode{'random'}, or an explicit @math{@var{n} * @var{p} } matrix.
 ##
 ## @item @qcode{'Replicates'}
-## The number of times to repeat the minimization from different starting points,
-## keeping the best (lowest-stress) result.  The default is 1.
+## The number of times to repeat the minimization from different starting
+## points, keeping the best (lowest-stress) result.  The default is 1.
 ##
 ## @item @qcode{'Options'}
 ## A structure of algorithm options (as returned by @code{statset}) whose
-## @qcode{MaxIter}, @qcode{TolFun}, and @qcode{TolX} fields control the iterative
-## minimization.
+## @qcode{MaxIter}, @qcode{TolFun}, and @qcode{TolX} fields control the
+## iterative minimization.
 ## @end table
 ##
 ## @subheading Non-uniqueness of the solution
@@ -94,16 +94,16 @@
 ## (with the largest-magnitude coordinate on each axis made positive), matching
 ## the convention used by MATLAB.
 ##
-## Beyond that rigid ambiguity, the @strong{nonmetric} criteria (@qcode{'stress'}
-## and @qcode{'sstress'}) are non-convex and typically have several local minima;
-## the one reached depends on the starting configuration and the details of the
-## optimizer.  As a result the returned configuration for these criteria may
-## differ from the one another program (including MATLAB) reports even when the
-## @strong{stress value} agrees, and different runs may find configurations with
-## slightly different stress.  Use @qcode{'Replicates'} with a @qcode{'random'}
-## start to search for a lower-stress solution.  The metric criteria and
-## @qcode{'strain'} have an essentially unique solution and are reproducible up to
-## the rigid ambiguity above.
+## Beyond that rigid ambiguity, the @strong{nonmetric} criteria
+## (@qcode{'stress'} and @qcode{'sstress'}) are non-convex and typically have
+## several local minima; the one reached depends on the starting configuration
+## and the details of the optimizer.  As a result the returned configuration for
+## these criteria may differ from the one another program (including MATLAB)
+## reports even when the @strong{stress value} agrees, and different runs may
+## find configurations with slightly different stress.  Use @qcode{'Replicates'}
+## with a @qcode{'random'} start to search for a lower-stress solution.  The
+## metric criteria and @qcode{'strain'} have an essentially unique solution and
+## are reproducible up to the rigid ambiguity above.
 ##
 ## @seealso{cmdscale, pdist, squareform, procrustes, statset}
 ## @end deftypefn

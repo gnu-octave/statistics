@@ -479,7 +479,7 @@ classdef ClassificationPartitionedEnsemble
         rows = sets{i};
         m = marginsOf (this.STfun (S(rows,:,min (i, size (S, 3)))), ...
                        this.gY(rows), 1);
-        w = this.W(rows);
+        w = double (this.W(rows));
         have = ! isnan (m);
         e(i) = sum (w(have) .* m(have)) / sum (w(have));
       endfor
@@ -546,7 +546,8 @@ classdef ClassificationPartitionedEnsemble
     ## Each fold's ensemble is resumed, as @code{ClassificationEnsemble.resume}
     ## does, by @var{NumLearningCycles} learners.
     ##
-    ## @seealso{ClassificationPartitionedEnsemble, ClassificationEnsemble.resume}
+    ## @seealso{ClassificationPartitionedEnsemble,
+    ## ClassificationEnsemble.resume}
     ## @end deftypefn
     function this = resume (this, varargin)
 
@@ -614,7 +615,7 @@ classdef ClassificationPartitionedEnsemble
     function L = setLoss (this, S, rows, LossFun)
       S = this.STfun (S(rows,:));
       g = this.gY(rows);
-      w = this.W(rows);
+      w = double (this.W(rows));
       have = ! any (isnan (S), 2);
       w = w(have);
       if (! (sum (w) > 0))

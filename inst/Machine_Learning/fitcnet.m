@@ -139,6 +139,16 @@
 ## @item @qcode{'DisplayInfo'} @tab A boolean flag indicating whether to
 ## print information during training.  Default is @qcode{false}.
 ##
+## @item @qcode{'Weights'} @tab A nonnegative single or double vector of
+## observation weights, one per row of @var{X}.  An empirical prior sums them
+## per class, and each class carries its prior spread over its observations in
+## proportion to them; the network is trained on the loss so weighted, which
+## is how a prior other than the empirical one enters the fit as well.
+## Standardization weighs the observations the same way, and a row of zero or
+## missing weight is left out.  The model's @code{W} keeps the class of the
+## weights, while every computation runs in double, so @code{Prior} is double
+## where MATLAB returns single.  The default is uniform.
+##
 ## @item @qcode{'ScoreTransform'} @tab A character vector defining one of
 ## the following functions or a user defined function handle, which is used
 ## for transforming the prediction scores returned by the @code{predict} and

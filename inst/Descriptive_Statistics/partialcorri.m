@@ -33,13 +33,13 @@
 ## @var{rho} is a @math{p}-by-@math{q} matrix.
 ##
 ## @code{@var{rho} = partialcorri (@var{y}, @var{x}, @var{z})} additionally
-## controls for the variables in the @math{n}-by-@math{r} matrix @var{z}, so that
-## @code{@var{rho}(i,j)} is adjusted for both the other columns of @var{x} and all
-## columns of @var{z}.
+## controls for the variables in the @math{n}-by-@math{r} matrix @var{z}, so
+## that @code{@var{rho}(i,j)} is adjusted for both the other columns of @var{x}
+## and all columns of @var{z}.
 ##
-## @code{[@var{rho}, @var{pval}] = partialcorri (@dots{})} also returns @var{pval},
-## a matrix of p-values for testing the hypothesis of no partial correlation
-## against the alternative selected by @qcode{'Tail'}.
+## @code{[@var{rho}, @var{pval}] = partialcorri (@dots{})} also returns
+## @var{pval}, a matrix of p-values for testing the hypothesis of no partial
+## correlation against the alternative selected by @qcode{'Tail'}.
 ##
 ## The @qcode{'Type'}, @qcode{'Rows'}, and @qcode{'Tail'} @var{Name}/@var{Value}
 ## options are accepted with the same meaning as in @code{partialcorr}.

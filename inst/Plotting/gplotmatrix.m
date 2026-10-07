@@ -28,19 +28,19 @@
 ##
 ## @code{gplotmatrix (@var{x}, @var{y}, @var{group})} creates a matrix of
 ## scatter plots.  Each subplot in the resulting figure is a scatter plot of a
-## column of @var{x} against a column of @var{y}.  If @var{x} is @code{n}-by-@var{p}
-## and @var{y} is @code{n}-by-@var{q}, the resulting figure holds a
-## @var{q}-by-@var{p} grid of subplots; the subplot in row @var{i} and column
-## @var{j} plots @code{@var{x}(:,j)} on the horizontal axis against
+## column of @var{x} against a column of @var{y}.  If @var{x} is
+## @code{n}-by-@var{p} and @var{y} is @code{n}-by-@var{q}, the resulting figure
+## holds a @var{q}-by-@var{p} grid of subplots; the subplot in row @var{i} and
+## column @var{j} plots @code{@var{x}(:,j)} on the horizontal axis against
 ## @code{@var{y}(:,i)} on the vertical axis.  Points are grouped and colored
 ## according to @var{group}, which is a grouping variable (numeric, logical,
 ## character, string, or cell array of strings) with one entry per row of
 ## @var{x}.
 ##
 ## @code{gplotmatrix (@var{x}, [], @var{group})} is equivalent to
-## @code{gplotmatrix (@var{x}, @var{x}, @var{group})} except that the diagonal of
-## the @var{p}-by-@var{p} grid is replaced by grouped histograms of the columns
-## of @var{x}.
+## @code{gplotmatrix (@var{x}, @var{x}, @var{group})} except that the diagonal
+## of the @var{p}-by-@var{p} grid is replaced by grouped histograms of the
+## columns of @var{x}.
 ##
 ## The appearance of the plot is controlled by further positional arguments:
 ##
@@ -70,19 +70,19 @@
 ## diagonal.
 ##
 ## @item @var{xnam}, @var{ynam}
-## Character vectors or cell arrays of strings giving the names of the columns of
-## @var{x} and @var{y}, used to label the outer axes.
+## Character vectors or cell arrays of strings giving the names of the columns
+## of @var{x} and @var{y}, used to label the outer axes.
 ## @end table
 ##
-## An optional leading @var{parent} argument (a figure or uipanel handle) selects
-## the container for the plot.
+## An optional leading @var{parent} argument (a figure or uipanel handle)
+## selects the container for the plot.
 ##
 ## The optional outputs are @var{h}, an array of handles to the plotted objects
-## with size @var{ny}-by-@var{p}-by-@var{k} (where @var{ny} is the number of rows
-## of the grid and @var{k} the number of groups); @var{ax}, the matrix of handles
-## to the subplot axes (with an extra row of hidden axes for the diagonal
-## histograms); and @var{bigax}, the handle to the invisible enclosing axes used
-## for titles and labels.
+## with size @var{ny}-by-@var{p}-by-@var{k} (where @var{ny} is the number of
+## rows of the grid and @var{k} the number of groups); @var{ax}, the matrix of
+## handles to the subplot axes (with an extra row of hidden axes for the
+## diagonal histograms); and @var{bigax}, the handle to the invisible enclosing
+## axes used for titles and labels.
 ##
 ## @seealso{gscatter, plotmatrix, grpstats}
 ## @end deftypefn

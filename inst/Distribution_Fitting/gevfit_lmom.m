@@ -87,7 +87,7 @@ function [paramhat, paramci] = gevfit_lmom (data)
   #next find sigma and mu given k
   if abs (k) < 1E-8
     sigma = L2 / log (2);
-    eg = 0.57721566490153286; %Euler-Mascheroni constant
+    eg = 0.57721566490153286; #Euler-Mascheroni constant
     mu = L1 - sigma * eg;
   else
     sigma = -k*L2 / (gamma (1 - k) * (1 - 2^(k)));

@@ -19,7 +19,8 @@
 ## -*- texinfo -*-
 ## @deftypefn {Private Function} {@var{DP} =} nbKernelUnpack (@var{DP}, @var{D}, @var{K}, @var{S}, @var{W})
 ##
-## Rebuild the fitted kernel densities @code{nbKernelPack} wrote out as samples.
+## Rebuild the fitted kernel densities @code{nbKernelPack} wrote out as samples,
+## with their weights where a second column carries them.
 ##
 ## @var{DP} is a @code{DistributionParameters} cell carrying a sample wherever
 ## @var{D} names a @qcode{'kernel'} predictor, and @var{K}, @var{S} and @var{W}
@@ -37,7 +38,12 @@ function DP = nbKernelUnpack (DP, D, K, S, W)
   for j = find (strcmp (D(:)', 'kernel'))
     for i = 1:rows (DP)
       if (! isempty (DP{i,j}) && ! isobject (DP{i,j}))
-        DP{i,j} = prob.KernelDistribution.fit (DP{i,j}, K{j}, S{j}, W(i,j));
+        freq = [];
+        if (columns (DP{i,j}) == 2)
+          freq = DP{i,j}(:,2);
+        endif
+        DP{i,j} = prob.KernelDistribution.fit (DP{i,j}(:,1), K{j}, S{j}, ...
+                                               W(i,j), freq);
       endif
     endfor
   endfor

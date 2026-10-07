@@ -39,7 +39,7 @@
 ##
 ## Name-Value pair arguments can be used to set statistical significance.
 ## @qcode{'alpha'} can be used to specify the significance level of the test
-## (the default value is 0.05).
+## and the level of the confidence interval (the default value is 0.05).
 ##
 ## If @var{h} is 1 the null hypothesis is rejected, meaning that the tested
 ## sample does not come from a multivariate distribution with mean @var{m}, or
@@ -50,11 +50,22 @@
 ## The p-value of the test is returned in @var{pval}.
 ##
 ## @var{stats} is a structure containing the value of the Hotelling's @math{T^2}
-## test statistic in the field "Tsq", and the degrees of freedom of the F
-## distribution in the fields "df1" and "df2".  Under the null hypothesis,
-## @math{(n-p) T^2 / (p(n-1))} has an F distribution with @math{p} and
-## @math{n-p} degrees of freedom, where @math{n} and @math{p} are the
-## numbers of samples and variables, respectively.
+## test statistic in the field "t2stat", its F transform in "fstat", and the
+## degrees of freedom of the F distribution in the fields "df1" and "df2".
+## Under the null hypothesis, @math{(n-p) T^2 / (p(n-1))} has an F
+## distribution with @math{p} and @math{n-p} degrees of freedom, where
+## @math{n} and @math{p} are the numbers of samples and variables,
+## respectively.
+##
+## The effect size is the Mahalanobis distance @math{D} between the mean and
+## @var{m}, in the field "MahalanobisD", with its @math{100 (1 - alpha)}%
+## confidence interval in "MahalanobisDCI".  The noncentrality of the F
+## statistic is @math{n D^2}; the distance is estimated from
+## @math{max (F df1 (df2 - 2) / df2 - df1, 0)}, unbiased for the
+## noncentrality before its truncation at zero, and the interval inverts
+## the noncentral F distribution.  Where the interval would need a
+## noncentrality above @math{10^5}, where @code{ncfcdf} loses accuracy, it
+## is @qcode{NaN}.
 ##
 ## @seealso{hotelling_t2test2}
 ## @end deftypefn
@@ -138,16 +149,58 @@ function [h, pval, stats] = hotelling_t2test (x, my, varargin)
 
   ## Calculate the necessary statistics
   d = mean (x) - my;
-  stats.Tsq = n * d * (cov (x) \ d');
+  stats.t2stat = n * d * (cov (x) \ d');
+  stats.fstat = (n - p) * stats.t2stat / (p * (n - 1));
   stats.df1 = p;
   stats.df2 = n - p;
-  pval = 1 - fcdf ((n-p) * stats.Tsq / (p * (n-1)), stats.df1, stats.df2);
+  pval = fcdf (stats.fstat, stats.df1, stats.df2, 'upper');
+
+  ## Mahalanobis distance between the mean and M: the noncentrality of F is
+  ## n D^2, estimated without bias and bounded by inverting its distribution
+  [lambda, lambdahat] = __ncfbounds__ (stats.fstat, stats.df1, stats.df2, ...
+                                       alpha);
+  stats.MahalanobisD = sqrt (lambdahat / n);
+  stats.MahalanobisDCI = sqrt (lambda / n);
 
   ## Determine the test outcome
   ## MATLAB returns this a double instead of a logical array
   h = double (pval < alpha);
 
 endfunction
+
+%!test
+%! ## Below the resolution of 1 - fcdf
+%! u = (1:30)';
+%! [~, p, st] = hotelling_t2test ([u, sin(u)] + 100);
+%! F = (30 - 2) * st.t2stat / (2 * 29);
+%! d1 = st.df1;
+%! d2 = st.df2;
+%! assert_equal (p, betainc (d2 / (d2 + d1 * F), d2 / 2, d1 / 2), -1e-12);
+%!test
+%! u = (1:30)';
+%! [~, ~, st] = hotelling_t2test ([u / 30, sin(u)] + [0.3, 0.2]);
+%! assert_equal (st.fstat, (30 - 2) * st.t2stat / (2 * 29), -1e-14);
+%!test
+%! ## The bounds are those of R's pf with ncp, inverted by uniroot
+%! u = (1:30)';
+%! [~, ~, st] = hotelling_t2test ([u / 30, sin(u)] + [0.3, 0.2]);
+%! assert_equal (st.MahalanobisD, 2.6950446312948171, -1e-12);
+%!test
+%! u = (1:30)';
+%! [~, ~, st] = hotelling_t2test ([u / 30, sin(u)] + [0.3, 0.2]);
+%! assert_equal (st.MahalanobisDCI, ...
+%!               [1.9814725140791032, 3.6141479420615656], -1e-8);
+%!test
+%! u = (1:30)';
+%! [~, ~, st] = hotelling_t2test ([u / 30, sin(u)] + [0.3, 0.2], [0, 0], ...
+%!                                'alpha', 0.01);
+%! assert_equal (st.MahalanobisDCI, ...
+%!               [1.7453752693724904, 3.8881257650035739], -1e-7);
+%!test
+%! ## Beyond a noncentrality of 1e5 the interval is not computed
+%! u = (1:30)';
+%! [~, ~, st] = hotelling_t2test ([u / 30, sin(u)] + 100);
+%! assert_equal (st.MahalanobisDCI, [NaN, NaN]);
 
 ## Test input validation
 %!error<Invalid call to hotelling_t2test.  Correct usage> hotelling_t2test ();

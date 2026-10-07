@@ -70,6 +70,10 @@ static void print_string_stdout(const char *s)
 	fflush(stdout);
 }
 static void (*svm_print_string) (const char *) = &print_string_stdout;
+
+// The number of solver runs that stopped at their iteration limit, read by
+// the caller after svm_train so that it can report the fit unconverged.
+static int svm_max_iter_count = 0;
 #if 1
 static void info(const char *fmt,...)
 {
@@ -763,7 +767,8 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 			active_size = l;
 			info("*");
 		}
-		fprintf(stderr,"\nWARNING: reaching max number of iterations\n");
+		svm_max_iter_count++;
+		info("\nWARNING: reaching max number of iterations\n");
 	}
 
 	// calculate rho
@@ -1644,13 +1649,18 @@ static void solve_epsilon_svr(
 	Solver s;
 	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y,
 		alpha2, C, param->eps, si, param->shrinking);
+	// Upstream divides by C * l; with a box constraint per instance the
+	// divisor is their sum, as solve_nu_svr takes it, and the two agree
+	// when every weight is 1
+	double sum_alpha = 0;
+	double sum_C = 0;
 	for(i=0;i<l;i++)
 	{
 		alpha[i] = alpha2[i] - alpha2[i+l];
+		sum_alpha += fabs(alpha[i]);
+		sum_C += C[i];
 	}
-	// Upstream reports nu = sum|alpha| / (C * l) here.  With a box constraint
-	// per instance there is no single C to divide by, so the diagnostic is
-	// dropped rather than reported wrongly, and the sum it needed with it.
+	info("nu = %f\n",sum_alpha/sum_C);
 	delete[] alpha2;
 	delete[] linear_term;
 	delete[] C;
@@ -3417,6 +3427,16 @@ int svm_check_probability_model(const svm_model *model)
 		(model->param.svm_type == ONE_CLASS && model->prob_density_marks!=NULL) ||
 		((model->param.svm_type == EPSILON_SVR || model->param.svm_type == NU_SVR) &&
 		 model->probA!=NULL);
+}
+
+int svm_get_max_iter_count(void)
+{
+	return svm_max_iter_count;
+}
+
+void svm_reset_max_iter_count(void)
+{
+	svm_max_iter_count = 0;
 }
 
 void svm_set_print_string_function(void (*print_func)(const char *))

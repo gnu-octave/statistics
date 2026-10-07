@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {} GeneralizedLinearMixedModel
+## @deftp {statistics} GeneralizedLinearMixedModel
 ##
 ## Generalized linear mixed-effects model fitted to data.
 ##
@@ -32,7 +32,7 @@
 ## @code{residuals}, @code{anova}, @code{coefTest}, and @code{coefCI} methods.
 ##
 ## @seealso{fitglme, fitlme, GeneralizedLinearModel}
-## @end deftypefn
+## @end deftp
 
 classdef GeneralizedLinearMixedModel < PredictiveModel
 
@@ -213,14 +213,6 @@ classdef GeneralizedLinearMixedModel < PredictiveModel
 
   methods (Hidden)
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ("%s =\n", in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       fprintf ("\n  Generalized linear mixed-effects model fit by %s\n", ...
                this.FitMethod);
@@ -326,7 +318,7 @@ classdef GeneralizedLinearMixedModel < PredictiveModel
       se = sqrt (diag (info.covbeta));
       tstat = info.beta ./ se;
       dfe = n - p;
-      pval = 2 * (1 - tcdf (abs (tstat), dfe));
+      pval = 2 * tcdf (-abs (tstat), dfe);
       tcrit = tinv (0.975, dfe);
       this.Coefficients = table (info.beta(:), se(:), tstat(:), ...
         repmat (dfe, p, 1), pval(:), info.beta(:) - tcrit*se(:), ...
@@ -440,7 +432,7 @@ classdef GeneralizedLinearMixedModel < PredictiveModel
       Fstat = (this.beta_ ./ se) .^ 2;
       DF1 = ones (p, 1);
       DF2 = repmat (this.DFE, p, 1);
-      pValue = 1 - fcdf (Fstat, DF1, DF2);
+      pValue = fcdf (Fstat, DF1, DF2, 'upper');
       tbl = table (Fstat(:), DF1(:), DF2(:), pValue(:), ...
         "VariableNames", {"FStat", "DF1", "DF2", "pValue"}, ...
         "RowNames", this.CoefficientNames(:));
@@ -459,7 +451,7 @@ classdef GeneralizedLinearMixedModel < PredictiveModel
       df1 = rank (H);
       df2 = this.DFE;
       F = (Hb' * ((H * this.covbeta_ * H') \ Hb)) / df1;
-      pval = 1 - fcdf (F, df1, df2);
+      pval = fcdf (F, df1, df2, 'upper');
     endfunction
 
     ## -*- texinfo -*-
@@ -582,6 +574,40 @@ endfunction
 %! assert_equal (issparse (designMatrix (glme, "Fixed")), false);
 %! assert_equal (issparse (designMatrix (glme, "Random")), true);
 %! assert_equal (glme.ModelCriterion.Deviance, -2 * glme.LogLikelihood, 1e-10);
+%!test
+%! ## A normal response with a dispersion far from one, and p-values below
+%! ## the resolution of 1 - tcdf; values from MATLAB R2024a
+%! x = (1:30)';
+%! g = repmat ((1:5)', 6, 1);
+%! T = table (x, g, 2 * x + g + 0.01 * sin (x), ...
+%!            'VariableNames', {'x', 'g', 'y'});
+%! m = fitglme (T, 'y ~ x + (1|g)');
+%! assert_equal (m.Coefficients.pValue, ...
+%!               [5.4976892695175e-05; 1.12635133546576e-95], -1e-3);
+%!test
+%! ## The Laplace approximation is exact for a normal response
+%! x = (1:30)';
+%! g = repmat ((1:5)', 6, 1);
+%! T = table (x, g, 2 * x + g + 0.01 * sin (x), ...
+%!            'VariableNames', {'x', 'g', 'y'});
+%! m = fitglme (T, 'y ~ x + (1|g)', 'FitMethod', 'Laplace');
+%! assert_equal (m.LogLikelihood, fitlme (T, 'y ~ x + (1|g)').LogLikelihood, ...
+%!               -1e-8);
+%!test
+%! ## Below the resolution of 1 - fcdf, values from MATLAB R2024a
+%! u = (1:30)';
+%! g = repmat ((1:5)', 6, 1);
+%! T = table (u, g, 2 * u + g + 0.01 * sin (u), ...
+%!            'VariableNames', {'x', 'g', 'y'});
+%! m = fitglme (T, 'y ~ x + (1|g)');
+%! assert_equal (coefTest (m), 1.12635133546576e-95, -1e-3);
+%!test
+%! u = (1:30)';
+%! g = repmat ((1:5)', 6, 1);
+%! T = table (u, g, 2 * u + g + 0.01 * sin (u), ...
+%!            'VariableNames', {'x', 'g', 'y'});
+%! A = anova (fitglme (T, 'y ~ x + (1|g)'));
+%! assert_equal (A.pValue(2), 1.12635133546576e-95, -1e-3);
 
 ## Error handling
 %!error <unknown ResidualType> residuals (glme, "ResidualType", "xxx")

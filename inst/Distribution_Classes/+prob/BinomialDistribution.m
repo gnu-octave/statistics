@@ -35,9 +35,9 @@ classdef BinomialDistribution < prob.ProbabilityDistribution
   ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{prob.BinomialDistribution (@var{N}, @var{p})}
-  ## to create a binomial distribution with fixed parameter values @var{N} and
-  ## @var{p}.
+  ## @item Use the constructor
+  ## @qcode{prob.BinomialDistribution (@var{N}, @var{p})} to create a binomial
+  ## distribution with fixed parameter values @var{N} and @var{p}.
   ## @item Use the static method @qcode{prob.BinomialDistribution.fit (@var{x},
   ## @var{ntrials}, @var{alpha})} to fit a distribution to the data in @var{x}
   ## using the same input arguments as the @code{binofit} function.
@@ -212,8 +212,8 @@ classdef BinomialDistribution < prob.ProbabilityDistribution
     ## @itemize
     ## @item @qcode{data} : a numeric vector containing the data used for
     ## distribution fitting.
-    ## @item @qcode{cens} : an empty array, since @qcode{prob.BinomialDistribution}
-    ## does not allow censoring.
+    ## @item @qcode{cens} : an empty array, since
+    ## @qcode{prob.BinomialDistribution} does not allow censoring.
     ## @item @qcode{frequency} : a numeric vector of non-negative integer values
     ## containing the frequency information corresponding to the elements of the
     ## data used for distribution fitting. If no frequency vector was used for

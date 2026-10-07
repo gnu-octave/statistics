@@ -64,8 +64,8 @@ function y = nanmean (x, dim)
 
   if (nargin < 1 || nargin > 2)
     print_usage ();
-  elseif (! isnumeric (x)  && ! islogical (x))
-    error ("nanmean: X must be numeric.");
+  elseif (! isnumeric (x) && ! islogical (x))
+    error ("nanmean: X must be numeric or logical.");
   ## 0 by 0 and no DIM given
   elseif (nargin < 2 && isequal (size (x), [0, 0]))
     y = NaN;
@@ -175,9 +175,12 @@ endfunction
 %! assert_equal (squeeze (nanmean (x, [1, 2])), [25/6; 100/8; 144/7])
 %! assert_equal (nanmean (x, [2, 3]), [139/11; 13])
 
+## Test logical input
+%!assert_equal (nanmean (logical ([1, 0, 1; 0, 0, 1])), [0.5, 0, 1])
+
 ## Test input validation
 %!error <Invalid call to nanmean> nanmean ()
-%!error <nanmean: X must be numeric.> nanmean ("str")
+%!error <nanmean: X must be numeric or logical.> nanmean ("str")
 %!error <nanmean: DIM must be a positive integer.> nanmean (ones (3), 0)
 %!error <nanmean: invalid option.> nanmean (ones (3), "invalid")
 %!error <nanmean: VECDIM must be a vector of positive integers.> nanmean (ones (3), [1, -1])

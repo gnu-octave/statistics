@@ -15,25 +15,23 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftypefn {statistics} {@var{Mdl} =} OneClassSVM (@var{X})
-## @deftypefnx {statistics} {@var{Mdl} =} OneClassSVM (@var{X}, @var{name}, @var{value})
-##
-## One-class support vector machine model for anomaly detection.
-##
-## A @code{OneClassSVM} object stores a one-class support vector machine fitted
-## to a set of observations in an expanded feature space, and detects anomalies
-## through the @code{isanomaly} method.  Create a model with the @code{ocsvm}
-## function rather than by calling this constructor directly.
-##
-## The model maps the data to a randomized feature space that approximates a
-## Gaussian kernel and fits a linear boundary that encloses the bulk of the
-## observations; points outside the boundary receive higher anomaly scores.
-##
-## @seealso{ocsvm, OneClassSVM.isanomaly}
-## @end deftypefn
-
 classdef OneClassSVM
+  ## -*- texinfo -*-
+  ## @deftp {statistics} OneClassSVM
+  ##
+  ## One-class support vector machine model for anomaly detection.
+  ##
+  ## A @code{OneClassSVM} object stores a one-class support vector machine
+  ## fitted to a set of observations in an expanded feature space, and detects
+  ## anomalies through the @code{isanomaly} method.  Create a @code{OneClassSVM}
+  ## object with @code{ocsvm} or the class constructor.
+  ##
+  ## The model maps the data to a randomized feature space that approximates a
+  ## Gaussian kernel and fits a linear boundary that encloses the bulk of the
+  ## observations; points outside the boundary receive higher anomaly scores.
+  ##
+  ## @seealso{ocsvm, OneClassSVM.isanomaly}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = private)
 
@@ -107,11 +105,51 @@ classdef OneClassSVM
 
     ## -*- texinfo -*-
     ## @deftypefn  {OneClassSVM} {@var{Mdl} =} OneClassSVM (@var{X})
-    ## @deftypefnx {OneClassSVM} {@var{Mdl} =} OneClassSVM (@var{X}, @var{name}, @var{value})
+    ## @deftypefnx {OneClassSVM} {@var{Mdl} =} OneClassSVM (@dots{}, @var{name}, @var{value})
     ##
-    ## Fit a one-class support vector machine to the @math{N}-by-@math{P} matrix
-    ## @var{X}.  Prefer the @code{ocsvm} function to this constructor.
+    ## Fit a one-class support vector machine.
     ##
+    ## @code{@var{Mdl} = OneClassSVM (@var{X})} fits a one-class support vector
+    ## machine to the @math{N}-by-@math{P} matrix @var{X}, whose rows are
+    ## observations and columns are variables, and returns a @code{OneClassSVM}
+    ## object @var{Mdl}.
+    ##
+    ## @code{@var{Mdl} = OneClassSVM (@dots{}, @var{name}, @var{value})} takes
+    ## the following @qcode{Name-Value} pairs.
+    ##
+    ## @multitable @columnfractions 0.34 0.66
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'KernelScale'} @tab the scale of the approximated Gaussian
+    ## kernel, a positive scalar or @qcode{'auto'} (default).
+    ##
+    ## @item @qcode{'Lambda'} @tab the ridge regularization strength, a
+    ## nonnegative scalar or @qcode{'auto'} (default).
+    ##
+    ## @item @qcode{'NumExpansionDimensions'} @tab the number of expanded
+    ## feature dimensions, a positive integer or @qcode{'auto'} (default).
+    ##
+    ## @item @qcode{'StandardizeData'} @tab a logical scalar (default
+    ## @code{false}); when @code{true} each predictor is centered and scaled and
+    ## the means and standard deviations are stored in @code{@var{Mdl}.Mu} and
+    ## @code{@var{Mdl}.Sigma}.
+    ##
+    ## @item @qcode{'ContaminationFraction'} @tab the assumed fraction of
+    ## anomalies in @var{X}, a scalar in @math{[0, 1]} (default 0).  It sets
+    ## @code{@var{Mdl}.ScoreThreshold} to the @math{1 -}
+    ## @var{ContaminationFraction} quantile of the anomaly scores of @var{X};
+    ## when it is 0 the threshold is the maximum score and no training
+    ## observation is flagged.
+    ## @end multitable
+    ##
+    ## The feature expansion uses random projections, so the model depends on
+    ## the state of the random number generator and is not reproducible across
+    ## runs unless the generator is seeded.
+    ##
+    ## @code{ocsvm} fits the same model and also returns the anomaly indicators
+    ## and the anomaly scores of the observations in @var{X}.
+    ##
+    ## @seealso{ocsvm, OneClassSVM.isanomaly}
     ## @end deftypefn
     function obj = OneClassSVM (X, varargin)
 

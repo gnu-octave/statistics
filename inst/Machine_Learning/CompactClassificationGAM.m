@@ -443,15 +443,6 @@ classdef CompactClassificationGAM < PredictiveModel
     endfunction
 
     ## Custom display
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
-    ## Custom display
     function disp (this)
       fprintf ("\n  CompactClassificationGAM\n\n");
       ## Print selected properties
@@ -559,29 +550,31 @@ classdef CompactClassificationGAM < PredictiveModel
       incInt = hasInt;
       Cost = this.Cost;
 
-      ## Parse optional arguments
-      while (numel (varargin) > 0)
-        switch (tolower (varargin {1}))
+      ## Parse optional paired arguments; interactions are included when the
+      ## model has them
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("CompactClassificationGAM.predict: optional", ...
+                       " arguments must be given in Name-Value pairs."));
+      endif
+      optNames = {'IncludeInteractions'};
+      dfValues = {incInt};
+      [incInt, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-          case 'includeinteractions'
-            tmpInt = varargin{2};
-            if (! islogical (tmpInt) || (tmpInt != 0 && tmpInt != 1))
-              error (strcat ("CompactClassificationGAM.predict:", ...
-                     " includeinteractions must be a logical value."));
-            endif
-            ## Check model for interactions
-            if (tmpInt && ! hasInt)
-              error (strcat ("CompactClassificationGAM.predict: trained", ...
-                             " model does not include any interactions."));
-            endif
-            incInt = tmpInt;
+      ## Validate optional paired arguments
+      if (! islogical (incInt) || (incInt != 0 && incInt != 1))
+        error (strcat ("CompactClassificationGAM.predict:", ...
+                       " includeinteractions must be a logical value."));
+      endif
+      if (incInt && ! hasInt)
+        error (strcat ("CompactClassificationGAM.predict: trained model", ...
+                       " does not include any interactions."));
+      endif
 
-          otherwise
-            error (strcat ("CompactClassificationGAM.predict: invalid", ...
-                           " NAME in optional pairs of arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("CompactClassificationGAM.predict: invalid optional", ...
+                       " paired argument."));
+      endif
 
       ## The boosted-tree engine keeps its fit as step functions over bins, so
       ## a term is a lookup rather than a spline evaluation and the whole
@@ -721,7 +714,8 @@ classdef CompactClassificationGAM < PredictiveModel
     ## @var{Y}.
     ##
     ## @seealso{CompactClassificationGAM, ClassificationGAM,
-    ## CompactClassificationGAM.edge, CompactClassificationGAM.loss, ## predict}
+    ## CompactClassificationGAM.edge, CompactClassificationGAM.loss,
+    ## CompactClassificationGAM.predict}
     ## @end deftypefn
     function m = margin (this, X, Y)
 
@@ -782,8 +776,8 @@ classdef CompactClassificationGAM < PredictiveModel
     ## @var{Y}.
     ##
     ## @seealso{CompactClassificationGAM, ClassificationGAM,
-    ## CompactClassificationGAM.margin, CompactClassificationGAM.loss, ##
-    ## predict}
+    ## CompactClassificationGAM.margin, CompactClassificationGAM.loss,
+    ## CompactClassificationGAM.predict}
     ## @end deftypefn
     function e = edge (this, X, Y, varargin)
 
@@ -799,10 +793,6 @@ classdef CompactClassificationGAM < PredictiveModel
       endif
       [X, Y, varargin] = tableResponse (this, 'edge', X, Y, varargin, ...
                                         nargin > 2);
-      if (mod (numel (varargin), 2) != 0)
-        error (strcat ("CompactClassificationGAM.edge: Name-Value", ...
-                       " arguments must be in pairs."));
-      endif
 
       [X, Y] = checkXY_ (this, X, Y, "edge");
 
@@ -857,8 +847,8 @@ classdef CompactClassificationGAM < PredictiveModel
     ## @end itemize
     ##
     ## @seealso{CompactClassificationGAM, ClassificationGAM,
-    ## CompactClassificationGAM.margin, CompactClassificationGAM.edge, ##
-    ## predict}
+    ## CompactClassificationGAM.margin, CompactClassificationGAM.edge,
+    ## CompactClassificationGAM.predict}
     ## @end deftypefn
     function L = loss (this, X, Y, varargin)
 
@@ -881,28 +871,46 @@ classdef CompactClassificationGAM < PredictiveModel
 
       [X, Y] = checkXY_ (this, X, Y, "loss");
 
-      ## Parse optional arguments
-      LossFun = 'mincost';
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mincost', []};
+      [LossFun, W, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
       lossnames = {'binodeviance', 'classifcost', 'classiferror', ...
                    'exponential', 'hinge', 'logit', 'mincost', 'quadratic'};
-      args = varargin;
-      keep = true (1, numel (args));
-      for i = 1:2:numel (args)
-        if (strcmpi (args{i}, 'lossfun'))
-          LossFun = args{i+1};
-          if (! (ischar (LossFun) && isrow (LossFun)))
-            error (strcat ("CompactClassificationGAM.loss: 'LossFun'", ...
-                           " must be a character vector."));
-          endif
-          LossFun = tolower (LossFun);
-          if (! any (strcmpi (LossFun, lossnames)))
-            error ("CompactClassificationGAM.loss: unsupported Loss function.");
-          endif
-          keep(i:i+1) = false;
-        endif
-      endfor
-      W = getWeights_ (this, args(keep), rows (X), "loss");
-      W = W(:) / sum (W);
+      if (! (ischar (LossFun) && isrow (LossFun)))
+        error (strcat ("CompactClassificationGAM.loss: 'LossFun' must be a", ...
+                       " character vector."));
+      endif
+      LossFun = tolower (LossFun);
+      if (! any (strcmpi (LossFun, lossnames)))
+        error ("CompactClassificationGAM.loss: unsupported Loss function.");
+      endif
+      errmsg = weightsClass (W);
+      if (! isempty (errmsg))
+        error ("CompactClassificationGAM.loss: %s", errmsg);
+      endif
+      if (! isempty (W) && ! (isnumeric (W) && isvector (W)))
+        error (strcat ("CompactClassificationGAM.loss: 'Weights' must be a", ...
+                       " numeric vector."));
+      endif
+      if (! isempty (W) && numel (W) != rows (X))
+        error (strcat ("CompactClassificationGAM.loss: size of 'Weights'", ...
+                       " must equal the number of rows in X."));
+      endif
+
+      if (! isempty (args))
+        error (strcat ("CompactClassificationGAM.loss: invalid optional", ...
+                       " paired argument."));
+      endif
+      if (isempty (W))
+        W = ones (rows (X), 1);
+      endif
+      W = double (W(:));
+      W = W / sum (W);
 
       [label, scores] = predict (this, X);
       classes = this.ClassNames;
@@ -1045,33 +1053,6 @@ classdef CompactClassificationGAM < PredictiveModel
         error (strcat ("CompactClassificationGAM.%s: Y must have the", ...
                        " same number of rows as X."), caller);
       endif
-    endfunction
-
-    ## Pull a "Weights" pair out of the optional arguments, defaulting to a
-    ## uniform weight, and reject any other name.
-    function W = getWeights_ (this, args, n, caller)
-      W = ones (n, 1);
-      for i = 1:2:numel (args)
-        if (! (ischar (args{i}) && isrow (args{i})))
-          error (strcat ("CompactClassificationGAM.%s: parameter name", ...
-                         " must be a character vector."), caller);
-        endif
-        if (strcmpi (args{i}, 'weights'))
-          W = args{i+1};
-          if (! (isnumeric (W) && isvector (W)))
-            error (strcat ("CompactClassificationGAM.%s: 'Weights'", ...
-                           " must be a numeric vector."), caller);
-          endif
-          if (numel (W) != n)
-            error (strcat ("CompactClassificationGAM.%s: size of", ...
-                           " 'Weights' must equal the number of rows", ...
-                           " in X."), caller);
-          endif
-        else
-          error (strcat ("CompactClassificationGAM.%s: invalid parameter", ...
-                         " name in optional paired arguments."), caller);
-        endif
-      endfor
     endfunction
 
   endmethods
@@ -1271,6 +1252,8 @@ endfunction
 %! predict (CMdl, [])
 %!error<CompactClassificationGAM.predict: XC must have the same number of features as the trained model.> ...
 %! predict (CMdl, 1)
+%!error<CompactClassificationGAM.predict: invalid optional paired argument.> ...
+%! predict (CMdl, ones (4,2), 'Bogus', 1)
 %!error <CompactClassificationGAM.savemodel: too few input arguments.> ...
 %! savemodel (CompactClassificationGAM ())
 %!error <CompactClassificationGAM.savemodel: FNAME must be a character vector.> ...
@@ -1362,10 +1345,12 @@ endfunction
 %! margin (CM, x2)
 %!error<CompactClassificationGAM.margin: X is empty.> ...
 %! margin (CM, [], y2)
-%!error<CompactClassificationGAM.edge: Name-Value arguments must be in pairs.> ...
+%!error<CompactClassificationGAM.edge: optional arguments must be given in Name-Value pairs.> ...
 %! edge (CM, x2, y2, 'Weights')
 %!error<CompactClassificationGAM.loss: unsupported Loss function.> ...
 %! loss (CM, x2, y2, 'LossFun', 'nonsense')
+%!error<CompactClassificationGAM.loss: invalid optional paired argument.> ...
+%! loss (CM, x2, y2, 'Bogus', 1)
 
 ## A fitted model survives savemodel and loadmodel: the properties come
 ## back as they were and it predicts the same.
@@ -1523,3 +1508,8 @@ endfunction
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <CompactClassificationGAM.loss: 'Weights' must be a real vector of class single or double.> ...
+%! loss (compact (fitcgam ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2])), ...
+%!       [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))

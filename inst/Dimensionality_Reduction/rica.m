@@ -24,8 +24,9 @@
 ## @code{@var{Mdl} = rica (@var{X}, @var{Q})} learns @var{Q} features from the
 ## @math{N * P} data matrix @var{X} (rows are observations, columns are
 ## predictors) and returns a @qcode{ReconstructionICA} object @var{Mdl}.  Apply
-## the learned transformation to data with @code{transform (@var{Mdl}, @var{X})},
-## which returns @code{@var{X} * @var{Mdl}.TransformWeights}.
+## the learned transformation to data with
+## @code{transform (@var{Mdl}, @var{X})}, which returns
+## @code{@var{X} * @var{Mdl}.TransformWeights}.
 ##
 ## The @math{P * @var{Q}} weight matrix (with unit-length columns) minimizes the
 ## objective
@@ -86,11 +87,11 @@
 ##
 ## @subheading Note on reproducibility
 ##
-## The RICA objective is not convex and is minimized by a quasi-Newton solver, so
-## the learned weights depend on the starting point and the solver, and are only
-## defined up to a permutation and sign of the feature columns.  Different runs
-## (or different software, including MATLAB) may return different weights that
-## nonetheless describe an equally valid feature transformation.  Fix
+## The RICA objective is not convex and is minimized by a quasi-Newton solver,
+## so the learned weights depend on the starting point and the solver, and are
+## only defined up to a permutation and sign of the feature columns.  Different
+## runs (or different software, including MATLAB) may return different weights
+## that nonetheless describe an equally valid feature transformation.  Fix
 ## @qcode{'InitialTransformWeights'} for a reproducible result.
 ##
 ## @seealso{ReconstructionICA, sparsefilt, pca}

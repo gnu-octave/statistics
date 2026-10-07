@@ -53,22 +53,22 @@ function x = gaminv (p, a, b)
     error ("gaminv: function called with too few input arguments.");
   endif
 
-  ## Check for common size of P, Α, and Β
+  ## Check for common size of P, A, and B
   if (! isscalar (p) || ! isscalar (a) || ! isscalar (b))
     [retval, p, a, b] = common_size (p, a, b);
     if (retval > 0)
-      error ("gaminv: P, Α, and Β must be of common size or scalars.");
+      error ("gaminv: P, A, and B must be of common size or scalars.");
     endif
   endif
 
-  ## Check for P, Α, and Β being double or single
+  ## Check for P, A, and B being double or single
   if (! (isfloat (p) && isfloat (a) && isfloat (b)))
-    error ("gaminv: P, Α, and Β must be double or single.");
+    error ("gaminv: P, A, and B must be double or single.");
   endif
 
-  ## Check for P, Α, and Β being reals
+  ## Check for P, A, and B being reals
   if (iscomplex (p) || iscomplex (a) || iscomplex (b))
-    error ("gaminv: P, Α, and Β must not be complex.");
+    error ("gaminv: P, A, and B must not be complex.");
   endif
 
   ## Check for class type
@@ -165,15 +165,15 @@ endfunction
 %!error<gaminv: function called with too few input arguments.> gaminv ()
 %!error<gaminv: function called with too few input arguments.> gaminv (1)
 %!error<gaminv: function called with too few input arguments.> gaminv (1,2)
-%!error<gaminv: P, Α, and Β must be of common size or scalars.> ...
+%!error<gaminv: P, A, and B must be of common size or scalars.> ...
 %! gaminv (ones (3), ones (2), ones (2))
-%!error<gaminv: P, Α, and Β must be of common size or scalars.> ...
+%!error<gaminv: P, A, and B must be of common size or scalars.> ...
 %! gaminv (ones (2), ones (3), ones (2))
-%!error<gaminv: P, Α, and Β must be of common size or scalars.> ...
+%!error<gaminv: P, A, and B must be of common size or scalars.> ...
 %! gaminv (ones (2), ones (2), ones (3))
-%!error<gaminv: P, Α, and Β must be double or single.> gaminv (int32 (2), 2, 2)
-%!error<gaminv: P, Α, and Β must be double or single.> gaminv (true, 2, 2)
-%!error<gaminv: P, Α, and Β must be double or single.> gaminv ('a', 2, 2)
-%!error<gaminv: P, Α, and Β must not be complex.> gaminv (i, 2, 2)
-%!error<gaminv: P, Α, and Β must not be complex.> gaminv (2, i, 2)
-%!error<gaminv: P, Α, and Β must not be complex.> gaminv (2, 2, i)
+%!error<gaminv: P, A, and B must be double or single.> gaminv (int32 (2), 2, 2)
+%!error<gaminv: P, A, and B must be double or single.> gaminv (true, 2, 2)
+%!error<gaminv: P, A, and B must be double or single.> gaminv ('a', 2, 2)
+%!error<gaminv: P, A, and B must not be complex.> gaminv (i, 2, 2)
+%!error<gaminv: P, A, and B must not be complex.> gaminv (2, i, 2)
+%!error<gaminv: P, A, and B must not be complex.> gaminv (2, 2, i)

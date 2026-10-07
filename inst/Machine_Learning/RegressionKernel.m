@@ -340,7 +340,8 @@ classdef RegressionKernel < PredictiveModel
     ## @item @qcode{'ResponseTransform'} @tab A transformation applied to the
     ## predicted response, named or given as a function handle.
     ##
-    ## @item @qcode{'Weights'} @tab One nonnegative weight per observation.
+    ## @item @qcode{'Weights'} @tab One nonnegative weight per observation, as a
+    ## single or double vector.  Every computation runs in double.
     ##
     ## @item @qcode{'PredictorNames'} @tab One name per predictor.
     ##
@@ -377,198 +378,133 @@ classdef RegressionKernel < PredictiveModel
                        " given in Name-Value pairs."));
       endif
 
-      ## Defaults
-      Learner                = 'svm';
-      EpsilonIn              = 'auto';
-      EpsilonGiven           = false;
-      NumDimsIn              = 'auto';
-      KernelScaleIn          = 1;
-      LambdaIn               = 'auto';
-      BoxConstraint          = 1;
-      BoxGiven               = false;
-      LambdaGiven            = false;
-      Standardize            = false;
-      BetaTolerance          = 1e-4;
-      GradientTolerance      = 1e-6;
-      IterationLimit         = 1000;
-      HessianHistorySize     = 15;
-      BlockSize              = 4e3;
-      Verbose                = 0;
-      ResponseTransform      = 'none';
-      Weights                = [];
-      PredictorNames         = {};
-      ResponseName           = 'Y';
-      CategoricalPredictors  = [];
+      ## Parse optional paired arguments
+      optNames = {'Learner', 'Epsilon', 'NumExpansionDimensions', ...
+                  'KernelScale', 'Lambda', 'BoxConstraint', 'Standardize', ...
+                  'BetaTolerance', 'GradientTolerance', 'IterationLimit', ...
+                  'HessianHistorySize', 'BlockSize', 'Verbose', ...
+                  'ResponseTransform', 'Weights', 'PredictorNames', ...
+                  'ResponseName', 'CategoricalPredictors'};
+      ## An empty default stands for one resolved once the data are known:
+      ## 'Epsilon' is 'auto', the interquartile range of the response over
+      ## 13.49, 'Lambda' is 'auto', 1/n, and 'BoxConstraint' is 1, each
+      ## empty so that giving it is told apart from leaving it out;
+      ## 'Weights' are uniform and 'PredictorNames' are x1, x2, ...
+      dfValues = {'svm', [], 'auto', 1, [], [], false, 1e-4, 1e-6, 1000, ...
+                  15, 4e3, 0, 'none', [], {}, 'Y', []};
+      [Learner, EpsilonIn, NumDimsIn, KernelScaleIn, LambdaIn, ...
+       BoxConstraint, Standardize, BetaTolerance, GradientTolerance, ...
+       IterationLimit, HessianHistorySize, BlockSize, Verbose, ...
+       ResponseTransform, Weights, PredictorNames, ResponseName, ...
+       CategoricalPredictors, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
+      ## Validate optional paired arguments
+      if (! (ischar (Learner)
+             && any (strcmpi (Learner, {'svm', 'leastsquares'}))))
+        error (strcat ("RegressionKernel: 'Learner' must be either 'svm'", ...
+                       " or 'leastsquares'."));
+      endif
+      Learner = lower (Learner);
+      if (! isempty (EpsilonIn) &&
+          ! ((ischar (EpsilonIn) && strcmpi (EpsilonIn, 'auto'))
+             || (isnumeric (EpsilonIn) && isscalar (EpsilonIn)
+                 && isreal (EpsilonIn) && EpsilonIn >= 0)))
+        error (strcat ("RegressionKernel: 'Epsilon' must be 'auto' or a", ...
+                       " nonnegative scalar."));
+      endif
+      if (! ((ischar (NumDimsIn) && strcmpi (NumDimsIn, 'auto'))
+             || (isnumeric (NumDimsIn) && isscalar (NumDimsIn)
+                 && isreal (NumDimsIn) && NumDimsIn > 0
+                 && fix (NumDimsIn) == NumDimsIn)))
+        error (strcat ("RegressionKernel: 'NumExpansionDimensions' must be", ...
+                       " 'auto' or a positive integer scalar."));
+      endif
+      if (! ((ischar (KernelScaleIn) && strcmpi (KernelScaleIn, 'auto'))
+             || (isnumeric (KernelScaleIn) && isscalar (KernelScaleIn)
+                 && isreal (KernelScaleIn) && KernelScaleIn > 0)))
+        error (strcat ("RegressionKernel: 'KernelScale' must be 'auto' or", ...
+                       " a positive scalar."));
+      endif
+      if (! isempty (LambdaIn) &&
+          ! ((ischar (LambdaIn) && strcmpi (LambdaIn, 'auto'))
+             || (isnumeric (LambdaIn) && isscalar (LambdaIn)
+                 && isreal (LambdaIn) && LambdaIn >= 0
+                 && isfinite (LambdaIn))))
+        error (strcat ("RegressionKernel: 'Lambda' must be 'auto' or a", ...
+                       " nonnegative finite scalar."));
+      endif
+      if (! isempty (BoxConstraint) &&
+          ! (isnumeric (BoxConstraint) && isscalar (BoxConstraint)
+             && isreal (BoxConstraint) && BoxConstraint > 0
+             && isfinite (BoxConstraint)))
+        error (strcat ("RegressionKernel: 'BoxConstraint' must be a", ...
+                       " positive finite scalar."));
+      endif
+      if (! (islogical (Standardize) || (isnumeric (Standardize)
+             && isscalar (Standardize) && any (Standardize == [0, 1]))))
+        error ("RegressionKernel: 'Standardize' must be either true or false.");
+      endif
+      Standardize = logical (Standardize);
+      if (! (isnumeric (BetaTolerance) && isscalar (BetaTolerance)
+             && isreal (BetaTolerance) && BetaTolerance >= 0))
+        error (strcat ("RegressionKernel: 'BetaTolerance' must be a", ...
+                       " nonnegative scalar."));
+      endif
+      if (! (isnumeric (GradientTolerance) && isscalar (GradientTolerance)
+             && isreal (GradientTolerance) && GradientTolerance >= 0))
+        error (strcat ("RegressionKernel: 'GradientTolerance' must be a", ...
+                       " nonnegative scalar."));
+      endif
+      if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
+             && isreal (IterationLimit) && IterationLimit > 0
+             && fix (IterationLimit) == IterationLimit))
+        error (strcat ("RegressionKernel: 'IterationLimit' must be a", ...
+                       " positive integer scalar."));
+      endif
+      if (! (isnumeric (HessianHistorySize) && isscalar (HessianHistorySize)
+             && isreal (HessianHistorySize) && HessianHistorySize > 0
+             && fix (HessianHistorySize) == HessianHistorySize))
+        error (strcat ("RegressionKernel: 'HessianHistorySize' must be a", ...
+                       " positive integer scalar."));
+      endif
+      if (! (isnumeric (BlockSize) && isscalar (BlockSize)
+             && isreal (BlockSize) && BlockSize > 0))
+        error ("RegressionKernel: 'BlockSize' must be a positive scalar.");
+      endif
+      if (! (isnumeric (Verbose) && isscalar (Verbose) && isreal (Verbose)
+             && any (Verbose == [0, 1])))
+        error ("RegressionKernel: 'Verbose' must be 0 or 1.");
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionKernel: %s", errmsg);
+      endif
+      if (! isempty (Weights) && ! (isnumeric (Weights) && isreal (Weights) &&
+                                    isvector (Weights) && all (Weights >= 0)))
+        error (strcat ("RegressionKernel: 'Weights' must be a vector of", ...
+                       " nonnegative values."));
+      endif
+      if (! isempty (PredictorNames) &&
+          ! (iscellstr (PredictorNames) && isvector (PredictorNames)))
+        error (strcat ("RegressionKernel: 'PredictorNames' must be a cell", ...
+                       " array of character vectors."));
+      endif
+      if (! (ischar (ResponseName) && isrow (ResponseName)))
+        error ("RegressionKernel: 'ResponseName' must be a character vector.");
+      endif
 
-          case 'learner'
-            Learner = varargin{2};
-            if (! (ischar (Learner)
-                   && any (strcmpi (Learner, {'svm', 'leastsquares'}))))
-              error (strcat ("RegressionKernel: 'Learner' must be either", ...
-                             " 'svm' or 'leastsquares'."));
-            endif
-            Learner = lower (Learner);
+      if (! isempty (args))
+        error ("RegressionKernel: invalid optional paired argument.");
+      endif
 
-          case 'epsilon'
-            EpsilonIn = varargin{2};
-            EpsilonGiven = true;
-            if (! ((ischar (EpsilonIn) && strcmpi (EpsilonIn, 'auto'))
-                   || (isnumeric (EpsilonIn) && isscalar (EpsilonIn)
-                       && isreal (EpsilonIn) && EpsilonIn >= 0)))
-              error (strcat ("RegressionKernel: 'Epsilon' must be 'auto'", ...
-                             " or a nonnegative scalar."));
-            endif
-
-          case 'numexpansiondimensions'
-            NumDimsIn = varargin{2};
-            if (! ((ischar (NumDimsIn) && strcmpi (NumDimsIn, 'auto'))
-                   || (isnumeric (NumDimsIn) && isscalar (NumDimsIn)
-                       && isreal (NumDimsIn) && NumDimsIn > 0
-                       && fix (NumDimsIn) == NumDimsIn)))
-              error (strcat ("RegressionKernel:", ...
-                             " 'NumExpansionDimensions' must be 'auto'", ...
-                             " or a positive integer scalar."));
-            endif
-
-          case 'kernelscale'
-            KernelScaleIn = varargin{2};
-            if (! ((ischar (KernelScaleIn)
-                    && strcmpi (KernelScaleIn, 'auto'))
-                   || (isnumeric (KernelScaleIn)
-                       && isscalar (KernelScaleIn)
-                       && isreal (KernelScaleIn) && KernelScaleIn > 0)))
-              error (strcat ("RegressionKernel: 'KernelScale' must be", ...
-                             " 'auto' or a positive scalar."));
-            endif
-
-          case 'lambda'
-            LambdaIn = varargin{2};
-            LambdaGiven = true;
-            if (! ((ischar (LambdaIn) && strcmpi (LambdaIn, 'auto'))
-                   || (isnumeric (LambdaIn) && isscalar (LambdaIn)
-                       && isreal (LambdaIn) && LambdaIn >= 0
-                       && isfinite (LambdaIn))))
-              error (strcat ("RegressionKernel: 'Lambda' must be 'auto'", ...
-                             " or a nonnegative finite scalar."));
-            endif
-
-          case 'boxconstraint'
-            BoxConstraint = varargin{2};
-            BoxGiven = true;
-            if (! (isnumeric (BoxConstraint) && isscalar (BoxConstraint)
-                   && isreal (BoxConstraint) && BoxConstraint > 0
-                   && isfinite (BoxConstraint)))
-              error (strcat ("RegressionKernel: 'BoxConstraint' must be", ...
-                             " a positive finite scalar."));
-            endif
-
-          case 'standardize'
-            Standardize = varargin{2};
-            if (! (islogical (Standardize) || (isnumeric (Standardize)
-                   && isscalar (Standardize)
-                   && any (Standardize == [0, 1]))))
-              error (strcat ("RegressionKernel: 'Standardize' must be", ...
-                             " either true or false."));
-            endif
-            Standardize = logical (Standardize);
-
-          case 'betatolerance'
-            BetaTolerance = varargin{2};
-            if (! (isnumeric (BetaTolerance) && isscalar (BetaTolerance)
-                   && isreal (BetaTolerance) && BetaTolerance >= 0))
-              error (strcat ("RegressionKernel: 'BetaTolerance' must be", ...
-                             " a nonnegative scalar."));
-            endif
-
-          case 'gradienttolerance'
-            GradientTolerance = varargin{2};
-            if (! (isnumeric (GradientTolerance)
-                   && isscalar (GradientTolerance)
-                   && isreal (GradientTolerance) && GradientTolerance >= 0))
-              error (strcat ("RegressionKernel: 'GradientTolerance' must", ...
-                             " be a nonnegative scalar."));
-            endif
-
-          case 'iterationlimit'
-            IterationLimit = varargin{2};
-            if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
-                   && isreal (IterationLimit) && IterationLimit > 0
-                   && fix (IterationLimit) == IterationLimit))
-              error (strcat ("RegressionKernel: 'IterationLimit' must be", ...
-                             " a positive integer scalar."));
-            endif
-
-          case 'hessianhistorysize'
-            HessianHistorySize = varargin{2};
-            if (! (isnumeric (HessianHistorySize)
-                   && isscalar (HessianHistorySize)
-                   && isreal (HessianHistorySize) && HessianHistorySize > 0
-                   && fix (HessianHistorySize) == HessianHistorySize))
-              error (strcat ("RegressionKernel: 'HessianHistorySize'", ...
-                             " must be a positive integer scalar."));
-            endif
-
-          case 'blocksize'
-            BlockSize = varargin{2};
-            if (! (isnumeric (BlockSize) && isscalar (BlockSize)
-                   && isreal (BlockSize) && BlockSize > 0))
-              error (strcat ("RegressionKernel: 'BlockSize' must be a", ...
-                             " positive scalar."));
-            endif
-
-          case 'verbose'
-            Verbose = varargin{2};
-            if (! (isnumeric (Verbose) && isscalar (Verbose)
-                   && isreal (Verbose) && any (Verbose == [0, 1])))
-              error ("RegressionKernel: 'Verbose' must be 0 or 1.");
-            endif
-
-          case 'responsetransform'
-            ResponseTransform = varargin{2};
-
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isreal (Weights)
-                   && isvector (Weights) && all (Weights >= 0)))
-              error (strcat ("RegressionKernel: 'Weights' must be a", ...
-                             " vector of nonnegative values."));
-            endif
-
-          case 'predictornames'
-            PredictorNames = varargin{2};
-            if (! (iscellstr (PredictorNames) && isvector (PredictorNames)))
-              error (strcat ("RegressionKernel: 'PredictorNames' must be", ...
-                             " a cell array of character vectors."));
-            endif
-
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! (ischar (ResponseName) && isrow (ResponseName)))
-              error (strcat ("RegressionKernel: 'ResponseName' must be a", ...
-                             " character vector."));
-            endif
-
-          case 'categoricalpredictors'
-            CategoricalPredictors = varargin{2};
-
-          otherwise
-            error (strcat ("RegressionKernel: invalid parameter name in", ...
-                           " optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
-
-      if (LambdaGiven && BoxGiven)
+      if (! isempty (LambdaIn) && ! isempty (BoxConstraint))
         error (strcat ("RegressionKernel: 'Lambda' and 'BoxConstraint'", ...
                        " cannot be given together, one being the", ...
                        " reciprocal of the other times the number of", ...
                        " observations."));
       endif
-      if (BoxGiven && strcmp (Learner, 'leastsquares'))
+      if (! isempty (BoxConstraint) && strcmp (Learner, 'leastsquares'))
         error (strcat ("RegressionKernel: 'BoxConstraint' applies to a", ...
                        " support vector machine only."));
       endif
@@ -606,12 +542,12 @@ classdef RegressionKernel < PredictiveModel
       ## Epsilon belongs to the insensitive band, so it means nothing to a
       ## least squares fit and is refused there rather than ignored.
       if (strcmp (Learner, 'leastsquares'))
-        if (EpsilonGiven)
+        if (! isempty (EpsilonIn))
           error (strcat ("RegressionKernel: 'Epsilon' applies to a", ...
                          " support vector machine only."));
         endif
         Epsilon = [];
-      elseif (ischar (EpsilonIn))
+      elseif (isempty (EpsilonIn) || ischar (EpsilonIn))
         r = iqr (Y);
         if (r == 0)
           Epsilon = 0.1;
@@ -646,14 +582,20 @@ classdef RegressionKernel < PredictiveModel
       endif
 
       ## Resolve Lambda and the box constraint from whichever was given
-      if (BoxGiven)
+      if (! isempty (BoxConstraint))
         Lambda = 1 / (n * BoxConstraint);
-      elseif (LambdaGiven && ! ischar (LambdaIn))
+      elseif (! isempty (LambdaIn) && ! ischar (LambdaIn))
         Lambda = LambdaIn;
         BoxConstraint = 1 / (n * Lambda);
       else
         Lambda = 1 / n;
         BoxConstraint = 1 / (n * Lambda);
+      endif
+      if (isempty (LambdaIn))
+        LambdaIn = 'auto';
+      endif
+      if (isempty (EpsilonIn))
+        EpsilonIn = 'auto';
       endif
 
       ## Draw the basis, map the data through it, and fit a linear model
@@ -824,31 +766,34 @@ classdef RegressionKernel < PredictiveModel
                        " be given in Name-Value pairs."));
       endif
 
-      LossFun = 'mse';
-      Weights = [];
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
-          case 'lossfun'
-            LossFun = varargin{2};
-            if (! (ischar (LossFun) && any (strcmpi (LossFun, ...
-                                     {'mse', 'epsiloninsensitive'}))))
-              error (strcat ("RegressionKernel.loss: 'LossFun' must be", ...
-                             " either 'mse' or 'epsiloninsensitive'."));
-            endif
-            LossFun = lower (LossFun);
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isreal (Weights)
-                   && isvector (Weights) && all (Weights >= 0)))
-              error (strcat ("RegressionKernel.loss: 'Weights' must be a", ...
-                             " vector of nonnegative values."));
-            endif
-          otherwise
-            error (strcat ("RegressionKernel.loss: invalid parameter", ...
-                           " name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments
+      optNames = {'LossFun', 'Weights'};
+      ## An empty 'Weights' stands for uniform weights
+      dfValues = {'mse', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (ischar (LossFun) && any (strcmpi (LossFun, ...
+                               {'mse', 'epsiloninsensitive'}))))
+        error (strcat ("RegressionKernel.loss: 'LossFun' must be", ...
+                       " either 'mse' or 'epsiloninsensitive'."));
+      endif
+      LossFun = lower (LossFun);
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionKernel.loss: %s", errmsg);
+      endif
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isreal (Weights)
+             && isvector (Weights) && all (Weights >= 0)))
+        error (strcat ("RegressionKernel.loss: 'Weights' must be a", ...
+                       " vector of nonnegative values."));
+      endif
+
+      if (! isempty (args))
+        error ("RegressionKernel.loss: invalid optional paired argument.");
+      endif
 
       if (strcmp (LossFun, 'epsiloninsensitive') && isempty (this.Epsilon))
         error (strcat ("RegressionKernel.loss: the", ...
@@ -867,7 +812,7 @@ classdef RegressionKernel < PredictiveModel
       if (isempty (Weights))
         w = ones (numel (Y), 1);
       else
-        w = Weights(:);
+        w = double (Weights(:));
         if (numel (w) != numel (Y))
           error (strcat ("RegressionKernel.loss: 'Weights' must have one", ...
                          " element per observation."));
@@ -887,6 +832,7 @@ classdef RegressionKernel < PredictiveModel
     ## -*- texinfo -*-
     ## @deftypefn  {RegressionKernel} {@var{obj} =} resume (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {RegressionKernel} {@var{obj} =} resume (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {RegressionKernel} {@var{obj} =} resume (@var{obj}, @var{Tbl}, @var{ResponseVarName})
     ##
     ## Continue fitting a kernel regression model.
     ##
@@ -904,61 +850,70 @@ classdef RegressionKernel < PredictiveModel
     ## R2024a, resuming a weighted fit without passing the weights back
     ## reaches the objective of the @emph{unweighted} fit.
     ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## The response is then named by @var{ResponseVarName}, a variable of the
+    ## table, or given beside the table as @var{Y}; unlike
+    ## @code{RegressionKernel.loss}, it is never taken from the table
+    ## unasked.
+    ##
     ## @end deftypefn
     function this = resume (this, X, Y, varargin)
 
       if (nargin < 3)
         error ("RegressionKernel.resume: too few input arguments.");
       endif
+
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("RegressionKernel.resume: optional arguments must", ...
                        " be given in Name-Value pairs."));
       endif
 
-      BetaTolerance = this.ModelParameters.BetaTolerance;
-      GradientTolerance = this.ModelParameters.GradientTolerance;
-      IterationLimit = this.ModelParameters.IterationLimit;
-      Weights = [];
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isreal (Weights)
-                   && isvector (Weights) && all (Weights >= 0)))
-              error (strcat ("RegressionKernel.resume: 'Weights' must", ...
-                             " be a vector of nonnegative values."));
-            endif
-          case 'betatolerance'
-            BetaTolerance = varargin{2};
-            if (! (isnumeric (BetaTolerance) && isscalar (BetaTolerance)
-                   && isreal (BetaTolerance) && BetaTolerance >= 0))
-              error (strcat ("RegressionKernel.resume: 'BetaTolerance'", ...
-                             " must be a nonnegative scalar."));
-            endif
-          case 'gradienttolerance'
-            GradientTolerance = varargin{2};
-            if (! (isnumeric (GradientTolerance)
-                   && isscalar (GradientTolerance)
-                   && isreal (GradientTolerance) && GradientTolerance >= 0))
-              error (strcat ("RegressionKernel.resume:", ...
-                             " 'GradientTolerance' must be a", ...
-                             " nonnegative scalar."));
-            endif
-          case 'iterationlimit'
-            IterationLimit = varargin{2};
-            if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
-                   && isreal (IterationLimit) && IterationLimit > 0
-                   && fix (IterationLimit) == IterationLimit))
-              error (strcat ("RegressionKernel.resume:", ...
-                             " 'IterationLimit' must be a positive", ...
-                             " integer scalar."));
-            endif
-          otherwise
-            error (strcat ("RegressionKernel.resume: invalid parameter", ...
-                           " name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments
+      optNames = {'Weights', 'BetaTolerance', 'GradientTolerance', ...
+                  'IterationLimit'};
+      dfValues = {[], this.ModelParameters.BetaTolerance, ...
+                  this.ModelParameters.GradientTolerance, ...
+                  this.ModelParameters.IterationLimit};
+      [Weights, BetaTolerance, GradientTolerance, IterationLimit, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionKernel.resume: %s", errmsg);
+      endif
+      if (! isempty (Weights) && ! (isnumeric (Weights) && isreal (Weights) &&
+                                    isvector (Weights) && all (Weights >= 0)))
+        error (strcat ("RegressionKernel.resume: 'Weights' must", ...
+                       " be a vector of nonnegative values."));
+      endif
+      if (! (isnumeric (BetaTolerance) && isscalar (BetaTolerance)
+             && isreal (BetaTolerance) && BetaTolerance >= 0))
+        error (strcat ("RegressionKernel.resume: 'BetaTolerance'", ...
+                       " must be a nonnegative scalar."));
+      endif
+      if (! (isnumeric (GradientTolerance)
+             && isscalar (GradientTolerance)
+             && isreal (GradientTolerance) && GradientTolerance >= 0))
+        error (strcat ("RegressionKernel.resume: 'GradientTolerance'", ...
+                       " must be a nonnegative scalar."));
+      endif
+      if (! (isnumeric (IterationLimit) && isscalar (IterationLimit)
+             && isreal (IterationLimit) && IterationLimit > 0
+             && fix (IterationLimit) == IterationLimit))
+        error (strcat ("RegressionKernel.resume: 'IterationLimit'", ...
+                       " must be a positive integer scalar."));
+      endif
+
+      ## Handle table input
+      if (istable (X))
+        [X, Y] = tableResponse (this, 'resume', X, Y, {}, true);
+      endif
+
+      if (! isempty (args))
+        error ("RegressionKernel.resume: invalid optional paired argument.");
+      endif
 
       if (! (isnumeric (X) && isreal (X) && ismatrix (X)))
         error ("RegressionKernel.resume: invalid values in X.");
@@ -986,7 +941,7 @@ classdef RegressionKernel < PredictiveModel
       if (isempty (Weights))
         W = ones (numel (Y), 1);
       else
-        W = Weights(:);
+        W = double (Weights(:));
         if (numel (W) != numel (Y))
           error (strcat ("RegressionKernel.resume: 'Weights' must have", ...
                          " one element per observation."));
@@ -1081,14 +1036,6 @@ classdef RegressionKernel < PredictiveModel
   endmethods
 
   methods (Access = public, Hidden)
-
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        printf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
 
     function disp (this)
       printf ("\n  RegressionKernel\n\n");
@@ -1337,7 +1284,7 @@ endclassdef
 %! RegressionKernel (ones (10, 2), ones (10, 1), 'Standardize', 'yes')
 %!error<RegressionKernel: 'Verbose' must be 0 or 1.> ...
 %! RegressionKernel (ones (10, 2), ones (10, 1), 'Verbose', 2)
-%!error<RegressionKernel: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionKernel: invalid optional paired argument.> ...
 %! RegressionKernel (ones (10, 2), ones (10, 1), 'Nonsense', 1)
 %!error<RegressionKernel: invalid values in X.> RegressionKernel ({1, 2; 3, 4}, [1; 2])
 %!error<RegressionKernel: X is empty.> RegressionKernel ([], [])
@@ -1353,6 +1300,9 @@ endclassdef
 %!error<RegressionKernel.loss: 'LossFun' must be either 'mse' or 'epsiloninsensitive'.> ...
 %! loss (RegressionKernel (ones (10, 2), ones (10, 1)), ones (10, 2), ...
 %!                     ones (10, 1), 'LossFun', 'hinge')
+%!error<RegressionKernel.loss: invalid optional paired argument.> ...
+%! loss (RegressionKernel (ones (10, 2), ones (10, 1)), ones (10, 2), ...
+%!                     ones (10, 1), 'Bogus', 1)
 %!error<RegressionKernel.loss: the 'epsiloninsensitive' loss applies to a support vector machine only.> ...
 %! loss (RegressionKernel (ones (10, 2), ones (10, 1), 'Learner', ...
 %!                     'leastsquares'), ones (10, 2), ones (10, 1), ...
@@ -1362,7 +1312,7 @@ endclassdef
 %!error<RegressionKernel.resume: X must have the same number of predictors as the trained model.> ...
 %! resume (RegressionKernel (ones (10, 2), ones (10, 1)), ones (10, 5), ...
 %!                     ones (10, 1))
-%!error<RegressionKernel.resume: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionKernel.resume: invalid optional paired argument.> ...
 %! resume (RegressionKernel (ones (10, 2), ones (10, 1)), ones (10, 2), ...
 %!                     ones (10, 1), 'Nonsense', 1)
 %!error<RegressionKernel.resume: 'Weights' must be a vector of nonnegative values.> ...
@@ -1441,3 +1391,55 @@ endclassdef
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'SL'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## A table at resume
+%!test  # the response is named or given beside the table
+%! load fisheriris
+%! X = meas(:,2:3);
+%! y = meas(:,1);
+%! T = table (X(:,1), X(:,2), 'VariableNames', {'SW', 'PL'});
+%! T.SL = y;
+%! Mdl = fitrkernel (T, 'SL', 'IterationLimit', 5);
+%! a = predict (resume (Mdl, X, y, 'IterationLimit', 20), X);
+%! assert_equal (predict (resume (Mdl, T(:,1:2), y, ...
+%!                                'IterationLimit', 20), X), a);
+%! assert_equal (predict (resume (Mdl, T, 'SL', 'IterationLimit', 20), X), a);
+%! assert_equal (predict (resume (Mdl, T(:,[3, 2, 1]), 'SL'), X), ...
+%!               predict (resume (Mdl, X, y), X));
+%!error<RegressionKernel.resume: too few input arguments.> ...
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,1), ...
+%!            'VariableNames', {'SW', 'PL', 'SL'});
+%! resume (fitrkernel (T, 'SL'), T)
+%!error<RegressionKernel.resume: optional arguments must be given in Name-Value pairs.> ...
+%! load fisheriris
+%! T = table (meas(:,2), meas(:,3), meas(:,1), ...
+%!            'VariableNames', {'SW', 'PL', 'SL'});
+%! resume (fitrkernel (T, 'SL'), T, 'IterationLimit', 5)
+
+## Observation weights of class single or double
+%!error <RegressionKernel: 'Weights' must be a real vector of class single or double.> ...
+%! fitrkernel ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', int8 ([1; 1; 1; 1]))
+%!error <RegressionKernel: 'Weights' must be a real vector of class single or double.> ...
+%! fitrkernel ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', true (4, 1))
+%!error <RegressionKernel.loss: 'Weights' must be a real vector of class single or double.>
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! y = (1:4)';
+%! loss (fitrkernel (X, y), X, y, 'Weights', int8 ([1; 1; 1; 1]))
+%!error <RegressionKernel.resume: 'Weights' must be a real vector of class single or double.>
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! y = (1:4)';
+%! resume (fitrkernel (X, y), X, y, 'Weights', int8 ([1; 1; 1; 1]))
+%!test
+%! ## Single weights compute as double
+%! load fisheriris
+%! X = meas(:,2:4);
+%! y = meas(:,1);
+%! w = 1 + (1:150)' / 7;
+%! rand ('seed', 1);
+%! randn ('seed', 1);
+%! A = fitrkernel (X, y, 'Weights', single (w));
+%! rand ('seed', 1);
+%! randn ('seed', 1);
+%! B = fitrkernel (X, y, 'Weights', double (single (w)));
+%! assert_equal (predict (A, X), predict (B, X));

@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -267,25 +276,27 @@
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
 					<li><a href="ansaribradley.html" class="text-decoration-none font-monospace"><small>ansaribradley</small></a></li>
-					<li><a href="bartlett_test.html" class="text-decoration-none font-monospace"><small>bartlett_test</small></a></li>
 					<li><a href="barttest.html" class="text-decoration-none font-monospace"><small>barttest</small></a></li>
 					<li><a href="binotest.html" class="text-decoration-none font-monospace"><small>binotest</small></a></li>
 					<li><a href="chi2gof.html" class="text-decoration-none font-monospace"><small>chi2gof</small></a></li>
 					<li><a href="chi2test.html" class="text-decoration-none font-monospace"><small>chi2test</small></a></li>
 					<li><a href="correlation_test.html" class="text-decoration-none font-monospace"><small>correlation_test</small></a></li>
+					<li><a href="detectdrift.html" class="text-decoration-none font-monospace"><small>detectdrift</small></a></li>
 					<li><a href="dwtest.html" class="text-decoration-none font-monospace"><small>dwtest</small></a></li>
 					<li><a href="fishertest.html" class="text-decoration-none font-monospace"><small>fishertest</small></a></li>
 					<li><a href="friedman.html" class="text-decoration-none font-monospace"><small>friedman</small></a></li>
 					<li><a href="hotelling_t2test.html" class="text-decoration-none font-monospace"><small>hotelling_t2test</small></a></li>
 					<li><a href="hotelling_t2test2.html" class="text-decoration-none font-monospace"><small>hotelling_t2test2</small></a></li>
 					<li><a href="jbtest.html" class="text-decoration-none font-monospace"><small>jbtest</small></a></li>
+					<li><a href="knntest.html" class="text-decoration-none font-monospace"><small>knntest</small></a></li>
 					<li><a href="kruskalwallis.html" class="text-decoration-none font-monospace"><small>kruskalwallis</small></a></li>
 					<li><a href="kstest.html" class="text-decoration-none font-monospace"><small>kstest</small></a></li>
 					<li><a href="kstest2.html" class="text-decoration-none font-monospace"><small>kstest2</small></a></li>
-					<li><a href="levene_test.html" class="text-decoration-none font-monospace"><small>levene_test</small></a></li>
 					<li><a href="lillietest.html" class="text-decoration-none font-monospace"><small>lillietest</small></a></li>
 					<li><a href="manova1.html" class="text-decoration-none font-monospace"><small>manova1</small></a></li>
 					<li><a href="mcnemar_test.html" class="text-decoration-none font-monospace"><small>mcnemar_test</small></a></li>
+					<li><a href="meanEffectSize.html" class="text-decoration-none font-monospace"><small>meanEffectSize</small></a></li>
+					<li><a href="mmdtest.html" class="text-decoration-none font-monospace"><small>mmdtest</small></a></li>
 					<li><a href="multcompare.html" class="text-decoration-none font-monospace"><small>multcompare</small></a></li>
 					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
 					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
@@ -293,6 +304,7 @@
 					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
 					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
 					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
+					<li><a href="stats.drift.DriftDiagnostics.html" class="text-decoration-none font-monospace"><small>stats.drift.DriftDiagnostics</small></a></li>
 					<li><a href="swtest.html" class="text-decoration-none font-monospace"><small>swtest</small></a></li>
 					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
 					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
@@ -339,6 +351,7 @@
 					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
 					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
 					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
+					<li><a href="fitrm.html" class="text-decoration-none font-monospace"><small>fitrm</small></a></li>
 					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
 					<li><a href="GeneralizedLinearModel.html" class="text-decoration-none font-monospace fw-bolder"><small>GeneralizedLinearModel</small></a></li>
 					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
@@ -362,6 +375,7 @@
 					<li><a href="plsregress.html" class="text-decoration-none font-monospace"><small>plsregress</small></a></li>
 					<li><a href="regress.html" class="text-decoration-none font-monospace"><small>regress</small></a></li>
 					<li><a href="regress_gp.html" class="text-decoration-none font-monospace"><small>regress_gp</small></a></li>
+					<li><a href="RepeatedMeasuresModel.html" class="text-decoration-none font-monospace"><small>RepeatedMeasuresModel</small></a></li>
 					<li><a href="ridge.html" class="text-decoration-none font-monospace"><small>ridge</small></a></li>
 					<li><a href="robustfit.html" class="text-decoration-none font-monospace"><small>robustfit</small></a></li>
 					<li><a href="stepwisefit.html" class="text-decoration-none font-monospace"><small>stepwisefit</small></a></li>
@@ -373,8 +387,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +452,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +468,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -511,6 +530,8 @@
 					<li><a href="KDTreeSearcher.html" class="text-decoration-none font-monospace"><small>KDTreeSearcher</small></a></li>
 					<li><a href="knnsearch.html" class="text-decoration-none font-monospace"><small>knnsearch</small></a></li>
 					<li><a href="mahal.html" class="text-decoration-none font-monospace"><small>mahal</small></a></li>
+					<li><a href="nomdist.html" class="text-decoration-none font-monospace"><small>nomdist</small></a></li>
+					<li><a href="nomdist2.html" class="text-decoration-none font-monospace"><small>nomdist2</small></a></li>
 					<li><a href="pdist.html" class="text-decoration-none font-monospace"><small>pdist</small></a></li>
 					<li><a href="pdist2.html" class="text-decoration-none font-monospace"><small>pdist2</small></a></li>
 					<li><a href="rangesearch.html" class="text-decoration-none font-monospace"><small>rangesearch</small></a></li>
@@ -873,6 +894,10 @@
 					<li><a href="stblinv.html" class="text-decoration-none font-monospace"><small>stblinv</small></a></li>
 					<li><a href="stblpdf.html" class="text-decoration-none font-monospace"><small>stblpdf</small></a></li>
 					<li><a href="stblrnd.html" class="text-decoration-none font-monospace"><small>stblrnd</small></a></li>
+					<li><a href="stdrcdf.html" class="text-decoration-none font-monospace"><small>stdrcdf</small></a></li>
+					<li><a href="stdrinv.html" class="text-decoration-none font-monospace"><small>stdrinv</small></a></li>
+					<li><a href="stdrpdf.html" class="text-decoration-none font-monospace"><small>stdrpdf</small></a></li>
+					<li><a href="stdrrnd.html" class="text-decoration-none font-monospace"><small>stdrrnd</small></a></li>
 					<li><a href="tcdf.html" class="text-decoration-none font-monospace"><small>tcdf</small></a></li>
 					<li><a href="tinv.html" class="text-decoration-none font-monospace"><small>tinv</small></a></li>
 					<li><a href="tpdf.html" class="text-decoration-none font-monospace"><small>tpdf</small></a></li>
@@ -929,6 +954,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -945,6 +971,7 @@
 					<li><a href="poisstat.html" class="text-decoration-none font-monospace"><small>poisstat</small></a></li>
 					<li><a href="raylstat.html" class="text-decoration-none font-monospace"><small>raylstat</small></a></li>
 					<li><a href="ricestat.html" class="text-decoration-none font-monospace"><small>ricestat</small></a></li>
+					<li><a href="stdrstat.html" class="text-decoration-none font-monospace"><small>stdrstat</small></a></li>
 					<li><a href="tlsstat.html" class="text-decoration-none font-monospace"><small>tlsstat</small></a></li>
 					<li><a href="tristat.html" class="text-decoration-none font-monospace"><small>tristat</small></a></li>
 					<li><a href="tstat.html" class="text-decoration-none font-monospace"><small>tstat</small></a></li>
@@ -985,24 +1012,34 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
 					<li><a href="ecdfhist.html" class="text-decoration-none font-monospace"><small>ecdfhist</small></a></li>
 					<li><a href="einstein.html" class="text-decoration-none font-monospace"><small>einstein</small></a></li>
+					<li><a href="gardnerAltmanPlot.html" class="text-decoration-none font-monospace"><small>gardnerAltmanPlot</small></a></li>
 					<li><a href="glyphplot.html" class="text-decoration-none font-monospace"><small>glyphplot</small></a></li>
 					<li><a href="gplotmatrix.html" class="text-decoration-none font-monospace"><small>gplotmatrix</small></a></li>
 					<li><a href="gscatter.html" class="text-decoration-none font-monospace"><small>gscatter</small></a></li>
+					<li><a href="heatmap.html" class="text-decoration-none font-monospace"><small>heatmap</small></a></li>
 					<li><a href="hist3.html" class="text-decoration-none font-monospace"><small>hist3</small></a></li>
 					<li><a href="histfit.html" class="text-decoration-none font-monospace"><small>histfit</small></a></li>
 					<li><a href="manovacluster.html" class="text-decoration-none font-monospace"><small>manovacluster</small></a></li>
 					<li><a href="normplot.html" class="text-decoration-none font-monospace"><small>normplot</small></a></li>
 					<li><a href="parallelcoords.html" class="text-decoration-none font-monospace"><small>parallelcoords</small></a></li>
+					<li><a href="parallelplot.html" class="text-decoration-none font-monospace"><small>parallelplot</small></a></li>
 					<li><a href="ppplot.html" class="text-decoration-none font-monospace"><small>ppplot</small></a></li>
 					<li><a href="probplot.html" class="text-decoration-none font-monospace"><small>probplot</small></a></li>
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
+					<li><a href="scatterhistogram.html" class="text-decoration-none font-monospace"><small>scatterhistogram</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="stats.chart.HeatmapChart.html" class="text-decoration-none font-monospace"><small>stats.chart.HeatmapChart</small></a></li>
+					<li><a href="stats.chart.ParallelCoordinatesPlot.html" class="text-decoration-none font-monospace"><small>stats.chart.ParallelCoordinatesPlot</small></a></li>
+					<li><a href="stats.chart.ScatterHistogramChart.html" class="text-decoration-none font-monospace"><small>stats.chart.ScatterHistogramChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1088,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: GeneralizedLinearModel</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: GeneralizedLinearModel</code></p>
 <p> Generalized linear regression model class.
 </p>
 <div class="ms-5">
@@ -1110,7 +1147,7 @@
   <a href="glmval.html">glmval</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/GeneralizedLinearModel.m">GeneralizedLinearModel</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Regression/GeneralizedLinearModel.m">GeneralizedLinearModel</a>
 </p>
 </div>
         <p class="lead my-3">The <code>GeneralizedLinearModel</code> class contains the following properties:</p>
@@ -1133,7 +1170,6 @@ Coefficient values
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Coefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per coefficient and four columns:
 </p>
@@ -1212,7 +1248,6 @@ Names of the coefficients
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_CoefficientNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors, one per coefficient, in the order the
  coefficients appear.  The intercept is <code>'(Intercept)'</code>, an
@@ -1281,7 +1316,6 @@ Covariance matrix of the coefficient estimates
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_CoefficientCovariance">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A square matrix with one row and column per coefficient, whose diagonal
  is the square of <code>Coefficients.SE</code>.  It is scaled by
@@ -1349,7 +1383,6 @@ Number of coefficients
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_NumCoefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer counting every coefficient the model carries, those
  dropped as rank deficient included.  A categorical predictor with
@@ -1416,7 +1449,6 @@ Number of coefficients actually estimated
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_NumEstimatedCoefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer counting the coefficients that carry a degree of
  freedom, which is <code>NumCoefficients</code> less however many were dropped
@@ -1484,7 +1516,6 @@ Number of predictor variables
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_NumPredictors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A nonnegative integer counting the predictors the model was given,
  whether or not each appears in a term.  It counts variables, so a
@@ -1551,7 +1582,6 @@ Number of observations used in the fit
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_NumObservations">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer giving the number of observations the fit actually
  used. Rows holding a missing value and rows named by the
@@ -1618,7 +1648,6 @@ Deviance of the fitted model
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Deviance">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A nonnegative scalar, twice the difference between the log-likelihood of
  the saturated model and that of this one.  It is the generalized linear
@@ -1686,7 +1715,6 @@ Error degrees of freedom
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_DFE">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A nonnegative integer, <code>NumObservations</code> less
  <code>NumEstimatedCoefficients</code>.
@@ -1752,7 +1780,6 @@ Dispersion parameter
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Dispersion">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive scalar.  It is estimated from the Pearson statistic for the
  normal, gamma, and inverse Gaussian families, and fixed at <em class="math">1</em> for
@@ -1821,7 +1848,6 @@ Whether the dispersion was estimated
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_DispersionEstimated">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A logical scalar, true where <code>Dispersion</code> was estimated from the
  data and false where it was held at <em class="math">1</em>.  It decides whether a
@@ -1889,7 +1915,6 @@ The response distribution
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Distribution">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with three fields: <code>Name</code>, the distribution&rsquo;s name;
  <code>DevianceFunction</code>, a function handle giving the deviance
@@ -1958,7 +1983,6 @@ The link function
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Link">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with four fields: <code>Name</code>, the link&rsquo;s name; <code>Link</code>,
  a function handle mapping the mean to the linear predictor;
@@ -2026,7 +2050,6 @@ Fitted values
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Fitted">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per input observation and two columns,
  <code>Response</code> on the scale of the response and <code>LinearPredictor</code>
@@ -2097,7 +2120,6 @@ Residuals for the fitted model
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Residuals">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per input observation and five columns:
 </p>
@@ -2175,7 +2197,6 @@ Per-observation diagnostics
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Diagnostics">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per input observation and three columns:
  <code>Leverage</code>, the diagonal of the weighted hat matrix;
@@ -2244,7 +2265,6 @@ Log-likelihood of the fitted model
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_LogLikelihood">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar, the log-likelihood of the observations under the fitted
  coefficients and the family&rsquo;s own density.  It is what the information
@@ -2311,7 +2331,6 @@ Information criteria
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_ModelCriterion">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with four fields, <code>AIC</code>, <code>AICc</code>, <code>BIC</code>, and
  <code>CAIC</code>, each penalising <code>LogLikelihood</code> by a different function
@@ -2379,7 +2398,6 @@ Measures of fit
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Rsquared">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with five fields: <code>Ordinary</code> and <code>Adjusted</code>,
  computed from the sums of squares on the response scale; <code>Deviance</code>,
@@ -2450,7 +2468,6 @@ Error sum of squares
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_SSE">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A nonnegative scalar, the weighted sum of squared raw residuals on the
  response scale.  For a generalized linear model this is a descriptive
@@ -2517,7 +2534,6 @@ Regression sum of squares
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_SSR">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A nonnegative scalar, the weighted sum of squared differences between the
  fitted values and the weighted mean of the response, on the response
@@ -2584,7 +2600,6 @@ Total sum of squares
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_SST">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A nonnegative scalar, the weighted sum of squared differences between the
  response and its weighted mean.  Unlike a linear model, a generalized
@@ -2651,7 +2666,6 @@ Offset added to the linear predictor
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Offset">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A column vector with one element per input observation, added to the
  linear predictor with a coefficient fixed at one, so that it shifts the
@@ -2719,7 +2733,6 @@ Penalty applied to the likelihood
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_LikelihoodPenalty">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector, always <code>'none'</code>: no penalized-likelihood
  fitting is offered, so the coefficients are always the plain
@@ -2786,7 +2799,6 @@ Name of the response variable
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_ResponseName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector.  It is taken from the table column, the
  <code>'ResponseVar'</code> or <code>'VarNames'</code> argument, or the formula, and
@@ -2853,7 +2865,6 @@ Names of the predictor variables
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_PredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors naming the predictors in the order the
  data lists them.  A predictor matrix gives them the names <code>'x1'</code>,
@@ -2920,7 +2931,6 @@ Names of all the variables
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_VariableNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors naming every variable the model was
  given, the response included, in the order the data lists them.
@@ -2986,7 +2996,6 @@ Number of variables
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_NumVariables">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer, the number of elements of <code>VariableNames</code>: the
  predictors and the response together, whether or not each appears in a
@@ -3053,7 +3062,6 @@ Per-variable information
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_VariableInfo">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per variable, named by it, and four columns:
  <code>Class</code>, the class of the data column; <code>Range</code>, its two-element
@@ -3122,7 +3130,6 @@ The data the model was built from
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Variables">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table holding every variable, the response included, with one row per
  input observation.  A model fitted from a predictor matrix gets a table
@@ -3189,7 +3196,6 @@ Per-observation status
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_ObservationInfo">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per input observation and four columns:
  <code>Weights</code>, the weight it was given; <code>Excluded</code>, true where
@@ -3258,7 +3264,6 @@ Names of the observations
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_ObservationNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors, one per input observation, and empty
  unless the data carried row names.
@@ -3324,7 +3329,6 @@ The model formula
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Formula">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <code>LinearFormula</code> object describing the fitted model, with
  properties including <code>ResponseName</code>, <code>LinearPredictor</code>,
@@ -3394,7 +3398,6 @@ Stepwise fitting information
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_Steps">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure recording the term-selection trace, populated whenever the
  model was fit by <code>stepwiseglm</code> and <code>[]</code> otherwise.  It has
@@ -3497,10 +3500,8 @@ Fit a generalized linear model.  Prefer the <code>fitglm</code> function, which
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_GeneralizedLinearModel">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>mdl</var> = <b>GeneralizedLinearModel</b> (<var>data</var>, <var>resp</var>, <var>modelspec</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>mdl</var> = <b>GeneralizedLinearModel</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>GeneralizedLinearModel: <var>mdl</var> = <b>GeneralizedLinearModel</b> (<var>data</var>, <var>resp</var>, <var>modelspec</var>)</code></p>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>mdl</var> = <b>GeneralizedLinearModel</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -3565,11 +3566,9 @@ Predict the response of the model <var>mdl</var> at the new predictor data
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_predict">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>yhat</var> = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: [<var>yhat</var>, <var>yci</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: [&hellip;] = <b>predict</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>GeneralizedLinearModel: <var>yhat</var> = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs"><code>GeneralizedLinearModel: [<var>yhat</var>, <var>yci</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: [&hellip;] = <b>predict</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -3632,9 +3631,7 @@ Predict the response by passing each predictor as a separate argument (a
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_feval">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>yhat</var> = <b>feval</b> (<var>mdl</var>, <var>x1</var>, <var>x2</var>, &hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>yhat</var> = <b>feval</b> (<var>mdl</var>, <var>x1</var>, <var>x2</var>, &hellip;)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -3698,10 +3695,8 @@ Confidence intervals for the coefficient estimates.  <var>ci</var> is a
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_coefCI">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>, <var>alpha</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>GeneralizedLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>, <var>alpha</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -3766,10 +3761,8 @@ Wald test of the linear hypothesis <em class="math">H b = 0</em> on the coeffici
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_coefTest">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: [<var>p</var>, <var>stat</var>, <var>df</var>] = <b>coefTest</b> (<var>mdl</var>, <var>H</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>GeneralizedLinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: [<var>p</var>, <var>stat</var>, <var>df</var>] = <b>coefTest</b> (<var>mdl</var>, <var>H</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -3826,17 +3819,19 @@ Wald test of the linear hypothesis <em class="math">H b = 0</em> on the coeffici
                 <div class="col-8">
 Likelihood-ratio (deviance) test of the fitted model against the
  intercept-only model.  Returns a table with the deviance, degrees of
- freedom, and p-value of each model, the last row giving the chi-square
- statistic (the drop in deviance) and its p-value.  Each row is named by
- the formula of the model it describes.
+ freedom, and p-value of each model, the last row giving the test
+ statistic and its p-value.  Where the dispersion is fixed, the statistic
+ is the drop in deviance, <code>chi2Stat</code>, referred to the chi-square
+ distribution; where it is estimated, it is the drop per degree of
+ freedom over the dispersion, <code>FStat</code>, referred to the
+ <em class="math">F</em>-distribution.  Each row is named by the formula of the model it
+ describes.
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_devianceTest">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>tbl</var> = <b>devianceTest</b> (<var>mdl</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>tbl</var> = <b>devianceTest</b> (<var>mdl</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -3900,10 +3895,8 @@ Simulate responses from the fitted model.  With one argument the fitted
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_random">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>ysim</var> = <b>random</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>ysim</var> = <b>random</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>GeneralizedLinearModel: <var>ysim</var> = <b>random</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>ysim</var> = <b>random</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -3968,11 +3961,9 @@ Plot the model residuals.  <var>plottype</var> is one of <code>'histogram'</code
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_plotResiduals">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotResiduals</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotResiduals</b> (<var>mdl</var>, <var>plottype</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotResiduals</b> (&hellip;, <code>'ResidualType'</code>, <var>rt</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>GeneralizedLinearModel: <var>h</var> = <b>plotResiduals</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>GeneralizedLinearModel: <var>h</var> = <b>plotResiduals</b> (<var>mdl</var>, <var>plottype</var>)</code></p>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>h</var> = <b>plotResiduals</b> (&hellip;, <code>'ResidualType'</code>, <var>rt</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -4035,10 +4026,8 @@ Plot observation diagnostics.  <var>plottype</var> is <code>'leverage'</code>
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_plotDiagnostics">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotDiagnostics</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotDiagnostics</b> (<var>mdl</var>, <var>plottype</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>GeneralizedLinearModel: <var>h</var> = <b>plotDiagnostics</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>h</var> = <b>plotDiagnostics</b> (<var>mdl</var>, <var>plottype</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -4101,9 +4090,7 @@ Main-effects plot: for each predictor, the change in the fitted mean
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_plotEffects">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotEffects</b> (<var>mdl</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>h</var> = <b>plotEffects</b> (<var>mdl</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -4167,9 +4154,7 @@ Adjusted-response plot for the predictor <var>var</var> (a name or index): the
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_plotAdjustedResponse">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotAdjustedResponse</b> (<var>mdl</var>, <var>var</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>h</var> = <b>plotAdjustedResponse</b> (<var>mdl</var>, <var>var</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">
@@ -4233,9 +4218,7 @@ Added-variable (partial-regression) plot for the predictor <var>var</var> (a
           </div>
           <div class="collapse multi-collapse" id="GeneralizedLinearModel_plotAdded">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">GeneralizedLinearModel: <var>h</var> = <b>plotAdded</b> (<var>mdl</var>, <var>var</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>GeneralizedLinearModel: <var>h</var> = <b>plotAdded</b> (<var>mdl</var>, <var>var</var>)</code></p>
 <p> </p>
 
         <div class="card rounded my-4">

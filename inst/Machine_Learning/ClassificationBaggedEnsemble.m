@@ -159,7 +159,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ##
     ## Behaves as @code{CompactClassificationEnsemble.predict}.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, CompactClassificationEnsemble.predict}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## CompactClassificationEnsemble.predict}
     ## @end deftypefn
     function [label, scores] = predict (this, varargin)
       [label, scores] = predict@ClassificationEnsemble (this, varargin{:});
@@ -183,7 +184,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ## fitted on.  The response may also be given beside the table as
     ## @var{Y}.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, CompactClassificationEnsemble.loss}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## CompactClassificationEnsemble.loss}
     ## @end deftypefn
     function L = loss (this, varargin)
       L = loss@ClassificationEnsemble (this, varargin{:});
@@ -207,7 +209,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ## fitted on.  The response may also be given beside the table as
     ## @var{Y}.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, CompactClassificationEnsemble.edge}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## CompactClassificationEnsemble.edge}
     ## @end deftypefn
     function e = edge (this, varargin)
       e = edge@ClassificationEnsemble (this, varargin{:});
@@ -231,7 +234,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ## fitted on.  The response may also be given beside the table as
     ## @var{Y}.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, CompactClassificationEnsemble.margin}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## CompactClassificationEnsemble.margin}
     ## @end deftypefn
     function m = margin (this, varargin)
       m = margin@ClassificationEnsemble (this, varargin{:});
@@ -245,7 +249,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ##
     ## Behaves as @code{ClassificationEnsemble.resubPredict}.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, ClassificationEnsemble.resubPredict}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## ClassificationEnsemble.resubPredict}
     ## @end deftypefn
     function [label, scores] = resubPredict (this, varargin)
       [label, scores] = resubPredict@ClassificationEnsemble (this, varargin{:});
@@ -287,7 +292,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ##
     ## Behaves as @code{ClassificationEnsemble.resubMargin}.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, ClassificationEnsemble.resubMargin}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## ClassificationEnsemble.resubMargin}
     ## @end deftypefn
     function m = resubMargin (this, varargin)
       m = resubMargin@ClassificationEnsemble (this, varargin{:});
@@ -324,7 +330,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ## is given the class of greatest prior probability.  @qcode{'Learners'}
     ## restricts the trees.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, ClassificationBaggedEnsemble.oobLoss}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## ClassificationBaggedEnsemble.oobLoss}
     ## @end deftypefn
     function [label, scores] = oobPredict (this, varargin)
       caller = 'ClassificationBaggedEnsemble.oobPredict';
@@ -347,7 +354,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ## @code{CompactClassificationEnsemble.loss}, and @qcode{'Learners'}
     ## restricts the trees.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, ClassificationBaggedEnsemble.oobPredict}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## ClassificationBaggedEnsemble.oobPredict}
     ## @end deftypefn
     function L = oobLoss (this, varargin)
       caller = 'ClassificationBaggedEnsemble.oobLoss';
@@ -366,7 +374,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ## The weighted mean of the out-of-bag margins, weighted by @code{W}.
     ## @qcode{'Mode'} and @qcode{'Learners'} are taken as by @code{oobLoss}.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, ClassificationBaggedEnsemble.oobMargin}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## ClassificationBaggedEnsemble.oobMargin}
     ## @end deftypefn
     function e = oobEdge (this, varargin)
       caller = 'ClassificationBaggedEnsemble.oobEdge';
@@ -385,7 +394,8 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     ## The margin of each training observation under its out-of-bag scores,
     ## @code{NaN} for one in the sample of every tree used.
     ##
-    ## @seealso{ClassificationBaggedEnsemble, ClassificationBaggedEnsemble.oobEdge}
+    ## @seealso{ClassificationBaggedEnsemble,
+    ## ClassificationBaggedEnsemble.oobEdge}
     ## @end deftypefn
     function m = oobMargin (this, varargin)
       caller = 'ClassificationBaggedEnsemble.oobMargin';
@@ -414,21 +424,36 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
     function imp = oobPermutedPredictorImportance (this, varargin)
 
       caller = 'ClassificationBaggedEnsemble.oobPermutedPredictorImportance';
-      args = oobArgs (varargin, {'Learners', 'Options'}, caller);
-      learners = 1:this.NumTrained;
-      for i = 1:2:numel (args)
-        if (strcmpi (args{i}, 'Options'))
-          error ("%s: 'Options' is not implemented.", caller);
-        endif
-        learners = oobLearners (args{i+1}, this.NumTrained, caller);
-      endfor
+      if (mod (numel (varargin), 2) != 0)
+        error ("%s: name-value arguments must be in pairs.", caller);
+      endif
+
+      ## Parse optional paired arguments; empty 'Learners' stands for every
+      ## trained learner
+      [Learners, Options, args] = ...
+             parsePairedArguments ({'Learners', 'Options'}, {[], []}, ...
+                                   varargin(:));
+
+      ## Validate optional paired arguments
+      if (isempty (Learners))
+        learners = 1:this.NumTrained;
+      else
+        learners = oobLearners (Learners, this.NumTrained, caller);
+      endif
+      if (! isempty (Options))
+        error ("%s: 'Options' is not implemented.", caller);
+      endif
+
+      if (! isempty (args))
+        error ("%s: invalid optional paired argument.", caller);
+      endif
       p = columns (this.X);
       gY = labelIndices (this.ClassNames, this.Y);
       D = zeros (numel (learners), p);
       for j = 1:numel (learners)
         t = learners(j);
         r = find (! this.UseObsForLearner(:,t));
-        w = this.W(r);
+        w = double (this.W(r));
         if (isempty (r) || ! (sum (w) > 0))
           continue;
         endif
@@ -471,8 +496,7 @@ function args = oobArgs (args, allowed, caller)
   endif
   for i = 1:2:numel (args)
     if (! (ischar (args{i}) && any (strcmpi (args{i}, allowed))))
-      error ("%s: invalid parameter name in optional pair arguments.", ...
-             caller);
+      error ("%s: invalid optional paired argument.", caller);
     endif
   endfor
 
@@ -657,7 +681,7 @@ endfunction
 %! imp = oobPermutedPredictorImportance (Mdl);
 %! assert_equal (min (imp(3:4)) > max (imp(1:2)), true);
 
-%!error<ClassificationBaggedEnsemble.oobPredict: invalid parameter name in optional pair arguments.> ...
+%!error<ClassificationBaggedEnsemble.oobPredict: invalid optional paired argument.> ...
 %! load fisheriris
 %! oobPredict (ClassificationBaggedEnsemble (meas, species, ...
 %!                                           'NumLearningCycles', 1), ...
@@ -666,17 +690,17 @@ endfunction
 %! load fisheriris
 %! oobLoss (ClassificationBaggedEnsemble (meas, species, ...
 %!                                        'NumLearningCycles', 1), 'Mode')
-%!error<ClassificationBaggedEnsemble.oobLoss: invalid parameter name in optional pair arguments.> ...
+%!error<ClassificationBaggedEnsemble.oobLoss: invalid optional paired argument.> ...
 %! load fisheriris
 %! oobLoss (ClassificationBaggedEnsemble (meas, species, ...
 %!                                        'NumLearningCycles', 1), ...
 %!          'Weights', ones (150, 1))
-%!error<ClassificationBaggedEnsemble.oobEdge: invalid parameter name in optional pair arguments.> ...
+%!error<ClassificationBaggedEnsemble.oobEdge: invalid optional paired argument.> ...
 %! load fisheriris
 %! oobEdge (ClassificationBaggedEnsemble (meas, species, ...
 %!                                        'NumLearningCycles', 1), ...
 %!          'LossFun', 'hinge')
-%!error<ClassificationBaggedEnsemble.oobMargin: invalid parameter name in optional pair arguments.> ...
+%!error<ClassificationBaggedEnsemble.oobMargin: invalid optional paired argument.> ...
 %! load fisheriris
 %! oobMargin (ClassificationBaggedEnsemble (meas, species, ...
 %!                                          'NumLearningCycles', 1), ...
@@ -691,6 +715,11 @@ endfunction
 %! oobPermutedPredictorImportance (ClassificationBaggedEnsemble (meas, ...
 %!                                 species, 'NumLearningCycles', 1), ...
 %!                                 'Options', struct ())
+%!error<ClassificationBaggedEnsemble.oobPermutedPredictorImportance: invalid optional paired argument.> ...
+%! load fisheriris
+%! oobPermutedPredictorImportance (ClassificationBaggedEnsemble (meas, ...
+%!                                 species, 'NumLearningCycles', 1), ...
+%!                                 'Bogus', struct ())
 
 %!shared X2, Y2, S
 %! load fisheriris

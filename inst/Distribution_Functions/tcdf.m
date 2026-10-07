@@ -94,21 +94,6 @@ function p = tcdf (x, df, uflag)
   ## Find finite values in X where 0 < DF < Inf
   k = isfinite (x) & (df > 0) & (df < Inf);
 
-  ## Process more efficiently small positive integer DF up to 1e3
-  ks = k & (fix (df) == df) & (df <= 1e3);
-  if (sum (ks) == 1 && sum (k) == 1)
-    if (isscalar (df))
-      p(ks) = tcdf_integer_df (x(ks), df);
-    else
-      vu = unique (df(ks));
-      for i = 1:numel (vu)
-        ki = ks & (df == vu(i));
-        p(ki) = tcdf_integer_df (x(ki), vu(i));
-      endfor
-    endif
-    return;
-  endif
-
   ## Distinguish between small and big abs(x)
   xx = x .^ 2;
   x_big_abs = (xx > df);
@@ -124,9 +109,10 @@ function p = tcdf (x, df, uflag)
   ## Deal with the case "abs(x) small"
   kk = k & ! x_big_abs;
   if (isscalar (df))
-    p(kk) = 0.5 * (1 - betainc (xx(kk) ./ (df + xx(kk)), 1/2, df/2));
+    p(kk) = 0.5 * betainc (xx(kk) ./ (df + xx(kk)), 1/2, df/2, 'upper');
   else
-    p(kk) = 0.5 * (1 - betainc (xx(kk) ./ (df(kk) + xx(kk)), 1/2, df(kk)/2));
+    p(kk) = 0.5 * betainc (xx(kk) ./ (df(kk) + xx(kk)), 1/2, df(kk)/2, ...
+                           'upper');
   endif
 
   ## For x > 0, F(x) = 1 - F(-|x|).
@@ -148,36 +134,6 @@ function p = tcdf (x, df, uflag)
   ## Make the result exact for the median
   p(x == 0 & ! is_nan) = 0.5;
 
-endfunction
-
-## Compute the t distribution CDF efficiently (without calling betainc)
-## for small positive integer DF up to 1e4
-function p = tcdf_integer_df (x, df)
-
-  if (df == 1)
-    p = 0.5 + atan (x)/pi;
-  elseif (df == 2)
-    p = 0.5 + x ./ (2 * sqrt (2 + x .^ 2));
-  else
-    xs = x ./ sqrt (df);
-    xxf = 1 ./ (1 + xs .^ 2);
-    u = s = 1;
-    if mod (df, 2)  ## odd DF
-      m = (df - 1) / 2;
-      for i = 2:m
-        u .*= (1 - 1/(2*i - 1)) .* xxf;
-        s += u;
-      endfor
-      p = 0.5 + (xs .* xxf .* s + atan (xs)) / pi;
-    else            ## even DF
-      m = df / 2;
-      for i = 1:(m - 1)
-        u .*= (1 - 1/(2*i)) .* xxf;
-        s += u;
-      endfor
-      p = 0.5 + (xs .* sqrt (xxf) .* s) / 2;
-    endif
-  endif
 endfunction
 
 %!demo
@@ -249,6 +205,14 @@ endfunction
 %!assert_equal (tcdf (-10^3, 2.5), 2.2747463948307452e-08, -tol_rel)
 %!assert_equal (tcdf (-10^4, 2.5), 7.1933970159922115e-11, -tol_rel)
 %!assert_equal (tcdf (-10^5, 2.5), 2.2747519231756221e-13, -tol_rel)
+
+## Lower tail at whole DF, values from MATLAB R2024a
+%!assert_equal (tcdf (-17.138, 147), 3.59494847838787e-37, -1e-13)
+%!assert_equal (tcdf (17.138, 147, 'upper'), 3.59494847838787e-37, -1e-13)
+%!assert_equal (tcdf (-8, 147), 1.70674966444924e-13, -1e-13)
+%!assert_equal (tcdf (-1e10, 1), 3.18309886183791e-11, -1e-14)
+%!assert_equal (tcdf (-1e5, 2), 4.99999999925002e-11, -1e-14)
+%!assert_equal (tcdf (-1000, 3), 1.1026538212883e-09, -1e-13)
 
 ## # Reference values obtained using Python 2.7.4 and mpmath 0.17
 ##

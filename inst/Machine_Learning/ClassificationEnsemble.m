@@ -80,9 +80,10 @@ classdef ClassificationEnsemble < PredictiveModel
     ##
     ## Observation weights
     ##
-    ## The weights given, scaled so that the observations of each class sum
-    ## to its prior probability.  A cost matrix is not folded into them.
-    ## This property is read-only.
+    ## The weights given, scaled so that the observations of each class sum to
+    ## its prior probability.  A cost matrix is not folded into them.  It has
+    ## the class of the @qcode{'Weights'} given, single or double.  This
+    ## property is read-only.
     ##
     ## @end deftp
     W = [];
@@ -370,14 +371,6 @@ classdef ClassificationEnsemble < PredictiveModel
       end_try_catch
     endfunction
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       fprintf ("\n  %s\n\n", class (this));
       fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
@@ -441,123 +434,117 @@ classdef ClassificationEnsemble < PredictiveModel
         caller = 'ClassificationEnsemble';
       endif
 
-      Method = ''; NLearn = 100; Learners = []; LearnRate = [];
-      NPred = []; AllCombinations = false;
-      NPrint = 0; ClassNames = []; Cost = []; Prior = []; Weights = [];
-      PredictorNames = {}; ResponseName = 'Y'; ScoreTransform = 'none';
-      CatPreds = [];
-      FResample = []; Replace = []; Resample = false; Ratio = [];
-      MarginPrecision = [];
+      ## Parse optional paired arguments.  An empty default stands for one
+      ## resolved once the data are known: 'Method' is 'LogitBoost' for two
+      ## classes and 'AdaBoostM2' for more, 'NumLearningCycles' is 100, the
+      ## learners are trees (nearest neighbours for 'Subspace'), the classes,
+      ## prior, cost and weights come from the response, and 'Resample' is
+      ## off.  'NPredToSample', 'LearnRate', 'FResample', 'Replace',
+      ## 'RatioToSmallest' and 'MarginPrecision' stay empty when not given,
+      ## which is how the checks below tell them apart from a value.
+      optNames = {'Method', 'NumLearningCycles', 'NPredToSample', ...
+                  'Learners', 'LearnRate', 'NPrint', 'ClassNames', 'Cost', ...
+                  'Prior', 'Weights', 'PredictorNames', 'ResponseName', ...
+                  'ScoreTransform', 'FResample', 'Replace', 'Resample', ...
+                  'CategoricalPredictors', 'RatioToSmallest', ...
+                  'MarginPrecision'};
+      dfValues = {'', [], [], [], [], 'off', [], [], [], [], {}, 'Y', ...
+                  'none', [], [], [], [], [], []};
+      [Method, NumCycles, NPred, Learners, LearnRate, NPrint, ClassNames, ...
+       Cost, Prior, Weights, PredictorNames, ResponseName, ScoreTransform, ...
+       FResample, Replace, Resample, CatPreds, Ratio, MarginPrecision, ...
+       args] = parsePairedArguments (optNames, dfValues, varargin(:));
 
-      for i = 1:2:numel (varargin)
-        name = varargin{i};
-        val = varargin{i+1};
-        if (! ischar (name))
-          error (strcat ("%s: invalid parameter name in optional pair", ...
-                         " arguments."), caller);
+      ## Validate optional paired arguments
+      NLearn = 100;
+      AllCombinations = false;
+      if (ischar (NumCycles)
+          && strcmpi (NumCycles, 'AllPredictorCombinations'))
+        AllCombinations = true;
+      elseif (isnumeric (NumCycles) && isscalar (NumCycles)
+              && isreal (NumCycles) && NumCycles >= 1
+              && NumCycles == fix (NumCycles))
+        NLearn = double (NumCycles);
+      elseif (! isempty (NumCycles))
+        error (strcat ("%s: 'NumLearningCycles' must be a positive", ...
+                       " integer or 'AllPredictorCombinations'."), caller);
+      endif
+      if (! isempty (NPred)
+          && ! (isnumeric (NPred) && isscalar (NPred) && isreal (NPred)
+                && NPred >= 1 && NPred == fix (NPred)))
+        error ("%s: 'NPredToSample' must be a positive integer.", caller);
+      endif
+      NPred = double (NPred);
+      if (! isempty (LearnRate)
+          && ! (isnumeric (LearnRate) && isscalar (LearnRate)
+                && isreal (LearnRate) && LearnRate > 0 && LearnRate <= 1))
+        error (strcat ("%s: 'LearnRate' must be a number greater than 0", ...
+                       " and no greater than 1."), caller);
+      endif
+      LearnRate = double (LearnRate);
+      if (ischar (NPrint) && strcmpi (NPrint, 'off'))
+        NPrint = 0;
+      elseif (isnumeric (NPrint) && isscalar (NPrint) && isreal (NPrint)
+              && NPrint >= 1 && NPrint == fix (NPrint))
+        NPrint = double (NPrint);
+      else
+        error ("%s: 'NPrint' must be a positive integer or 'off'.", caller);
+      endif
+      if (! (ischar (ResponseName) && isrow (ResponseName)))
+        error ("%s: 'ResponseName' must be a character vector.", caller);
+      endif
+      if (! isempty (FResample)
+          && ! (isnumeric (FResample) && isscalar (FResample)
+                && isreal (FResample) && FResample > 0 && FResample <= 1))
+        error (strcat ("%s: 'FResample' must be a number greater than 0", ...
+                       " and no greater than 1."), caller);
+      endif
+      FResample = double (FResample);
+      if (! isempty (Replace))
+        [Replace, ok] = onOff (Replace);
+        if (! ok)
+          error ("%s: 'Replace' must be 'on' or 'off'.", caller);
         endif
-        switch (tolower (name))
-          case 'method'
-            Method = val;
-          case 'numlearningcycles'
-            if (ischar (val) && strcmpi (val, 'AllPredictorCombinations'))
-              AllCombinations = true;
-            elseif (isnumeric (val) && isscalar (val) && isreal (val)
-                    && val >= 1 && val == fix (val))
-              NLearn = double (val);
-            else
-              error (strcat ("%s: 'NumLearningCycles' must be a positive", ...
-                             " integer or 'AllPredictorCombinations'."), ...
-                     caller);
-            endif
-          case 'npredtosample'
-            if (! (isnumeric (val) && isscalar (val) && isreal (val)
-                   && val >= 1 && val == fix (val)))
-              error ("%s: 'NPredToSample' must be a positive integer.", ...
-                     caller);
-            endif
-            NPred = double (val);
-          case 'learners'
-            Learners = val;
-          case 'learnrate'
-            if (! (isnumeric (val) && isscalar (val) && isreal (val)
-                   && val > 0 && val <= 1))
-              error (strcat ("%s: 'LearnRate' must be a number greater", ...
-                             " than 0 and no greater than 1."), caller);
-            endif
-            LearnRate = double (val);
-          case 'nprint'
-            if (ischar (val) && strcmpi (val, 'off'))
-              NPrint = 0;
-            elseif (isnumeric (val) && isscalar (val) && isreal (val)
-                    && val >= 1 && val == fix (val))
-              NPrint = double (val);
-            else
-              error ("%s: 'NPrint' must be a positive integer or 'off'.", ...
-                     caller);
-            endif
-          case 'classnames'
-            ClassNames = val;
-          case 'cost'
-            Cost = val;
-          case 'prior'
-            Prior = val;
-          case 'weights'
-            Weights = val;
-          case 'predictornames'
-            PredictorNames = val;
-          case 'responsename'
-            if (! (ischar (val) && isrow (val)))
-              error ("%s: 'ResponseName' must be a character vector.", ...
-                     caller);
-            endif
-            ResponseName = val;
-          case 'scoretransform'
-            ScoreTransform = val;
-          case 'fresample'
-            if (! (isnumeric (val) && isscalar (val) && isreal (val)
-                   && val > 0 && val <= 1))
-              error (strcat ("%s: 'FResample' must be a number greater", ...
-                             " than 0 and no greater than 1."), caller);
-            endif
-            FResample = double (val);
-          case 'replace'
-            [Replace, ok] = onOff (val);
-            if (! ok)
-              error ("%s: 'Replace' must be 'on' or 'off'.", caller);
-            endif
-          case 'resample'
-            [Resample, ok] = onOff (val);
-            if (! ok)
-              error ("%s: 'Resample' must be 'on' or 'off'.", caller);
-            endif
-          case 'categoricalpredictors'
-            CatPreds = val;
-          case 'ratiotosmallest'
-            if (! (isnumeric (val) && isvector (val) && isreal (val)
-                   && all (isfinite (val)) && all (val >= 0) && any (val > 0)))
-              error (strcat ("%s: 'RatioToSmallest' must be a vector of", ...
-                             " nonnegative numbers with a positive", ...
-                             " element."), caller);
-            endif
-            Ratio = double (val(:)');
-          case 'marginprecision'
-            if (! (isnumeric (val) && isscalar (val) && isreal (val)
-                   && val >= 0 && val <= 1))
-              error ("%s: 'MarginPrecision' must be a number from 0 to 1.", ...
-                     caller);
-            endif
-            MarginPrecision = double (val);
-          case {'robusterrorgoal', ...
-                'robustmaxmargin', 'robustmarginsigma', 'numbins', ...
-                'optimizehyperparameters', ...
-                'hyperparameteroptimizationoptions', 'options'}
-            error ("%s: '%s' is not implemented.", caller, name);
-          otherwise
-            error (strcat ("%s: invalid parameter name in optional pair", ...
-                           " arguments."), caller);
-        endswitch
+      endif
+      if (isempty (Resample))
+        Resample = false;
+      else
+        [Resample, ok] = onOff (Resample);
+        if (! ok)
+          error ("%s: 'Resample' must be 'on' or 'off'.", caller);
+        endif
+      endif
+      if (! isempty (Ratio)
+          && ! (isnumeric (Ratio) && isvector (Ratio) && isreal (Ratio)
+                && all (isfinite (Ratio)) && all (Ratio >= 0)
+                && any (Ratio > 0)))
+        error (strcat ("%s: 'RatioToSmallest' must be a vector of", ...
+                       " nonnegative numbers with a positive element."), ...
+               caller);
+      endif
+      Ratio = double (Ratio(:)');
+      if (! isempty (MarginPrecision)
+          && ! (isnumeric (MarginPrecision) && isscalar (MarginPrecision)
+                && isreal (MarginPrecision) && MarginPrecision >= 0
+                && MarginPrecision <= 1))
+        error ("%s: 'MarginPrecision' must be a number from 0 to 1.", caller);
+      endif
+      MarginPrecision = double (MarginPrecision);
+
+      ## Options MATLAB takes that this class does not implement are named
+      ## one by one, so that asking for one is refused rather than quietly
+      ## doing nothing; anything else left over is unknown.
+      notImpl = {'RobustErrorGoal', 'RobustMaxMargin', 'RobustMarginSigma', ...
+                 'NumBins', 'OptimizeHyperparameters', ...
+                 'HyperparameterOptimizationOptions', 'Options'};
+      for i = 1:2:numel (args)
+        if (ischar (args{i}) && any (strcmpi (args{i}, notImpl)))
+          error ("%s: '%s' is not implemented.", caller, args{i});
+        endif
       endfor
+      if (! isempty (args))
+        error ("%s: invalid optional paired argument.", caller);
+      endif
 
       F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, caller, false);
       K = classCount (F.ClassNames);
@@ -753,8 +740,10 @@ classdef ClassificationEnsemble < PredictiveModel
       if (! isempty (errmsg))
         error ("%s: %s", caller, errmsg);
       endif
-      this.W = priorNormalize (F.Weights, this.gY, this.Prior);
-      this.W /= sum (this.W);
+      ## The weights keep their class in the model; every computation runs on
+      ## them as double.
+      W = priorNormalize (F.Weights, this.gY, this.Prior);
+      this.W = cast (W / sum (W), F.WeightsClass);
       [~, this.DefaultIndex] = max (this.Prior);
       if (issub)
         ## The nearest neighbour and discriminant learners take no weights,
@@ -840,7 +829,8 @@ classdef ClassificationEnsemble < PredictiveModel
     ## @qcode{'CVPartition'}, a @code{cvpartition} object, may choose the
     ## partition instead.
     ##
-    ## @seealso{ClassificationEnsemble, ClassificationPartitionedEnsemble, cvpartition}
+    ## @seealso{ClassificationEnsemble, ClassificationPartitionedEnsemble,
+    ## cvpartition}
     ## @end deftypefn
     function CVMdl = crossval (this, varargin)
 
@@ -911,22 +901,23 @@ classdef ClassificationEnsemble < PredictiveModel
         error (strcat ("%s: an ensemble of all predictor combinations", ...
                        " cannot grow further."), caller);
       endif
-      NPrint = 0;
-      for i = 1:2:numel (varargin)
-        if (! (ischar (varargin{i}) && strcmpi (varargin{i}, 'NPrint')))
-          error (strcat ("%s: invalid parameter name in optional pair", ...
-                         " arguments."), caller);
-        endif
-        val = varargin{i+1};
-        if (ischar (val) && strcmpi (val, 'off'))
-          NPrint = 0;
-        elseif (isnumeric (val) && isscalar (val) && isreal (val)
-                && val >= 1 && val == fix (val))
-          NPrint = double (val);
-        else
-          error ("%s: 'NPrint' must be a positive integer or 'off'.", caller);
-        endif
-      endfor
+      ## Parse optional paired arguments
+      [NPrint, args] = parsePairedArguments ({'NPrint'}, {'off'}, ...
+                                             varargin(:));
+
+      ## Validate optional paired arguments
+      if (ischar (NPrint) && strcmpi (NPrint, 'off'))
+        NPrint = 0;
+      elseif (isnumeric (NPrint) && isscalar (NPrint) && isreal (NPrint)
+              && NPrint >= 1 && NPrint == fix (NPrint))
+        NPrint = double (NPrint);
+      else
+        error ("%s: 'NPrint' must be a positive integer or 'off'.", caller);
+      endif
+
+      if (! isempty (args))
+        error ("%s: invalid optional paired argument.", caller);
+      endif
       this = growLearners (this, double (NumLearningCycles), NPrint, caller);
 
     endfunction
@@ -1190,7 +1181,7 @@ classdef ClassificationEnsemble < PredictiveModel
       if (isempty (this.State) && ! any (strcmp (this.Method, ...
                                                  {'Bag', 'Subspace'})))
         csum = sum (this.Cost, 2);
-        d0 = this.W .* csum(g);
+        d0 = double (this.W) .* csum(g);
         d0 /= sum (d0);
         switch (this.Method)
           case 'AdaBoostM2'
@@ -1516,11 +1507,12 @@ classdef ClassificationEnsemble < PredictiveModel
           case 'Bag'
             m = ceil (this.BagFResample * n);
             if (this.BagReplace)
-              cw = [0; cumsum(this.W)];
+              cw = [0; cumsum(double (this.W))];
               cw /= cw(end);
               idx = lookup (cw, rand (m, 1));
             else
-              [~, order] = sort (rand (n, 1) .^ (1 ./ this.W), 'descend');
+              [~, order] = sort (rand (n, 1) .^ (1 ./ double (this.W)), ...
+                                 'descend');
               idx = order(1:m);
             endif
             present = labelsFromIndex (this.ClassNames, unique (g(idx)));
@@ -1805,9 +1797,9 @@ endfunction
 %! ClassificationEnsemble (X2)
 %!error<ClassificationEnsemble: name-value arguments must be in pairs.> ...
 %! ClassificationEnsemble (X2, Y2, 'Method')
-%!error<ClassificationEnsemble: invalid parameter name in optional pair arguments.> ...
+%!error<ClassificationEnsemble: invalid optional paired argument.> ...
 %! ClassificationEnsemble (X2, Y2, 'Foo', 1)
-%!error<ClassificationEnsemble: invalid parameter name in optional pair arguments.> ...
+%!error<ClassificationEnsemble: invalid optional paired argument.> ...
 %! ClassificationEnsemble (X2, Y2, 1, 1)
 %!error<ClassificationEnsemble: 'NumLearningCycles' must be a positive integer or 'AllPredictorCombinations'.> ...
 %! ClassificationEnsemble (X2, Y2, 'NumLearningCycles', 0)
@@ -1861,7 +1853,7 @@ endfunction
 %! resume (ClassificationEnsemble (X2, Y2, 'NumLearningCycles', 1), 0)
 %!error<ClassificationEnsemble.resume: name-value arguments must be in pairs.> ...
 %! resume (ClassificationEnsemble (X2, Y2, 'NumLearningCycles', 1), 1, 'NPrint')
-%!error<ClassificationEnsemble.resume: invalid parameter name in optional pair arguments.> ...
+%!error<ClassificationEnsemble.resume: invalid optional paired argument.> ...
 %! resume (ClassificationEnsemble (X2, Y2, 'NumLearningCycles', 1), 1, 'Foo', 1)
 %!error<ClassificationEnsemble.resume: 'NPrint' must be a positive integer or 'off'.> ...
 %! resume (ClassificationEnsemble (X2, Y2, 'NumLearningCycles', 1), 1, ...
@@ -1874,7 +1866,7 @@ endfunction
 %! edge (ClassificationEnsemble (X2, Y2, 'NumLearningCycles', 1), X2)
 %!error<ClassificationEnsemble.margin: too few input arguments.> ...
 %! margin (ClassificationEnsemble (X2, Y2, 'NumLearningCycles', 1), X2)
-%!error<ClassificationEnsemble.resubLoss: invalid parameter name in optional pair arguments.> ...
+%!error<ClassificationEnsemble.resubLoss: invalid optional paired argument.> ...
 %! resubLoss (ClassificationEnsemble (X2, Y2, 'NumLearningCycles', 1), 'Foo', 1)
 %!error<ClassificationEnsemble.subsasgn: 'ScoreTransform' must be a character vector or a 'function_handle' object.> ...
 %! Mdl = ClassificationEnsemble (X2, Y2, 'NumLearningCycles', 1);
@@ -2013,3 +2005,27 @@ endfunction
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <ClassificationEnsemble: 'Weights' must be a real vector of class single or double.> ...
+%! fitcensemble (ones (4, 2), [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))
+%!error <ClassificationEnsemble: 'Weights' must be a real vector of class single or double.> ...
+%! fitcensemble (ones (4, 2), [1; 1; 2; 2], 'Weights', true (4, 1))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = fitcensemble (meas, species, 'Weights', single (w), ...
+%!                     'NumLearningCycles', 10);
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Single weights compute as double
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! A = fitcensemble (meas, species, 'Weights', single (w), ...
+%!                   'NumLearningCycles', 10);
+%! B = fitcensemble (meas, species, 'Weights', double (single (w)), ...
+%!                   'NumLearningCycles', 10);
+%! assert_equal (nthargout (2, @predict, A, meas), nthargout (2, @predict, ...
+%!               B, meas));

@@ -84,7 +84,17 @@
 ## MATLAB uses; where that is zero it falls back to @math{0.1}.
 ##
 ## @item @qcode{'BoxConstraint'} @tab A positive scalar bounding the dual
-## coefficients, the cost of an error outside the tube.  The default is 1.
+## coefficients, the cost of an error outside the tube.  The default is
+## @code{iqr (@var{Y}) / 1.349} for a Gaussian kernel, or 1 where that is
+## zero, and 1 for any other kernel.
+##
+## @item @qcode{'Weights'} @tab A nonnegative single or double vector of
+## observation weights, one per row of @var{X}.  An observation's box
+## constraint is @math{n} times @qcode{BoxConstraint} times its weight, the
+## weights scaled to sum to one; standardization uses weighted means and
+## standard deviations, and a row of zero or missing weight is left out.  The
+## model's @code{W} keeps the class of the weights, while every computation
+## runs in double.  The default is uniform.
 ##
 ## @item @qcode{'KernelFunction'} @tab A character vector naming the kernel,
 ## one of @qcode{'linear'}, the default, @qcode{'rbf'}, @qcode{'gaussian'},
@@ -93,11 +103,16 @@
 ## @item @qcode{'PolynomialOrder'} @tab A positive integer, the order of the
 ## polynomial kernel.  The default is 3.  It is ignored by every other kernel.
 ##
-## @item @qcode{'KernelScale'} @tab A positive scalar dividing the predictors
-## before the kernel is applied.  The default is 1.
+## @item @qcode{'KernelScale'} @tab A positive scalar dividing every predictor
+## before any kernel is applied, as MATLAB does, so that with @math{u} and
+## @math{v} the divided predictors the kernels are @math{u'v},
+## @math{exp (-||u - v||^2)}, @math{(1 + u'v)^q} and @math{tanh (u'v + c)},
+## @math{c} being @qcode{'KernelOffset'}.  The default is 1.
 ##
-## @item @qcode{'KernelOffset'} @tab A non-negative scalar added to the kernel
-## value.  The default is 0.
+## @item @qcode{'KernelOffset'} @tab A non-negative scalar, the constant
+## @math{c} of the sigmoid kernel, which MATLAB does not have.  MATLAB adds
+## it to every element of the Gram matrix, which leaves the fitted model
+## unchanged, so it changes no other kernel here.  The default is 0.
 ##
 ## @item @qcode{'SVMtype'} @tab A character vector selecting the formulation,
 ## either @qcode{'eps_svr'}, the default, or @qcode{'nu_svr'}.  MATLAB fits

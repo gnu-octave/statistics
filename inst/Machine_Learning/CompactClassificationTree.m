@@ -532,14 +532,6 @@ classdef CompactClassificationTree < PredictiveModel
       this.STfun = f;
     endfunction
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       fprintf ('\n  CompactClassificationTree\n\n');
       fprintf ('%22s: %s\n', 'ResponseName', this.ResponseName);
@@ -922,7 +914,8 @@ classdef CompactClassificationTree < PredictiveModel
 
       W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
                        'CompactClassificationTree', 'edge');
-      e = sum (W .* margin (this, X, Y));
+      m = margin (this, X, Y);
+      e = sum (W .* m(:)) / sum (W);
 
     endfunction
 
@@ -983,30 +976,32 @@ classdef CompactClassificationTree < PredictiveModel
                        " arguments must be in pairs."));
       endif
 
-      LossFun = 'mincost';
-      Weights = [];
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mincost', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
       lf_opt = {'binodeviance', 'classifcost', 'classiferror', ...
                 'exponential', 'hinge', 'logit', 'mincost', 'quadratic'};
+      if (! (ischar (LossFun) && any (strcmpi (LossFun, lf_opt))))
+        error ("CompactClassificationTree.loss: invalid loss function.");
+      endif
+      LossFun = tolower (LossFun);
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("CompactClassificationTree.loss: %s", errmsg);
+      endif
+      if (! isempty (Weights) && ! (isnumeric (Weights) && isvector (Weights)))
+        error ("CompactClassificationTree.loss: invalid 'Weights'.");
+      endif
 
-      while (numel (varargin) > 0)
-        Value = varargin{2};
-        switch (tolower (varargin{1}))
-          case 'lossfun'
-            if (! (ischar (Value) && any (strcmpi (Value, lf_opt))))
-              error ("CompactClassificationTree.loss: invalid loss function.");
-            endif
-            LossFun = tolower (Value);
-          case 'weights'
-            if (! (isnumeric (Value) && isvector (Value)))
-              error ("CompactClassificationTree.loss: invalid 'Weights'.");
-            endif
-            Weights = Value;
-          otherwise
-            error (strcat ("CompactClassificationTree.loss: invalid", ...
-                           " parameter name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("CompactClassificationTree.loss: invalid optional", ...
+                       " paired argument."));
+      endif
 
       [gY, errmsg] = labelIndices (this.ClassNames, Y);
       if (! isempty (errmsg))
@@ -1019,7 +1014,7 @@ classdef CompactClassificationTree < PredictiveModel
       if (isempty (Weights))
         w = ones (numel (gY), 1);
       else
-        w = Weights(:);
+        w = double (Weights(:));
         if (numel (w) != numel (gY))
           error (strcat ("CompactClassificationTree.loss: 'Weights' must", ...
                          " have one element per observation."));
@@ -1247,6 +1242,12 @@ endclassdef
 %! assert_equal (loss (CMdl, meas, species, 'LossFun', 'hinge'), ...
 %!               0.0308212560386473, 1e-14);
 
+%!test  # MATLAB parity: edge on a set missing a class
+%! load fisheriris
+%! CMdl = compact (ClassificationTree (meas, species));
+%! r = 51:150;
+%! assert_equal (edge (CMdl, meas(r,:), species(r)), 0.9075362319, 1e-10);
+
 %!test  # MATLAB parity: predictorImportance and nodeVariableRange
 %! load fisheriris
 %! CMdl = compact (ClassificationTree (meas, species));
@@ -1339,6 +1340,9 @@ endclassdef
 %!error<CompactClassificationTree.loss: invalid loss function.>
 %! loss (compact (ClassificationTree (ones (4, 2), [1; 1; 2; 2])), ...
 %!       ones (4, 2), [1; 1; 2; 2], 'LossFun', 'x')
+%!error<CompactClassificationTree.loss: invalid optional paired argument.> ...
+%! loss (compact (ClassificationTree (ones (4, 2), [1; 1; 2; 2])), ...
+%!       ones (4, 2), [1; 1; 2; 2], 'Bogus', 1)
 %!error<CompactClassificationTree.nodeVariableRange: NODE must be a positive integer no greater than the number of nodes in the tree.>
 %! nodeVariableRange (compact (ClassificationTree (ones (4, 2), ...
 %!                             [1; 1; 2; 2])), 99)
@@ -1431,3 +1435,9 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <CompactClassificationTree.loss: 'Weights' must be a real vector of class single or double.> ...
+%! loss (compact (fitctree (ones (4, 2), [1; 1; 2; 2])), ones (4, 2), ...
+%!       [1; 1; 2; 2], ...
+%!       'Weights', int8 ([1; 1; 1; 1]))

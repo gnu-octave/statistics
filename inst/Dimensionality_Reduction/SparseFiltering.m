@@ -142,7 +142,7 @@ classdef SparseFiltering
   methods
 
     ## -*- texinfo -*-
-    ## @deftypefn {statistics} {@var{Mdl} =} SparseFiltering (@var{X}, @var{Q}, @dots{})
+    ## @deftypefn {SparseFiltering} {@var{Mdl} =} SparseFiltering (@var{X}, @var{Q}, @dots{})
     ## Fit a sparse filtering model.  This constructor is invoked by
     ## @code{sparsefilt}; see @code{help sparsefilt} for the arguments.
     ## @end deftypefn
@@ -251,7 +251,7 @@ classdef SparseFiltering
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn {statistics} {@var{Z} =} transform (@var{Mdl}, @var{X})
+    ## @deftypefn {SparseFiltering} {@var{Z} =} transform (@var{Mdl}, @var{X})
     ## Transform data @var{X} into the learned feature space, returning the
     ## @math{N * Q} matrix @var{Z} of sparse features.
     ## @end deftypefn

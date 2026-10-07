@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -267,25 +276,27 @@
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
 					<li><a href="ansaribradley.html" class="text-decoration-none font-monospace"><small>ansaribradley</small></a></li>
-					<li><a href="bartlett_test.html" class="text-decoration-none font-monospace"><small>bartlett_test</small></a></li>
 					<li><a href="barttest.html" class="text-decoration-none font-monospace"><small>barttest</small></a></li>
 					<li><a href="binotest.html" class="text-decoration-none font-monospace"><small>binotest</small></a></li>
 					<li><a href="chi2gof.html" class="text-decoration-none font-monospace"><small>chi2gof</small></a></li>
 					<li><a href="chi2test.html" class="text-decoration-none font-monospace"><small>chi2test</small></a></li>
 					<li><a href="correlation_test.html" class="text-decoration-none font-monospace"><small>correlation_test</small></a></li>
+					<li><a href="detectdrift.html" class="text-decoration-none font-monospace"><small>detectdrift</small></a></li>
 					<li><a href="dwtest.html" class="text-decoration-none font-monospace"><small>dwtest</small></a></li>
 					<li><a href="fishertest.html" class="text-decoration-none font-monospace"><small>fishertest</small></a></li>
 					<li><a href="friedman.html" class="text-decoration-none font-monospace"><small>friedman</small></a></li>
 					<li><a href="hotelling_t2test.html" class="text-decoration-none font-monospace"><small>hotelling_t2test</small></a></li>
 					<li><a href="hotelling_t2test2.html" class="text-decoration-none font-monospace"><small>hotelling_t2test2</small></a></li>
 					<li><a href="jbtest.html" class="text-decoration-none font-monospace"><small>jbtest</small></a></li>
+					<li><a href="knntest.html" class="text-decoration-none font-monospace"><small>knntest</small></a></li>
 					<li><a href="kruskalwallis.html" class="text-decoration-none font-monospace"><small>kruskalwallis</small></a></li>
 					<li><a href="kstest.html" class="text-decoration-none font-monospace"><small>kstest</small></a></li>
 					<li><a href="kstest2.html" class="text-decoration-none font-monospace"><small>kstest2</small></a></li>
-					<li><a href="levene_test.html" class="text-decoration-none font-monospace"><small>levene_test</small></a></li>
 					<li><a href="lillietest.html" class="text-decoration-none font-monospace"><small>lillietest</small></a></li>
 					<li><a href="manova1.html" class="text-decoration-none font-monospace"><small>manova1</small></a></li>
 					<li><a href="mcnemar_test.html" class="text-decoration-none font-monospace"><small>mcnemar_test</small></a></li>
+					<li><a href="meanEffectSize.html" class="text-decoration-none font-monospace"><small>meanEffectSize</small></a></li>
+					<li><a href="mmdtest.html" class="text-decoration-none font-monospace"><small>mmdtest</small></a></li>
 					<li><a href="multcompare.html" class="text-decoration-none font-monospace"><small>multcompare</small></a></li>
 					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
 					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
@@ -293,6 +304,7 @@
 					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
 					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
 					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
+					<li><a href="stats.drift.DriftDiagnostics.html" class="text-decoration-none font-monospace"><small>stats.drift.DriftDiagnostics</small></a></li>
 					<li><a href="swtest.html" class="text-decoration-none font-monospace"><small>swtest</small></a></li>
 					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
 					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
@@ -339,6 +351,7 @@
 					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
 					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
 					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
+					<li><a href="fitrm.html" class="text-decoration-none font-monospace"><small>fitrm</small></a></li>
 					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
 					<li><a href="GeneralizedLinearModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearModel</small></a></li>
 					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
@@ -362,6 +375,7 @@
 					<li><a href="plsregress.html" class="text-decoration-none font-monospace"><small>plsregress</small></a></li>
 					<li><a href="regress.html" class="text-decoration-none font-monospace"><small>regress</small></a></li>
 					<li><a href="regress_gp.html" class="text-decoration-none font-monospace"><small>regress_gp</small></a></li>
+					<li><a href="RepeatedMeasuresModel.html" class="text-decoration-none font-monospace"><small>RepeatedMeasuresModel</small></a></li>
 					<li><a href="ridge.html" class="text-decoration-none font-monospace"><small>ridge</small></a></li>
 					<li><a href="robustfit.html" class="text-decoration-none font-monospace"><small>robustfit</small></a></li>
 					<li><a href="stepwisefit.html" class="text-decoration-none font-monospace"><small>stepwisefit</small></a></li>
@@ -373,8 +387,8 @@
 			<div class="row">
 				<input id="togList6" type="checkbox">
 				<label for="togList6">
-					<span><h6>Supervised Learning</h6></span>
-					<span><h6>Supervised Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
@@ -438,6 +452,9 @@
 					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
 					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
 					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
 					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
 					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
 					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
@@ -451,6 +468,8 @@
 					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
 					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
 					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
 					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
 					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
 					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
@@ -511,6 +530,8 @@
 					<li><a href="KDTreeSearcher.html" class="text-decoration-none font-monospace"><small>KDTreeSearcher</small></a></li>
 					<li><a href="knnsearch.html" class="text-decoration-none font-monospace"><small>knnsearch</small></a></li>
 					<li><a href="mahal.html" class="text-decoration-none font-monospace"><small>mahal</small></a></li>
+					<li><a href="nomdist.html" class="text-decoration-none font-monospace"><small>nomdist</small></a></li>
+					<li><a href="nomdist2.html" class="text-decoration-none font-monospace"><small>nomdist2</small></a></li>
 					<li><a href="pdist.html" class="text-decoration-none font-monospace"><small>pdist</small></a></li>
 					<li><a href="pdist2.html" class="text-decoration-none font-monospace"><small>pdist2</small></a></li>
 					<li><a href="rangesearch.html" class="text-decoration-none font-monospace"><small>rangesearch</small></a></li>
@@ -873,6 +894,10 @@
 					<li><a href="stblinv.html" class="text-decoration-none font-monospace"><small>stblinv</small></a></li>
 					<li><a href="stblpdf.html" class="text-decoration-none font-monospace"><small>stblpdf</small></a></li>
 					<li><a href="stblrnd.html" class="text-decoration-none font-monospace"><small>stblrnd</small></a></li>
+					<li><a href="stdrcdf.html" class="text-decoration-none font-monospace"><small>stdrcdf</small></a></li>
+					<li><a href="stdrinv.html" class="text-decoration-none font-monospace"><small>stdrinv</small></a></li>
+					<li><a href="stdrpdf.html" class="text-decoration-none font-monospace"><small>stdrpdf</small></a></li>
+					<li><a href="stdrrnd.html" class="text-decoration-none font-monospace"><small>stdrrnd</small></a></li>
 					<li><a href="tcdf.html" class="text-decoration-none font-monospace"><small>tcdf</small></a></li>
 					<li><a href="tinv.html" class="text-decoration-none font-monospace"><small>tinv</small></a></li>
 					<li><a href="tpdf.html" class="text-decoration-none font-monospace"><small>tpdf</small></a></li>
@@ -929,6 +954,7 @@
 					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
 					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
 					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
 					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
 					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
 					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
@@ -945,6 +971,7 @@
 					<li><a href="poisstat.html" class="text-decoration-none font-monospace"><small>poisstat</small></a></li>
 					<li><a href="raylstat.html" class="text-decoration-none font-monospace"><small>raylstat</small></a></li>
 					<li><a href="ricestat.html" class="text-decoration-none font-monospace"><small>ricestat</small></a></li>
+					<li><a href="stdrstat.html" class="text-decoration-none font-monospace"><small>stdrstat</small></a></li>
 					<li><a href="tlsstat.html" class="text-decoration-none font-monospace"><small>tlsstat</small></a></li>
 					<li><a href="tristat.html" class="text-decoration-none font-monospace"><small>tristat</small></a></li>
 					<li><a href="tstat.html" class="text-decoration-none font-monospace"><small>tstat</small></a></li>
@@ -985,24 +1012,34 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
 					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
 					<li><a href="ecdfhist.html" class="text-decoration-none font-monospace"><small>ecdfhist</small></a></li>
 					<li><a href="einstein.html" class="text-decoration-none font-monospace"><small>einstein</small></a></li>
+					<li><a href="gardnerAltmanPlot.html" class="text-decoration-none font-monospace"><small>gardnerAltmanPlot</small></a></li>
 					<li><a href="glyphplot.html" class="text-decoration-none font-monospace"><small>glyphplot</small></a></li>
 					<li><a href="gplotmatrix.html" class="text-decoration-none font-monospace"><small>gplotmatrix</small></a></li>
 					<li><a href="gscatter.html" class="text-decoration-none font-monospace"><small>gscatter</small></a></li>
+					<li><a href="heatmap.html" class="text-decoration-none font-monospace"><small>heatmap</small></a></li>
 					<li><a href="hist3.html" class="text-decoration-none font-monospace"><small>hist3</small></a></li>
 					<li><a href="histfit.html" class="text-decoration-none font-monospace"><small>histfit</small></a></li>
 					<li><a href="manovacluster.html" class="text-decoration-none font-monospace"><small>manovacluster</small></a></li>
 					<li><a href="normplot.html" class="text-decoration-none font-monospace"><small>normplot</small></a></li>
 					<li><a href="parallelcoords.html" class="text-decoration-none font-monospace"><small>parallelcoords</small></a></li>
+					<li><a href="parallelplot.html" class="text-decoration-none font-monospace"><small>parallelplot</small></a></li>
 					<li><a href="ppplot.html" class="text-decoration-none font-monospace"><small>ppplot</small></a></li>
 					<li><a href="probplot.html" class="text-decoration-none font-monospace"><small>probplot</small></a></li>
 					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
 					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
+					<li><a href="scatterhistogram.html" class="text-decoration-none font-monospace"><small>scatterhistogram</small></a></li>
 					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="stats.chart.HeatmapChart.html" class="text-decoration-none font-monospace"><small>stats.chart.HeatmapChart</small></a></li>
+					<li><a href="stats.chart.ParallelCoordinatesPlot.html" class="text-decoration-none font-monospace"><small>stats.chart.ParallelCoordinatesPlot</small></a></li>
+					<li><a href="stats.chart.ScatterHistogramChart.html" class="text-decoration-none font-monospace"><small>stats.chart.ScatterHistogramChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
 					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
 					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
 				</ul>
@@ -1051,7 +1088,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl><code><h5 class="description">statistics: CompactLinearModel</h5></code></dl>
+<p class="h5 description mb-3"><code>statistics: CompactLinearModel</code></p>
 <p> Compact linear regression model
 </p>
 <div class="ms-5">
@@ -1086,9 +1123,6 @@
  <code>NumPredictors</code>, <code>NumVariables</code>, <code>PredictorNames</code>,
  <code>ResponseName</code>, <code>VariableInfo</code>, and <code>VariableNames</code>.</td></tr>
 </table>
-<p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/CompactLinearModel.m">CompactLinearModel</a>
-</p>
 </div>
 
 <p> Because the training data is discarded, a <code>CompactLinearModel</code>
@@ -1132,9 +1166,6 @@
  of its terms, since a <code>CompactLinearModel</code> object has no data to
  refit with.</td></tr>
 </table>
-<p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/CompactLinearModel.m">CompactLinearModel</a>
-</p>
 </div>
 
 <p> Create a <code>CompactLinearModel</code> object by using the <code>compact</code>
@@ -1145,7 +1176,7 @@
   <a href="LinearModel.html#LinearModel_compact">LinearModel.compact</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/7023b5a/inst/Regression/CompactLinearModel.m">CompactLinearModel</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Regression/CompactLinearModel.m">CompactLinearModel</a>
 </p>
 </div>
         <p class="lead my-3">The <code>CompactLinearModel</code> class contains the following properties:</p>
@@ -1168,7 +1199,6 @@ Covariance matrix of coefficient estimates
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_CoefficientCovariance">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A <em class="math">p</em>-by-<em class="math">p</em> numeric matrix of covariance values for the
  coefficient estimates, where <em class="math">p</em> is the number of coefficients in
@@ -1199,7 +1229,6 @@ Coefficient names
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_CoefficientNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors, each containing the name of the
  corresponding model term (e.g., <code>'(Intercept)'</code>, <code>'x1'</code>,
@@ -1229,7 +1258,6 @@ Coefficient values
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_Coefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row for each coefficient and four columns:
 </p>
@@ -1268,7 +1296,6 @@ Number of model coefficients
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_NumCoefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer giving the total number of coefficients in the fitted
  model, including any coefficients set to zero because the model terms are
@@ -1298,7 +1325,6 @@ Number of estimated coefficients
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_NumEstimatedCoefficients">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer giving the number of coefficients actually estimated,
  i.e., not set to zero due to rank deficiency.
@@ -1329,7 +1355,6 @@ Degrees of freedom for error
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_DFE">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer equal to the number of observations minus the number
  of estimated coefficients: <code>DFE = NumObservations -
@@ -1359,7 +1384,6 @@ Log-likelihood of the fitted model
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_LogLikelihood">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to the log-likelihood of the response
  values, assuming each response is normally distributed with mean equal
@@ -1390,7 +1414,6 @@ Model comparison criteria
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_ModelCriterion">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with four fields:
 </p>
@@ -1433,7 +1456,6 @@ Mean squared error
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_MSE">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to <em class="math">SSE / DFE</em>, where <code>SSE</code> is
  the sum of squared errors and <code>DFE</code> is the degrees of freedom for
@@ -1463,7 +1485,6 @@ Root mean squared error
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_RMSE">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to <em class="math">sqrt(MSE)</em>.  This property is
  read-only.
@@ -1492,7 +1513,6 @@ R-squared goodness-of-fit statistics
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_Rsquared">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with two fields:
 </p>
@@ -1529,7 +1549,6 @@ Sum of squared errors
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_SSE">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to the sum of squared residuals.  For a
  model with an intercept, <em class="math">SST = SSE + SSR</em>.  For weighted fits,
@@ -1559,7 +1578,6 @@ Regression sum of squares
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_SSR">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to the sum of squared deviations of the
  fitted values from the mean of the response.  For a model with an
@@ -1590,7 +1608,6 @@ Total sum of squares
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_SST">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A scalar numeric value equal to the sum of squared deviations of the
  response from its mean. For a model with an intercept,
@@ -1622,7 +1639,6 @@ Robust fit information
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_Robust">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure with three fields:
 </p>
@@ -1662,7 +1678,6 @@ Model formula information
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_Formula">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A structure representing the model formula with fields including
  <code>ResponseName</code>, <code>LinearPredictor</code>, <code>PredictorNames</code>,
@@ -1693,7 +1708,6 @@ Number of observations used in the fit
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_NumObservations">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer giving the number of observations actually used in
  fitting the original model.  Rows with missing values and rows
@@ -1724,7 +1738,6 @@ Number of predictor variables
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_NumPredictors">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer giving the number of predictor variables used to
  fit the model.  This property is read-only.
@@ -1753,7 +1766,6 @@ Number of variables in the input data
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_NumVariables">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A positive integer giving the total number of variables in the input
  data used to fit the original model, counting predictors, the
@@ -1783,7 +1795,6 @@ Names of predictor variables
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_PredictorNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors containing the names of the
  predictor variables used to fit the model.  This property is
@@ -1813,7 +1824,6 @@ Response variable name
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_ResponseName">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A character vector containing the name of the response variable.
  This property is read-only.
@@ -1842,7 +1852,6 @@ Information about input variables
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_VariableInfo">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A table with one row per variable including any unused variables, and
  four columns:
@@ -1885,7 +1894,6 @@ Names of all variables in the input data
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_VariableNames">
             <div class="border-bottom py-2">
-
 <p> </p>
 <p> A cell array of character vectors containing the names of all
  variables used to fit the original model, including predictors, the
@@ -1918,10 +1926,8 @@ Confidence intervals for the coefficient estimates of a fitted linear
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_coefCI">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>, <var>alpha</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactLinearModel: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>, <var>alpha</var>)</code></p>
 <p> </p>
 <p> <code><var>ci</var> = coefCI (<var>mdl</var>)</code> returns 95% confidence intervals
  for every coefficient in <var>mdl</var> using a default significance level of
@@ -1974,13 +1980,11 @@ Linear hypothesis test on the coefficients of a fitted linear regression
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_coefTest">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactLinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>, <var>H</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>, <var>H</var>, <var>C</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: [<var>p</var>, <var>F</var>] = <b>coefTest</b> (&hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: [<var>p</var>, <var>F</var>, <var>r</var>] = <b>coefTest</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactLinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>CompactLinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>, <var>H</var>)</code></p>
+<p class="h5 fs"><code>CompactLinearModel: <var>p</var> = <b>coefTest</b> (<var>mdl</var>, <var>H</var>, <var>C</var>)</code></p>
+<p class="h5 fs"><code>CompactLinearModel: [<var>p</var>, <var>F</var>] = <b>coefTest</b> (&hellip;)</code></p>
+<p class="h5 fs fs-last"><code>CompactLinearModel: [<var>p</var>, <var>F</var>, <var>r</var>] = <b>coefTest</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>coefTest</code> tests whether one or more linear combinations of the
  fitted coefficients equal specified constants.  Each linear combination
@@ -2043,11 +2047,9 @@ Predict responses from a fitted linear regression model.
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_predict">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactLinearModel: <var>ypred</var> = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: [<var>ypred</var>, <var>yci</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: [<var>ypred</var>, <var>yci</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactLinearModel: <var>ypred</var> = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs"><code>CompactLinearModel: [<var>ypred</var>, <var>yci</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactLinearModel: [<var>ypred</var>, <var>yci</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>, <var>Name</var>, <var>Value</var>)</code></p>
 <p> </p>
 <p> <code><var>ypred</var> = predict (<var>mdl</var>, <var>Xnew</var>)</code> returns the fitted
  response values at the new predictor locations in <var>Xnew</var>.  <var>Xnew</var>
@@ -2112,9 +2114,7 @@ Simulate responses with random noise from a fitted linear regression
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_random">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactLinearModel: <var>ysim</var> = <b>random</b> (<var>mdl</var>, <var>Xnew</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs fs-last"><code>CompactLinearModel: <var>ysim</var> = <b>random</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
 <p> </p>
 <p> <code><var>ysim</var> = random (<var>mdl</var>, <var>Xnew</var>)</code> computes the fitted
  response at each row of <var>Xnew</var> and then adds independent Gaussian
@@ -2162,10 +2162,8 @@ Predict responses of a fitted linear regression model using separate
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_feval">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactLinearModel: <var>ypred</var> = <b>feval</b> (<var>mdl</var>, <var>X</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <var>ypred</var> = <b>feval</b> (<var>mdl</var>, <var>x1</var>, <var>x2</var>, &hellip;, <var>xp</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactLinearModel: <var>ypred</var> = <b>feval</b> (<var>mdl</var>, <var>X</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactLinearModel: <var>ypred</var> = <b>feval</b> (<var>mdl</var>, <var>x1</var>, <var>x2</var>, &hellip;, <var>xp</var>)</code></p>
 <p> </p>
 <p> <code><var>ypred</var> = feval (<var>mdl</var>, <var>X</var>)</code> accepts a single
  numeric matrix <var>X</var> with one column per predictor in the same order
@@ -2216,11 +2214,9 @@ Plot the main effects of each predictor in a compact linear regression
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_plotEffects">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactLinearModel: <b>plotEffects</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <b>plotEffects</b> (<var>ax</var>, <var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <var>h</var> = <b>plotEffects</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactLinearModel: <b>plotEffects</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>CompactLinearModel: <b>plotEffects</b> (<var>ax</var>, <var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactLinearModel: <var>h</var> = <b>plotEffects</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>plotEffects (<var>mdl</var>)</code> creates a horizontal dot-and-line plot
  with one row per predictor.  Each dot shows the estimated main effect on
@@ -2279,12 +2275,10 @@ Plot the interaction effects of two predictors in a compact linear
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_plotInteraction">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactLinearModel: <b>plotInteraction</b> (<var>mdl</var>, <var>var1</var>, <var>var2</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <b>plotInteraction</b> (<var>mdl</var>, <var>var1</var>, <var>var2</var>, <var>ptype</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <b>plotInteraction</b> (<var>ax</var>, &hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <var>h</var> = <b>plotInteraction</b> (&hellip;)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactLinearModel: <b>plotInteraction</b> (<var>mdl</var>, <var>var1</var>, <var>var2</var>)</code></p>
+<p class="h5 fs"><code>CompactLinearModel: <b>plotInteraction</b> (<var>mdl</var>, <var>var1</var>, <var>var2</var>, <var>ptype</var>)</code></p>
+<p class="h5 fs"><code>CompactLinearModel: <b>plotInteraction</b> (<var>ax</var>, &hellip;)</code></p>
+<p class="h5 fs fs-last"><code>CompactLinearModel: <var>h</var> = <b>plotInteraction</b> (&hellip;)</code></p>
 <p> </p>
 <p> <code>plotInteraction (<var>mdl</var>, <var>var1</var>, <var>var2</var>)</code> creates a
  plot of the main effects of <var>var1</var> and <var>var2</var> together with
@@ -2364,11 +2358,9 @@ Analysis of variance for a compact linear regression model.
           </div>
           <div class="collapse multi-collapse" id="CompactLinearModel_anova">
             <div class="border-bottom py-2">
-<dl>
-<dt><code><h5 class="fs">CompactLinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>, <var>anovatype</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactLinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>, <code>&quot;components&quot;</code>, <var>sstype</var>)</code></h5></dt>
-</dl>
+<p class="h5 fs"><code>CompactLinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>CompactLinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>, <var>anovatype</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactLinearModel: <var>tbl</var> = <b>anova</b> (<var>mdl</var>, <code>&quot;components&quot;</code>, <var>sstype</var>)</code></p>
 <p> </p>
 <p> <code>anova (<var>mdl</var>)</code> returns a table <var>tbl</var> with component
  ANOVA statistics for every term in <var>mdl</var> except the constant

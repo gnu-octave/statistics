@@ -16,27 +16,27 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef ClassificationPartitionedECOC
-## -*- texinfo -*-
-## @deftypefn {statistics} ClassificationPartitionedECOC
-##
-## A cross-validated multiclass model built from binary learners.
-##
-## Each fold holds out part of the data, fits an error correcting output codes
-## model on the rest, and answers the part it held out, so every observation
-## is classified by a model that never saw it.
-##
-## It comes from @code{crossval} on a @code{ClassificationECOC}, and from
-## @code{fitcecoc} given any of @qcode{'KFold'}, @qcode{'Holdout'},
-## @qcode{'Leaveout'} or @qcode{'CVPartition'}.
-##
-## This is the one cross-validated class in the package that is not the
-## general @code{ClassificationPartitionedModel}.  It carries
-## @code{CodingMatrix}, @code{BinaryLoss} and @code{BinaryY}, three things
-## the general class has nowhere to put and without which a fold's scores
-## cannot be decoded at all.
-##
-## @seealso{fitcecoc, ClassificationECOC, CompactClassificationECOC}
-## @end deftypefn
+  ## -*- texinfo -*-
+  ## @deftp {statistics} ClassificationPartitionedECOC
+  ##
+  ## A cross-validated multiclass model built from binary learners.
+  ##
+  ## Each fold holds out part of the data, fits an error correcting output codes
+  ## model on the rest, and answers the part it held out, so every observation
+  ## is classified by a model that never saw it.
+  ##
+  ## It comes from @code{crossval} on a @code{ClassificationECOC}, and from
+  ## @code{fitcecoc} given any of @qcode{'KFold'}, @qcode{'Holdout'},
+  ## @qcode{'Leaveout'} or @qcode{'CVPartition'}.
+  ##
+  ## This is the one cross-validated class in the package that is not the
+  ## general @code{ClassificationPartitionedModel}.  It carries
+  ## @code{CodingMatrix}, @code{BinaryLoss} and @code{BinaryY}, three things
+  ## the general class has nowhere to put and without which a fold's scores
+  ## cannot be decoded at all.
+  ##
+  ## @seealso{fitcecoc, ClassificationECOC, CompactClassificationECOC}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 
@@ -413,7 +413,7 @@ classdef ClassificationPartitionedECOC
 
       m = kfoldMargin (this);
       keep = ! isnan (m);
-      w = this.W(:)(keep);
+      w = double (this.W(:))(keep);
       e = sum (w .* m(keep)) / sum (w);
 
     endfunction
@@ -441,22 +441,21 @@ classdef ClassificationPartitionedECOC
         error (strcat ("ClassificationPartitionedECOC.kfoldLoss:", ...
                        " name-value arguments must be in pairs."));
       endif
-      LossFun = 'classiferror';
-      for i = 1:2:numel (varargin)
-        switch (tolower (varargin{i}))
-          case 'lossfun'
-            LossFun = varargin{i+1};
-            if (! (ischar (LossFun) && isrow (LossFun)))
-              error (strcat ("ClassificationPartitionedECOC.kfoldLoss:", ...
-                             " 'LossFun' must be a character vector."));
-            endif
-            LossFun = tolower (LossFun);
-          otherwise
-            error (strcat ("ClassificationPartitionedECOC.kfoldLoss:", ...
-                           " invalid parameter name in optional pair", ...
-                           " arguments."));
-        endswitch
-      endfor
+      ## Parse optional paired arguments
+      [LossFun, args] = parsePairedArguments ({'LossFun'}, {'classiferror'}, ...
+                                              varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (ischar (LossFun) && isrow (LossFun)))
+        error (strcat ("ClassificationPartitionedECOC.kfoldLoss:", ...
+                       " 'LossFun' must be a character vector."));
+      endif
+      LossFun = tolower (LossFun);
+
+      if (! isempty (args))
+        error (strcat ("ClassificationPartitionedECOC.kfoldLoss:", ...
+                       " invalid optional paired argument."));
+      endif
 
       [~, NegLoss] = kfoldPredict (this);
       [gY, errmsg] = labelIndices (this.ClassNames, this.Y);
@@ -468,7 +467,7 @@ classdef ClassificationPartitionedECOC
       ## left out of the loss rather than counted as an error.
       keep = ! any (isnan (NegLoss), 2);
       L = classificationLoss (LossFun, NegLoss(keep,:), gY(keep), ...
-                              this.W(keep), this.Cost);
+                              double (this.W(keep)), this.Cost);
 
     endfunction
 
@@ -622,6 +621,10 @@ endclassdef
 %! y = [1; 2; 1; 2; 1; 2; 1; 2]; ...
 %! CV = crossval (ClassificationECOC (ones (8, 2), y), 'KFold', 2); ...
 %! kfoldLoss (CV, 'LossFun')
+%!error<ClassificationPartitionedECOC.kfoldLoss: invalid optional paired argument.> ...
+%! y = [1; 2; 1; 2; 1; 2; 1; 2]; ...
+%! CV = crossval (ClassificationECOC (ones (8, 2), y), 'KFold', 2); ...
+%! kfoldLoss (CV, 'Bogus', 1)
 %!error<ClassificationPartitionedECOC.kfoldfun: FUN must be a function handle.> ...
 %! y = [1; 2; 1; 2; 1; 2; 1; 2]; ...
 %! CV = crossval (ClassificationECOC (ones (8, 2), y), 'KFold', 2); ...

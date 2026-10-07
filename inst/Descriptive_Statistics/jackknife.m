@@ -19,19 +19,25 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{jackstat} =} jackknife (@var{E}, @var{x})
 ## @deftypefnx {statistics} {@var{jackstat} =} jackknife (@var{E}, @var{x}, @dots{})
+## @deftypefnx {statistics} {@var{jackstat} =} jackknife (@dots{}, @qcode{'Options'}, @var{options})
 ##
 ## Compute jackknife estimates of a parameter taking one or more given samples
 ## as parameters.
 ##
 ## In particular, @var{E} is the estimator to be jackknifed as a function name,
 ## handle, or inline function, and @var{x} is the sample for which the estimate
-## is to be taken.  The @var{i}-th entry of @var{jackstat} will contain the
-## value of the estimator on the sample @var{x} with its @var{i}-th row omitted.
+## is to be taken.  Each row of @var{x} is an observation, and a row vector is
+## taken as a column of them.  The @var{i}-th row of @var{jackstat} holds the
+## estimator's value on @var{x} with its @var{i}-th row omitted, reshaped to a
+## row, so an estimator returning @math{m} values gives an @math{n*m} matrix
+## for @math{n} observations, and a scalar estimator a column vector.  Every
+## sample must give the estimator's result the same number of elements as the
+## whole of @var{x} does.  With fewer than two observations there is nothing
+## to omit, and @var{jackstat} is the estimator's value on @var{x} itself.
 ##
 ## @example
 ## @group
-## jackstat (@var{i}) = @var{E}(@var{x}(1 : @var{i} - 1,
-##                              @var{i} + 1 : length(@var{x})))
+## jackstat (@var{i},:) = @var{E} (@var{x}([1:@var{i}-1, @var{i}+1:end],:))
 ## @end group
 ## @end example
 ##
@@ -43,10 +49,25 @@
 ## cell arrays, for example jackknifing the standard deviation of a sample can
 ## be performed with @code{@var{jackstat} = jackknife (@@std, rand (100, 1))}.
 ## @item
-## If, however, more than one sample is to be used, the samples must all be of
-## equal size, and the estimator must address them as elements of a cell-array,
-## in which they are aggregated in their order of appearance:
+## If several samples are used, an estimator that takes as many inputs, or
+## declares @code{varargin}, receives each sample as an argument of its own,
+## as in MATLAB.  A scalar is passed to every call unchanged, and the other
+## samples must all have the same number of rows, the same row being omitted
+## from each:
 ## @end itemize
+##
+## @example
+## @group
+## @var{jackstat} = jackknife (@@(x, y) std (x) / var (y),
+## rand (100, 1), randn (100, 1))
+## @end group
+## @end example
+##
+## An estimator declaring exactly one input instead receives the samples as
+## the elements of a cell array, in their order of appearance, and the samples
+## must all have the same number of rows.  This form is an Octave extension.
+## An estimator written for it that also declares an optional second input
+## receives the samples as separate arguments.
 ##
 ## @example
 ## @group
@@ -54,6 +75,10 @@
 ## rand (100, 1), randn (100, 1))
 ## @end group
 ## @end example
+##
+## @qcode{'Options'} takes an options structure, as made by @code{statset},
+## for MATLAB compatibility; it changes nothing, the samples being evaluated
+## one after another.
 ##
 ## If all goes well, a theoretical value @var{P} for the parameter is already
 ## known, @var{n} is the sample size,
@@ -87,42 +112,97 @@
 
 function jackstat = jackknife (anEstimator, varargin)
 
+  if (nargin < 2)
+    print_usage ();
+  endif
+
   ## Convert function name to handle if necessary, or throw an error.
-  if (! strcmp (typeinfo (anEstimator), 'function handle'))
-    if (isascii (anEstimator))
-      anEstimator = str2func (anEstimator);
-    else
-      error (strcat ("jackknife: estimators must be passed as function", ...
-                     " names or handles."));
-    endif
+  if (ischar (anEstimator))
+    anEstimator = str2func (anEstimator);
+  elseif (! is_function_handle (anEstimator))
+    error (strcat ("jackknife: estimators must be passed as function", ...
+                   " names or handles."));
   endif
 
-  ## Simple jackknifing can be done with a single vector argument, and
-  ## first and foremost with a function that does not care about cell-arrays.
-  if (length (varargin) == 1 && isnumeric (varargin {1}))
-    aSample = varargin{1};
-    g = length (aSample);
-    jackstat = zeros (1, g);
-    for k = 1:g
-      jackstat(k) = anEstimator(aSample([1:k - 1,k + 1:g]));
-    endfor
+  ## An options structure is taken and changes nothing: the samples are
+  ## evaluated one after another and nothing is drawn at random.
+  if (numel (varargin) >= 3 && ischar (varargin{end-1})
+      && strcmpi (varargin{end-1}, 'Options'))
+    if (! (isstruct (varargin{end}) || isempty (varargin{end})))
+      error ("jackknife: 'Options' must be a structure.");
+    endif
+    varargin(end-1:end) = [];
+  endif
 
-  ## More complicated input requires more work, however.
+  ## Each row is an observation, and a row vector is a column of them.
+  for i = 1:numel (varargin)
+    if (isrow (varargin{i}))
+      varargin{i} = varargin{i}(:);
+    endif
+  endfor
+
+  ## A single sample reaches the estimator as it is.  Several reach a
+  ## one-input estimator as a cell array, and any other estimator as
+  ## arguments of their own with every scalar passed unchanged, as in MATLAB.
+  if (numel (varargin) == 1)
+    n = rows (varargin{1});
+    estimate = @(idx) anEstimator (varargin{1}(idx,:));
+  elseif (takesOneInput (anEstimator))
+    n = cellfun (@rows, varargin);
+    if (any (n != n(1)))
+      error ("jackknife: all passed data must have the same number of rows.");
+    endif
+    n = n(1);
+    estimate = @(idx) anEstimator (cellfun (@(x) x(idx,:), varargin, ...
+                                            'UniformOutput', false));
   else
-    g = cellfun (@(x) length (x), varargin);
-
-    if (any (g - g(1)))
-      error ("jackknife: all passed data must be of equal length.");
+    isdata = ! cellfun (@isscalar, varargin);
+    n = [cellfun(@rows, varargin(isdata)), 0];
+    if (any (n(1:end-1) != n(1)))
+      error (strcat ("jackknife: all passed data other than scalars must", ...
+                     " have the same number of rows."));
     endif
-    g = g(1);
-    jackstat = zeros (1, g);
-
-    for k = 1:g
-      jackstat(k) = anEstimator(cellfun (@(x) x( [ 1 : k - 1, k + 1 : g ]), ...
-                                 varargin, 'UniformOutput', false));
-    endfor
+    n = n(1);
+    estimate = @(idx) leaveOut (anEstimator, varargin, isdata, idx);
   endif
 
+  ## One row per jackknife sample, holding the estimate as a row.  With
+  ## fewer than two observations there is no sample to leave one out of,
+  ## and the estimate on the whole data is returned.
+  jackstat = estimate (1:n);
+  jackstat = jackstat(:).';
+  if (n < 2)
+    return;
+  endif
+  m = numel (jackstat);
+  jackstat = repmat (jackstat, n, 1);
+  for k = 1:n
+    s = estimate ([1:k-1, k+1:n]);
+    if (numel (s) != m)
+      error (strcat ("jackknife: the estimator returned %d values for a", ...
+                     " jackknife sample and %d for the whole data."), ...
+             numel (s), m);
+    endif
+    jackstat(k,:) = s(:).';
+  endfor
+
+endfunction
+
+## True for an estimator declaring exactly one input.
+function tf = takesOneInput (fcn)
+  try
+    tf = (nargin (fcn) == 1);
+  catch
+    tf = false;
+  end_try_catch
+endfunction
+
+## The estimator on every data argument restricted to the rows IDX.
+function s = leaveOut (fcn, samples, isdata, idx)
+  for i = find (isdata)
+    samples{i} = samples{i}(idx,:);
+  endfor
+  s = fcn (samples{:});
 endfunction
 
 
@@ -151,9 +231,143 @@ endfunction
 %! plot (sort (tcdf (t, 49)), ...
 %!       '-;Almost linear mapping indicates good fit with t-distribution.;')
 
+%!demo
+%! ## Jackknife the correlation of two samples, each handed to the estimator
+%! ## as an argument of its own, and correct it for bias
+%! rng (42);
+%! x = randn (30, 1);
+%! y = x + randn (30, 1);
+%! n = numel (x);
+%! r = corr (x, y);
+%! jackstat = jackknife (@(a, b) corr (a, b), x, y);
+%! bias = (n - 1) * (mean (jackstat) - r)
+%! se = sqrt ((n - 1) / n * sumsq (jackstat - mean (jackstat)))
+%! r_corrected = r - bias
+
 ## Test output
 %!test
 %! ##Example from Quenouille, Table 1
 %! d=[0.18 4.00 1.04 0.85 2.14 1.01 3.01 2.33 1.57 2.19];
 %! jackstat = jackknife ( @(x) 1/mean (x), d );
 %! assert_equal ( 10 / mean (d) - 9 * mean (jackstat), 0.5240, 1e-5 );
+
+%!test
+%! ## Empty input
+%! assert_equal (jackknife (@mean, []), NaN);
+
+%!test
+%! ## Single-element input
+%! assert_equal (jackknife (@mean, 5), 5);
+
+%!test
+%! ## Estimator returning multiple values
+%! expected = [2.5, sqrt(0.5);
+%!             2.0, sqrt(2);
+%!             1.5, sqrt(0.5)];
+%! jackstat = jackknife (@(x) [mean(x); std(x)], [1 2 3]);
+%! assert_equal (jackstat, expected, 1e-5);
+
+## Expected values below are MATLAB R2024a's.
+%!test
+%! ## Each row of a matrix is an observation
+%! assert_equal (jackknife (@mean, magic (3)), ...
+%!               [3.5, 7, 4.5; 6, 5, 4; 5.5, 3, 6.5]);
+
+%!test
+%! assert_equal (jackknife (@mean, [1, 2; 3, 4; 5, 7]), ...
+%!               [4, 5.5; 3, 4.5; 2, 3]);
+
+%!test
+%! ## A row vector is a column of observations
+%! assert_equal (jackknife (@mean, [1, 2, 3]), [2.5; 2; 1.5]);
+
+%!test
+%! ## An estimate is reshaped to a row
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 10];
+%! assert_equal (jackknife (@(v) [v(1), v(end)], x), [4, 10; 1, 10; 1, 6]);
+
+%!test
+%! assert_equal (jackknife (@(v) sum (v(:)) * ones (2, 2), [1, 2, 3, 4]), ...
+%!               [9, 9, 9, 9; 8, 8, 8, 8; 7, 7, 7, 7; 6, 6, 6, 6]);
+
+%!test
+%! assert_equal (jackknife (@mean, zeros (1, 0)), NaN);
+
+%!test
+%! assert_equal (jackknife (@(x) [mean(x); std(x)], []), [NaN, NaN]);
+
+%!test
+%! assert_equal (jackknife (@(x) [mean(x); std(x)], 5), [5, 0]);
+
+%!test
+%! assert_equal (jackknife (@(x) mean (x) > 2, [1, 2, 3]), ...
+%!               [true; false; false]);
+
+%!test
+%! assert_equal (jackknife (@mean, single ([1, 2, 3])), single ([2.5; 2; 1.5]));
+
+%!test
+%! assert_equal (jackknife ('mean', [1, 2, 3]), [2.5; 2; 1.5]);
+
+%!test
+%! assert_equal (jackknife (@mean, [1, 2, 3], 'Options', statset ()), ...
+%!               [2.5; 2; 1.5]);
+
+%!test
+%! ## Several samples reach a one-input estimator as a cell array
+%! assert_equal (jackknife (@(x) mean (x{1}) - mean (x{2}), [1, 2, 3], ...
+%!                          [4, 5, 7]), [-3.5; -3.5; -3]);
+
+%!test
+%! ## and any other estimator as arguments of their own
+%! assert_equal (jackknife (@(a, b) mean (a) - mean (b), [1, 2, 3], ...
+%!                          [4; 5; 7]), [-3.5; -3.5; -3]);
+
+%!test
+%! assert_equal (jackknife (@(varargin) numel (varargin), [1, 2, 3], ...
+%!                          [4, 5, 7]), [2; 2; 2]);
+
+%!test
+%! ## A scalar is passed unchanged
+%! assert_equal (jackknife (@(a, b) a + mean (b), 5, [1, 2, 3]), ...
+%!               [7.5; 7; 6.5]);
+
+%!test
+%! assert_equal (jackknife (@(a, b, c) mean (a) * b + mean (c), ...
+%!                          [1, 2, 3], 2, [4, 5, 7]), [11; 9.5; 7.5]);
+
+%!test
+%! x = [1, 2; 3, 4; 5, 6];
+%! assert_equal (jackknife (@(a, b) mean (a, 1) + b, x, 10), ...
+%!               [14, 15; 13, 14; 12, 13]);
+
+%!test
+%! assert_equal (jackknife (@(a, b) [mean(a), mean(b)], [1, 2, 3], ...
+%!                          [4, 5, 7]), [2.5, 6; 2, 5.5; 1.5, 4.5]);
+
+%!test
+%! assert_equal (jackknife (@(a, b) a + b, 5, 6), 11);
+
+%!test
+%! assert_equal (jackknife (@(a, b) sum (a) + b, [], 1), 1);
+
+%!test
+%! assert_equal (jackknife (@(a, b) mean (a) - mean (b), [1, 2, 3], ...
+%!                          [4, 5, 7], 'Options', statset ()), ...
+%!               [-3.5; -3.5; -3]);
+
+%!test
+%! assert_equal (jackknife (@(x) mean (x{1}) + mean (x{2}), 5, 6), 11);
+
+## Test input validation
+%!error<Invalid call to jackknife> jackknife (@mean)
+%!error<jackknife: estimators must be passed as function names or handles.> ...
+%! jackknife (1, [1, 2, 3])
+%!error<jackknife: 'Options' must be a structure.> ...
+%! jackknife (@mean, [1, 2, 3], 'Options', 1)
+%!error<jackknife: all passed data must have the same number of rows.> ...
+%! jackknife (@(x) mean (x{1}), [1, 2, 3], [4, 5])
+%!error<jackknife: all passed data other than scalars must have the same number of rows.> ...
+%! jackknife (@(a, b) mean (a), [1, 2], [4; 5; 7])
+%!error<jackknife: the estimator returned 2 values for a jackknife sample and 3 for the whole data.> ...
+%! jackknife (@(v) v, [1, 2, 3])

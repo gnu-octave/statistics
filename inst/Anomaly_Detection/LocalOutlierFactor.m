@@ -15,26 +15,24 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftypefn {statistics} {@var{Mdl} =} LocalOutlierFactor (@var{X})
-## @deftypefnx {statistics} {@var{Mdl} =} LocalOutlierFactor (@var{X}, @var{name}, @var{value})
-##
-## Local Outlier Factor model for anomaly detection.
-##
-## A @code{LocalOutlierFactor} object stores a Local Outlier Factor (LOF) model
-## fitted to a set of observations, and detects anomalies among those or new
-## observations through the @code{isanomaly} method.  Create a model with the
-## @code{lof} function rather than by calling this constructor directly.
-##
-## The LOF of an observation compares its local density with the local density
-## of its neighbors; a value near 1 indicates an inlier, whereas a value well
-## above 1 indicates an outlier that lies in a sparser region than its
-## neighbors.
-##
-## @seealso{lof, LocalOutlierFactor.isanomaly}
-## @end deftypefn
-
 classdef LocalOutlierFactor
+  ## -*- texinfo -*-
+  ## @deftp {statistics} LocalOutlierFactor
+  ##
+  ## Local Outlier Factor model for anomaly detection.
+  ##
+  ## A @code{LocalOutlierFactor} object stores a Local Outlier Factor (LOF)
+  ## model fitted to a set of observations, and detects anomalies among those or
+  ## new observations through the @code{isanomaly} method.  Create a
+  ## @code{LocalOutlierFactor} object with @code{lof} or the class constructor.
+  ##
+  ## The LOF of an observation compares its local density with the local density
+  ## of its neighbors; a value near 1 indicates an inlier, whereas a value well
+  ## above 1 indicates an outlier that lies in a sparser region than its
+  ## neighbors.
+  ##
+  ## @seealso{lof, LocalOutlierFactor.isanomaly}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = private)
 
@@ -90,11 +88,48 @@ classdef LocalOutlierFactor
 
     ## -*- texinfo -*-
     ## @deftypefn  {LocalOutlierFactor} {@var{Mdl} =} LocalOutlierFactor (@var{X})
-    ## @deftypefnx {LocalOutlierFactor} {@var{Mdl} =} LocalOutlierFactor (@var{X}, @var{name}, @var{value})
+    ## @deftypefnx {LocalOutlierFactor} {@var{Mdl} =} LocalOutlierFactor (@dots{}, @var{name}, @var{value})
     ##
-    ## Fit a Local Outlier Factor model to the @math{N}-by-@math{P} matrix
-    ## @var{X}.  Prefer the @code{lof} function to this constructor.
+    ## Fit a Local Outlier Factor model.
     ##
+    ## @code{@var{Mdl} = LocalOutlierFactor (@var{X})} fits a Local Outlier
+    ## Factor model to the @math{N}-by-@math{P} matrix @var{X}, whose rows are
+    ## observations and columns are variables, and returns a
+    ## @code{LocalOutlierFactor} object @var{Mdl}.
+    ##
+    ## @code{@var{Mdl} = LocalOutlierFactor (@dots{}, @var{name}, @var{value})}
+    ## takes the following @qcode{Name-Value} pairs.
+    ##
+    ## @multitable @columnfractions 0.28 0.72
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'NumNeighbors'} @tab the number of nearest neighbors, a
+    ## positive integer less than @math{N}.  The default is
+    ## @code{min (20, @var{u} - 1)}, where @var{u} is the number of unique
+    ## observations.
+    ##
+    ## @item @qcode{'Distance'} @tab the distance metric used to find neighbors,
+    ## one of the metrics accepted by @code{pdist2} (@qcode{'euclidean'} by
+    ## default).
+    ##
+    ## @item @qcode{'ContaminationFraction'} @tab the assumed fraction of
+    ## anomalies in @var{X}, a scalar in @math{[0, 1]} (default 0).  It sets
+    ## @code{@var{Mdl}.ScoreThreshold} to the @math{1 -}
+    ## @var{ContaminationFraction} quantile of the anomaly scores of @var{X};
+    ## when it is 0 the threshold is the maximum score and no training
+    ## observation is flagged.
+    ##
+    ## @item @qcode{'Exponent'} @tab the Minkowski distance exponent (default
+    ## 2), used only with the @qcode{'minkowski'} distance.
+    ##
+    ## @item @qcode{'Cov'} @tab the covariance matrix used only with the
+    ## @qcode{'mahalanobis'} distance.
+    ## @end multitable
+    ##
+    ## @code{lof} fits the same model and also returns the anomaly indicators
+    ## and the anomaly scores of the observations in @var{X}.
+    ##
+    ## @seealso{lof, LocalOutlierFactor.isanomaly}
     ## @end deftypefn
     function obj = LocalOutlierFactor (X, varargin)
 

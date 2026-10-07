@@ -138,7 +138,7 @@ function [h, pval, ci, stats] = regression_ttest (y, x, varargin)
   ## and the confidence interval.
   switch lower (tail)
     case 'both'
-      pval = 2 * (1 - tcdf (abs (stats.tstat), stats.df));
+      pval = 2 * tcdf (-abs (stats.tstat), stats.df);
       tcrit = - tinv (alpha / 2, stats.df);
       ci = [stats.beta1 - tcrit * term; stats.beta1 + tcrit * term];
     case 'left'
@@ -146,7 +146,7 @@ function [h, pval, ci, stats] = regression_ttest (y, x, varargin)
       tcrit = - tinv (alpha, stats.df);
       ci = [-inf; stats.beta1 + tcrit * term];
     case 'right'
-      pval = 1 - tcdf (stats.tstat, stats.df);
+      pval = tcdf (stats.tstat, stats.df, 'upper');
       tcrit = - tinv (alpha, stats.df);
       ci = [stats.beta1 - tcrit * term; inf];
   endswitch
@@ -220,6 +220,16 @@ endfunction
 %! [~, ~, ~, sr] = regression_ttest (y', x');
 %! assert_equal (sr.beta1, sc.beta1, 1e-12);
 %! assert_equal (sr.tstat, sc.tstat, 1e-9);
+%!test
+%! ## Below the resolution of 1 - tcdf, the slope p-value of fitlm in
+%! ## MATLAB R2024a
+%! x = (1:30)';
+%! [~, pval] = regression_ttest (2 * x + 0.01 * sin (x), x);
+%! assert_equal (pval, 2.48569558345347e-96, -1e-6);
+%!test
+%! x = (1:30)';
+%! [~, pval] = regression_ttest (2 * x + 0.01 * sin (x), x, 'tail', 'right');
+%! assert_equal (pval, 2.48569558345347e-96 / 2, -1e-6);
 
 ## Test input validation
 %!error<Invalid call to regression_ttest.  Correct usage> regression_ttest ();

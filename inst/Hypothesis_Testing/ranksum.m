@@ -48,7 +48,16 @@
 ## It contains the field @code{ranksum} with the value of the rank sum test
 ## statistic, and the field @code{zval} with the value of the z-statistic when
 ## computed with the "approximate" method, and empty otherwise.  The field is
-## always there.
+## always there.  Two further fields, an Octave extension, hold the effect
+## size: @code{RankBiserial}, the rank-biserial correlation, which is Cliff's
+## delta, the share of pairs @math{(x_i, y_j)} with @math{x_i > y_j} less the
+## share with @math{x_i < y_j}, and @code{RankBiserialCI}, its two-sided
+## confidence interval at the level @math{100 (1 - alpha)} percent, whatever
+## the tail.  Both are those of @code{meanEffectSize (@var{x}, @var{y},
+## "Effect", "cliff")}: by default the interval is Cliff's, and the options
+## @qcode{"ConfidenceIntervalType"}, @qcode{"bootstrap"} for a BCa bootstrap
+## interval, @qcode{"NumBootstraps"} and @qcode{"Resampling"} are passed on to
+## @code{meanEffectSize}.
 ##
 ## @code{[@dots{}] = ranksum (@var{x}, @var{y}, @var{alpha})} or alternatively
 ## @code{[@dots{}] = ranksum (@var{x}, @var{y}, "alpha", @var{alpha})} returns
@@ -89,40 +98,44 @@
 ## Note: the rank sum statistic is based on the smaller sample of vectors
 ## @var{x} and @var{y}.
 ##
+## @seealso{signrank, kruskalwallis, meanEffectSize}
 ## @end deftypefn
 
 function [p, h, stats] = ranksum(x, y, varargin)
 
   ## Check that x and y are vectors
   if ! isvector (x) || ! isvector (y)
-     error ("X and Y must be vectors");
+     error ("ranksum: X and Y must be vectors.");
   endif
   ## Remove missing data and make column vectors
   x = x(! isnan (x))(:);
   y = y(! isnan (y))(:);
   if isempty (x)
-    error ("Not enough data in X");
+    error ("ranksum: X holds no observation that is not missing.");
   endif
   if isempty (y)
-    error ("Not enough data in Y");
+    error ("ranksum: Y holds no observation that is not missing.");
   endif
 
   ## Check for extra input arguments
   alpha = 0.05;
   method = [];
   tail = 'both';
+  citype = 'exact';
+  nboot = 1000;
+  resampling = 'pooled';
   ## Old syntax: ranksum (x, y, alpha)
   if nargin > 2 && isnumeric (varargin{1}) && isscalar (varargin{1})
     alpha = varargin{1};
     varargin(1) = [];
     if isnan (alpha) || alpha <= 0 || alpha >= 1
-      error ("Alpha does not have a valid value");
+      error ("ranksum: ALPHA must be a scalar between 0 and 1.");
     endif
   endif
   ## Check for Name:Value pairs
   arg_pairs = length (varargin);
   if ! (int16 (arg_pairs / 2) == arg_pairs / 2)
-    error ("Extra arguments are not in Name:Value pairs");
+    error ("ranksum: optional arguments must be in Name, Value pairs.");
   endif
   num_pair = 1;
   while (arg_pairs)
@@ -131,20 +144,40 @@ function [p, h, stats] = ranksum(x, y, varargin)
     switch (lower (name))
       case 'alpha'
         alpha = value;
-        if (isnan (alpha) || alpha <= 0 || alpha >= 1 || ! isnumeric (alpha) ...
-            || ! isscalar (alpha))
-          error ("Alpha does not have a valid value");
+        if (! isnumeric (alpha) || ! isscalar (alpha) || isnan (alpha)
+            || alpha <= 0 || alpha >= 1)
+          error ("ranksum: 'alpha' must be a scalar between 0 and 1.");
         endif
       case 'method'
         method = value;
         if ! any (strcmpi (method, {'exact', 'approximate', 'oldexact'}))
-          error ("Wrong value for method option");
+          error (strcat ("ranksum: 'method' must be 'exact',", ...
+                         " 'approximate' or 'oldexact'."));
         endif
       case 'tail'
         tail = value;
         if ! any (strcmpi (tail, {'both', 'right', 'left'}))
-          error ("Wrong value for tail option");
+          error ("ranksum: 'tail' must be 'both', 'right' or 'left'.");
         endif
+      case 'confidenceintervaltype'
+        citype = value;
+        if (! any (strcmpi (citype, {'exact', 'bootstrap'})))
+          error (strcat ("ranksum: 'ConfidenceIntervalType' must be", ...
+                         " 'exact' or 'bootstrap'."));
+        endif
+      case 'numbootstraps'
+        nboot = value;
+        if (! (isnumeric (nboot) && isreal (nboot) && isscalar (nboot)
+               && isfinite (nboot) && nboot >= 1 && nboot == fix (nboot)))
+          error ("ranksum: 'NumBootstraps' must be a positive integer.");
+        endif
+      case 'resampling'
+        resampling = value;
+        if (! any (strcmpi (resampling, {'pooled', 'stratified'})))
+          error ("ranksum: 'Resampling' must be 'pooled' or 'stratified'.");
+        endif
+      otherwise
+        error ("ranksum: invalid optional paired argument.");
     endswitch
     arg_pairs -= 2;
     num_pair += 2;
@@ -162,7 +195,7 @@ function [p, h, stats] = ranksum(x, y, varargin)
     endif
   endif
 
-  % Determine computational technique
+  ## Determine computational technique
   switch method
     case 'approximate'
       technique = 'approximation';
@@ -300,6 +333,12 @@ function [p, h, stats] = ranksum(x, y, varargin)
          stats.ranksum = sum (ranks(ns+1:end));
        endif
        stats.zval = zval;
+       ## The rank-biserial correlation is Cliff's delta
+       T = meanEffectSize (x, y, 'Effect', 'cliff', 'Alpha', alpha, ...
+                           'ConfidenceIntervalType', citype, ...
+                           'NumBootstraps', nboot, 'Resampling', resampling);
+       stats.RankBiserial = T.Effect;
+       stats.RankBiserialCI = T.ConfidenceIntervals;
      endif
   endif
 endfunction
@@ -333,12 +372,66 @@ endfunction
 %! x = 1:8;
 %! y = 9:16;
 %! [p, h, stats] = ranksum (x, y);
-%! assert_equal (fieldnames (stats), {'ranksum'; 'zval'});
+%! assert_equal (fieldnames (stats), {'ranksum'; 'zval'; 'RankBiserial'; ...
+%!                                    'RankBiserialCI'});
 %! assert_equal (isempty (stats.zval), true);
 
 %!test  # zval is second for the approximate method too
 %! x = 1:8;
 %! y = 9:16;
 %! [p, h, stats] = ranksum (x, y, 'method', 'approximate');
-%! assert_equal (fieldnames (stats), {'ranksum'; 'zval'});
+%! assert_equal (fieldnames (stats), {'ranksum'; 'zval'; 'RankBiserial'; ...
+%!                                    'RankBiserialCI'});
 %! assert_equal (stats.zval, -3.3082, 1e-4);
+%!test
+%! ## Effect size against the R package effectsize 1.0.3, rank_biserial
+%! m1 = [33.3, 33.4, 32.9, 32.6, 32.5, 33.0];
+%! m2 = [34.5, 34.8, 33.8, 33.4, 33.7, 33.9];
+%! [~, ~, stats] = ranksum (m1, m2);
+%! assert_equal (stats.RankBiserial, -0.97222222222222232, -1e-14);
+%! T = meanEffectSize (m1, m2, 'Effect', 'cliff');
+%! assert_equal (stats.RankBiserialCI, T.ConfidenceIntervals);
+%!test
+%! year1 = [51 52 62 62 52 52 51 53 59 63 59 56 63 74 68 86 82 70 69 75 73 ...
+%!          49 47 50 60 59 60 62 61 71]';
+%! year2 = [54 53 64 66 57 53 54 54 62 66 59 59 67 76 75 86 82 67 74 80 75 ...
+%!          54 50 53 62 62 62 72 60 67]';
+%! [~, ~, stats] = ranksum (year1, year2, 'alpha', 0.1);
+%! assert_equal (stats.RankBiserial, -0.17222222222222228, -1e-14);
+%! T = meanEffectSize (year1, year2, 'Effect', 'cliff', 'Alpha', 0.1);
+%! assert_equal (stats.RankBiserialCI, T.ConfidenceIntervals);
+%!test
+%! rand ('state', 1);
+%! [~, ~, stats] = ranksum ([1, 3, 4, 7, 8], [2, 5, 6, 9, 10, 11], ...
+%!                          'ConfidenceIntervalType', 'bootstrap', ...
+%!                          'NumBootstraps', 200, 'Resampling', 'stratified');
+%! ci = stats.RankBiserialCI;
+%! assert_equal ([ci(1) <= ci(2), ci(1) >= -1, ci(2) <= 1], true (1, 3));
+
+%!error<ranksum: 'ConfidenceIntervalType' must be 'exact' or 'bootstrap'.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 'ConfidenceIntervalType', 'none')
+%!error<ranksum: 'NumBootstraps' must be a positive integer.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 'NumBootstraps', 0)
+%!error<ranksum: 'Resampling' must be 'pooled' or 'stratified'.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 'Resampling', 'foo')
+%!error<ranksum: X and Y must be vectors.> ranksum ([1, 2; 3, 4], [1, 2, 3])
+%!error<ranksum: X holds no observation that is not missing.> ...
+%! ranksum ([NaN, NaN], [1, 2, 3])
+%!error<ranksum: Y holds no observation that is not missing.> ...
+%! ranksum ([1, 2, 3], NaN)
+%!error<ranksum: ALPHA must be a scalar between 0 and 1.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 1.5)
+%!error<ranksum: optional arguments must be in Name, Value pairs.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 'tail')
+%!error<ranksum: invalid optional paired argument.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 'Tial', 'left')
+%!error<ranksum: invalid optional paired argument.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 'alpha', 0.1, 5, 'left')
+%!error<ranksum: 'alpha' must be a scalar between 0 and 1.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 'alpha', 0)
+%!error<ranksum: 'alpha' must be a scalar between 0 and 1.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 'alpha', [0.1, 0.2])
+%!error<ranksum: 'method' must be 'exact', 'approximate' or 'oldexact'.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 'method', 'foo')
+%!error<ranksum: 'tail' must be 'both', 'right' or 'left'.> ...
+%! ranksum ([1, 2, 3], [4, 5, 6], 'tail', 'up')

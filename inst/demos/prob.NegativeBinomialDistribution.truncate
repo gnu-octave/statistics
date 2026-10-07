@@ -1,32 +1,26 @@
 %!demo
-%! ## Generate a deterministic data set mimicking 10000 samples from a truncated
-%! ## Negative Binomial distribution with parameters R = 5 and P = 0.5,
-%! ## truncated at [2, 10].  Fit a Negative Binomial distribution to this data
-%! ## and plot a PDF of the truncated fitted distribution superimposed on a
-%! ## histogram of the data.
+%! ## Plot the PMF of a Negative Binomial distribution, with parameters R = 5
+%! ## and P = 0.5, truncated at [2, 10].  Generate 10000 random samples from
+%! ## this truncated distribution and superimpose a histogram of their relative
+%! ## frequencies.
 %!
-%! x_vals = 2:10;
-%! probs = nbinpdf (x_vals, 5, 0.5);
-%! total_prob = nbincdf (10, 5, 0.5) - nbincdf (1, 5, 0.5);
-%! probs = probs / total_prob;
-%! N = 10000;
-%! freq = round (probs * N);
-%! data = [];
-%! data = repelem (x_vals, freq);
-%! warning ("off", "all");
-%! pd = fitdist (data, "NegativeBinomial");
+%! rng (42);
+%! randg ('state', 42);
+%! randp ('state', 42);
+%! pd = makedist ("NegativeBinomial", "R", 5, "P", 0.5);
 %! t = truncate (pd, 2, 10);
+%! data = random (t, 10000, 1);
 %!
-%! ## Plot histogram and truncated PDF
-%! plot (t)
+%! ## Relative frequency of each value from 2 to 10
+%! centers = 2:10;
+%! probs = histc (data, centers) / numel (data);
+%!
+%! bar (centers, probs, 0.5, "facecolor", [0.6 0.6 1]);
 %! hold on
-%!
-%! [counts, centers] = hist (data, 50);
-%! bar (centers, counts / trapz (centers, counts), 'hist');
-%!
+%! plot (centers, pdf (t, centers), 'r-', "linewidth", 2);
 %! hold off
-%! title ("Negative Binomial distribution (R=5, P=0.5) truncated at [2, 10]")
-%! legend ("Truncated PDF", "Histogram")
+%! title ("Negative Binomial distribution (R = 5, P = 0.5) truncated at [2, 10]")
+%! legend ("Histogram", "Truncated PMF")
 %!
-%! ## This demonstrates truncating a Negative Binomial distribution to a specific
-%! ## range and visualizing the resulting distribution with random samples.
+%! ## This demonstrates truncating a Negative Binomial distribution to a
+%! ## specific range and checking the result against random samples.

@@ -67,7 +67,7 @@ function [v, idx] = nanmax (x, y, dim)
     nanvals = isnan (x);
     x(nanvals) = -Inf;
     [v, idx] = max (x);
-    if (! isempty (v))
+    if (any (nanvals(:)))
       v(all (nanvals)) = NaN;
     endif
   elseif (nargin == 3 && strcmpi (dim, 'all') && isempty (y))
@@ -75,7 +75,7 @@ function [v, idx] = nanmax (x, y, dim)
     nanvals = isnan (x);
     x(nanvals) = -Inf;
     [v, idx] = max (x);
-    if (! isempty (v))
+    if (any (nanvals(:)))
       v(all (nanvals)) = NaN;
     endif
   elseif (nargin == 3 && isempty (y))
@@ -83,7 +83,7 @@ function [v, idx] = nanmax (x, y, dim)
       nanvals = isnan (x);
       x(nanvals) = -Inf;
       [v, idx] = max (x, [], dim);
-      if (! isempty (v))
+      if (any (nanvals(:)))
         v(all (nanvals, dim)) = NaN;
       endif
     else
@@ -113,7 +113,7 @@ function [v, idx] = nanmax (x, y, dim)
           nanvals = isnan (x);
           x(nanvals) = -Inf;
           [v, idx] = max (x);
-          if (! isempty (v))
+          if (any (nanvals(:)))
             v(all (nanvals)) = NaN;
           endif
 
@@ -131,7 +131,7 @@ function [v, idx] = nanmax (x, y, dim)
           nanvals = isnan (x);
           x(nanvals) = -Inf;
           [v, idx] = max (x, [], dim);
-          if (! isempty (v))
+          if (any (nanvals(:)))
             v(all (nanvals, dim)) = NaN;
           endif
 
@@ -150,7 +150,7 @@ function [v, idx] = nanmax (x, y, dim)
     x(Xnan) = -Inf;
     y(Ynan) = -Inf;
     v = max (x, y);
-    if (! isempty (v))
+    if (any (Xnan(:)) && any (Ynan(:)))
       v(Xnan & Ynan) = NaN;
     endif
   endif
@@ -227,8 +227,24 @@ endfunction
 ## Test comparisons
 %!assert_equal (nanmax (ones (2), 3), 3 * ones (2,2))
 
+## Test logical input
+%!assert_equal (nanmax (logical ([0, 1, 0])), logical (1))
+%!assert_equal (nanmax (logical ([0, 1; 1, 0])), logical ([1, 1]))
+%!assert_equal (nanmax (logical ([0, 1; 1, 0]), [], 2), logical ([1; 1]))
+%!assert_equal (nanmax (logical ([0, 1; 1, 0]), [], 'all'), logical (1))
+%!assert_equal (nanmax (logical ([0, 1; 1, 0]), [], [1, 2]), true)
+%!assert_equal (nanmax (true (2, 2, 2), [], 3), true (2, 2))
+%!assert_equal (nanmax (logical (zeros (0, 3))), logical (zeros (0, 3)))
+%!assert_equal (nthargout (2, @nanmax, logical ([0, 1, 0])), 2)
+%!assert_equal (nthargout (2, @nanmax, logical ([0, 1; 1, 0]), [], 2), [2; 1])
+%!assert_equal (nanmax (logical ([0, 1; 1, 0]), true), true (2))
+%!assert_equal (nanmax (logical ([0, 0]), NaN), [0, 0])
+%!assert_equal (nanmax ([NaN, 0], logical ([0, 1])), [0, 1])
+
 ## Test input validation
 %!error <nanmax: VECDIM must contain non-repeating positive integers.> ...
 %! nanmax (y, [], [1, 1, 2])
+%!error <nanmax: VECDIM must contain non-repeating positive integers.> ...
+%! nanmax (true (2), [], [1, 1])
 %!error <nanmax: a second output is not supported with this syntax.> ...
 %! [v, idx] = nanmax (x, y, [1 2])

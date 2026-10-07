@@ -72,7 +72,7 @@
 ## Further information about the exponential distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Exponential_distribution}
 ##
-## @seealso{expcdf, expinv, explpdf, exprnd, explike, expstat}
+## @seealso{expcdf, expinv, exppdf, exprnd, explike, expstat}
 ## @end deftypefn
 
 function [muhat, muci] = expfit (x, alpha = 0.05, censor = [], freq = [])

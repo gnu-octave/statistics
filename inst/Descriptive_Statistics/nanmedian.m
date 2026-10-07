@@ -54,7 +54,7 @@ function m = nanmedian (x, dim)
     print_usage ();
   endif
   if (! isnumeric (x) && ! islogical (x))
-    error ("nanmedian: X must be numeric.");
+    error ("nanmedian: X must be numeric or logical.");
   endif
   ## 0 by 0 and no DIM given
   if (nargin < 2 && isequal (size (x), [0, 0]))
@@ -177,7 +177,7 @@ endfunction
 
 ## Test input validation
 %!error <Invalid call to nanmedian> nanmedian ()
-%!error <nanmedian: X must be numeric.> nanmedian ({3})
+%!error <nanmedian: X must be numeric or logical.> nanmedian ({3})
 %!error <nanmedian: DIM must be a positive integer.> nanmedian (ones (3), 0)
 %!error <nanmedian: DIM must be a positive integer.> nanmedian (ones (3), 1.5)
 %!error <nanmedian: VECDIM must contain non-repeating positive integers.> ...

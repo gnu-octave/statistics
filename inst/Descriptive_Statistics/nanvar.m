@@ -60,7 +60,7 @@ function v = nanvar (x, w, dim)
     print_usage ();
   endif
   if (! isnumeric (x) && ! islogical (x))
-    error ("nanvar: X must be numeric.");
+    error ("nanvar: X must be numeric or logical.");
   endif
   if (nargin < 3 && isequal (size (x), [0, 0]))
     v = NaN;
@@ -196,7 +196,7 @@ endfunction
 
 ## Test input validation
 %!error <Invalid call to nanvar> nanvar ()
-%!error <nanvar: X must be numeric.> nanvar ({3})
+%!error <nanvar: X must be numeric or logical.> nanvar ({3})
 %!error <nanvar: W must be 0 or 1 when it is a scalar.> nanvar (ones (3), 2)
 %!error <nanvar: weight vector W must contain nonnegative values.> ...
 %! nanvar (ones (1, 3), [1, -1, 2])

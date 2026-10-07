@@ -27,7 +27,8 @@
 ##
 ## Fields: @qcode{X} and @qcode{Y}, the retained data; @qcode{RowsUsed}, a
 ## logical over the rows as supplied; @qcode{Weights}, the retained weights
-## before normalization; @qcode{W}, the same normalized; and @qcode{n} and
+## before normalization, as double; @qcode{WeightsClass}, the class the
+## weights were given in; @qcode{W}, the same normalized; and @qcode{n} and
 ## @qcode{p}.
 ##
 ## @end deftypefn
@@ -48,10 +49,16 @@ function F = regFrame (X, Y, Weights, classname)
     error ("%s: number of rows in X and Y must be equal.", classname);
   endif
 
+  errmsg = weightsClass (Weights);
+  if (! isempty (errmsg))
+    error ("%s: %s", classname, errmsg);
+  endif
+  WeightsClass = "double";
   if (isempty (Weights))
     Weights = ones (rows (X), 1);
   else
-    Weights = Weights(:);
+    WeightsClass = class (Weights);
+    Weights = double (Weights(:));
     if (numel (Weights) != rows (X))
       error ("%s: 'Weights' must have one element per observation.", ...
              classname);
@@ -63,6 +70,7 @@ function F = regFrame (X, Y, Weights, classname)
   F.X = X(F.RowsUsed, :);
   F.Y = Y(F.RowsUsed);
   F.Weights = Weights(F.RowsUsed);
+  F.WeightsClass = WeightsClass;
   if (isempty (F.Y))
     error ("%s: no complete observations in the data.", classname);
   endif

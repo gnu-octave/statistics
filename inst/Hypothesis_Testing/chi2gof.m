@@ -285,7 +285,7 @@ function [h, p, stats] = chi2gof (x, varargin)
         endif
       endif
     elseif (iscell (cdf_spec))
-      % Get function and args from cell array
+      ## Get function and args from cell array
       cdffunc = cdf_spec{1};
       cdfargs = cdf_spec(2:end);
       if (isempty (nparams))
@@ -306,7 +306,7 @@ function [h, p, stats] = chi2gof (x, varargin)
       msg = sprintf ("chi2gof: Wrong number of outputs from: %s\n", cdfname);
       error (msg);
     endif
-    % Compute the expected values
+    ## Compute the expected values
     Expected = sum (Observed) * diff ([0;Fcdf(:);1]);
   endif
   ## Avoid too small expected values
@@ -322,7 +322,7 @@ function [h, p, stats] = chi2gof (x, varargin)
   endif
   df = nbins - 1 - nparams;
   if (df > 0)
-    p = 1 - chi2cdf (cstat, df);
+    p = chi2cdf (cstat, df, 'upper');
   else
     df = 0;
     p = NaN;
@@ -431,6 +431,12 @@ endfunction
 %! expCounts = n * poisspdf (bins,lambdaHat);
 %! [h, p, stats] = chi2gof (bins, 'binctrs', bins, 'frequency', obsCounts, ...
 %!                          'expected', expCounts, 'nparams',1)
+%!test
+%! ## Below the resolution of 1 - chi2cdf, values from MATLAB R2024a
+%! [~, p] = chi2gof (1:5, 'Ctrs', 1:5, ...
+%!                  'Frequency', [500, 300, 300, 300, 600], ...
+%!                  'Expected', 400 * ones (1, 5), 'NParams', 0);
+%! assert_equal (p, 3.75727673578105e-42, -1e-10);
 
 ## Test input validation
 %!error chi2gof ()

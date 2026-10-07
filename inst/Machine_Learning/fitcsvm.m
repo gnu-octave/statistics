@@ -125,25 +125,26 @@
 ## the @qcode{'KernelFunction'} is set to @qcode{'polynomial'}, this parameter
 ## is ignored.
 ##
-## @item @qcode{'KernelScale'} @tab A positive scalar that specifies a
-## scaling factor for the @math{γ} (gamma) parameter, which can be seen as the
-## inverse of the radius of influence of samples selected by the model as
-## support vectors.  The @math{γ} (gamma) parameter is computed as
-## @math{gamma = @qcode{KernelScale} / (number of features)}.  The default value
-## for @qcode{'KernelScale'} is 1.
+## @item @qcode{'KernelScale'} @tab A positive scalar dividing every predictor
+## before any kernel is applied, as MATLAB does, so that with @math{u} and
+## @math{v} the divided predictors the kernels are @math{u'v},
+## @math{exp (-||u - v||^2)}, @math{(1 + u'v)^q} and @math{tanh (u'v + c)},
+## @math{c} being @qcode{'KernelOffset'}.  The default is 1.
 ##
-## @item @qcode{'KernelOffset'} @tab A nonnegative scalar that specifies
-## the @math{coef0} in kernel function. For the polynomial kernel, it influences
-## the polynomial's shift, and for the sigmoid kernel, it affects the hyperbolic
-## tangent's shift. The default value for @qcode{'KernelOffset'} is 0.
+## @item @qcode{'KernelOffset'} @tab A non-negative scalar, the constant
+## @math{c} of the sigmoid kernel, which MATLAB does not have.  MATLAB adds
+## it to every element of the Gram matrix, which leaves the fitted model
+## unchanged, so it changes no other kernel here.  The default is 0.
 ##
-## @item @qcode{'Weights'} @tab A numeric vector of nonnegative observation
-## weights, one per row of @var{X}.  Each observation's box constraint is
-## @math{n} times @qcode{BoxConstraint} times its weight, the weights scaled
-## so that each class carries its prior times the cost of misclassifying it.
-## An empirical prior sums the weights per class, standardization uses
-## weighted means and standard deviations, and a row of zero weight is left
-## out.
+## @item @qcode{'Weights'} @tab A single or double vector of nonnegative
+## observation weights, one per row of @var{X}.  Each observation's box
+## constraint is @math{n} times @qcode{BoxConstraint} times its weight, the
+## weights scaled so that each class carries its prior times the cost of
+## misclassifying it.  An empirical prior sums the weights per class,
+## standardization uses weighted means and standard deviations, and a row of
+## zero weight is left out.  The model's @code{W} keeps the class of the
+## weights, while every computation runs in double, so @code{Prior} is double
+## where MATLAB returns single.
 ##
 ## @item @qcode{'BoxConstraint'} @tab A positive scalar that specifies the
 ## upper bound of the Lagrange multipliers, i.e. the parameter C, which is used
@@ -259,7 +260,7 @@ function Mdl = fitcsvm (X, Y, varargin)
         cv_opt = true;
 
       case 'leaveout'
-        Name = 'Holdout';
+        Name = 'Leaveout';
         Value = varargin{2};
         cv_arg += 1;
         cv_opt = true;
@@ -423,6 +424,12 @@ endfunction
 %! fitcsvm (ones (4,2), ones (4, 1), 'CrossVal', 'a')
 %!error <fitcsvm: You can use only one cross-validation name-value pair argument> ...
 %! fitcsvm (ones (4,2), ones (4, 1), 'KFold', 10, 'Holdout', 0.3)
+
+%!test  # 'Leaveout' leaves one observation out of each fold
+%! load fisheriris
+%! k = [51:70, 101:120];
+%! CVMdl = fitcsvm (meas(k,:), species(k), 'Leaveout', 'on');
+%! assert_equal (CVMdl.KFold, 40);
 
 %!test  # MATLAB parity: classes given as text are sorted
 %! load fisheriris

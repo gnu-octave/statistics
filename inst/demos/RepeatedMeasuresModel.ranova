@@ -1,0 +1,27 @@
+%!demo
+%! ## 1. Whether the measurements differ, and whether species changes that
+%!
+%! load fisheriris
+%! t = table (species, meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!            'VariableNames', {'species', 'meas1', 'meas2', 'meas3', 'meas4'});
+%! Meas = table ([1, 2, 3, 4]', 'VariableNames', {'Measurements'});
+%! rm = fitrm (t, 'meas1-meas4 ~ species', 'WithinDesign', Meas);
+%!
+%! ## The corrected p-values sit beside the uncorrected ones; `mauchly`
+%! ## says whether the correction is needed and `epsilon` how large it is
+%! ranova (rm)
+%! mauchly (rm)
+%! epsilon (rm)
+
+%!demo
+%! ## 2. Linear, quadratic and cubic trends over a numeric factor
+%!
+%! load fisheriris
+%! t = table (species, meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!            'VariableNames', {'species', 'meas1', 'meas2', 'meas3', 'meas4'});
+%! Meas = table ([1, 2, 3, 4]', 'VariableNames', {'Measurements'});
+%! rm = fitrm (t, 'meas1-meas4 ~ species', 'WithinDesign', Meas);
+%!
+%! ## One block of rows per polynomial degree, the between-subject tests of
+%! ## the mean first
+%! ranova (rm, 'WithinModel', 'orthogonalcontrasts')

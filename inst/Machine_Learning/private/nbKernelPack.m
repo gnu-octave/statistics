@@ -20,7 +20,8 @@
 ## @deftypefn {Private Function} {@var{DP} =} nbKernelPack (@var{DP}, @var{D})
 ##
 ## Replace every fitted kernel density in @var{DP} by the sample it was fitted
-## to, so that a naive Bayes model can be written to a file.
+## to, so that a naive Bayes model can be written to a file.  A density fitted
+## with weights becomes a two-column matrix, the sample beside its weights.
 ##
 ## @var{DP} is a @code{DistributionParameters} cell, class by predictor, and
 ## @var{D} the matching @code{DistributionNames}.  A @qcode{'kernel'} predictor
@@ -40,7 +41,8 @@ function DP = nbKernelPack (DP, D)
   for j = find (strcmp (D(:)', 'kernel'))
     for i = 1:rows (DP)
       if (isobject (DP{i,j}))
-        DP{i,j} = DP{i,j}.InputData.data;
+        ## A weighted density goes out as its sample beside its weights
+        DP{i,j} = [DP{i,j}.InputData.data, DP{i,j}.InputData.freq];
       endif
     endfor
   endfor

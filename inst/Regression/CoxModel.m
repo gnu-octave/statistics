@@ -817,7 +817,7 @@ classdef CoxModel
         bk       = this.b_(idx);
         Vk       = this.CoefficientCovariance(idx, idx);
         stat     = bk(:)' * (Vk \ bk(:));
-        pvals(k) = 1 - chi2cdf (stat, numel (idx));
+        pvals(k) = chi2cdf (stat, numel (idx), 'upper');
         if (k == 1)
           names{k} = 'Empty Model';
         else
@@ -1267,8 +1267,8 @@ function [pz, pg] = ph_assumption_test (stats, T)
   ## the centred regression, so d V s is what is correlated with time.
   u  = (w' * (s * V * d))';
   z  = (u .^ 2) ./ (varx * d * diag (V));
-  pz = (1 - chi2cdf (z, 1))';
-  pg = 1 - chi2cdf (u' * ((V * d * varx) \ u), columns (s));
+  pz = chi2cdf (z, 1, 'upper')';
+  pg = chi2cdf (u' * ((V * d * varx) \ u), columns (s), 'upper');
 
 endfunction
 

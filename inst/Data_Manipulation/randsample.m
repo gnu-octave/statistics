@@ -27,7 +27,9 @@
 ## Returns @var{k} random elements from a vector @var{v} with @var{n} elements,
 ## sampled without or with @var{replacement}, with an optional weight vector.
 ##
-## If @var{v} is a scalar, samples from 1:@var{v}.
+## If @var{v} is a non-negative integer scalar, samples from 1:@var{v}; it must
+## not be @code{Inf}.  Any other scalar, @code{-Inf} and @code{NaN} included, is
+## a population of one element.  @var{k} must be finite.
 ##
 ## If a weight vector @var{w} of the same size as @var{v} is specified, the
 ## probability of each element being sampled is proportional to @var{w}.
@@ -41,17 +43,19 @@
 
 function y = randsample (v, k, replacement=false, w=[])
 
-  if (isscalar (v) && isnumeric (v) && (round (v) == v) && (v >= 0))
+  if (isscalar (v) && isnumeric (v) && v == Inf)
+    error ("randsample: The input v must not be Inf.");
+  elseif (isscalar (v) && isnumeric (v) && (round (v) == v) && (v >= 0))
     n = v;
     vector_v = false;
-  elseif (isvector (v) || isscalar (v))
+  elseif (isvector (v))
     n = length (v);
     vector_v = true;
   else
     error ("randsample: The input v must be a vector or non-negative integer.");
   endif
 
-  if (! isscalar (k) || ! isnumeric (k) || round (k) != k)
+  if (! isscalar (k) || ! isnumeric (k) || ! isfinite (k) || round (k) != k)
     error ("randsample: The input k must be an integer.");
   endif
 
@@ -221,6 +225,8 @@ endfunction
 %! assert_equal (randsample (true, 1), true);
 %! assert_equal (randsample (5.5, 1), 5.5);
 %! assert_equal (randsample (-5, 1), -5);
+%! assert_equal (randsample (-Inf, 1), -Inf);
+%! assert_equal (randsample (NaN, 1), NaN);
 
 %!test
 %! x = randsample (10, -2);
@@ -250,3 +256,7 @@ endfunction
 
 %!error <randsample: The input k must be an integer.> ...
 %! randsample (10, 2.5)
+
+%!error <randsample: The input v must not be Inf.> randsample (Inf, 1)
+%!error <randsample: The input k must be an integer.> randsample (5, Inf, true)
+%!error <randsample: The input k must be an integer.> randsample (5, NaN)

@@ -75,6 +75,10 @@ function [o, errmsg] = bagArgs (args, T, N, allowed)
         endif
         o.use = val;
       case 'weights'
+        errmsg = weightsClass (val);
+        if (! isempty (errmsg))
+          return;
+        endif
         if (! (isnumeric (val) && isvector (val) && isreal (val)
                && numel (val) == N && all (val >= 0) && sum (val) > 0))
           errmsg = strcat ("'Weights' must be a nonnegative numeric", ...

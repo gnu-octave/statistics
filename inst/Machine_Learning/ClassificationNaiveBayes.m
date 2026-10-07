@@ -16,7 +16,6 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef ClassificationNaiveBayes < PredictiveModel
-
   ## -*- texinfo -*-
   ## @deftp {statistics} ClassificationNaiveBayes
   ##
@@ -99,8 +98,10 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ## Observation weights
     ##
     ## A numeric column vector with one entry per observation used for fitting,
-    ## summing to one.  Each class contributes its prior, spread evenly over
-    ## the observations belonging to it.  This property is read-only.
+    ## summing to one.  Each class contributes its prior, spread over the
+    ## observations belonging to it in proportion to the @qcode{'Weights'}
+    ## given, or evenly when none were.  It has the class of the
+    ## @qcode{'Weights'} given, single or double.  This property is read-only.
     ##
     ## @end deftp
     W = [];
@@ -389,6 +390,10 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ## The parsed ScoreTransform, applied to the posterior by predict.
     STfun = [];
 
+    ## The observation weights given, one per observation used and in their
+    ## own class, from which W follows the prior; empty when none were given.
+    RawWeights = [];
+
   endproperties
 
   ## Set methods for the properties a user may assign after fitting.
@@ -432,7 +437,16 @@ classdef ClassificationNaiveBayes < PredictiveModel
       endif
       this.Prior = P(:)' / sum (P);
       ## The weights follow the prior, so reassigning one re-derives the other.
-      if (! isempty (this.Y))
+      ## Weights that were given keep their class in W, computed as double.
+      if (! isempty (this.RawWeights))
+        used = this.RowsUsed;
+        if (isempty (used))
+          used = true (rows (this.Y), 1);
+        endif
+        gY = labelIndices (this.ClassNames, this.Y(used,:));
+        this.W = cast (priorNormalize (double (this.RawWeights), gY, ...
+                                       this.Prior), class (this.RawWeights));
+      elseif (! isempty (this.Y))
         gY = labelIndices (this.ClassNames, this.Y);
         keep = gY > 0;
         this.W = priorWeights (this.Prior, gY(keep), sum (keep));
@@ -443,14 +457,6 @@ classdef ClassificationNaiveBayes < PredictiveModel
       [f, st] = parseScoreTransform (val, 'ClassificationNaiveBayes');
       this.ScoreTransform = st;
       this.STfun = f;
-    endfunction
-
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
     endfunction
 
     function disp (this)
@@ -518,84 +524,63 @@ classdef ClassificationNaiveBayes < PredictiveModel
 
       nPred = columns (X);
 
-      ## Set default values before parsing optional parameters
-      CatPreds       = [];
-      ClassNames     = [];
-      Cost           = [];
-      DistNames      = [];
-      Kernel         = [];
-      PredictorNames = {};
-      Prior          = 'empirical';
-      ResponseName   = 'Y';
-      ScoreTransform = 'none';
-      Support        = [];
-      Width          = [];
+      ## Parse optional paired arguments
+      optNames = {'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', ...
+                  'Cost', 'ScoreTransform', 'CategoricalPredictors', ...
+                  'DistributionNames', 'Kernel', 'Support', 'Width', ...
+                  'Weights'};
+      ## An empty default stands for one resolved once the data are known:
+      ## the distributions, kernels, supports and widths follow from the
+      ## predictors, the classes and 'Cost' from the response, and
+      ## 'PredictorNames' are x1, x2, ...
+      dfValues = {{}, 'Y', [], 'empirical', [], 'none', [], [], [], [], [], ...
+                  []};
+      [PredictorNames, ResponseName, ClassNames, Prior, Cost, ...
+       ScoreTransform, CatPreds, DistNames, Kernel, Support, Width, ...
+       Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      ## Parse optional parameters
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
+      ## Validate optional paired arguments
+      if (! isempty (PredictorNames) && ! iscellstr (PredictorNames))
+        error (strcat ("ClassificationNaiveBayes: 'PredictorNames' must be", ...
+                       " supplied as a cellstring array."));
+      elseif (! isempty (PredictorNames) && numel (PredictorNames) != nPred)
+        error (strcat ("ClassificationNaiveBayes: 'PredictorNames' must", ...
+                       " equal the number of columns in X."));
+      endif
+      if (! (ischar (ResponseName) && isrow (ResponseName)))
+        error (strcat ("ClassificationNaiveBayes: 'ResponseName' must be a", ...
+                       " character vector."));
+      endif
+      if (! isempty (ClassNames) &&
+          ! (iscellstr (ClassNames) || isnumeric (ClassNames)
+             || islogical (ClassNames) || ischar (ClassNames)
+             || isa (ClassNames, 'categorical')
+             || isa (ClassNames, 'string')))
+        error (strcat ("ClassificationNaiveBayes: 'ClassNames' must be a", ...
+                       " categorical array, a character array, a string", ...
+                       " array, a logical vector, a numeric vector, or a", ...
+                       " cell array of character vectors."));
+      endif
 
-          case 'predictornames'
-            PredictorNames = varargin{2};
-            if (! iscellstr (PredictorNames))
-              error (strcat ("ClassificationNaiveBayes: 'PredictorNames'", ...
-                             " must be supplied as a cellstring array."));
-            elseif (numel (PredictorNames) != nPred)
-              error (strcat ("ClassificationNaiveBayes: 'PredictorNames'", ...
-                             " must equal the number of columns in X."));
-            endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationNaiveBayes: %s", errmsg);
+      endif
+      if (! isempty (Weights)
+          && ! (isvector (Weights) && numel (Weights) == rows (X)))
+        error (strcat ("ClassificationNaiveBayes: 'Weights' must be a", ...
+                       " vector with one element per row of X."));
+      endif
+      if (! isempty (Weights) && (any (Weights < 0)
+                                  || ! (sum (Weights(! isnan (Weights))) > 0)))
+        error (strcat ("ClassificationNaiveBayes: 'Weights' must be", ...
+                       " nonnegative and must not be all zero."));
+      endif
 
-          case 'responsename'
-            ResponseName = varargin{2};
-            if (! (ischar (ResponseName) && isrow (ResponseName)))
-              error (strcat ("ClassificationNaiveBayes: 'ResponseName'", ...
-                             " must be a character vector."));
-            endif
-
-          case 'classnames'
-            ClassNames = varargin{2};
-            if (! (iscellstr (ClassNames) || isnumeric (ClassNames)
-                   || islogical (ClassNames) || ischar (ClassNames)
-                   || isa (ClassNames, 'categorical')
-                   || isa (ClassNames, 'string')))
-              error (strcat ("ClassificationNaiveBayes: 'ClassNames' must", ...
-                             " be a categorical array, a character array,", ...
-                             " a string array, a logical vector, a numeric", ...
-                             " vector, or a cell array of character", ...
-                             " vectors."));
-            endif
-
-          case 'prior'
-            Prior = varargin{2};
-
-          case 'cost'
-            Cost = varargin{2};
-
-          case 'scoretransform'
-            ScoreTransform = varargin{2};
-
-          case 'categoricalpredictors'
-            CatPreds = varargin{2};
-
-          case 'distributionnames'
-            DistNames = varargin{2};
-
-          case 'kernel'
-            Kernel = varargin{2};
-
-          case 'support'
-            Support = varargin{2};
-
-          case 'width'
-            Width = varargin{2};
-
-          otherwise
-            error (strcat ("ClassificationNaiveBayes: invalid parameter", ...
-                           sprintf (" name '%s'.", varargin{1})));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("ClassificationNaiveBayes: invalid optional paired argument.");
+      endif
 
       ## Resolve the categorical predictors and the distribution of every
       ## predictor.  The two are tied: naming a predictor categorical makes
@@ -621,10 +606,14 @@ classdef ClassificationNaiveBayes < PredictiveModel
       this.DistributionNames = D;
       this.CategoricalPredictors = catidx;
 
-      ## Store the data as supplied, then drop the rows that are not complete
+      ## Store the data as supplied, then drop the rows that are not complete,
+      ## and those of zero or missing weight, as R2024a drops them
       this.X = X;
       this.Y = Y;
       ok = ! any (isnan (X), 2);
+      if (! isempty (Weights))
+        ok = ok & ! isnan (Weights(:)) & Weights(:) > 0;
+      endif
       if (! all (ok))
         this.RowsUsed = ok;
       endif
@@ -694,9 +683,16 @@ classdef ClassificationNaiveBayes < PredictiveModel
         this.Cost = Cost;
       endif
 
-      ## Prior, and the observation weights that follow from it
+      ## Prior, and the observation weights that follow from it.  The weights
+      ## given keep their class in the model; every computation runs on them
+      ## as double.
+      wf = ones (nObs, 1);
+      if (! isempty (Weights))
+        this.RawWeights = Weights(:)(ok);
+        wf = double (this.RawWeights);
+      endif
       if (ischar (Prior) && strcmpi (Prior, 'empirical'))
-        this.Prior = accumarray (gY, 1, [nCls, 1])' / nObs;
+        this.Prior = accumarray (gY, wf, [nCls, 1])' / sum (wf);
       elseif (ischar (Prior) && strcmpi (Prior, 'uniform'))
         this.Prior = ones (1, nCls) / nCls;
       else
@@ -708,7 +704,7 @@ classdef ClassificationNaiveBayes < PredictiveModel
       ## Fit one density per class and per predictor
       [this.DistributionParameters, this.Kernel, this.Support, ...
        this.Width, this.CategoricalLevels] = ...
-              nbFit (Xf, gY, nCls, this.DistributionNames, this.W, ...
+              nbFit (Xf, gY, nCls, this.DistributionNames, double (this.W), ...
                      Kernel, Support, Width, 'ClassificationNaiveBayes', ...
                      this.ClassNames, this.PredictorNames);
 
@@ -1029,7 +1025,8 @@ classdef ClassificationNaiveBayes < PredictiveModel
                                         nargin > 2);
       W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
                        'ClassificationNaiveBayes', 'edge');
-      e = sum (W .* margin (this, X, Y));
+      m = margin (this, X, Y);
+      e = sum (W .* m(:)) / sum (W);
 
     endfunction
 
@@ -1087,31 +1084,32 @@ classdef ClassificationNaiveBayes < PredictiveModel
                        " arguments must be in pairs."));
       endif
 
-      LossFun = 'mincost';
-      Weights = [];
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mincost', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
       lf_opt = {'binodeviance', 'classifcost', 'classiferror', ...
                 'exponential', 'hinge', 'logit', 'mincost', 'quadratic'};
+      if (! (ischar (LossFun) && any (strcmpi (LossFun, lf_opt))))
+        error ("ClassificationNaiveBayes.loss: invalid loss function.");
+      endif
+      LossFun = tolower (LossFun);
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("ClassificationNaiveBayes.loss: %s", errmsg);
+      endif
+      if (! isempty (Weights) && ! (isnumeric (Weights) && isvector (Weights)))
+        error ("ClassificationNaiveBayes.loss: invalid 'Weights'.");
+      endif
 
-      while (numel (varargin) > 0)
-        Value = varargin{2};
-        switch (tolower (varargin{1}))
-          case 'lossfun'
-            if (! (ischar (Value) && any (strcmpi (Value, lf_opt))))
-              error (strcat ("ClassificationNaiveBayes.loss: invalid", ...
-                             " loss function."));
-            endif
-            LossFun = tolower (Value);
-          case 'weights'
-            if (! (isnumeric (Value) && isvector (Value)))
-              error ("ClassificationNaiveBayes.loss: invalid 'Weights'.");
-            endif
-            Weights = Value;
-          otherwise
-            error (strcat ("ClassificationNaiveBayes.loss: invalid", ...
-                           " parameter name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("ClassificationNaiveBayes.loss: invalid optional", ...
+                       " paired argument."));
+      endif
 
       [gY, errmsg] = labelIndices (this.ClassNames, Y);
       if (! isempty (errmsg))
@@ -1124,7 +1122,7 @@ classdef ClassificationNaiveBayes < PredictiveModel
       if (isempty (Weights))
         w = ones (numel (gY), 1);
       else
-        w = Weights(:);
+        w = double (Weights(:));
         if (numel (w) != numel (gY))
           error (strcat ("ClassificationNaiveBayes.loss: 'Weights' must", ...
                          " have one element per observation."));
@@ -1151,12 +1149,22 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ## marks an observation the model finds unlike anything it was trained on,
     ## whatever class it would be assigned to.
     ##
+    ## @var{X} may also be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position: one
+    ## the model was not fitted on is passed over, one it needs and cannot
+    ## find is named, and a value holding a level is coded as that level was
+    ## coded at fitting.
+    ##
     ## @end deftypefn
     function lp = logp (this, X)
 
       if (nargin < 2)
         error ("ClassificationNaiveBayes.logp: too few input arguments.");
       endif
+
+      ## A table is read by the names the model was fitted on
+      X = tableColumns (this, 'ClassificationNaiveBayes.logp', X);
+
       if (isempty (X))
         error ("ClassificationNaiveBayes.logp: X is empty.");
       endif
@@ -1173,10 +1181,9 @@ classdef ClassificationNaiveBayes < PredictiveModel
 
       ## Sum the classes in logs: the largest term is factored out so that a
       ## density small enough to underflow still contributes its logarithm.
-      ## Factoring out the largest term keeps a density small enough to
-      ## underflow contributing its logarithm.  Where every class is
-      ## impossible the largest term is -Inf and the factoring is 0/0, so the
-      ## answer is written directly: the density really is zero there.
+      ## Where every class is impossible the largest term is -Inf and the
+      ## factoring is 0/0, so the answer is written directly: the density
+      ## really is zero there.
       Lmax = max (L, [], 2);
       lp = Lmax + log (sum (exp (L - Lmax), 2));
       lp(Lmax == -Inf) = -Inf;
@@ -1237,8 +1244,9 @@ classdef ClassificationNaiveBayes < PredictiveModel
         error (strcat ("ClassificationNaiveBayes.resubEdge:", ...
                        " too few input arguments."));
       endif
+      ## The training data weighs by the model's own weights, as in R2024a
       [X, Y] = nbTrainX (this);
-      e = edge (this, X, Y);
+      e = edge (this, X, Y, 'Weights', this.W);
 
     endfunction
 
@@ -1257,7 +1265,11 @@ classdef ClassificationNaiveBayes < PredictiveModel
         error (strcat ("ClassificationNaiveBayes.resubLoss:", ...
                        " too few input arguments."));
       endif
+      ## The model's own weights stand unless others are given, as in R2024a
       [X, Y] = nbTrainX (this);
+      if (! any (strcmpi (varargin(1:2:end), 'Weights')))
+        varargin = [varargin, {'Weights', this.W}];
+      endif
       l = loss (this, X, Y, varargin{:});
 
     endfunction
@@ -1320,6 +1332,7 @@ classdef ClassificationNaiveBayes < PredictiveModel
       Support                = this.Support;
       Width                  = this.Width;
       STfun                  = this.STfun;
+      RawWeights             = this.RawWeights;
 
       ## Save classdef name and all model properties as individual variables
       HyperparameterOptimizationResults = this.HyperparameterOptimizationResults;
@@ -1329,7 +1342,7 @@ classdef ClassificationNaiveBayes < PredictiveModel
             'ExpandedPredictorNames', 'ClassNames', 'Prior', 'Cost', ...
             'ScoreTransform', 'DistributionNames', 'Mu', 'Sigma', ...
             'DistributionParameters', 'CategoricalLevels', 'Kernel', ...
-            'Support', 'Width', 'STfun', ...
+            'Support', 'Width', 'STfun', 'RawWeights', ...
             'HyperparameterOptimizationResults');
 
     endfunction
@@ -1478,6 +1491,12 @@ endclassdef
 %! assert_equal (edge (Mdl, meas, species, 'Weights', w), ...
 %!               0.898902916457462, 1e-12);
 %! assert_equal (edge (Mdl, meas, species), 0.894430597464877, 1e-12);
+
+%!test  # MATLAB parity: edge on a set missing a class
+%! load fisheriris
+%! Mdl = fitcnb (meas, species);
+%! r = 51:150;
+%! assert_equal (edge (Mdl, meas(r,:), species(r)), 0.8416458962, 1e-10);
 
 %!test  # MATLAB parity: logp over all the classes
 %! load fisheriris
@@ -1990,7 +2009,7 @@ endclassdef
 %! ClassificationNaiveBayes ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'ResponseName', 5)
 %!error<ClassificationNaiveBayes: not all 'ClassNames' are present in Y.> ...
 %! ClassificationNaiveBayes ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'ClassNames', [1, 3])
-%!error<ClassificationNaiveBayes: invalid parameter name 'nope'.> ...
+%!error<ClassificationNaiveBayes: invalid optional paired argument.> ...
 %! ClassificationNaiveBayes ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'nope', 1)
 %!error<ClassificationNaiveBayes: unsupported distribution 'poisson'.> ...
 %! ClassificationNaiveBayes ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], ...
@@ -2015,6 +2034,9 @@ endclassdef
 %!error<ClassificationNaiveBayes.loss: invalid loss function.> ...
 %! loss (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), [1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], ...
 %!       'LossFun', 'nope')
+%!error<ClassificationNaiveBayes.loss: invalid optional paired argument.> ...
+%! loss (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), ...
+%!       [1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'Bogus', 1)
 %!error<ClassificationNaiveBayes.loss: 'Weights' must have one element per observation.> ...
 %! loss (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), [1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], ...
 %!       'Weights', [1, 2])
@@ -2138,3 +2160,111 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## A table at logp
+%!test  # a table is matched to the predictors by name
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!           'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%! Mdl = fitcnb (T, 'Species');
+%! a = logp (Mdl, meas);
+%! assert_equal (logp (Mdl, T(:,1:4)), a);
+%! assert_equal (logp (Mdl, T(:,[5, 4, 2, 3, 1])), a);
+
+## Observation weights of class single or double
+%!error <ClassificationNaiveBayes.loss: 'Weights' must be a real vector of class single or double.> ...
+%! loss (fitcnb ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2]), ...
+%!       [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))
+
+## Observation weights
+%!error <ClassificationNaiveBayes: 'Weights' must be a real vector of class single or double.> ...
+%! ClassificationNaiveBayes ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!                           'Weights', int8 ([1; 1; 1; 1]))
+%!error <ClassificationNaiveBayes: 'Weights' must be a real vector of class single or double.> ...
+%! ClassificationNaiveBayes ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!                           'Weights', true (4, 1))
+%!error <ClassificationNaiveBayes: 'Weights' must be a vector with one element per row of X.> ...
+%! ClassificationNaiveBayes ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!                           'Weights', [1; 1])
+%!error <ClassificationNaiveBayes: 'Weights' must be nonnegative and must not be all zero.> ...
+%! ClassificationNaiveBayes ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
+%!                           'Weights', [1; -1; 1; 1])
+%!test
+%! ## An empirical prior and a normal density weigh the observations
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (meas, species, 'Weights', 1 + (1:150)' / 7);
+%! assert_equal (Mdl.Prior, [0.1313131313131313, 0.3333333333333333, ...
+%!                           0.5353535353535354], 1e-15);
+%! assert_equal (Mdl.DistributionParameters{1,1}, ...
+%!               [5.0008; 0.3400154735180538], 1e-13);
+%!test
+%! ## A kernel density weighs the observations, its bandwidth does not
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (meas, species, ...
+%!                                 'Weights', 1 + (1:150)' / 7, ...
+%!                                 'DistributionNames', 'kernel');
+%! Mdl0 = ClassificationNaiveBayes (meas, species, ...
+%!                                  'DistributionNames', 'kernel');
+%! assert_equal (Mdl.Width, Mdl0.Width);
+%! [~, Posterior] = predict (Mdl, meas(51,:));
+%! assert_equal (Posterior, [0, 0.7141545707763224, 0.2858454292236776], 1e-12);
+%!test
+%! ## A multivariate multinomial counts the observations by their weights
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (round (meas), species, ...
+%!                                 'Weights', 1 + (1:150)' / 7, ...
+%!                                 'DistributionNames', 'mvmn');
+%! assert_equal (Mdl.DistributionParameters{1,1}, ...
+%!               [0.09258741258741258; 0.7655944055944056; ...
+%!                0.1054545454545455; 0.01818181818181818; ...
+%!                0.01818181818181818], 1e-15);
+%!test
+%! ## A multinomial counts the tokens by their weights
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (round (meas * 2), species, ...
+%!                                 'Weights', 1 + (1:150)' / 7, ...
+%!                                 'DistributionNames', 'mn');
+%! assert_equal ([Mdl.DistributionParameters{1,:}], ...
+%!               [0.4954405908994194, 0.3390224626888355, ...
+%!                0.1481959937992036, 0.01734095261254141], 1e-15);
+%!test
+%! ## Rows of zero weight are left out, as R2024a leaves them
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! w(5) = 0;
+%! Mdl = ClassificationNaiveBayes (meas, species, 'Weights', w);
+%! assert_equal (Mdl.NumObservations, 149);
+%! assert_equal (Mdl.RowsUsed(5), false);
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (meas, species, ...
+%!                                 'Weights', single (1 + (1:150)' / 7));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## resubLoss weighs the observations by W, as R2024a does
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (meas, species, 'Weights', 1 + (1:150)' / 7);
+%! assert_equal (resubLoss (Mdl), 0.06141414141414142, 1e-15);
+%!test
+%! ## Reassigning the prior keeps W in proportion to the weights
+%! load fisheriris
+%! w = 1 + (1:150)' / 7;
+%! Mdl = ClassificationNaiveBayes (meas, species, 'Weights', w);
+%! Mdl.Prior = [1, 1, 1] / 3;
+%! assert_equal (Mdl.W(1:50), w(1:50) / sum (w(1:50)) / 3, 1e-15);
+%!test
+%! ## A weighted kernel model saves and loads with its weights
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (meas, species, ...
+%!                                 'Weights', 1 + (1:150)' / 7, ...
+%!                                 'DistributionNames', 'kernel');
+%! fname = [tempname(), '.mat'];
+%! savemodel (Mdl, fname);
+%! Mdl2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (nthargout (2, @predict, Mdl2, meas(51,:)), ...
+%!               nthargout (2, @predict, Mdl, meas(51,:)), 1e-15);
+

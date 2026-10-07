@@ -67,8 +67,8 @@
 ## The dimension of the embedding @var{Y} (default @code{min (P, 2)}).
 ##
 ## @item @qcode{'NumPCAComponents'}
-## If positive, reduce @var{X} to this many principal components before embedding
-## (default 0, no reduction).
+## If positive, reduce @var{X} to this many principal components before
+## embedding (default 0, no reduction).
 ##
 ## @item @qcode{'Standardize'}
 ## Logical; center and scale each column of @var{X} before embedding (default

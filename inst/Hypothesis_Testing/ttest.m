@@ -143,7 +143,7 @@ function [h, p, ci, stats] = ttest (x, my, varargin)
   ## and the confidence interval.
   switch lower (tail)
     case 'both'
-      p = 2 * (1 - tcdf (abs (tval), n - 1));
+      p = 2 * tcdf (-abs (tval), n - 1);
       tcrit = - tinv (alpha / 2, n - 1);
       ci = [x_bar-tcrit.*x_bar_std; x_bar+tcrit.*x_bar_std] + my;
     case 'left'
@@ -151,7 +151,7 @@ function [h, p, ci, stats] = ttest (x, my, varargin)
       tcrit = - tinv (alpha, n - 1);
       ci = [-inf*ones(size(x_bar)); my+x_bar+tcrit.*x_bar_std];
     case 'right'
-      p = 1 - tcdf (tval, n - 1);
+      p = tcdf (tval, n - 1, 'upper');
       tcrit = - tinv (alpha, n - 1);
       ci = [my+x_bar-tcrit.*x_bar_std; inf*ones(size(x_bar))];
     otherwise
@@ -178,12 +178,20 @@ endfunction
 %! assert_equal (ci, [9.6219 10.3781], 1E-5)
 %! [h, pval, ci0] = ttest (x, 0);
 %! assert_equal (h, 1)
-%! assert_equal (pval, 0)
+%! assert_equal (pval, 7.99598458174846e-39, -1e-13)  # MATLAB R2024a
 %! assert_equal (ci0, ci, 2e-15)
 %! [h, pval, ci] = ttest (x, 10, 'tail', 'right', 'dim', 2, 'alpha', 0.05);
 %! assert_equal (h, 0)
 %! assert_equal (pval, 0.5, 10*eps)
 %! assert_equal (ci, [9.68498 Inf], 1E-5)
+%!test
+%! ## Below the resolution of 1 - tcdf, values from MATLAB R2024a
+%! [~, pval] = ttest (10 + sin (1:30)');
+%! assert_equal (pval, 9.53562250074996e-35, -1e-13);
+%!test
+%! [~, pval] = ttest (10 + sin (1:30)', 0, 'tail', 'right');
+%! assert_equal (pval, 4.76781125037498e-35, -1e-13);
+
 %!error ttest ([8:0.1:12], 10, 'tail', 'invalid');
 %!error ttest ([8:0.1:12], 10, 'tail', 25);
 

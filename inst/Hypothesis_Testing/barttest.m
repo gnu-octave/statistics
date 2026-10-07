@@ -76,7 +76,7 @@ function [ndim, pval, chisq] = barttest (x, alpha);
   ## Calculate the degrees of freedom
   df = (pk - 1) .* (pk + 2) / 2;
   ## Find the corresponding p-values
-  pval = 1 - chi2cdf (chisq, df);
+  pval = chi2cdf (chisq, df, 'upper');
   ## Get ndim
   dim  = min (find (pval > alpha));
   if (isempty (dim))
@@ -90,6 +90,12 @@ function [ndim, pval, chisq] = barttest (x, alpha);
    ndim = dim - 1;
   endif
 endfunction
+
+%!test
+%! ## Below the resolution of 1 - chi2cdf, values from MATLAB R2024a
+%! u = (1:30)';
+%! [~, p] = barttest ([u, u + sin(u), cos(u)]);
+%! assert_equal (p, [3.45658879157417e-53; 0.247541092553521], -1e-10);
 
 ## Test input validation
 %!error<barttest: invalid number of input arguments.> barttest ()
@@ -105,7 +111,7 @@ endfunction
 %! x = [2, 3, 4, 5, 6, 7, 8, 9; 1, 2, 3, 4, 5, 6, 7, 8]';
 %! [ndim, pval, chisq] = barttest (x);
 %! assert_equal (ndim, 2);
-%! assert_equal (pval, 0);
+%! assert_equal (pval < 1e-100, true);
 %! ## assert_equal (chisq, 512.0558, 1e-4); Result differs between octave 6 and 7 ?
 %!test
 %! x = [0.53767,  0.62702,   -0.10224,   -0.25485,   1.4193,   1.5237  ; ...

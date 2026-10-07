@@ -27,6 +27,10 @@
 ## corresponds to a single treatment.  Each column contains the settings for a
 ## single factor, with values of 0 and 1 for the two levels.
 ##
+## @var{n} must be a non-negative integer scalar.  @code{ff2n (0)} returns a
+## 1-by-0 matrix, a single treatment with no factors.  An empty @var{n} is an
+## error, whereas MATLAB returns an empty matrix.
+##
 ## @seealso{fullfact}
 ## @end deftypefn
 
@@ -34,21 +38,30 @@ function A = ff2n (n)
   if (nargin != 1)
     error ("ff2n: wrong number of input arguments.");
   endif
-  if (floor (n) != n || numel (n) != 1 || n < 1 ...
-                     || ! isfinite (n) || ! isreal (n))
-    error ("ff2n: @var{N} must be a positive integer scalar.");
+  if (! (isscalar (n) && (isnumeric (n) || islogical (n)) && isreal (n)
+         && isfinite (n) && n >= 0 && fix (n) == n))
+    error ("ff2n: N must be a non-negative integer scalar.");
   endif
-  A = flip (fullfact (2 * ones (1, n)), 2) - 1;
+  if (n == 0)
+    A = zeros (1, 0);
+  else
+    A = flip (fullfact (2 * ones (1, n)), 2) - 1;
+  endif
 endfunction
 
 %!error ff2n ();
 %!error ff2n (2, 5);
-%!error ff2n (2.5);
-%!error ff2n (0);
-%!error ff2n (-3);
-%!error ff2n (3+2i);
-%!error ff2n (Inf);
-%!error ff2n (NaN);
+%!error <ff2n: N must be a non-negative integer scalar.> ff2n ([])
+%!error <ff2n: N must be a non-negative integer scalar.> ff2n ([1, 2])
+%!error <ff2n: N must be a non-negative integer scalar.> ff2n ('a')
+%!error <ff2n: N must be a non-negative integer scalar.> ff2n (2.5)
+%!error <ff2n: N must be a non-negative integer scalar.> ff2n (-3)
+%!error <ff2n: N must be a non-negative integer scalar.> ff2n (3+2i)
+%!error <ff2n: N must be a non-negative integer scalar.> ff2n (Inf)
+%!error <ff2n: N must be a non-negative integer scalar.> ff2n (NaN)
+%!assert_equal (ff2n (0), zeros (1, 0))
+%!assert_equal (ff2n (true), [0; 1])
+%!assert_equal (ff2n (int8 (2)), [0, 0; 0, 1; 1, 0; 1, 1])
 %!test
 %! A = ff2n (3);
 %! assert_equal (A, [0, 0, 0; 0, 0, 1; 0, 1, 0; 0, 1, 1; ...

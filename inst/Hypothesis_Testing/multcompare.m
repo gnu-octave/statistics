@@ -598,9 +598,9 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     C(:,7) = t;     # Unlike Matlab, we include the t statistic
     C(:,8) = DFE;   # Unlike Matlab, we include the degrees of freedom
     if (any (isinf (DFE)))
-      p = 2 * (1 - normcdf (abs (t)));
+      p = 2 * normcdf (-abs (t));
     else
-      p = 2 * (1 - tcdf (abs (t), DFE));
+      p = 2 * tcdf (-abs (t), DFE);
     endif
     [C(:,6), critval, C(:,8)] = feval (CTYPE, p, t, Ng, DFE, R, ALPHA);
     C(:,3) = C(:,4) - sed .* critval;
@@ -741,9 +741,9 @@ function [padj, critval, dfe] = scheffe (p, t, Ng, dfe, R, ALPHA)
 
   ## Calculate the p-value
   if (isinf (dfe))
-    padj = 1 - chi2cdf (t.^2, Ng - 1);
+    padj = chi2cdf (t.^2, Ng - 1, 'upper');
   else
-    padj = 1 - fcdf ((t.^2) / (Ng - 1), Ng - 1, dfe);
+    padj = fcdf ((t.^2) / (Ng - 1), Ng - 1, dfe, 'upper');
   endif
 
   ## Calculate critical value at Scheffe-adjusted ALPHA level
@@ -1359,3 +1359,18 @@ endfunction
 %! assert_equal (padj(7), 0.5089719, 1e-07);
 %! assert_equal (padj(8), 0.7757550, 1e-07);
 %! assert_equal (padj(9), 0.7757550, 1e-07);
+%!test
+%! ## Below the resolution of 1 - tcdf, values from MATLAB R2024a
+%! [~, ~, stats] = anova1 ([1:10, 101:110, 201:210]', ...
+%!                         kron ((1:3)', ones (10, 1)), 'off');
+%! C = multcompare (stats, 'CriticalValueType', 'lsd', 'Display', 'off');
+%! assert_equal (C(:,6), [1.07511774090732e-32; 8.40615185462431e-41; ...
+%!                        1.07511774090732e-32], -1e-13);
+%!test
+%! ## Scheffe below the resolution of 1 - fcdf, values from MATLAB R2024a
+%! w = [1:10, 101:110, 201:210]';
+%! g = kron ((1:3)', ones (10, 1));
+%! [~, ~, st] = anova1 (w, g, 'off');
+%! C = multcompare (st, 'CriticalValueType', 'scheffe', 'Display', 'off');
+%! assert_equal (C(:,6), [7.05050215176788e-32; 5.522164708181e-40; ...
+%!                        7.05050215176788e-32], -1e-10);

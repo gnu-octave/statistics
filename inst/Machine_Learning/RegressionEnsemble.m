@@ -90,8 +90,8 @@ classdef RegressionEnsemble < PredictiveModel
     ##
     ## Observation weights
     ##
-    ## The weights given, normalized to sum to one.  This property is
-    ## read-only.
+    ## The weights given, normalized to sum to one.  It has the class of the
+    ## @qcode{'Weights'} given, single or double.  This property is read-only.
     ##
     ## @end deftp
     W = [];
@@ -321,14 +321,6 @@ classdef RegressionEnsemble < PredictiveModel
         parseResponseTransform (val, 'RegressionEnsemble');
     endfunction
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       fprintf ("\n  %s\n\n", class (this));
       fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
@@ -390,95 +382,88 @@ classdef RegressionEnsemble < PredictiveModel
         caller = 'RegressionEnsemble';
       endif
 
-      Method = 'LSBoost'; NLearn = 100; Learners = 'tree'; LearnRate = [];
-      NPrint = 0; Weights = []; PredictorNames = {}; ResponseName = 'Y';
-      CatPreds = [];
-      ResponseTransform = 'none'; FResample = []; Replace = [];
-      Resample = false;
+      ## Parse optional paired arguments.  'LearnRate', 'FResample' and
+      ## 'Replace' stay empty when not given, which is how the checks below
+      ## tell them apart from a value, and 'Resample' is off.
+      optNames = {'Method', 'NumLearningCycles', 'Learners', 'LearnRate', ...
+                  'NPrint', 'Weights', 'PredictorNames', 'ResponseName', ...
+                  'ResponseTransform', 'FResample', 'Replace', 'Resample', ...
+                  'CategoricalPredictors'};
+      dfValues = {'LSBoost', 100, 'tree', [], 'off', [], {}, 'Y', 'none', ...
+                  [], [], [], []};
+      [Method, NLearn, Learners, LearnRate, NPrint, Weights, ...
+       PredictorNames, ResponseName, ResponseTransform, FResample, ...
+       Replace, Resample, CatPreds, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      for i = 1:2:numel (varargin)
-        name = varargin{i};
-        val = varargin{i+1};
-        if (! ischar (name))
-          error (strcat ("%s: invalid parameter name in optional pair", ...
-                         " arguments."), caller);
+      ## Validate optional paired arguments
+      if (! (ischar (Method) && isrow (Method)))
+        error ("%s: 'Method' must be a character vector.", caller);
+      elseif (strcmpi (Method, 'LSBoost'))
+        Method = 'LSBoost';
+      elseif (strcmpi (Method, 'Bag'))
+        Method = 'Bag';
+      else
+        error ("%s: '%s' is not a valid ensemble method.", caller, Method);
+      endif
+      if (! (isnumeric (NLearn) && isscalar (NLearn) && isreal (NLearn)
+             && NLearn >= 1 && NLearn == fix (NLearn)))
+        error ("%s: 'NumLearningCycles' must be a positive integer.", caller);
+      endif
+      NLearn = double (NLearn);
+      if (! isempty (LearnRate)
+          && ! (isnumeric (LearnRate) && isscalar (LearnRate)
+                && isreal (LearnRate) && LearnRate > 0 && LearnRate <= 1))
+        error (strcat ("%s: 'LearnRate' must be a number greater than 0", ...
+                       " and no greater than 1."), caller);
+      endif
+      LearnRate = double (LearnRate);
+      if (ischar (NPrint) && strcmpi (NPrint, 'off'))
+        NPrint = 0;
+      elseif (isnumeric (NPrint) && isscalar (NPrint) && isreal (NPrint)
+              && NPrint >= 1 && NPrint == fix (NPrint))
+        NPrint = double (NPrint);
+      else
+        error ("%s: 'NPrint' must be a positive integer or 'off'.", caller);
+      endif
+      if (! (ischar (ResponseName) && isrow (ResponseName)))
+        error ("%s: 'ResponseName' must be a character vector.", caller);
+      endif
+      if (! isempty (FResample)
+          && ! (isnumeric (FResample) && isscalar (FResample)
+                && isreal (FResample) && FResample > 0 && FResample <= 1))
+        error (strcat ("%s: 'FResample' must be a number greater than 0", ...
+                       " and no greater than 1."), caller);
+      endif
+      FResample = double (FResample);
+      if (! isempty (Replace))
+        [Replace, ok] = onOff (Replace);
+        if (! ok)
+          error ("%s: 'Replace' must be 'on' or 'off'.", caller);
         endif
-        switch (tolower (name))
-          case 'method'
-            if (! (ischar (val) && isrow (val)))
-              error ("%s: 'Method' must be a character vector.", caller);
-            elseif (strcmpi (val, 'LSBoost'))
-              Method = 'LSBoost';
-            elseif (strcmpi (val, 'Bag'))
-              Method = 'Bag';
-            else
-              error ("%s: '%s' is not a valid ensemble method.", caller, val);
-            endif
-          case 'numlearningcycles'
-            if (! (isnumeric (val) && isscalar (val) && isreal (val)
-                   && val >= 1 && val == fix (val)))
-              error (strcat ("%s: 'NumLearningCycles' must be a positive", ...
-                             " integer."), caller);
-            endif
-            NLearn = double (val);
-          case 'learners'
-            Learners = val;
-          case 'learnrate'
-            if (! (isnumeric (val) && isscalar (val) && isreal (val)
-                   && val > 0 && val <= 1))
-              error (strcat ("%s: 'LearnRate' must be a number greater", ...
-                             " than 0 and no greater than 1."), caller);
-            endif
-            LearnRate = double (val);
-          case 'nprint'
-            if (ischar (val) && strcmpi (val, 'off'))
-              NPrint = 0;
-            elseif (isnumeric (val) && isscalar (val) && isreal (val)
-                    && val >= 1 && val == fix (val))
-              NPrint = double (val);
-            else
-              error ("%s: 'NPrint' must be a positive integer or 'off'.", ...
-                     caller);
-            endif
-          case 'weights'
-            Weights = val;
-          case 'predictornames'
-            PredictorNames = val;
-          case 'responsename'
-            if (! (ischar (val) && isrow (val)))
-              error ("%s: 'ResponseName' must be a character vector.", ...
-                     caller);
-            endif
-            ResponseName = val;
-          case 'responsetransform'
-            ResponseTransform = val;
-          case 'fresample'
-            if (! (isnumeric (val) && isscalar (val) && isreal (val)
-                   && val > 0 && val <= 1))
-              error (strcat ("%s: 'FResample' must be a number greater", ...
-                             " than 0 and no greater than 1."), caller);
-            endif
-            FResample = double (val);
-          case 'replace'
-            [Replace, ok] = onOff (val);
-            if (! ok)
-              error ("%s: 'Replace' must be 'on' or 'off'.", caller);
-            endif
-          case 'resample'
-            [Resample, ok] = onOff (val);
-            if (! ok)
-              error ("%s: 'Resample' must be 'on' or 'off'.", caller);
-            endif
-          case 'categoricalpredictors'
-            CatPreds = val;
-          case {'numbins', 'optimizehyperparameters', ...
-                'hyperparameteroptimizationoptions', 'options'}
-            error ("%s: '%s' is not implemented.", caller, name);
-          otherwise
-            error (strcat ("%s: invalid parameter name in optional pair", ...
-                           " arguments."), caller);
-        endswitch
+      endif
+      if (isempty (Resample))
+        Resample = false;
+      else
+        [Resample, ok] = onOff (Resample);
+        if (! ok)
+          error ("%s: 'Resample' must be 'on' or 'off'.", caller);
+        endif
+      endif
+
+      ## Options MATLAB takes that this class does not implement are named
+      ## one by one, so that asking for one is refused rather than quietly
+      ## doing nothing; anything else left over is unknown.
+      notImpl = {'NumBins', 'OptimizeHyperparameters', ...
+                 'HyperparameterOptimizationOptions', 'Options'};
+      for i = 1:2:numel (args)
+        if (ischar (args{i}) && any (strcmpi (args{i}, notImpl)))
+          error ("%s: '%s' is not implemented.", caller, args{i});
+        endif
       endfor
+      if (! isempty (args))
+        error ("%s: invalid optional paired argument.", caller);
+      endif
 
       if (ischar (Learners) && strcmpi (Learners, 'tree'))
         tmpl = templateTree ();
@@ -559,7 +544,9 @@ classdef RegressionEnsemble < PredictiveModel
       this.X = F.X;
       this.Y = double (F.Y);
       this.RowsUsed = F.RowsUsed;
-      this.W = F.W;
+      ## The weights keep their class in the model; every computation runs on
+      ## them as double.
+      this.W = cast (F.W, F.WeightsClass);
       this.NumObservations = F.n;
       this.PredictorNames = PredictorNames(:)';
       this.ExpandedPredictorNames = this.PredictorNames;
@@ -680,22 +667,23 @@ classdef RegressionEnsemble < PredictiveModel
       if (mod (numel (varargin), 2) != 0)
         error ("%s: name-value arguments must be in pairs.", caller);
       endif
-      NPrint = 0;
-      for i = 1:2:numel (varargin)
-        if (! (ischar (varargin{i}) && strcmpi (varargin{i}, 'NPrint')))
-          error (strcat ("%s: invalid parameter name in optional pair", ...
-                         " arguments."), caller);
-        endif
-        val = varargin{i+1};
-        if (ischar (val) && strcmpi (val, 'off'))
-          NPrint = 0;
-        elseif (isnumeric (val) && isscalar (val) && isreal (val)
-                && val >= 1 && val == fix (val))
-          NPrint = double (val);
-        else
-          error ("%s: 'NPrint' must be a positive integer or 'off'.", caller);
-        endif
-      endfor
+      ## Parse optional paired arguments
+      [NPrint, args] = parsePairedArguments ({'NPrint'}, {'off'}, ...
+                                             varargin(:));
+
+      ## Validate optional paired arguments
+      if (ischar (NPrint) && strcmpi (NPrint, 'off'))
+        NPrint = 0;
+      elseif (isnumeric (NPrint) && isscalar (NPrint) && isreal (NPrint)
+              && NPrint >= 1 && NPrint == fix (NPrint))
+        NPrint = double (NPrint);
+      else
+        error ("%s: 'NPrint' must be a positive integer or 'off'.", caller);
+      endif
+
+      if (! isempty (args))
+        error ("%s: invalid optional paired argument.", caller);
+      endif
       this = growLearners (this, double (NumLearningCycles), NPrint);
       this.Regularization = [];
 
@@ -876,7 +864,7 @@ classdef RegressionEnsemble < PredictiveModel
 
       T = this.NumTrained;
       Y = this.Y;
-      W = this.W / sum (this.W);
+      W = double (this.W) / sum (double (this.W));
       P = zeros (numel (Y), T);
       for t = 1:T
         P(:,t) = predict (this.Trained{t}, this.X);
@@ -1056,12 +1044,12 @@ classdef RegressionEnsemble < PredictiveModel
         te = test (CV.Partition, k);
         Ek = regularize (CV.Trainable{k}, 'Lambda', Lambda, ...
                          'MaxIter', o.MaxIter, 'RelTol', o.RelTol);
-        wsum += sum (this.W(te));
+        wsum += sum (double (this.W(te)));
         for a = 1:L
           for b = 1:M
             Ck = shrink (Ek, 'WeightColumn', a, 'Threshold', o.Threshold(b));
             r = this.Y(te) - predict (Ck, this.X(te,:));
-            sse(a,b) += sum (this.W(te) .* r .^ 2);
+            sse(a,b) += sum (double (this.W(te)) .* r .^ 2);
             counts(a,b) += Ck.NumTrained;
           endfor
         endfor
@@ -1095,28 +1083,30 @@ classdef RegressionEnsemble < PredictiveModel
           if (this.Resampling)
             ## The tree sees the rows drawn; the prediction and the fit
             ## information run over every row, as in MATLAB R2024a.
-            [idx, sw, cnt] = boostSample (this.W, ...
+            [idx, sw, cnt] = boostSample (double (this.W), ...
                                           ceil (this.BagFResample * n), ...
                                           this.BagReplace);
             T = compact (RegressionTree (this.X(idx,:), r(idx), ...
                                          'Weights', sw, targs{:}));
             this.BagInBag(:,end+1) = cnt > 0;
           else
-            T = compact (RegressionTree (this.X, r, 'Weights', this.W, ...
+            T = compact (RegressionTree (this.X, r, ...
+                                         'Weights', double (this.W), ...
                                          targs{:}));
           endif
           h = predict (T, this.X);
-          this.FitInfo(end+1,1) = sum (this.W .* (r - h) .^ 2);
+          this.FitInfo(end+1,1) = sum (double (this.W) .* (r - h) .^ 2);
           this.F += this.LearnRate * h;
           this = addLearner (this, T, this.LearnRate);
         else
           m = ceil (this.BagFResample * n);
           if (this.BagReplace)
-            cw = [0; cumsum(this.W)];
+            cw = [0; cumsum(double (this.W))];
             cw /= cw(end);
             idx = lookup (cw, rand (m, 1));
           else
-            [~, order] = sort (rand (n, 1) .^ (1 ./ this.W), 'descend');
+            [~, order] = sort (rand (n, 1) .^ (1 ./ double (this.W)), ...
+                               'descend');
             idx = order(1:m);
           endif
           T = compact (RegressionTree (this.X(idx,:), this.Y(idx), ...
@@ -1164,54 +1154,61 @@ function [o, errmsg] = shrinkOptions (args, allowed)
     errmsg = "name-value arguments must be in pairs.";
     return;
   endif
-  for i = 1:2:numel (args)
-    k = [];
-    if (ischar (args{i}))
-      k = find (strcmpi (args{i}, allowed));
-    endif
-    if (isempty (k))
-      errmsg = "invalid parameter name in optional pair arguments.";
+
+  ## Parse optional paired arguments.  Each caller accepts the subset of
+  ## them ALLOWED lists; an option left empty keeps the default above.
+  optNames = {'Lambda', 'MaxIter', 'RelTol', 'WeightColumn', 'Threshold'};
+  [Lambda, MaxIter, RelTol, WeightColumn, Threshold, args] = ...
+         parsePairedArguments (optNames, {[], [], [], [], []}, args(:));
+  given = optNames(! cellfun (@isempty, {Lambda, MaxIter, RelTol, ...
+                                          WeightColumn, Threshold}));
+  if (! isempty (args) || ! all (ismember (lower (given), lower (allowed))))
+    errmsg = "invalid optional paired argument.";
+    return;
+  endif
+
+  ## Validate optional paired arguments
+  if (! isempty (Lambda))
+    if (! (isnumeric (Lambda) && isreal (Lambda) && isvector (Lambda)
+           && all (isfinite (Lambda)) && all (Lambda >= 0)))
+      errmsg = "'Lambda' must be a vector of non-negative numbers.";
       return;
     endif
-    val = args{i+1};
-    switch (allowed{k})
-      case 'Lambda'
-        if (! (isnumeric (val) && isreal (val) && isvector (val)
-               && all (isfinite (val)) && all (val >= 0)))
-          errmsg = "'Lambda' must be a vector of non-negative numbers.";
-          return;
-        endif
-        o.Lambda = double (val(:)');
-      case 'MaxIter'
-        if (! (isnumeric (val) && isscalar (val) && isreal (val)
-               && val >= 1 && val == fix (val)))
-          errmsg = "'MaxIter' must be a positive integer.";
-          return;
-        endif
-        o.MaxIter = double (val);
-      case 'RelTol'
-        if (! (isnumeric (val) && isscalar (val) && isreal (val)
-               && isfinite (val) && val > 0))
-          errmsg = "'RelTol' must be a positive number.";
-          return;
-        endif
-        o.RelTol = double (val);
-      case 'WeightColumn'
-        if (! (isnumeric (val) && isscalar (val) && isreal (val)
-               && val >= 1 && val == fix (val)))
-          errmsg = "'WeightColumn' must be a positive integer.";
-          return;
-        endif
-        o.WeightColumn = double (val);
-      case 'Threshold'
-        if (! (isnumeric (val) && isreal (val) && isvector (val)
-               && all (isfinite (val)) && all (val >= 0)))
-          errmsg = "'Threshold' must hold non-negative numbers.";
-          return;
-        endif
-        o.Threshold = double (val(:)');
-    endswitch
-  endfor
+    o.Lambda = double (Lambda(:)');
+  endif
+  if (! isempty (MaxIter))
+    if (! (isnumeric (MaxIter) && isscalar (MaxIter) && isreal (MaxIter)
+           && MaxIter >= 1 && MaxIter == fix (MaxIter)))
+      errmsg = "'MaxIter' must be a positive integer.";
+      return;
+    endif
+    o.MaxIter = double (MaxIter);
+  endif
+  if (! isempty (RelTol))
+    if (! (isnumeric (RelTol) && isscalar (RelTol) && isreal (RelTol)
+           && isfinite (RelTol) && RelTol > 0))
+      errmsg = "'RelTol' must be a positive number.";
+      return;
+    endif
+    o.RelTol = double (RelTol);
+  endif
+  if (! isempty (WeightColumn))
+    if (! (isnumeric (WeightColumn) && isscalar (WeightColumn)
+           && isreal (WeightColumn) && WeightColumn >= 1
+           && WeightColumn == fix (WeightColumn)))
+      errmsg = "'WeightColumn' must be a positive integer.";
+      return;
+    endif
+    o.WeightColumn = double (WeightColumn);
+  endif
+  if (! isempty (Threshold))
+    if (! (isnumeric (Threshold) && isreal (Threshold) && isvector (Threshold)
+           && all (isfinite (Threshold)) && all (Threshold >= 0)))
+      errmsg = "'Threshold' must hold non-negative numbers.";
+      return;
+    endif
+    o.Threshold = double (Threshold(:)');
+  endif
 
 endfunction
 
@@ -1332,9 +1329,9 @@ endfunction
 %!error<RegressionEnsemble: too few input arguments.> RegressionEnsemble (X)
 %!error<RegressionEnsemble: name-value arguments must be in pairs.> ...
 %! RegressionEnsemble (X, y, 'Method')
-%!error<RegressionEnsemble: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionEnsemble: invalid optional paired argument.> ...
 %! RegressionEnsemble (X, y, 'Foo', 1)
-%!error<RegressionEnsemble: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionEnsemble: invalid optional paired argument.> ...
 %! RegressionEnsemble (X, y, 1, 1)
 %!error<RegressionEnsemble: 'Method' must be a character vector.> ...
 %! RegressionEnsemble (X, y, 'Method', 1)
@@ -1372,7 +1369,7 @@ endfunction
 %! resume (RegressionEnsemble (X, y, 'NumLearningCycles', 1), 0)
 %!error<RegressionEnsemble.resume: name-value arguments must be in pairs.> ...
 %! resume (RegressionEnsemble (X, y, 'NumLearningCycles', 1), 1, 'NPrint')
-%!error<RegressionEnsemble.resume: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionEnsemble.resume: invalid optional paired argument.> ...
 %! resume (RegressionEnsemble (X, y, 'NumLearningCycles', 1), 1, 'Foo', 1)
 %!error<RegressionEnsemble.resume: 'NPrint' must be a positive integer or 'off'.> ...
 %! resume (RegressionEnsemble (X, y, 'NumLearningCycles', 1), 1, ...
@@ -1381,7 +1378,7 @@ endfunction
 %! predict (RegressionEnsemble (X, y, 'NumLearningCycles', 1))
 %!error<RegressionEnsemble.loss: too few input arguments.> ...
 %! loss (RegressionEnsemble (X, y, 'NumLearningCycles', 1), X)
-%!error<RegressionEnsemble.resubLoss: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionEnsemble.resubLoss: invalid optional paired argument.> ...
 %! resubLoss (RegressionEnsemble (X, y, 'NumLearningCycles', 1), 'Foo', 1)
 
 %!test  # MATLAB parity: crossval equals cross-validating at fit time
@@ -1518,8 +1515,10 @@ endfunction
 %! regularize (E, 'MaxIter', 0)
 %!error<RegressionEnsemble.regularize: 'RelTol' must be a positive number.> ...
 %! regularize (E, 'RelTol', 0)
-%!error<RegressionEnsemble.regularize: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionEnsemble.regularize: invalid optional paired argument.> ...
 %! regularize (E, 'Npass', 3)
+%!error<RegressionEnsemble.regularize: invalid optional paired argument.> ...
+%! regularize (E, 'Threshold', 0.1)
 %!error<RegressionEnsemble.regularize: name-value arguments must be in pairs.> ...
 %! regularize (E, 'Lambda')
 %!error<RegressionEnsemble.shrink: 'WeightColumn' must be a positive integer.> ...
@@ -1532,7 +1531,7 @@ endfunction
 %! shrink (E, 'Threshold', [0, 1])
 %!error<RegressionEnsemble.cvshrink: 'Lambda' must be given for an ensemble that has not been regularized.> ...
 %! cvshrink (E)
-%!error<RegressionEnsemble.cvshrink: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionEnsemble.cvshrink: invalid optional paired argument.> ...
 %! cvshrink (E, 'Lambda', 0.1, 'Foo', 1)
 
 %!shared X, yr
@@ -1570,3 +1569,19 @@ endfunction
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'SL'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <RegressionEnsemble: 'Weights' must be a real vector of class single or double.> ...
+%! fitrensemble ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', ...
+%!               int8 ([1; 1; 1; 1]))
+%!error <RegressionEnsemble: 'Weights' must be a real vector of class single or double.> ...
+%! fitrensemble ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', true (4, 1))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! X = meas(:,2:4);
+%! y = meas(:,1);
+%! w = 1 + (1:150)' / 7;
+%! Mdl = fitrensemble (X, y, 'Weights', single (w), 'NumLearningCycles', 10);
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);

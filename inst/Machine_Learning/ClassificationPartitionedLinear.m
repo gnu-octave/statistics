@@ -15,33 +15,32 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftp {statistics} ClassificationPartitionedLinear
-##
-## Cross-validated linear binary classifier.
-##
-## A @qcode{ClassificationPartitionedLinear} object holds one
-## @qcode{ClassificationLinear} per fold of a partition, each fitted to the
-## observations the fold trains on.  Every @code{kfold} method predicts each
-## observation with the fold that held it @emph{out}, so the estimate it
-## returns is an out-of-sample one.
-##
-## A @qcode{ClassificationLinear} stores no copy of its training data and so
-## has no resubstitution methods and no @code{compact} form.  This class is
-## what takes their place: cross-validation is the way a linear model is
-## asked how it would do on data it has not seen.
-##
-## When the fold models carry a whole regularization path, every method
-## returns one column per strength, in the order of the @qcode{'Lambda'}
-## that was asked for.
-##
-## Create one with @code{fitclinear} and a cross-validation option, or
-## directly.
-##
-## @seealso{fitclinear, ClassificationLinear, ClassificationPartitionedKernel}
-## @end deftp
-
 classdef ClassificationPartitionedLinear
+  ## -*- texinfo -*-
+  ## @deftp {statistics} ClassificationPartitionedLinear
+  ##
+  ## Cross-validated linear binary classifier.
+  ##
+  ## A @qcode{ClassificationPartitionedLinear} object holds one
+  ## @qcode{ClassificationLinear} per fold of a partition, each fitted to the
+  ## observations the fold trains on.  Every @code{kfold} method predicts each
+  ## observation with the fold that held it @emph{out}, so the estimate it
+  ## returns is an out-of-sample one.
+  ##
+  ## A @qcode{ClassificationLinear} stores no copy of its training data and so
+  ## has no resubstitution methods and no @code{compact} form.  This class is
+  ## what takes their place: cross-validation is the way a linear model is
+  ## asked how it would do on data it has not seen.
+  ##
+  ## When the fold models carry a whole regularization path, every method
+  ## returns one column per strength, in the order of the @qcode{'Lambda'}
+  ## that was asked for.
+  ##
+  ## Create one with @code{fitclinear} and a cross-validation option, or
+  ## directly.
+  ##
+  ## @seealso{fitclinear, ClassificationLinear, ClassificationPartitionedKernel}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 

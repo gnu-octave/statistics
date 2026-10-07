@@ -15,34 +15,33 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-## -*- texinfo -*-
-## @deftp {statistics} CompactRegressionGP
-##
-## Compact Gaussian process regression
-##
-## A @code{CompactRegressionGP} object holds a Gaussian process regression
-## model without its training data, keeping what is needed to predict and
-## dropping the rest.
-##
-## Create a @code{CompactRegressionGP} object by using the @code{compact}
-## method of a @code{RegressionGP} object.
-##
-## A compact model keeps the active set it predicts from, the prediction
-## weights, the covariance function and its parameters, the explicit basis and
-## its coefficients, the noise standard deviation and the standardizing
-## location and scale.  It drops the response, the observation weights, the
-## rows used, the count of observations and the maximized log likelihood, so
-## it can predict but cannot be cross validated, refitted, or asked for its
-## resubstitution loss or its post-fit statistics.
-##
-## The standard deviation and the prediction intervals remain available,
-## because the active set of an exactly fitted model is the whole of the
-## training predictors and the factorization can be rebuilt from it.
-##
-## @seealso{RegressionGP, fitrgp}
-## @end deftp
-
 classdef CompactRegressionGP < PredictiveModel
+  ## -*- texinfo -*-
+  ## @deftp {statistics} CompactRegressionGP
+  ##
+  ## Compact Gaussian process regression
+  ##
+  ## A @code{CompactRegressionGP} object holds a Gaussian process regression
+  ## model without its training data, keeping what is needed to predict and
+  ## dropping the rest.
+  ##
+  ## Create a @code{CompactRegressionGP} object by using the @code{compact}
+  ## method of a @code{RegressionGP} object.
+  ##
+  ## A compact model keeps the active set it predicts from, the prediction
+  ## weights, the covariance function and its parameters, the explicit basis
+  ## and its coefficients, the noise standard deviation and the standardizing
+  ## location and scale.  It drops the response, the observation weights, the
+  ## rows used, the count of observations and the maximized log likelihood, so
+  ## it can predict but cannot be cross validated, refitted, or asked for its
+  ## resubstitution loss or its post-fit statistics.
+  ##
+  ## The standard deviation and the prediction intervals remain available,
+  ## because the active set of an exactly fitted model is the whole of the
+  ## training predictors and the factorization can be rebuilt from it.
+  ##
+  ## @seealso{RegressionGP, fitrgp}
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = protected)
 
@@ -291,26 +290,23 @@ classdef CompactRegressionGP < PredictiveModel
                        " number of predictors as the trained model."));
       endif
 
-      CIAlpha = 0.05;
-      while (numel (varargin) > 0)
-        if (numel (varargin) < 2)
-          error (strcat ("CompactRegressionGP.predict: optional arguments", ...
-                         " must be given in Name-Value pairs."));
-        endif
-        switch (lower (varargin{1}))
-          case 'alpha'
-            CIAlpha = varargin{2};
-            if (! (isnumeric (CIAlpha) && isscalar (CIAlpha) && ...
-                   CIAlpha >= 0 && CIAlpha <= 1))
-              error (strcat ("CompactRegressionGP.predict: 'Alpha' must", ...
-                             " be a scalar between 0 and 1."));
-            endif
-          otherwise
-            error (strcat ("CompactRegressionGP.predict: invalid NAME in", ...
-                           " optional pairs of arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments
+      optNames = {'Alpha'};
+      dfValues = {0.05};
+      [CIAlpha, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (isnumeric (CIAlpha) && isscalar (CIAlpha) && ...
+             CIAlpha >= 0 && CIAlpha <= 1))
+        error (strcat ("CompactRegressionGP.predict: 'Alpha' must be a", ...
+                       " scalar between 0 and 1."));
+      endif
+
+      if (! isempty (args))
+        error (strcat ("CompactRegressionGP.predict: invalid optional", ...
+                       " paired argument."));
+      endif
 
       if (! isempty (this.Coding_))
         XC = dummyCoding (XC, this.Coding_);
@@ -385,44 +381,42 @@ classdef CompactRegressionGP < PredictiveModel
                        " Y must be equal."));
       endif
 
-      LossFun = 'mse';
-      Weights = ones (rows (X), 1);
-      Epsilon = 0;
-      while (numel (varargin) > 0)
-        if (numel (varargin) < 2)
-          error (strcat ("CompactRegressionGP.loss: optional arguments", ...
-                         " must be given in Name-Value pairs."));
-        endif
-        switch (lower (varargin{1}))
-          case 'lossfun'
-            LossFun = varargin{2};
-            if (! (ischar (LossFun) || is_function_handle (LossFun)))
-              error (strcat ("CompactRegressionGP.loss: 'LossFun' must be", ...
-                             " a character vector or a function handle."));
-            endif
-            if (ischar (LossFun) && ...
-                ! any (strcmpi (LossFun, {'mse', 'mae', ...
-                                          'epsiloninsensitive'})))
-              error (strcat ("CompactRegressionGP.loss: unsupported", ...
-                             " 'LossFun' value."));
-            endif
-          case 'weights'
-            Weights = varargin{2};
-            if (! (isnumeric (Weights) && isvector (Weights) && ...
-                   numel (Weights) == rows (X) && all (Weights >= 0)))
-              error (strcat ("CompactRegressionGP.loss: 'Weights' must be", ...
-                             " a vector of non-negative values with one", ...
-                             " element per observation."));
-            endif
-            Weights = Weights(:);
-          case 'epsilon'
-            Epsilon = varargin{2};
-          otherwise
-            error (strcat ("CompactRegressionGP.loss: invalid NAME in", ...
-                           " optional pairs of arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights', 'Epsilon'};
+      dfValues = {'mse', [], 0};
+      [LossFun, Weights, Epsilon, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
+      if (! (ischar (LossFun) || is_function_handle (LossFun)))
+        error (strcat ("CompactRegressionGP.loss: 'LossFun' must be a", ...
+                       " character vector or a function handle."));
+      endif
+      if (ischar (LossFun) && ...
+          ! any (strcmpi (LossFun, {'mse', 'mae', ...
+                                    'epsiloninsensitive'})))
+        error ("CompactRegressionGP.loss: unsupported 'LossFun' value.");
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("CompactRegressionGP.loss: %s", errmsg);
+      endif
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isvector (Weights) && ...
+             numel (Weights) == rows (X) && all (Weights >= 0)))
+        error (strcat ("CompactRegressionGP.loss: 'Weights' must be a", ...
+                       " vector of non-negative values with one element", ...
+                       " per observation."));
+      endif
+      Weights = double (Weights(:));
+
+      if (! isempty (args))
+        error ("CompactRegressionGP.loss: invalid optional paired argument.");
+      endif
+      if (isempty (Weights))
+        Weights = ones (rows (X), 1);
+      endif
 
       yFit = this.predict (X);
       if (is_function_handle (LossFun))
@@ -489,14 +483,6 @@ classdef CompactRegressionGP < PredictiveModel
   endmethods
 
   methods (Access = public, Hidden)
-
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        printf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
 
     function disp (this)
       printf ("\n  CompactRegressionGP\n\n");
@@ -725,7 +711,7 @@ endclassdef
 %!error<CompactRegressionGP.predict: 'Alpha' must be a scalar between 0 and 1.> ...
 %! predict (compact (RegressionGP (ones (5, 2), ones (5, 1))), ...
 %!          ones (3, 2), 'Alpha', 2)
-%!error<CompactRegressionGP.predict: invalid NAME in optional pairs of arguments.> ...
+%!error<CompactRegressionGP.predict: invalid optional paired argument.> ...
 %! predict (compact (RegressionGP (ones (5, 2), ones (5, 1))), ...
 %!          ones (3, 2), 'bogus', 1)
 
@@ -737,6 +723,9 @@ endclassdef
 %!error<CompactRegressionGP.loss: number of rows in X and Y must be equal.> ...
 %! loss (compact (RegressionGP (ones (5, 2), ones (5, 1))), ...
 %!       ones (3, 2), ones (2, 1))
+%!error<CompactRegressionGP.loss: invalid optional paired argument.> ...
+%! loss (compact (RegressionGP (ones (5, 2), ones (5, 1))), ...
+%!       ones (3, 2), ones (3, 1), 'Bogus', 1)
 %!error<CompactRegressionGP.loss: unsupported 'LossFun' value.> ...
 %! loss (compact (RegressionGP (ones (5, 2), ones (5, 1))), ones (3, 2), ...
 %!       ones (3, 1), 'LossFun', 'bogus')
@@ -798,3 +787,9 @@ endclassdef
 %! assert_equal (loss (Mdl, T(:,1:2), y), a);
 %! assert_equal (loss (Mdl, T, 'SL'), a);
 %! assert_equal (loss (Mdl, T), a);
+
+## Observation weights of class single or double
+%!error <CompactRegressionGP.loss: 'Weights' must be a real vector of class single or double.>
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! y = (1:4)';
+%! loss (compact (fitrgp (X, y)), X, y, 'Weights', int8 ([1; 1; 1; 1]))

@@ -36,9 +36,10 @@ classdef BurrDistribution < prob.ProbabilityDistribution
   ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{prob.BurrDistribution (@var{alpha}, @var{c},
-  ## @var{k})} to create a Burr distribution with fixed parameter values
-  ## @var{alpha}, @var{c}, and @var{k}.
+  ## @item Use the constructor
+  ## @qcode{prob.BurrDistribution (@var{alpha}, @var{c}, @var{k})} to create a
+  ## Burr distribution with fixed parameter values @var{alpha}, @var{c}, and
+  ## @var{k}.
   ## @item Use the static method @qcode{prob.BurrDistribution.fit (@var{x},
   ## @var{alpha}, @var{censor}, @var{freq}, @var{options})} to fit a
   ## distribution to the data in @var{x} using the same input arguments as the
@@ -226,8 +227,8 @@ classdef BurrDistribution < prob.ProbabilityDistribution
     ## @itemize
     ## @item @qcode{data}: a numeric vector containing the data used for
     ## distribution fitting.
-    ## @item @qcode{cens}: an empty array, since @qcode{prob.BurrDistribution} does
-    ## not allow censoring.
+    ## @item @qcode{cens}: an empty array, since @qcode{prob.BurrDistribution}
+    ## does not allow censoring.
     ## @item @qcode{freq}: a numeric vector of non-negative integer values
     ## containing the frequency information corresponding to the elements of the
     ## data used for distribution fitting. If no frequency vector was used for

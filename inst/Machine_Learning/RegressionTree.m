@@ -119,7 +119,8 @@ classdef RegressionTree < PredictiveModel
     ## Observation weights
     ##
     ## A numeric column vector of the weights the fit used, one per retained
-    ## observation.  They are the weights given, scaled to sum to one.  This
+    ## observation.  They are the weights given, scaled to sum to one.  It has
+    ## the class of the @qcode{'Weights'} given, single or double.  This
     ## property is read-only.
     ##
     ## @end deftp
@@ -544,14 +545,6 @@ classdef RegressionTree < PredictiveModel
                             parseResponseTransform (val, 'RegressionTree');
     endfunction
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       fprintf ('\n  RegressionTree\n\n');
       fprintf ('%22s: %s\n', 'ResponseName', this.ResponseName);
@@ -642,8 +635,10 @@ classdef RegressionTree < PredictiveModel
     ## @item @qcode{'SplitCriterion'} @tab @qcode{'mse'}, the only criterion
     ## a regression tree has.
     ##
-    ## @item @qcode{'Weights'} @tab A nonnegative numeric vector with one
-    ## element per observation.  The default is uniform.
+    ## @item @qcode{'Weights'} @tab A nonnegative single or double vector with
+    ## one element per observation.  The default is uniform.  The model's
+    ## @code{W} keeps the class of the weights, while every computation runs in
+    ## double, so the predictions are double where MATLAB returns single.
     ##
     ## @end multitable
     ##
@@ -677,163 +672,124 @@ classdef RegressionTree < PredictiveModel
 
       Y = double (Y(:));
 
-      ## Defaults.  MaxNumSplits is left empty until the retained rows are
-      ## known, its default being one less than their number.
-      PredictorNames = {};
-      ResponseName   = [];
-      Weights        = [];
-      MaxNumSplits   = [];
-      MergeLeaves    = 'on';
-      MinLeafSize    = 1;
-      MinParentSize  = 10;
-      NumVarSample   = 'all';
-      Prune          = 'on';
-      QEToler        = 1e-6;
-      CatPreds       = [];
-      MaxNumCat      = 10;
-      this.ResponseTransform = 'none';
+      ## Parse optional paired arguments
+      optNames = {'PredictorNames', 'ResponseName', 'ResponseTransform', ...
+                  'Weights', 'MaxNumSplits', 'MinLeafSize', 'MinParentSize', ...
+                  'NumVariablesToSample', 'MergeLeaves', 'Prune', ...
+                  'QuadraticErrorTolerance', 'SplitCriterion', ...
+                  'PruneCriterion', 'CategoricalPredictors', ...
+                  'MaxNumCategories'};
+      ## An empty default stands for one resolved once the data are known:
+      ## 'PredictorNames' are x1, x2, ... and 'ResponseName' is 'Y';
+      ## 'Weights' are uniform; 'MaxNumSplits' is one less than the number
+      ## of rows kept; and no predictor is categorical.
+      dfValues = {{}, [], 'none', [], [], 1, 10, 'all', 'on', 'on', 1e-6, ...
+                  'mse', 'mse', [], 10};
+      [PredictorNames, ResponseName, ResponseTransform, Weights, ...
+       MaxNumSplits, MinLeafSize, MinParentSize, NumVarSample, MergeLeaves, ...
+       Prune, QEToler, SplitCrit, PruneCrit, CatPreds, MaxNumCat, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      ## Parse optional parameters
-      while (numel (varargin) > 0)
-        Value = varargin{2};
-        switch (tolower (varargin{1}))
-
-          case 'predictornames'
-            PredictorNames = Value;
-            if (! iscellstr (PredictorNames))
-              error (strcat ("RegressionTree: 'PredictorNames' must be", ...
-                             " supplied as a cellstring array."));
-            elseif (numel (PredictorNames) != columns (X))
-              error (strcat ("RegressionTree: 'PredictorNames' must equal", ...
-                             " the number of columns in X."));
-            endif
-
-          case 'responsename'
-            ResponseName = Value;
-            if (! (ischar (ResponseName) && isrow (ResponseName)))
-              error (strcat ("RegressionTree: 'ResponseName' must be a", ...
-                             " character vector."));
-            endif
-
-          case 'responsetransform'
-            this.ResponseTransform = Value;
-
-          case 'weights'
-            Weights = Value;
-            if (! (isnumeric (Weights) && isvector (Weights)
-                   && isreal (Weights)))
-              error (strcat ("RegressionTree: 'Weights' must be a real", ...
-                             " numeric vector."));
-            endif
-            if (numel (Weights) != rows (X))
-              error (strcat ("RegressionTree: 'Weights' must have one", ...
-                             " element per row in X."));
-            endif
-            if (any (Weights < 0) || ! (sum (Weights) > 0))
-              error (strcat ("RegressionTree: 'Weights' must be", ...
-                             " nonnegative and must not be all zero."));
-            endif
-
-          case 'maxnumsplits'
-            MaxNumSplits = Value;
-            if (! (isnumeric (MaxNumSplits) && isscalar (MaxNumSplits)
-                   && isreal (MaxNumSplits) && MaxNumSplits >= 0
-                   && MaxNumSplits == fix (MaxNumSplits)))
-              error (strcat ("RegressionTree: 'MaxNumSplits' must be a", ...
-                             " nonnegative integer."));
-            endif
-
-          case 'minleafsize'
-            MinLeafSize = Value;
-            if (! (isnumeric (MinLeafSize) && isscalar (MinLeafSize)
-                   && isreal (MinLeafSize) && MinLeafSize >= 1
-                   && MinLeafSize == fix (MinLeafSize)))
-              error (strcat ("RegressionTree: 'MinLeafSize' must be a", ...
-                             " positive integer."));
-            endif
-
-          case 'minparentsize'
-            MinParentSize = Value;
-            if (! (isnumeric (MinParentSize) && isscalar (MinParentSize)
-                   && isreal (MinParentSize) && MinParentSize >= 1
-                   && MinParentSize == fix (MinParentSize)))
-              error (strcat ("RegressionTree: 'MinParentSize' must be a", ...
-                             " positive integer."));
-            endif
-
-          case 'numvariablestosample'
-            NumVarSample = Value;
-            if (! ((ischar (NumVarSample) && strcmpi (NumVarSample, 'all'))
-                   || (isnumeric (NumVarSample) && isscalar (NumVarSample)
-                       && isreal (NumVarSample) && NumVarSample >= 1
-                       && NumVarSample == fix (NumVarSample))))
-              error (strcat ("RegressionTree: 'NumVariablesToSample'", ...
-                             " must be a positive integer or 'all'."));
-            endif
-
-          case 'mergeleaves'
-            MergeLeaves = Value;
-            if (! (ischar (MergeLeaves)
-                   && any (strcmpi (MergeLeaves, {'on', 'off'}))))
-              error (strcat ("RegressionTree: 'MergeLeaves' must be either", ...
-                             " 'on' or 'off'."));
-            endif
-
-          case 'prune'
-            Prune = Value;
-            if (! (ischar (Prune) && any (strcmpi (Prune, {'on', 'off'}))))
-              error (strcat ("RegressionTree: 'Prune' must be either 'on'", ...
-                             " or 'off'."));
-            endif
-
-          case 'quadraticerrortolerance'
-            QEToler = Value;
-            if (! (isnumeric (QEToler) && isscalar (QEToler)
-                   && isreal (QEToler) && QEToler > 0))
-              error (strcat ("RegressionTree: 'QuadraticErrorTolerance'", ...
-                             " must be a positive scalar."));
-            endif
-
-          ## A regression tree has one criterion either way, so the two
-          ## names are taken and checked rather than refused outright.
-          case {'splitcriterion', 'prunecriterion'}
-            if (! (ischar (Value) && strcmpi (Value, 'mse')))
-              error (strcat ("RegressionTree: '%s' must be 'mse' for a", ...
-                             " regression tree."), varargin{1});
-            endif
-
-          case 'categoricalpredictors'
-            CatPreds = Value;
-
-          case 'maxnumcategories'
-            MaxNumCat = Value;
-            if (! (isnumeric (MaxNumCat) && isscalar (MaxNumCat)
-                   && isreal (MaxNumCat) && MaxNumCat >= 0
-                   && (MaxNumCat == fix (MaxNumCat) || isinf (MaxNumCat))))
-              error (strcat ("RegressionTree: 'MaxNumCategories' must be a", ...
-                             " nonnegative integer."));
-            endif
-
-          ## Options MATLAB takes that this class does not implement.  They
-          ## are named one by one so that asking for one is refused rather
-          ## than quietly doing nothing.
-          case {'surrogate', 'predictorselection', 'numbins', ...
-                'optimizehyperparameters', ...
-                'hyperparameteroptimizationoptions'}
-            error ("RegressionTree: '%s' is not implemented.", varargin{1});
-
-          case {'crossval', 'cvpartition', 'holdout', 'kfold', 'leaveout'}
-            error (strcat ("RegressionTree: '%s' is not implemented; fit", ...
-                           " the model and cross-validate it afterwards."), ...
-                   varargin{1});
-
-          otherwise
-            error (strcat ("RegressionTree: invalid parameter name in", ...
-                           " optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Validate optional paired arguments
+      if (! isempty (PredictorNames) && ! iscellstr (PredictorNames))
+        error (strcat ("RegressionTree: 'PredictorNames' must be supplied", ...
+                       " as a cellstring array."));
+      elseif (! isempty (PredictorNames)
+              && numel (PredictorNames) != columns (X))
+        error (strcat ("RegressionTree: 'PredictorNames' must equal the", ...
+                       " number of columns in X."));
+      endif
+      if (! isempty (ResponseName) &&
+          ! (ischar (ResponseName) && isrow (ResponseName)))
+        error ("RegressionTree: 'ResponseName' must be a character vector.");
+      endif
+      this.ResponseTransform = ResponseTransform;
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionTree: %s", errmsg);
+      endif
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isvector (Weights)
+             && isreal (Weights)))
+        error ("RegressionTree: 'Weights' must be a real numeric vector.");
+      endif
+      if (! isempty (Weights) && numel (Weights) != rows (X))
+        error ("RegressionTree: 'Weights' must have one element per row in X.");
+      endif
+      if (! isempty (Weights) && (any (Weights < 0) || ! (sum (Weights) > 0)))
+        error (strcat ("RegressionTree: 'Weights' must be nonnegative and", ...
+                       " must not be all zero."));
+      endif
+      if (! isempty (MaxNumSplits) &&
+          ! (isnumeric (MaxNumSplits) && isscalar (MaxNumSplits)
+             && isreal (MaxNumSplits) && MaxNumSplits >= 0
+             && MaxNumSplits == fix (MaxNumSplits)))
+        error ("RegressionTree: 'MaxNumSplits' must be a nonnegative integer.");
+      endif
+      if (! (isnumeric (MinLeafSize) && isscalar (MinLeafSize)
+             && isreal (MinLeafSize) && MinLeafSize >= 1
+             && MinLeafSize == fix (MinLeafSize)))
+        error ("RegressionTree: 'MinLeafSize' must be a positive integer.");
+      endif
+      if (! (isnumeric (MinParentSize) && isscalar (MinParentSize)
+             && isreal (MinParentSize) && MinParentSize >= 1
+             && MinParentSize == fix (MinParentSize)))
+        error ("RegressionTree: 'MinParentSize' must be a positive integer.");
+      endif
+      if (! ((ischar (NumVarSample) && strcmpi (NumVarSample, 'all'))
+             || (isnumeric (NumVarSample) && isscalar (NumVarSample)
+                 && isreal (NumVarSample) && NumVarSample >= 1
+                 && NumVarSample == fix (NumVarSample))))
+        error (strcat ("RegressionTree: 'NumVariablesToSample' must be a", ...
+                       " positive integer or 'all'."));
+      endif
+      if (! (ischar (MergeLeaves)
+             && any (strcmpi (MergeLeaves, {'on', 'off'}))))
+        error ("RegressionTree: 'MergeLeaves' must be either 'on' or 'off'.");
+      endif
+      if (! (ischar (Prune) && any (strcmpi (Prune, {'on', 'off'}))))
+        error ("RegressionTree: 'Prune' must be either 'on' or 'off'.");
+      endif
+      if (! (isnumeric (QEToler) && isscalar (QEToler)
+             && isreal (QEToler) && QEToler > 0))
+        error (strcat ("RegressionTree: 'QuadraticErrorTolerance' must be", ...
+                       " a positive scalar."));
+      endif
+      ## A regression tree has one criterion either way, so the two names are
+      ## taken and checked rather than refused outright.
+      if (! (ischar (SplitCrit) && strcmpi (SplitCrit, 'mse')))
+        error (strcat ("RegressionTree: 'SplitCriterion' must be 'mse' for", ...
+                       " a regression tree."));
+      endif
+      if (! (ischar (PruneCrit) && strcmpi (PruneCrit, 'mse')))
+        error (strcat ("RegressionTree: 'PruneCriterion' must be 'mse' for", ...
+                       " a regression tree."));
+      endif
+      if (! (isnumeric (MaxNumCat) && isscalar (MaxNumCat)
+             && isreal (MaxNumCat) && MaxNumCat >= 0
+             && (MaxNumCat == fix (MaxNumCat) || isinf (MaxNumCat))))
+        error (strcat ("RegressionTree: 'MaxNumCategories' must be a", ...
+                       " nonnegative integer."));
+      endif
+      ## Options MATLAB takes that this class does not implement are named
+      ## one by one, so that asking for one is refused rather than quietly
+      ## doing nothing; anything else left over is unknown.
+      notImpl = {'Surrogate', 'PredictorSelection', 'NumBins', ...
+                 'OptimizeHyperparameters', ...
+                 'HyperparameterOptimizationOptions'};
+      cvNames = {'CrossVal', 'CVPartition', 'Holdout', 'KFold', 'Leaveout'};
+      for i = 1:2:numel (args)
+        if (ischar (args{i}) && any (strcmpi (args{i}, notImpl)))
+          error ("RegressionTree: '%s' is not implemented.", args{i});
+        elseif (ischar (args{i}) && any (strcmpi (args{i}, cvNames)))
+          error (strcat ("RegressionTree: '%s' is not implemented; fit", ...
+                         " the model and cross-validate it afterwards."), ...
+                 args{i});
+        endif
+      endfor
+      if (! isempty (args))
+        error ("RegressionTree: invalid optional paired argument.");
+      endif
 
       ## Default predictor and response names
       if (isempty (PredictorNames))
@@ -889,13 +845,17 @@ classdef RegressionTree < PredictiveModel
       if (isempty (Weights))
         RawWeights = ones (this.NumObservations, 1);
       else
-        RawWeights = double (Weights(:));
+        RawWeights = Weights(:);
       endif
+      ## The weights keep their class in the model; every computation runs on
+      ## them as double.
       this.RawWeights = RawWeights;
+      RawWeights = double (RawWeights);
 
       ## A regression carries no prior, so the weights are simply scaled to
       ## sum to one, which is the W MATLAB reports.
-      this.W = RawWeights / sum (RawWeights);
+      W = RawWeights / sum (RawWeights);
+      this.W = cast (W, class (this.RawWeights));
 
       if (isempty (MaxNumSplits))
         MaxNumSplits = max (this.NumObservations - 1, 0);
@@ -930,7 +890,7 @@ classdef RegressionTree < PredictiveModel
         opts.MaxNumCategories = MaxNumCat;
       endif
 
-      T = treetrain (X, this.Y, this.W, opts);
+      T = treetrain (X, this.Y, W, opts);
 
       ## The node table the engine returns
       this.NumNodes = T.NumNodes;
@@ -1331,50 +1291,40 @@ classdef RegressionTree < PredictiveModel
       endif
 
       maxLevel = numel (this.PruneAlpha) - 1;
-      SubTrees = 0;
-      TreeSize = 'se';
-      KFold = 10;
+      ## Parse optional paired arguments; 'SubTrees' defaults to the tree
+      ## as fitted, level 0
+      optNames = {'SubTrees', 'TreeSize', 'KFold'};
+      dfValues = {0, 'se', 10};
+      [SubTrees, TreeSize, KFold, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      while (numel (varargin) > 0)
-        Value = varargin{2};
-        switch (tolower (varargin{1}))
+      ## Validate optional paired arguments
+      if (ischar (SubTrees) && strcmpi (SubTrees, 'all'))
+        SubTrees = 0:maxLevel;
+      elseif (isnumeric (SubTrees) && isreal (SubTrees) && isvector (SubTrees)
+              && ! isempty (SubTrees) && all (SubTrees >= 0)
+              && all (SubTrees == fix (SubTrees))
+              && all (diff (SubTrees(:)') > 0))
+        SubTrees = SubTrees(:)';
+      else
+        error (strcat ("RegressionTree.cvloss: 'SubTrees' must be 'all' or", ...
+                       " a vector of nonnegative integers in ascending", ...
+                       " order."));
+      endif
+      if (! (ischar (TreeSize) && any (strcmpi (TreeSize, {'se', 'min'}))))
+        error (strcat ("RegressionTree.cvloss: 'TreeSize' must be either", ...
+                       " 'se' or 'min'."));
+      endif
+      TreeSize = tolower (TreeSize);
+      if (! (isnumeric (KFold) && isscalar (KFold) && isreal (KFold)
+             && KFold == fix (KFold) && KFold > 1))
+        error (strcat ("RegressionTree.cvloss: 'KFold' must be an integer", ...
+                       " value greater than 1."));
+      endif
 
-          case 'subtrees'
-            if (ischar (Value) && strcmpi (Value, 'all'))
-              SubTrees = 0:maxLevel;
-            elseif (isnumeric (Value) && isreal (Value) && isvector (Value)
-                    && ! isempty (Value) && all (Value >= 0)
-                    && all (Value == fix (Value))
-                    && all (diff (Value(:)') > 0))
-              SubTrees = Value(:)';
-            else
-              error (strcat ("RegressionTree.cvloss: 'SubTrees' must be", ...
-                             " 'all' or a vector of nonnegative integers", ...
-                             " in ascending order."));
-            endif
-
-          case 'treesize'
-            if (! (ischar (Value) && any (strcmpi (Value, {'se', 'min'}))))
-              error (strcat ("RegressionTree.cvloss: 'TreeSize' must be", ...
-                             " either 'se' or 'min'."));
-            endif
-            TreeSize = tolower (Value);
-
-          case 'kfold'
-            KFold = Value;
-            if (! (isnumeric (KFold) && isscalar (KFold) && isreal (KFold)
-                   && KFold == fix (KFold) && KFold > 1))
-              error (strcat ("RegressionTree.cvloss: 'KFold' must be an", ...
-                             " integer value greater than 1."));
-            endif
-
-          otherwise
-            error (strcat ("RegressionTree.cvloss: invalid parameter name", ...
-                           " in optional pair arguments."));
-
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error ("RegressionTree.cvloss: invalid optional paired argument.");
+      endif
 
       if (any (SubTrees > maxLevel))
         error (strcat ("RegressionTree.cvloss: 'SubTrees' must not exceed", ...
@@ -1428,7 +1378,7 @@ classdef RegressionTree < PredictiveModel
       endfor
 
       ## The loss is weighed by the model's own weights, which sum to one.
-      W = this.W(:);
+      W = double (this.W(:));
       E = W' * L;
 
       ## The standard error over the folds, each fold's loss being its
@@ -1682,38 +1632,38 @@ classdef RegressionTree < PredictiveModel
                        " must be equal."));
       endif
 
-      LossFun = 'mse';
-      Weights = [];
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mse', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
 
-      while (numel (varargin) > 0)
-        Value = varargin{2};
-        switch (tolower (varargin{1}))
-          case 'lossfun'
-            if (! (is_function_handle (Value)
-                   || (ischar (Value) && isrow (Value))))
-              error (strcat ("RegressionTree.loss: 'LossFun' must be a", ...
-                             " character vector or a function handle."));
-            endif
-            if (ischar (Value) && ! strcmpi (Value, 'mse'))
-              error ("RegressionTree.loss: unsupported 'LossFun' value.");
-            endif
-            LossFun = Value;
-          case 'weights'
-            if (! (isnumeric (Value) && isvector (Value) && isreal (Value)))
-              error (strcat ("RegressionTree.loss: 'Weights' must be a", ...
-                             " real numeric vector."));
-            endif
-            if (numel (Value) != rows (X))
-              error (strcat ("RegressionTree.loss: 'Weights' must have one", ...
-                             " element per observation."));
-            endif
-            Weights = Value;
-          otherwise
-            error (strcat ("RegressionTree.loss: invalid parameter name in", ...
-                           " optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      ## Validate optional paired arguments
+      if (! (is_function_handle (LossFun)
+             || (ischar (LossFun) && isrow (LossFun))))
+        error (strcat ("RegressionTree.loss: 'LossFun' must be a character", ...
+                       " vector or a function handle."));
+      endif
+      if (ischar (LossFun) && ! strcmpi (LossFun, 'mse'))
+        error ("RegressionTree.loss: unsupported 'LossFun' value.");
+      endif
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("RegressionTree.loss: %s", errmsg);
+      endif
+      if (! isempty (Weights) &&
+          ! (isnumeric (Weights) && isvector (Weights) && isreal (Weights)))
+        error ("RegressionTree.loss: 'Weights' must be a real numeric vector.");
+      endif
+      if (! isempty (Weights) && numel (Weights) != rows (X))
+        error (strcat ("RegressionTree.loss: 'Weights' must have one", ...
+                       " element per observation."));
+      endif
+
+      if (! isempty (args))
+        error ("RegressionTree.loss: invalid optional paired argument.");
+      endif
 
       if (isempty (Weights))
         W = ones (rows (X), 1);
@@ -2375,8 +2325,10 @@ endclassdef
 %! RegressionTree (ones (4, 2), (1:4)', 'ResponseTransform', 5)
 %!error<RegressionTree: unrecognized 'ResponseTransform' function.>
 %! RegressionTree (ones (4, 2), (1:4)', 'ResponseTransform', 'bogus')
-%!error<RegressionTree: 'Weights' must be a real numeric vector.>
+%!error<RegressionTree: 'Weights' must be a real vector of class single or double.>
 %! RegressionTree (ones (4, 2), (1:4)', 'Weights', 'a')
+%!error<RegressionTree: 'Weights' must be a real numeric vector.>
+%! RegressionTree (ones (4, 2), (1:4)', 'Weights', ones (2, 2))
 %!error<RegressionTree: 'Weights' must have one element per row in X.>
 %! RegressionTree (ones (4, 2), (1:4)', 'Weights', [1, 2, 3])
 %!error<RegressionTree: 'Weights' must be nonnegative and must not be all zero.>
@@ -2401,7 +2353,7 @@ endclassdef
 %! RegressionTree (ones (4, 2), (1:4)', 'Surrogate', 'on')
 %!error<RegressionTree: 'KFold' is not implemented; fit the model and cross-validate it afterwards.>
 %! RegressionTree (ones (4, 2), (1:4)', 'KFold', 5)
-%!error<RegressionTree: invalid parameter name in optional pair arguments.>
+%!error<RegressionTree: invalid optional paired argument.>
 %! RegressionTree (ones (4, 2), (1:4)', 'Bogus', 1)
 %!error<RegressionTree: no observations with a known response.>
 %! RegressionTree (ones (4, 2), nan (4, 1))
@@ -2426,13 +2378,16 @@ endclassdef
 %!error<RegressionTree.loss: 'LossFun' must return a numeric scalar.>
 %! loss (RegressionTree (ones (4, 2), (1:4)'), ones (4, 2), (1:4)', ...
 %!       'LossFun', @(y, f, w) [1, 2])
-%!error<RegressionTree.loss: 'Weights' must be a real numeric vector.>
+%!error<RegressionTree.loss: 'Weights' must be a real vector of class single or double.>
 %! loss (RegressionTree (ones (4, 2), (1:4)'), ones (4, 2), (1:4)', ...
 %!       'Weights', 'a')
+%!error<RegressionTree.loss: 'Weights' must be a real numeric vector.>
+%! loss (RegressionTree (ones (4, 2), (1:4)'), ones (4, 2), (1:4)', ...
+%!       'Weights', ones (2, 2))
 %!error<RegressionTree.loss: 'Weights' must have one element per observation.>
 %! loss (RegressionTree (ones (4, 2), (1:4)'), ones (4, 2), (1:4)', ...
 %!       'Weights', [1, 2])
-%!error<RegressionTree.loss: invalid parameter name in optional pair arguments.>
+%!error<RegressionTree.loss: invalid optional paired argument.>
 %! loss (RegressionTree (ones (4, 2), (1:4)'), ones (4, 2), (1:4)', 'Bogus', 1)
 %!error<RegressionTree.loss: number of rows in X and Y must be equal.>
 %! loss (RegressionTree (ones (4, 2), (1:4)'), ones (4, 2), (1:3)')
@@ -2470,7 +2425,7 @@ endclassdef
 %!error<RegressionTree.cvloss: 'KFold' must be an integer value greater than 1.>
 %! load carsmall
 %! cvloss (RegressionTree ([Weight, Cylinders], MPG), 'KFold', 1)
-%!error<RegressionTree.cvloss: invalid parameter name in optional pair arguments.>
+%!error<RegressionTree.cvloss: invalid optional paired argument.>
 %! load carsmall
 %! cvloss (RegressionTree ([Weight, Cylinders], MPG), 'Bogus', 1)
 %!error<RegressionTree.cvloss: the tree carries no pruning sequence; fit it with 'Prune' or 'MergeLeaves' on.>
@@ -2548,7 +2503,7 @@ endclassdef
 %! RegressionTree (Xr, yr, 'CategoricalPredictors', 3)
 %!error<RegressionTree: 'MaxNumCategories' must be a nonnegative integer.> ...
 %! RegressionTree (Xr, yr, 'MaxNumCategories', 1.5)
-%!error<RegressionTree: invalid parameter name in optional pair arguments.> ...
+%!error<RegressionTree: invalid optional paired argument.> ...
 %! RegressionTree (Xr, yr, 'AlgorithmForCategorical', 'pca')
 
 ## A table at prediction
@@ -2616,3 +2571,28 @@ endclassdef
 %! loss (lrtM, lrtT, 'NoSuch')
 %!error<RegressionTree.loss: the table holds no variable 'SL'.> ...
 %! loss (lrtM, lrtT(:,1:2))
+
+## Observation weights of class single or double
+%!error <RegressionTree: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionTree ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', ...
+%!                 int8 ([1; 1; 1; 1]))
+%!error <RegressionTree: 'Weights' must be a real vector of class single or double.> ...
+%! RegressionTree ([1, 2; 3, 4; 5, 6; 7, 8], (1:4)', 'Weights', true (4, 1))
+%!test
+%! ## Single weights are stored single, summing to one
+%! load fisheriris
+%! X = meas(:,2:4);
+%! y = meas(:,1);
+%! w = 1 + (1:150)' / 7;
+%! Mdl = RegressionTree (X, y, 'Weights', single (w));
+%! assert_equal (class (Mdl.W), 'single');
+%! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test
+%! ## Single weights compute as double
+%! load fisheriris
+%! X = meas(:,2:4);
+%! y = meas(:,1);
+%! w = 1 + (1:150)' / 7;
+%! A = RegressionTree (X, y, 'Weights', single (w));
+%! B = RegressionTree (X, y, 'Weights', double (single (w)));
+%! assert_equal (predict (A, X), predict (B, X));

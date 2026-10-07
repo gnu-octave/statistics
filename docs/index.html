@@ -92,9 +92,18 @@
       });
     </script>
     <style>
-    h5.fs {
+    .fs {
     margin-top: -0.15em;
     margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
     }
     h6:hover {
       color: gray;
@@ -190,7 +199,7 @@
             </div>
             <div class="col-sm-9 col-md-10">
               <h3 class="d-inline-block mr-2">statistics</h3>
-              <b>1.9.3&nbsp;2026-09-16</b>
+              <b>2.0.0&nbsp;2026-09-30</b>
               <p class="indent">
                 The Statistics package for GNU Octave.
               </p>
@@ -205,7 +214,7 @@
              <option value="#Hypothesis Testing">Hypothesis Testing</option>
              <option value="#Experimental Design">Experimental Design</option>
              <option value="#Regression">Regression</option>
-             <option value="#Supervised Learning">Supervised Learning</option>
+             <option value="#Machine Learning">Machine Learning</option>
              <option value="#Clustering">Clustering</option>
              <option value="#Nearest Neighbors">Nearest Neighbors</option>
              <option value="#Anomaly Detection">Anomaly Detection</option>
@@ -324,7 +333,7 @@ parameters.</td>
                    <a href="nancov.html">nancov</a>
                    </code></b>
                  </td>
-                 <td>Compute the covariance matrix while ignoring NaN values.</td>
+                 <td>Compute the covariance matrix while handling NaN values.</td>
                </tr>
                <tr>
                  <td>
@@ -598,14 +607,6 @@ independent variables) on a continuous outcome (i.e.  dependent variable).</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="bartlett_test.html">bartlett_test</a>
-                   </code></b>
-                 </td>
-                 <td>Perform a Bartlett test for the homogeneity of variances.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
                    <a href="barttest.html">barttest</a>
                    </code></b>
                  </td>
@@ -643,6 +644,14 @@ independent variables) on a continuous outcome (i.e.  dependent variable).</td>
                  </td>
                  <td>Perform a correlation coefficient test to determine whether two samples X and Y
 come from uncorrelated populations.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="detectdrift.html">detectdrift</a>
+                   </code></b>
+                 </td>
+                 <td>Detect drift between two data sets, one variable at a time.</td>
                </tr>
                <tr>
                  <td>
@@ -698,6 +707,14 @@ samples (paired-samples).</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="knntest.html">knntest</a>
+                   </code></b>
+                 </td>
+                 <td>Two-sample multivariate test based on nearest neighbours.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="kruskalwallis.html">kruskalwallis</a>
                    </code></b>
                  </td>
@@ -721,14 +738,6 @@ population, ...</td>
                    </code></b>
                  </td>
                  <td>Two-sample Kolmogorov-Smirnov goodness-of-fit hypothesis test.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="levene_test.html">levene_test</a>
-                   </code></b>
-                 </td>
-                 <td>Perform a Levene's test for the homogeneity of variances.</td>
                </tr>
                <tr>
                  <td>
@@ -757,6 +766,23 @@ population, ...</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="meanEffectSize.html">meanEffectSize</a>
+                   </code></b>
+                 </td>
+                 <td>Effect sizes for the difference between two means, with their confidence
+intervals.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="mmdtest.html">mmdtest</a>
+                   </code></b>
+                 </td>
+                 <td>Two-sample multivariate test on the maximum mean discrepancy.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="multcompare.html">multcompare</a>
                    </code></b>
                  </td>
@@ -777,7 +803,7 @@ family-wise error rate (FWER) or false discovery rate (FDR).</td>
                    <a href="regression_ftest.html">regression_ftest</a>
                    </code></b>
                  </td>
-                 <td>F-test for General Linear Regression Analysis</td>
+                 <td>F-test for nested linear regression models.</td>
                </tr>
                <tr>
                  <td>
@@ -810,6 +836,16 @@ family-wise error rate (FWER) or false discovery rate (FDR).</td>
                    </code></b>
                  </td>
                  <td>Signed test for median.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="stats.drift.DriftDiagnostics.html">stats.drift.DriftDiagnostics</a>
+                   </code></b>
+                 </td>
+                 <td>The drift found between two data sets, as ‘detectdrift’ returns it.
+
+  </td>
                </tr>
                <tr>
                  <td>
@@ -1023,6 +1059,14 @@ hypothesis that the groups are drawn from distributions with the same mean.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="fitrm.html">fitrm</a>
+                   </code></b>
+                 </td>
+                 <td>Fit a repeated measures model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="GeneralizedLinearMixedModel.html">GeneralizedLinearMixedModel</a>
                    </code></b>
                  </td>
@@ -1211,6 +1255,14 @@ X * beta + e’.
                <tr>
                  <td>
                    <b><code>
+                   <a href="RepeatedMeasuresModel.html">RepeatedMeasuresModel</a>
+                   </code></b>
+                 </td>
+                 <td>Repeated measures model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="ridge.html">ridge</a>
                    </code></b>
                  </td>
@@ -1254,7 +1306,7 @@ X * beta + e’.
              </tbody>
            </table>
            <h3 class="category">
-             <a name="Supervised Learning">Supervised Learning</a>
+             <a name="Machine Learning">Machine Learning</a>
            </h3>
            <table class="table table-striped">
              <tbody>
@@ -1741,6 +1793,30 @@ X * beta + e’.
                <tr>
                  <td>
                    <b><code>
+                   <a href="partialDependence.html">partialDependence</a>
+                   </code></b>
+                 </td>
+                 <td>Compute partial dependence.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="plotPartialDependence.html">plotPartialDependence</a>
+                   </code></b>
+                 </td>
+                 <td>Plot partial dependence and individual conditional expectation.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="PredictiveModel.html">PredictiveModel</a>
+                   </code></b>
+                 </td>
+                 <td>A fitted model that answers for new observations.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="RegressionBaggedEnsemble.html">RegressionBaggedEnsemble</a>
                    </code></b>
                  </td>
@@ -1760,8 +1836,7 @@ X * beta + e’.
                    <a href="RegressionGAM.html">RegressionGAM</a>
                    </code></b>
                  </td>
-                 <td>Create a RegressionGAM class object containing a Generalized Additive Model
-(GAM) for regression.</td>
+                 <td>Generalized additive model for regression.</td>
                </tr>
                <tr>
                  <td>
@@ -1769,7 +1844,7 @@ X * beta + e’.
                    <a href="RegressionGP.html">RegressionGP</a>
                    </code></b>
                  </td>
-                 <td>Create a RegressionGP object containing a Gaussian process regression model.</td>
+                 <td>Gaussian process regression model.</td>
                </tr>
                <tr>
                  <td>
@@ -1793,8 +1868,7 @@ X * beta + e’.
                    <a href="RegressionNeuralNetwork.html">RegressionNeuralNetwork</a>
                    </code></b>
                  </td>
-                 <td>Create a RegressionNeuralNetwork object containing a neural network regression
-model.</td>
+                 <td>Neural network regression model.</td>
                </tr>
                <tr>
                  <td>
@@ -1826,8 +1900,7 @@ model.</td>
                    <a href="RegressionPartitionedModel.html">RegressionPartitionedModel</a>
                    </code></b>
                  </td>
-                 <td>Create a RegressionPartitionedModel object, a regression model cross validated
-over a partition of its training data.</td>
+                 <td>Cross-validated regression model.</td>
                </tr>
                <tr>
                  <td>
@@ -1835,8 +1908,7 @@ over a partition of its training data.</td>
                    <a href="RegressionSVM.html">RegressionSVM</a>
                    </code></b>
                  </td>
-                 <td>Create a RegressionSVM object containing a support vector machine regression
-model.</td>
+                 <td>Support vector machine regression model.</td>
                </tr>
                <tr>
                  <td>
@@ -1845,6 +1917,22 @@ model.</td>
                    </code></b>
                  </td>
                  <td>Binary decision tree for regression</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="lime.html">lime</a>
+                   </code></b>
+                 </td>
+                 <td>Local interpretable model-agnostic explanations for a fitted model.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="shapley.html">shapley</a>
+                   </code></b>
+                 </td>
+                 <td>Shapley values for a fitted model at one or more query points.</td>
                </tr>
                <tr>
                  <td>
@@ -2049,8 +2137,7 @@ DATA which comprise an instance matrix.</td>
                    <a href="gmdistribution.html">gmdistribution</a>
                    </code></b>
                  </td>
-                 <td>Create an object of the gmdistribution class which represents a Gaussian mixture
-model with k components of n-dimensional Gaussians.</td>
+                 <td>Gaussian mixture distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -2171,6 +2258,22 @@ tree.</td>
                    </code></b>
                  </td>
                  <td>Mahalanobis' D-square distance.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="nomdist.html">nomdist</a>
+                   </code></b>
+                 </td>
+                 <td>Dissimilarity between every pair of rows of nominal data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="nomdist2.html">nomdist2</a>
+                   </code></b>
+                 </td>
+                 <td>Dissimilarity between the rows of two samples of nominal data.</td>
                </tr>
                <tr>
                  <td>
@@ -4434,6 +4537,38 @@ parameters.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="stdrcdf.html">stdrcdf</a>
+                   </code></b>
+                 </td>
+                 <td>Studentized range cumulative distribution function (CDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="stdrinv.html">stdrinv</a>
+                   </code></b>
+                 </td>
+                 <td>Inverse of the studentized range cumulative distribution function (iCDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="stdrpdf.html">stdrpdf</a>
+                   </code></b>
+                 </td>
+                 <td>Studentized range probability density function (PDF).</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="stdrrnd.html">stdrrnd</a>
+                   </code></b>
+                 </td>
+                 <td>Random arrays from the studentized range distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="tcdf.html">tcdf</a>
                    </code></b>
                  </td>
@@ -4804,6 +4939,14 @@ parameters</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="gumbelstat.html">gumbelstat</a>
+                   </code></b>
+                 </td>
+                 <td>Compute statistics of the Gumbel distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="hnstat.html">hnstat</a>
                    </code></b>
                  </td>
@@ -4928,6 +5071,14 @@ parameters</td>
                    </code></b>
                  </td>
                  <td>Compute statistics of the Rician distribution.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="stdrstat.html">stdrstat</a>
+                   </code></b>
+                 </td>
+                 <td>Compute statistics of the studentized range distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -5090,6 +5241,14 @@ parameters</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="boxchart.html">boxchart</a>
+                   </code></b>
+                 </td>
+                 <td>Draw a box chart.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="boxplot.html">boxplot</a>
                    </code></b>
                  </td>
@@ -5132,6 +5291,14 @@ parameters</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="gardnerAltmanPlot.html">gardnerAltmanPlot</a>
+                   </code></b>
+                 </td>
+                 <td>Gardner-Altman plot of two samples and the effect size between them.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="glyphplot.html">glyphplot</a>
                    </code></b>
                  </td>
@@ -5152,6 +5319,15 @@ parameters</td>
                    </code></b>
                  </td>
                  <td>Draw a scatter plot with grouped data.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="heatmap.html">heatmap</a>
+                   </code></b>
+                 </td>
+                 <td>Heatmap of a matrix, or of the rows of a table counted or aggregated over two of
+its variables.</td>
                </tr>
                <tr>
                  <td>
@@ -5196,6 +5372,14 @@ parameters</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="parallelplot.html">parallelplot</a>
+                   </code></b>
+                 </td>
+                 <td>Parallel coordinates plot of observations of several variables.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="ppplot.html">ppplot</a>
                    </code></b>
                  </td>
@@ -5228,10 +5412,67 @@ parameters</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="scatterhistogram.html">scatterhistogram</a>
+                   </code></b>
+                 </td>
+                 <td>Scatter plot of two samples with the histogram of each along its sides.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="silhouette.html">silhouette</a>
                    </code></b>
                  </td>
                  <td>Compute the silhouette values of clustered data and show them on a plot.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="stats.chart.BoxChart.html">stats.chart.BoxChart</a>
+                   </code></b>
+                 </td>
+                 <td>A box chart, as ‘boxchart’ draws it.
+
+  </td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="stats.chart.HeatmapChart.html">stats.chart.HeatmapChart</a>
+                   </code></b>
+                 </td>
+                 <td>A heatmap, as ‘heatmap’ draws it.
+
+  </td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="stats.chart.ParallelCoordinatesPlot.html">stats.chart.ParallelCoordinatesPlot</a>
+                   </code></b>
+                 </td>
+                 <td>A parallel coordinates plot, as ‘parallelplot’ draws it.
+
+  </td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="stats.chart.ScatterHistogramChart.html">stats.chart.ScatterHistogramChart</a>
+                   </code></b>
+                 </td>
+                 <td>A scatter plot with a histogram of each variable along its sides, as
+‘scatterhistogram’ draws it.
+
+  </td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="swarmchart.html">swarmchart</a>
+                   </code></b>
+                 </td>
+                 <td>Draw a swarm chart.</td>
                </tr>
                <tr>
                  <td>

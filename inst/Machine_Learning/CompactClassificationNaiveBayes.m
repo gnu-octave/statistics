@@ -14,10 +14,8 @@
 ##
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
-##
 
 classdef CompactClassificationNaiveBayes < PredictiveModel
-
   ## -*- texinfo -*-
   ## @deftp {statistics} CompactClassificationNaiveBayes
   ##
@@ -279,14 +277,6 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
       this.STfun = f;
     endfunction
 
-    function display (this)
-      in_name = inputname (1);
-      if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
-      endif
-      disp (this);
-    endfunction
-
     function disp (this)
       fprintf ('\n  CompactClassificationNaiveBayes\n\n');
       fprintf ('%22s: %s\n', 'ResponseName', this.ResponseName);
@@ -491,7 +481,8 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
                                         nargin > 2);
       W = edgeWeights (varargin, Y, this.ClassNames, this.Prior, ...
                        'CompactClassificationNaiveBayes', 'edge');
-      e = sum (W .* margin (this, X, Y));
+      m = margin (this, X, Y);
+      e = sum (W .* m(:)) / sum (W);
 
     endfunction
 
@@ -534,32 +525,32 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
                        " arguments must be in pairs."));
       endif
 
-      LossFun = 'mincost';
-      Weights = [];
+      ## Parse optional paired arguments; an empty 'Weights' stands for
+      ## uniform weights
+      optNames = {'LossFun', 'Weights'};
+      dfValues = {'mincost', []};
+      [LossFun, Weights, args] = ...
+                 parsePairedArguments (optNames, dfValues, varargin(:));
+
+      ## Validate optional paired arguments
       lf_opt = {'binodeviance', 'classifcost', 'classiferror', ...
                 'exponential', 'hinge', 'logit', 'mincost', 'quadratic'};
+      if (! (ischar (LossFun) && any (strcmpi (LossFun, lf_opt))))
+        error ("CompactClassificationNaiveBayes.loss: invalid loss function.");
+      endif
+      LossFun = tolower (LossFun);
+      errmsg = weightsClass (Weights);
+      if (! isempty (errmsg))
+        error ("CompactClassificationNaiveBayes.loss: %s", errmsg);
+      endif
+      if (! isempty (Weights) && ! (isnumeric (Weights) && isvector (Weights)))
+        error ("CompactClassificationNaiveBayes.loss: invalid 'Weights'.");
+      endif
 
-      while (numel (varargin) > 0)
-        Value = varargin{2};
-        switch (tolower (varargin{1}))
-          case 'lossfun'
-            if (! (ischar (Value) && any (strcmpi (Value, lf_opt))))
-              error (strcat ("CompactClassificationNaiveBayes.loss:", ...
-                             " invalid loss function."));
-            endif
-            LossFun = tolower (Value);
-          case 'weights'
-            if (! (isnumeric (Value) && isvector (Value)))
-              error (strcat ("CompactClassificationNaiveBayes.loss:", ...
-                             " invalid 'Weights'."));
-            endif
-            Weights = Value;
-          otherwise
-            error (strcat ("CompactClassificationNaiveBayes.loss: invalid", ...
-                           " parameter name in optional pair arguments."));
-        endswitch
-        varargin(1:2) = [];
-      endwhile
+      if (! isempty (args))
+        error (strcat ("CompactClassificationNaiveBayes.loss: invalid", ...
+                       " optional paired argument."));
+      endif
 
       [gY, errmsg] = labelIndices (this.ClassNames, Y);
       if (! isempty (errmsg))
@@ -572,7 +563,7 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
       if (isempty (Weights))
         w = ones (numel (gY), 1);
       else
-        w = Weights(:);
+        w = double (Weights(:));
         if (numel (w) != numel (gY))
           error (strcat ("CompactClassificationNaiveBayes.loss:", ...
                          " 'Weights' must have one element per", ...
@@ -591,6 +582,18 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
     ##
     ## Log unconditional probability density of new data.
     ##
+    ## @code{@var{lp} = logp (@var{obj}, @var{X})} returns one value per
+    ## observation, the logarithm of its density under the fitted model taken
+    ## over all the classes, each weighted by its prior.  A markedly low value
+    ## marks an observation the model finds unlike anything it was trained on,
+    ## whatever class it would be assigned to.
+    ##
+    ## @var{X} may also be a table, whose variables are matched to the
+    ## predictors the model was fitted on by name and not by position: one
+    ## the model was not fitted on is passed over, one it needs and cannot
+    ## find is named, and a value holding a level is coded as that level was
+    ## coded at fitting.
+    ##
     ## @end deftypefn
     function lp = logp (this, X)
 
@@ -598,6 +601,10 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
         error (strcat ("CompactClassificationNaiveBayes.logp: too few", ...
                        " input arguments."));
       endif
+
+      ## A table is read by the names the model was fitted on
+      X = tableColumns (this, 'CompactClassificationNaiveBayes.logp', X);
+
       if (isempty (X))
         error ("CompactClassificationNaiveBayes.logp: X is empty.");
       endif
@@ -785,6 +792,12 @@ endclassdef
 %!               134.164589619731402, 1e-10);
 %! assert_equal (logp (CMdl, meas)(1), 1.026591235856343, 1e-12);
 
+%!test  # MATLAB parity: edge on a set missing a class
+%! load fisheriris
+%! CMdl = compact (fitcnb (meas, species));
+%! r = 51:150;
+%! assert_equal (edge (CMdl, meas(r,:), species(r)), 0.8416458962, 1e-10);
+
 %!test  # a kernel model compacts, densities and all
 %! load fisheriris
 %! Mdl = fitcnb (meas, species, 'DistributionNames', 'kernel');
@@ -886,6 +899,9 @@ endclassdef
 %!error<CompactClassificationNaiveBayes.loss: invalid loss function.> ...
 %! loss (compact (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2])), [1, 2; 2, 3; 3, 4; 4, 5], ...
 %!       [1; 1; 2; 2], 'LossFun', 'nope')
+%!error<CompactClassificationNaiveBayes.loss: invalid optional paired argument.> ...
+%! loss (compact (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2])), ...
+%!       [1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2], 'Bogus', 1)
 %!error<CompactClassificationNaiveBayes.margin: too few input arguments.> ...
 %! margin (compact (fitcnb ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2])), [1, 2; 2, 3; 3, 4; 4, 5])
 %!error<CompactClassificationNaiveBayes.edge: too few input arguments.> ...
@@ -991,3 +1007,19 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## A table at logp
+%!test  # a table is matched to the predictors by name
+%! load fisheriris
+%! T = table (meas(:,1), meas(:,2), meas(:,3), meas(:,4), ...
+%!           'VariableNames', {'SL', 'SW', 'PL', 'PW'});
+%! T.Species = categorical (species);
+%! Mdl = compact (fitcnb (T, 'Species'));
+%! a = logp (Mdl, meas);
+%! assert_equal (logp (Mdl, T(:,1:4)), a);
+%! assert_equal (logp (Mdl, T(:,[5, 4, 2, 3, 1])), a);
+
+## Observation weights of class single or double
+%!error <CompactClassificationNaiveBayes.loss: 'Weights' must be a real vector of class single or double.> ...
+%! loss (compact (fitcnb ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2])), ...
+%!       [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))
