@@ -583,7 +583,7 @@ harmmean
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1723
+# length: 1856
 statistics: m = harmmean (x)
 statistics: m = harmmean (x, "all")
 statistics: m = harmmean (x, dim)
@@ -599,14 +599,17 @@ If x is a matrix, then harmmean(x) returns a row
 vector with the harmonic mean of each columns in x.
 If x is a multidimensional array, then harmmean(x)
 operates along the first nonsingleton dimension of x.
-x must not contain any negative or complex values.
+x may contain negative or complex values, in which case the
+result follows from the formula above, as in MATLAB.
 
 harmmean(x, "all") returns the harmonic mean of all the elements
-in x. If x contains any 0, then the returned value is 0.
+in x. If x contains any 0 and no negative or complex values,
+then the returned value is 0.
 
 harmmean(x, dim) returns the harmonic mean along the
 operating dimension dim of x. Calculating the harmonic mean of
-any subarray containing any 0 will return 0.
+any subarray containing any 0 and no negative or complex values will return
+0.
 
 harmmean(x, vecdim) returns the harmonic mean over the
 dimensions specified in the vector vecdim. For example, if x is

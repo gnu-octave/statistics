@@ -176,6 +176,10 @@
  ** geomean, harmmean:
     an `Inf` in `DIM` or `VECDIM` is refused, where it was ignored (#510).
 
+ ** harmmean:
+    negative and complex values are accepted, as in MATLAB; they raised an
+    error.
+
  ** glmfit, fitglm:
     the canonical 'inverse gaussian' fit converges, where its deviance could
     become `Inf`.
