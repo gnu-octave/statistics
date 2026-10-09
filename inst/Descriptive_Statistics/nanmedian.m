@@ -72,7 +72,7 @@ function m = nanmedian (x, dim)
     m = __colmedian__ (x(:).');
     return;
   elseif (isscalar (dim))
-    if (! isnumeric (dim) || fix (dim) != dim || dim <= 0)
+    if (! isnumeric (dim)  || ! isfinite (dim) || fix (dim) != dim || dim <= 0)
       error ("nanmedian: DIM must be a positive integer.");
     endif
   elseif (isnumeric (dim) && isvector (dim))
@@ -180,5 +180,6 @@ endfunction
 %!error <nanmedian: X must be numeric.> nanmedian ({3})
 %!error <nanmedian: DIM must be a positive integer.> nanmedian (ones (3), 0)
 %!error <nanmedian: DIM must be a positive integer.> nanmedian (ones (3), 1.5)
+%!error <nanmedian: DIM must be a positive integer.> nanmedian (ones (3), Inf)
 %!error <nanmedian: VECDIM must contain non-repeating positive integers.> ...
 %! nanmedian (ones (3, 3, 3), [2, 2, 3])
