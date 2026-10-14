@@ -40,7 +40,9 @@
 ##
 ## The order of the rows and columns can be specified by setting the
 ## @var{grouporder} variable. The data type of @var{grouporder} must be the
-## same of @var{group} and @var{grouphat}.
+## same of @var{group} and @var{grouphat}.  For logical inputs, the default
+## order is @code{false} followed by @code{true}, and @var{grouporder} must
+## contain both values.
 ##
 ## @seealso{crosstab}
 ## @end deftypefn
@@ -122,7 +124,15 @@ function [C, order] = confusionmat (group, grouphat, opt = 'Order', grouporder)
 
     ## numeric and boolean values are sorted in ascending order
     if (! exist ('unique_tokens', 'var'))
-      unique_tokens = unique ([y_true; y_pred]);
+      if (islogical (y_true))
+        unique_tokens = [false; true];
+      else
+        unique_tokens = unique ([y_true; y_pred]);
+      endif
+    elseif (islogical (y_true)
+            && (! any (unique_tokens) || all (unique_tokens)))
+      error (strcat ("confusionmat: ORDER should contain all the labels", ...
+                     " appearing in G or GHAT."));
     endif
 
     C_size = length (unique_tokens);
@@ -466,6 +476,30 @@ endfunction
 %! assert_equal (C, 3);
 %! assert_equal (order, 1);
 
+## Test 25: Logical (Single Observation)
+%!test
+%! [C, order] = confusionmat (true, true);
+%! assert_equal (C, [0 0; 0 1]);
+%! assert_equal (order, [false; true]);
+
+## Test 26: Logical (Only false Present)
+%!test
+%! [C, order] = confusionmat ([false; false], [false; false]);
+%! assert_equal (C, [2 0; 0 0]);
+%! assert_equal (order, [false; true]);
+
+## Test 27: Logical (Empty Input)
+%!test
+%! [C, order] = confusionmat (true (0, 1), true (0, 1));
+%! assert_equal (C, zeros (2));
+%! assert_equal (order, [false; true]);
+
+## Test 28: Logical (Custom Order)
+%!test
+%! [C, order] = confusionmat (true, true, 'Order', [true; false]);
+%! assert_equal (C, [1 0; 0 0]);
+%! assert_equal (order, [true; false]);
+
 ## Teset input validation
 %!error <confusionmat: group and grouphat must be of the same data type.>
 %! confusionmat ([1; 2], {'A'; 'B'})
@@ -480,3 +514,7 @@ endfunction
 %!error <confusionmat: group must be a vector or character array.>
 %! confusionmat (eye (2), eye (2))
 %!error <confusionmat: invalid data type.> confusionmat ({1; 2}, {1; 2})
+%!error <confusionmat: ORDER should contain all the labels appearing in G or GHAT.> ...
+%! confusionmat (true, true, 'Order', true)
+%!error <confusionmat: ORDER should contain all the labels appearing in G or GHAT.> ...
+%! confusionmat (true, true, 'Order', false)
