@@ -31,21 +31,22 @@
 ## @item categorical vector
 ## @item cell array of character vectors
 ## @item character array
+## @item datetime vector
 ## @item duration vector
 ## @item logical vector
 ## @item numeric vector
 ## @end itemize
 ##
 ## @var{s} must be a vector, unless it is a 2-D character array.  In the case of
-## numerical and logical data types, the group indices are ordered in sorted
-## order of @var{s}.  In the case of categorical arrays, the group indices are
-## allocated by the order of the categories in @var{s}.  For the rest of the
-## data types, the group indices are allocated by order of first appearance in
-## @var{s}.  Note that in case of a categorical grouping variable, the indexing
-## integer values might not be continuous, since @var{s} may contain unassigned
-## categories.  For every other data type, @var{g} will contain integer values
-## in the range @math{[1:K]}, where @math{K} is the number of distinct groups
-## in @var{s}.
+## numerical, logical, datetime, and duration data types, the group indices are
+## ordered in sorted order of @var{s}.  In the case of categorical arrays, the
+## group indices are allocated by the order of the categories in @var{s}.  For
+## the rest of the data types, the group indices are allocated by order of first
+## appearance in @var{s}.  Note that in case of a categorical grouping variable,
+## the indexing integer values might not be continuous, since @var{s} may
+## contain unassigned categories.  For every other data type, @var{g} will
+## contain integer values in the range @math{[1:K]}, where @math{K} is the
+## number of distinct groups in @var{s}.
 ##
 ## @code{[@var{g}, @var{gn}] = grp2idx (@var{s})} also returns a cell array of
 ## character vectors @var{gn} representing the list of group names.  The order
@@ -56,8 +57,8 @@
 ## column vector @var{gl} representing the list of the group levels with the
 ## same data type as @var{s}.
 ##
-## Note that standard missing values in @var{s} appear as NaN in @var{g} and are
-## not present on either @var{gn} and @var{gl}.
+## Note that standard missing values in @var{s}, such as NaN or NaT, appear as
+## NaN in @var{g} and are not present on either @var{gn} and @var{gl}.
 ##
 ## An empty @var{s} returns @var{g}, @var{gn} and @var{gl} as 0-by-1 arrays,
 ## whereas MATLAB returns a 0-by-0 @var{gn} for an empty categorical @var{s}.
@@ -80,7 +81,7 @@ function [g, gn, gl] = grp2idx (s)
 
   is_categorical = false;
   is_char_array = false;
-  #is_datetime = false;
+  is_datetime = false;
   is_duration = false;
   is_string = false;
 
@@ -100,7 +101,10 @@ function [g, gn, gl] = grp2idx (s)
       s = cellstr (s);
     endif
   elseif (isdatetime (s))
-    error ("grp2idx: 'datetime' grouping variable is not supported yet.");
+    if (! isvector (s))
+      error ("grp2idx: 'datetime' grouping variable must be a vector.");
+    endif
+    is_datetime = true;
   elseif (isduration (s))
     if (! isvector (s))
       error ("grp2idx: 'duration' grouping variable must be a vector.");
@@ -177,6 +181,10 @@ function [g, gn, gl] = grp2idx (s)
     if (any (empties))
       gl(empties) = [];
     endif
+  elseif (is_datetime)
+    ## NaT sorts last, like NaN, so removing it leaves the indices intact
+    g(isnat (s)) = NaN;
+    gl(isnat (gl)) = [];
   else
     ## This works fine because NaN come at the end after sorting, we don't
     ## have to worry about change on the indices.
@@ -185,7 +193,7 @@ function [g, gn, gl] = grp2idx (s)
   endif
 
   if (nargout > 1)
-    if (is_duration)
+    if (is_duration || is_datetime)
       if (isempty (gl))
         gn = cell (0,1);
       else
@@ -528,12 +536,59 @@ endfunction
 %! assert_equal (gn, cell (0, 1));
 %! assert_equal (gl, '');
 
+## Test datetime grouping variables against MATLAB R2026b
+%!shared d
+%! d = [datetime(2026, 10, 13); datetime(2026, 1, 5); ...
+%!      datetime(2026, 10, 13); NaT; datetime(2025, 3, 1)];
+%!test
+%! [g, gn, gl] = grp2idx (d);
+%! assert_equal (g, [3; 2; 3; NaN; 1]);
+%! assert_equal (gn, {'01-Mar-2025'; '05-Jan-2026'; '13-Oct-2026'});
+%! assert_equal (isdatetime (gl), true);
+%! assert_equal (cellstr (gl), gn);
+%!test
+%! d2 = d;
+%! d2.Format = 'yyyy-MM-dd';
+%! [g, gn, gl] = grp2idx (d2);
+%! assert_equal (g, [3; 2; 3; NaN; 1]);
+%! assert_equal (gn, {'2025-03-01'; '2026-01-05'; '2026-10-13'});
+%! assert_equal (gl.Format, 'yyyy-MM-dd');
+%!test
+%! t = [datetime(2026, 10, 13, 5, 0, 0); datetime(2026, 10, 13, 6, 0, 0); ...
+%!      datetime(2026, 10, 13, 5, 0, 0)];
+%! [g, gn] = grp2idx (t);
+%! assert_equal (g, [1; 2; 1]);
+%! assert_equal (gn, {'13-Oct-2026 05:00:00'; '13-Oct-2026 06:00:00'});
+%!test
+%! [g, gn, gl] = grp2idx (d.');
+%! assert_equal (g, [3; 2; 3; NaN; 1]);
+%! assert_equal (size (gn), [3, 1]);
+%! assert_equal (size (gl), [3, 1]);
+%!test
+%! [g, gn, gl] = grp2idx (NaT (3, 1));
+%! assert_equal (g, [NaN; NaN; NaN]);
+%! assert_equal (gn, cell (0, 1));
+%! assert_equal (isdatetime (gl), true);
+%! assert_equal (size (gl), [0, 1]);
+%!test
+%! [g, gn, gl] = grp2idx (NaT (0, 1));
+%! assert_equal (g, zeros (0, 1));
+%! assert_equal (gn, cell (0, 1));
+%! assert_equal (isdatetime (gl), true);
+%! assert_equal (size (gl), [0, 1]);
+%!test
+%! z = datetime (2026, 10, 13, 5, 0, 0, 'TimeZone', 'Asia/Kolkata');
+%! [g, gn, gl] = grp2idx ([z; z]);
+%! assert_equal (g, [1; 1]);
+%! assert_equal (gn, {'13-Oct-2026 05:00:00'});
+%! assert_equal (gl.TimeZone, z.TimeZone);
+
 ## Test input validation
 %!error <grp2idx: S must be either a vector or a matrix.> grp2idx (ones (3, 3, 3))
 %!error <grp2idx: 'categorical' grouping variable must be a vector.> ...
 %! grp2idx (categorical ([1, 2; 1, 3]))
-%!error <grp2idx: 'datetime' grouping variable is not supported yet.> ...
-%! grp2idx (datetime ('now'))
+%!error <grp2idx: 'datetime' grouping variable must be a vector.> ...
+%! grp2idx (repmat (datetime (2026, 1, 1), 2, 2))
 %!error <grp2idx: 'duration' grouping variable must be a vector.> ...
 %! grp2idx (days ([1, 2; 1, 3]))
 %!error <grp2idx: 'string' grouping variable must be a vector.> ...

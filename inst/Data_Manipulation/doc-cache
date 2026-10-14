@@ -389,7 +389,7 @@ grp2idx
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1932
+# length: 1990
 statistics: g = grp2idx (s)
 statistics: [g, gn] = grp2idx (s)
 statistics: [g, gn, gl] = grp2idx (s)
@@ -402,20 +402,21 @@ s can specified as any of the following data types:
 categorical vector
 cell array of character vectors
 character array
+datetime vector
 duration vector
 logical vector
 numeric vector
 
 s must be a vector, unless it is a 2-D character array. In the case of
-numerical and logical data types, the group indices are ordered in sorted
-order of s. In the case of categorical arrays, the group indices are
-allocated by the order of the categories in s. For the rest of the
-data types, the group indices are allocated by order of first appearance in
-s. Note that in case of a categorical grouping variable, the indexing
-integer values might not be continuous, since s may contain unassigned
-categories. For every other data type, g will contain integer values
-in the range [1:K], where K is the number of distinct groups
-in s.
+numerical, logical, datetime, and duration data types, the group indices are
+ordered in sorted order of s. In the case of categorical arrays, the
+group indices are allocated by the order of the categories in s. For
+the rest of the data types, the group indices are allocated by order of first
+appearance in s. Note that in case of a categorical grouping variable,
+the indexing integer values might not be continuous, since s may
+contain unassigned categories. For every other data type, g will
+contain integer values in the range [1:K], where K is the
+number of distinct groups in s.
 
 [g, gn] = grp2idx (s) also returns a cell array of
 character vectors gn representing the list of group names. The order
@@ -426,8 +427,8 @@ in g according to the data type of s, as described above.
 column vector gl representing the list of the group levels with the
 same data type as s.
 
-Note that standard missing values in s appear as NaN in g and are
-not present on either gn and gl.
+Note that standard missing values in s, such as NaN or NaT, appear as
+NaN in g and are not present on either gn and gl.
 
 An empty s returns g, gn and gl as 0-by-1 arrays,
 whereas MATLAB returns a 0-by-0 gn for an empty categorical s.
