@@ -37,7 +37,8 @@
 ## The sample values @var{y} can be a scalar, vector, or an N-dimensional
 ## array. If @var{y} is an N-dimensional array, the interpolation is
 ## performed along its last dimension, which must have the same length as
-## @var{x}. Complex values for @var{y} are supported.  Sample points where
+## @var{x}. Complex values for @var{y} are supported, and their real and
+## imaginary parts are interpolated independently.  Sample points where
 ## @var{x} or @var{y} is @code{NaN} are dropped in pairs before the fit,
 ## and a warning is issued.
 ##
@@ -111,14 +112,22 @@ function yi = makima (x, y, xq, varargin)
   endif
 
   if (iscomplex (y))
+    if (is_y_vector)
+      y_orig = y;
+    else
+      size_perm = size_y(perm_order);
+      size_perm(1) = n;
+      y_orig = ipermute (reshape (y, size_perm), perm_order);
+    endif
     if (return_pp)
       ## Build complex pp struct
-      pp_real = makima (x, real (y));
-      pp_imag = makima (x, imag (y));
+      pp_real = makima (x, real (y_orig));
+      pp_imag = makima (x, imag (y_orig));
       yi = pp_real;
       yi.coefs = pp_real.coefs + 1i * pp_imag.coefs;
     else
-      yi = makima (x, real (y), xq, varargin{:}) + 1i * makima (x, imag (y), xq, varargin{:});
+      yi = makima (x, real (y_orig), xq, varargin{:}) ...
+           + 1i * makima (x, imag (y_orig), xq, varargin{:});
     endif
     return;
   endif
@@ -465,6 +474,42 @@ endfunction
 %! assert_equal (iscomplex (pp.coefs), true);
 %! assert_equal (ppval (pp, 1.5), makima (x, y, 1.5), 1e-12);
 %!test
+%! ## Complex matrix y with vector xq.
+%! x = [1 2 3];
+%! y = [1+2i 3 2; 2 4 6+1i];
+%! yi = makima (x, y, [1.5 2.5]);
+%! expected = [2.304086538461538+0.768750000000000i, ...
+%!             2.781250000000000-0.187500000000000i; ...
+%!             3.000000000000000-0.093750000000000i, ...
+%!             5.000000000000000+0.384375000000000i];
+%! assert_equal (yi, expected, 1e-12);
+%!test
+%! ## Complex y with as many series as sample points.
+%! x = [1 2 3];
+%! y = [1+2i 3 2+1i; 2 4+3i 6; 5 1i 2];
+%! yi = makima (x, y, 1.5);
+%! expected = [2.304086538461538+0.695913461538462i; ...
+%!             3.000000000000000+2.062500000000000i; ...
+%!             1.775705645161290+0.687500000000000i];
+%! assert_equal (yi, expected, 1e-12);
+%!test
+%! ## Complex 3D y.
+%! x = 1:4;
+%! y = reshape ((1:24) + 1i * (24:-1:1), [2 3 4]);
+%! yi = makima (x, y, [1.5 2.5 3.5]);
+%! expected = cat (3, [4+21i, 6+19i, 8+17i; 5+20i, 7+18i, 9+16i], ...
+%!                    [10+15i, 12+13i, 14+11i; 11+14i, 13+12i, 15+10i], ...
+%!                    [16+9i, 18+7i, 20+5i; 17+8i, 19+6i, 21+4i]);
+%! assert_equal (yi, expected, 1e-12);
+%!test
+%! ## Complex matrix y in pp form.
+%! x = [1 2 3];
+%! y = [1+2i 3 2; 2 4 6+1i];
+%! pp = makima (x, y);
+%! expected = [2.304086538461538+0.768750000000000i; ...
+%!             3.000000000000000-0.093750000000000i];
+%! assert_equal (ppval (pp, 1.5), expected, 1e-12);
+%!test
 %! ## N-dimensional y (3D) with N-dimensional xq (2x2 matrix)
 %! x = [1 2 3 4];
 %! y3 = reshape (1:24, [2 3 4]);
@@ -497,7 +542,7 @@ endfunction
 
 %!test
 %! ## NaN entry in y is dropped before the fit.
-%! warning ("off", "local");
+%! warning ("off", "all", "local");
 %! x = [1; 2; 3; 4; 5];
 %! y = [1; NaN; 3; 4; 5];
 %! xq = [1.5; 2.5; 3.5; 4.5];
@@ -511,7 +556,7 @@ endfunction
 %! ## A NaN in one series drops that sample point from every series, so a
 %! ## series with no NaN of its own is refitted without it.  Fitted alone,
 %! ## the first row would give 5.535714286 at both query points.
-%! warning ("off", "local");
+%! warning ("off", "all", "local");
 %! y = [0, 0, 10, 0, 0; 1, NaN, 3, 4, 5];
 %! yi = makima (1:5, y, [2.5, 3.5]);
 %! assert_equal (yi(1,:), [10.6399, 4.9887], 1e-4);
