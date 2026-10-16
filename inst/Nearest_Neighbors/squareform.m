@@ -44,7 +44,8 @@
 ## The second argument is used to specify the output type in case the distance
 ## input is a scalar.  Accepted values are @qcode{'tomatrix'} (or @qcode{'tom'})
 ## and @qcode{'tovector'} (or @qcode{'tov'}).  If not specified, it defaults to
-## @qcode{'tomatrix'} otherwise.
+## @qcode{'tomatrix'} otherwise.  When @qcode{'tomatrix'} is specified, the
+## distance input must be a vector.
 ##
 ## @seealso{pdist}
 ## @end deftypefn
@@ -89,6 +90,11 @@ function y = squareform (x, method)
       y = vec (tril (x, -1, 'pack'), 2);
 
     case {'tomatrix', 'tom'}
+      if (! isvector (x))
+        error (strcat ("squareform: distance input must be a vector to", ...
+                       " convert it to a distance matrix."));
+      endif
+
       ## the dimensions of y are the solution to the quadratic formula for:
       ## length (x) = (sy - 1) * (sy / 2)
       sy = (1 + sqrt (1 + 8 * numel (x))) / 2;
@@ -168,6 +174,10 @@ endfunction
 %! squareform ([1, 2, 3; 4, 5, 6], true)
 %!error <squareform: distance input vector cannot form a square matrix.> ...
 %! squareform ([1, 2, 3, 4], 'tomatrix')
+%!error <squareform: distance input must be a vector to convert it to a distance matrix.> ...
+%! squareform ([1, 2, 3; 4, 5, 6], 'tomatrix')
+%!error <squareform: distance input must be a vector to convert it to a distance matrix.> ...
+%! squareform (zeros (2, 2), 'tomatrix')
+%!error <squareform: distance input must be a vector to convert it to a distance matrix.> ...
+%! squareform ([], 'tomatrix')
 %!error <squareform: invalid METHOD 'invalid'> squareform ([1, 2, 3], 'invalid')
-
-
