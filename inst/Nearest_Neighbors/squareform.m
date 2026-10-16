@@ -35,7 +35,10 @@
 ## If @var{x} is a numeric or logical vector, its number of elements must fit
 ## into the triangular part of a matrix (main diagonal excluded).  In other
 ## words, @code{numel (@var{x}) = @var{n} * (@var{n} - 1) / 2} for some integer
-## @var{n}.  The resulting matrix will be @var{n} by @var{n}.
+## @var{n}.  The resulting matrix will be @var{n} by @var{n}.  An empty vector
+## is the distance vector of a single observation, so it returns the 1-by-1
+## distance matrix @code{0} and @code{squareform (pdist (@var{x}))} holds for a
+## single row @var{x}.  MATLAB returns an empty matrix instead.
 ##
 ## If @var{x} is a numeric or logical distance matrix, it must be square and the
 ## diagonal entries of @var{x} must all be zeros.  If @var{x} is not symmetric,
@@ -136,6 +139,9 @@ endfunction
 %!assert_equal (squareform (1), [0 1;1 0])
 %!assert_equal (squareform (1, 'tomatrix'), [0 1; 1 0])
 %!assert_equal (squareform (0, 'tovector'), zeros (1, 0))
+%!assert_equal (squareform (zeros (1, 0)), 0)
+%!assert_equal (squareform (zeros (0, 1), 'tomatrix'), 0)
+%!assert_equal (squareform (pdist ([1, 2])), 0)
 
 ## confirm that it respects input class
 %!test
