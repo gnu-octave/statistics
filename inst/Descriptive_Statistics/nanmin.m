@@ -35,7 +35,8 @@
 ## @qcode{NaN}, the minimum is returned as @qcode{NaN} rather than @qcode{[]}.
 ##
 ## @code{@var{v} = nanmin (@var{x}, [], @var{dim})} operates along the dimension
-## @var{dim} of @var{x}.
+## @var{dim} of @var{x}.  A logical @var{dim} or @var{vecdim} is an error,
+## although MATLAB accepts @code{true} as dimension 1.
 ##
 ## @code{[@var{v}, @var{idx}] = nanmin (@dots{})} also returns the row indices
 ## of the minimum values for each column in the vector @var{idx}.  When @var{x}
@@ -81,6 +82,9 @@ function [v, idx] = nanmin (x, y, dim)
     endif
   elseif (nargin == 3 && isempty (y))
     if (isscalar (dim))
+      if (islogical (dim))
+        error ("nanmin: DIM must be a positive integer.");
+      endif
       nanvals = isnan (x);
       x(nanvals) = Inf;
       [v, idx] = min (x, [], dim);
@@ -88,6 +92,9 @@ function [v, idx] = nanmin (x, y, dim)
         v(all (nanvals, dim)) = NaN;
       endif
     else
+      if (islogical (dim))
+        error ("nanmin: VECDIM must be a vector of positive integers.");
+      endif
       vecdim = sort (dim);
       if (! all (diff (vecdim)))
          error ("nanmin: VECDIM must contain non-repeating positive integers.");
@@ -243,6 +250,9 @@ endfunction
 %!assert_equal (nanmin ([NaN, 1], logical ([1, 0])), [1, 0])
 
 ## Test input validation
+%!error <nanmin: DIM must be a positive integer.> nanmin (ones (3), [], true)
+%!error <nanmin: VECDIM must be a vector of positive integers.> ...
+%! nanmin (ones (3), [], [true, false])
 %!error <nanmin: VECDIM must contain non-repeating positive integers.> ...
 %! nanmin (y, [], [1, 1, 2])
 %!error <nanmin: VECDIM must contain non-repeating positive integers.> ...

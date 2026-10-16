@@ -34,7 +34,8 @@
 ## @qcode{NaN}, the maximum is returned as @qcode{NaN} rather than @qcode{[]}.
 ##
 ## @code{@var{v} = nanmax (@var{x}, [], @var{dim})} operates along the dimension
-## @var{dim} of @var{x}.
+## @var{dim} of @var{x}.  A logical @var{dim} or @var{vecdim} is an error,
+## although MATLAB accepts @code{true} as dimension 1.
 ##
 ## @code{[@var{v}, @var{idx}] = nanmax (@dots{})} also returns the row indices
 ## of the maximum values for each column in the vector @var{idx}.  When @var{x}
@@ -80,6 +81,9 @@ function [v, idx] = nanmax (x, y, dim)
     endif
   elseif (nargin == 3 && isempty (y))
     if (isscalar (dim))
+      if (islogical (dim))
+        error ("nanmax: DIM must be a positive integer.");
+      endif
       nanvals = isnan (x);
       x(nanvals) = -Inf;
       [v, idx] = max (x, [], dim);
@@ -87,6 +91,9 @@ function [v, idx] = nanmax (x, y, dim)
         v(all (nanvals, dim)) = NaN;
       endif
     else
+      if (islogical (dim))
+        error ("nanmax: VECDIM must be a vector of positive integers.");
+      endif
       vecdim = sort (dim);
       if (! all (diff (vecdim)))
          error ("nanmax: VECDIM must contain non-repeating positive integers.");
@@ -242,6 +249,9 @@ endfunction
 %!assert_equal (nanmax ([NaN, 0], logical ([0, 1])), [0, 1])
 
 ## Test input validation
+%!error <nanmax: DIM must be a positive integer.> nanmax (ones (3), [], true)
+%!error <nanmax: VECDIM must be a vector of positive integers.> ...
+%! nanmax (ones (3), [], [true, false])
 %!error <nanmax: VECDIM must contain non-repeating positive integers.> ...
 %! nanmax (y, [], [1, 1, 2])
 %!error <nanmax: VECDIM must contain non-repeating positive integers.> ...

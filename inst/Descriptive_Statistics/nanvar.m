@@ -44,7 +44,8 @@
 ## an empty value, @code{@var{w} = []}, to pass the default normalization.
 ##
 ## @code{@var{v} = nanvar (@var{x}, @var{w}, @var{dim})} operates along the
-## dimension @var{dim} of @var{x}.
+## dimension @var{dim} of @var{x}.  A logical @var{dim} or @var{vecdim} is an
+## error, although MATLAB accepts @code{true} as dimension 1.
 ##
 ## @code{@var{v} = nanvar (@var{x}, @var{w}, @var{vecdim})} returns the variance
 ## over the dimensions specified in the vector @var{vecdim}.  A weight vector is
@@ -201,6 +202,7 @@ endfunction
 %!error <nanvar: weight vector W must contain nonnegative values.> ...
 %! nanvar (ones (1, 3), [1, -1, 2])
 %!error <nanvar: DIM must be a positive integer.> nanvar (ones (3), 0, 1.5)
+%!error <nanvar: DIM must be a positive integer.> nanvar (ones (3), 0, true)
 %!error <nanvar: VECDIM must contain non-repeating positive integers.> ...
 %! nanvar (ones (3, 3, 3), 0, [2, 2, 3])
 %!error <nanvar: a weight vector is supported only with a scalar DIM.> ...

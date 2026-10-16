@@ -35,7 +35,8 @@
 ## of @code{nansum (@var{x}(:))}.
 ##
 ## @code{@var{s} = nansum (@var{x}, @var{dim})} operates along the dimension
-## @var{dim} of @var{x}.
+## @var{dim} of @var{x}.  A logical @var{dim} or @var{vecdim} is an error,
+## although MATLAB accepts @code{true} as dimension 1.
 ##
 ## @code{@var{s} = nansum (@var{x}, @var{vecdim})} returns the sum over the
 ## dimensions specified in the vector @var{vecdim}.  Each element of
@@ -198,6 +199,7 @@ endfunction
 ## Test input validation
 %!error <nansum: X must be numeric or logical.> nansum ({3})
 %!error <nansum: DIM must be a positive integer.> nansum (ones (3), 0)
+%!error <nansum: DIM must be a positive integer.> nansum (ones (3), true)
 %!error <nansum: DIM must be a positive integer.> nansum (ones (3), 1.5)
 %!error <nansum: DIM must be a positive integer.> nansum (ones (3), 1.5)
 %!error <nansum: VECDIM must be a vector of positive integer.> ...

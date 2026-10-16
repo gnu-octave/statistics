@@ -46,7 +46,8 @@
 ## normalization.
 ##
 ## @code{@var{s} = nanstd (@var{x}, @var{w}, @var{dim})} operates along the
-## dimension @var{dim} of @var{x}.
+## dimension @var{dim} of @var{x}.  A logical @var{dim} or @var{vecdim} is an
+## error, although MATLAB accepts @code{true} as dimension 1.
 ##
 ## @code{@var{s} = nanstd (@var{x}, @var{w}, @var{vecdim})} returns the standard
 ## deviation over the dimensions specified in the vector @var{vecdim}.  A weight
