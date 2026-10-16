@@ -82,7 +82,7 @@ function [v, idx] = nanmin (x, y, dim)
     endif
   elseif (nargin == 3 && isempty (y))
     if (isscalar (dim))
-      if (islogical (dim))
+      if (! isnumeric (dim) || fix (dim) != dim || dim <= 0)
         error ("nanmin: DIM must be a positive integer.");
       endif
       nanvals = isnan (x);
@@ -92,7 +92,9 @@ function [v, idx] = nanmin (x, y, dim)
         v(all (nanvals, dim)) = NaN;
       endif
     else
-      if (islogical (dim))
+      if (! (isnumeric (dim) && isvector (dim)))
+        error ("nanmin: invalid DIM argument.");
+      elseif (any (fix (dim) != dim) || any (dim <= 0))
         error ("nanmin: VECDIM must be a vector of positive integers.");
       endif
       vecdim = sort (dim);
@@ -250,12 +252,21 @@ endfunction
 %!assert_equal (nanmin ([NaN, 1], logical ([1, 0])), [1, 0])
 
 ## Test input validation
+%!error <nanmin: DIM must be a positive integer.> nanmin (ones (3), [], 0)
+%!error <nanmin: DIM must be a positive integer.> nanmin (ones (3), [], 1.5)
 %!error <nanmin: DIM must be a positive integer.> nanmin (ones (3), [], true)
 %!error <nanmin: VECDIM must be a vector of positive integers.> ...
-%! nanmin (ones (3), [], [true, false])
+%! nanmin (ones (3, 3, 3), [], [2, 2.5])
+%!error <nanmin: VECDIM must be a vector of positive integers.> ...
+%! nanmin (ones (3, 3, 3), [], [-1, 2])
 %!error <nanmin: VECDIM must contain non-repeating positive integers.> ...
 %! nanmin (y, [], [1, 1, 2])
 %!error <nanmin: VECDIM must contain non-repeating positive integers.> ...
 %! nanmin (true (2), [], [1, 1])
+%!error <nanmin: invalid DIM argument.> nanmin (ones (3), [], "invalid")
+%!error <nanmin: invalid DIM argument.> nanmin (ones (3), [], ones (2))
+%!error <nanmin: invalid DIM argument.> nanmin (ones (3), [], [])
+%!error <nanmin: invalid DIM argument.> ...
+%! nanmin (ones (3), [], [true, false])
 %!error <nanmin: a second output is not supported with this syntax.> ...
 %! [v, idx] = nanmin (x, y, [1 2])

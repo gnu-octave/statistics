@@ -82,8 +82,10 @@ function s = nansum (x, dim)
       s = sum (x, dim);
       s(all (nanvals, dim)) = 0;
     else
-      if (! isvector (dim) || any (fix (dim) != dim) || any (dim <= 0))
-        error ("nansum: VECDIM must be a vector of positive integer.");
+      if (! (isnumeric (dim) && isvector (dim)))
+        error ("nansum: invalid DIM argument.");
+      elseif (any (fix (dim) != dim) || any (dim <= 0))
+        error ("nansum: VECDIM must be a vector of positive integers.");
       endif
       vecdim = sort (dim);
       if (! all (diff (vecdim)))
@@ -202,9 +204,12 @@ endfunction
 %!error <nansum: DIM must be a positive integer.> nansum (ones (3), true)
 %!error <nansum: DIM must be a positive integer.> nansum (ones (3), 1.5)
 %!error <nansum: DIM must be a positive integer.> nansum (ones (3), 1.5)
-%!error <nansum: VECDIM must be a vector of positive integer.> ...
+%!error <nansum: VECDIM must be a vector of positive integers.> ...
 %! nansum (ones (3, 3, 3), [2, 2.5])
-%!error <nansum: VECDIM must be a vector of positive integer.> ...
+%!error <nansum: VECDIM must be a vector of positive integers.> ...
 %! nansum (ones (3, 3, 3), [-1, 2])
 %!error <nansum: VECDIM must contain non-repeating positive integers.> ...
 %! nansum (ones (3, 3, 3), [2, 2, 3])
+%!error <nansum: invalid DIM argument.> nansum (ones (3), "invalid")
+%!error <nansum: invalid DIM argument.> nansum (ones (3), ones (2))
+%!error <nansum: invalid DIM argument.> nansum (ones (3), [])

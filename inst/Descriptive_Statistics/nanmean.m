@@ -77,25 +77,23 @@ function y = nanmean (x, dim)
       if (isempty (dim)) # scalar
         dim = 1;
       endif
-    else
-      if (isscalar (dim))
-        if (! isnumeric (dim) || fix (dim) != dim || dim <= 0)
-          error ("nanmean: DIM must be a positive integer.");
-        endif
-      elseif (isvector (dim))
-        if (ischar (dim))
-          if (strcmpi (dim, 'all'))
-             x = x(:);
-             dim = 1;
-          else
-             error ("nanmean: invalid option.");
-          endif
-        else
-          if (! isnumeric (dim) || any (fix (dim) != dim) || any (dim <= 0))
-            error ("nanmean: VECDIM must be a vector of positive integers.");
-          endif
-        endif
+    elseif (ischar (dim) && strcmpi (dim, 'all'))
+      x = x(:);
+      dim = 1;
+    elseif (isscalar (dim))
+      if (! isnumeric (dim) || fix (dim) != dim || dim <= 0)
+        error ("nanmean: DIM must be a positive integer.");
       endif
+    elseif (isnumeric (dim) && isvector (dim))
+      if (any (fix (dim) != dim) || any (dim <= 0))
+        error ("nanmean: VECDIM must be a vector of positive integers.");
+      endif
+      dim = sort (dim);
+      if (! all (diff (dim)))
+        error ("nanmean: VECDIM must contain non-repeating positive integers.");
+      endif
+    else
+      error ("nanmean: invalid DIM argument.");
     endif
 
     na = isnan (x);
@@ -179,5 +177,11 @@ endfunction
 %!error <Invalid call to nanmean> nanmean ()
 %!error <nanmean: X must be numeric or logical.> nanmean ("str")
 %!error <nanmean: DIM must be a positive integer.> nanmean (ones (3), 0)
-%!error <nanmean: invalid option.> nanmean (ones (3), "invalid")
+%!error <nanmean: DIM must be a positive integer.> nanmean (ones (3), 1.5)
+%!error <nanmean: DIM must be a positive integer.> nanmean (ones (3), true)
 %!error <nanmean: VECDIM must be a vector of positive integers.> nanmean (ones (3), [1, -1])
+%!error <nanmean: VECDIM must contain non-repeating positive integers.> ...
+%! nanmean (ones (3, 3, 3), [2, 2, 3])
+%!error <nanmean: invalid DIM argument.> nanmean (ones (3), "invalid")
+%!error <nanmean: invalid DIM argument.> nanmean (ones (3), ones (2))
+%!error <nanmean: invalid DIM argument.> nanmean (ones (3), [])

@@ -81,7 +81,7 @@ function [v, idx] = nanmax (x, y, dim)
     endif
   elseif (nargin == 3 && isempty (y))
     if (isscalar (dim))
-      if (islogical (dim))
+      if (! isnumeric (dim) || fix (dim) != dim || dim <= 0)
         error ("nanmax: DIM must be a positive integer.");
       endif
       nanvals = isnan (x);
@@ -91,7 +91,9 @@ function [v, idx] = nanmax (x, y, dim)
         v(all (nanvals, dim)) = NaN;
       endif
     else
-      if (islogical (dim))
+      if (! (isnumeric (dim) && isvector (dim)))
+        error ("nanmax: invalid DIM argument.");
+      elseif (any (fix (dim) != dim) || any (dim <= 0))
         error ("nanmax: VECDIM must be a vector of positive integers.");
       endif
       vecdim = sort (dim);
@@ -249,12 +251,21 @@ endfunction
 %!assert_equal (nanmax ([NaN, 0], logical ([0, 1])), [0, 1])
 
 ## Test input validation
+%!error <nanmax: DIM must be a positive integer.> nanmax (ones (3), [], 0)
+%!error <nanmax: DIM must be a positive integer.> nanmax (ones (3), [], 1.5)
 %!error <nanmax: DIM must be a positive integer.> nanmax (ones (3), [], true)
 %!error <nanmax: VECDIM must be a vector of positive integers.> ...
-%! nanmax (ones (3), [], [true, false])
+%! nanmax (ones (3, 3, 3), [], [2, 2.5])
+%!error <nanmax: VECDIM must be a vector of positive integers.> ...
+%! nanmax (ones (3, 3, 3), [], [-1, 2])
 %!error <nanmax: VECDIM must contain non-repeating positive integers.> ...
 %! nanmax (y, [], [1, 1, 2])
 %!error <nanmax: VECDIM must contain non-repeating positive integers.> ...
 %! nanmax (true (2), [], [1, 1])
+%!error <nanmax: invalid DIM argument.> nanmax (ones (3), [], "invalid")
+%!error <nanmax: invalid DIM argument.> nanmax (ones (3), [], ones (2))
+%!error <nanmax: invalid DIM argument.> nanmax (ones (3), [], [])
+%!error <nanmax: invalid DIM argument.> ...
+%! nanmax (ones (3), [], [true, false])
 %!error <nanmax: a second output is not supported with this syntax.> ...
 %! [v, idx] = nanmax (x, y, [1 2])
