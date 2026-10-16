@@ -93,10 +93,9 @@ function yi = makima (x, y, xq, varargin)
       error ("makima: the number of sample points X, %d, is incompatible with the number of values Y, %d.", n, size_y(dim_y));
     endif
 
-    ## permute the interpolation dimension to be the first
-    perm_order = 1:numel (size_y);
-    perm_order(dim_y) = 1;
-    perm_order(1) = dim_y;
+    ## move the interpolation dimension to the front, keeping the others in
+    ## order so that the series columns follow the layout mkpp expects
+    perm_order = [dim_y, 1:dim_y-1];
 
     y = permute (y, perm_order);
     nc = numel (y) / n;
@@ -509,6 +508,15 @@ endfunction
 %! expected = [2.304086538461538+0.768750000000000i; ...
 %!             3.000000000000000-0.093750000000000i];
 %! assert_equal (ppval (pp, 1.5), expected, 1e-12);
+%!test
+%! ## N-dimensional y in pp form.
+%! pp = makima (1:4, reshape (1:24, [2 3 4]));
+%! assert_equal (ppval (pp, 2.5), [10, 12, 14; 11, 13, 15], 1e-12);
+%!test
+%! ## Complex N-dimensional y in pp form.
+%! pp = makima (1:4, reshape ((1:24) + 1i * (24:-1:1), [2 3 4]));
+%! expected = [10+15i, 12+13i, 14+11i; 11+14i, 13+12i, 15+10i];
+%! assert_equal (ppval (pp, 2.5), expected, 1e-12);
 %!test
 %! ## N-dimensional y (3D) with N-dimensional xq (2x2 matrix)
 %! x = [1 2 3 4];
