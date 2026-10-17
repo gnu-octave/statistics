@@ -25,10 +25,10 @@
 ## Calculate partial least squares regression using SIMPLS algorithm.
 ##
 ## @code{plsregress} uses the SIMPLS algorithm, and first centers @var{X} and
-## @var{Y} by subtracting off column means to get centered variables.  However,
-## it does not rescale the columns.  To perform partial least squares regression
-## with standardized variables, use @code{zscore} to normalize @var{X} and
-## @var{Y}.
+## @var{Y} by subtracting off column means to get centered variables, unless
+## @qcode{'Intercept'} is @qcode{false}.  However, it does not rescale the
+## columns.  To perform partial least squares regression with standardized
+## variables, use @code{zscore} to normalize @var{X} and @var{Y}.
 ##
 ## @code{[@var{xload}, @var{yload}] = plsregress (@var{X}, @var{Y})} computes a
 ## partial least squares regression of  @var{Y} on @var{X}, using @var{NCOMP}
@@ -68,7 +68,9 @@
 ## components @var{xscore} have maximum covariance, with rows corresponding to
 ## observations and columns corresponding to components.
 ## @item @var{coef} is a @math{(P+1)*M} matrix with the PLS regression
-## coefficients, containing the intercepts in the first row.
+## coefficients, containing the intercepts in the first row.  If
+## @qcode{'Intercept'} is @qcode{false}, @var{coef} is a @math{P*M} matrix
+## without the intercepts.
 ## @item @var{pctVar} is a @math{2*NCOMP} matrix containing the percentage of
 ## the variance explained by the model with the first row containing the
 ## percentage of explained varianced in @var{X} by each PLS component and the
@@ -108,6 +110,10 @@
 ## meaningful when using the @qcode{'HoldOut'} method for cross-validation,
 ## previously set by a @code{cvpartition} object.  If no cross-validation method
 ## is used, then @qcode{'MCReps'} must be @qcode{1}.
+## @item @qcode{'Intercept'} @tab A logical scalar, or @qcode{'on'} or
+## @qcode{'off'}, specifying whether the model includes a constant term.  When
+## the constant term is excluded, @var{X} and @var{Y} are not centered and
+## @var{coef} contains no intercepts.  By default, @qcode{@var{Value} = true}.
 ## @end multitable
 ##
 ## Further information about the PLS regression can be found at
@@ -157,6 +163,7 @@ function [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = ...
   ## Add default optional arguments
   CV = false;
   mcreps = 1;
+  intercept = true;
 
   ## Parse additional Name-Value pairs
   while (numel (varargin) > 0)
@@ -173,6 +180,17 @@ function [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = ...
       mcreps = varargin{2};
       if (! (isscalar (mcreps) && mcreps == fix (mcreps) && mcreps > 0))
         error ("plsregress: invalid VALUE for 'mcreps' optional argument.");
+      endif
+    elseif (strcmpi (varargin{1}, 'intercept'))
+      intarg = varargin{2};
+      if (ischar (intarg) && isrow (intarg) &&
+          any (strcmpi (intarg, {'on', 'off'})))
+        intercept = strcmpi (intarg, 'on');
+      elseif ((isnumeric (intarg) || islogical (intarg)) && isscalar (intarg) &&
+              (intarg == 0 || intarg == 1))
+        intercept = logical (intarg);
+      else
+        error ("plsregress: invalid VALUE for 'intercept' optional argument.");
       endif
     else
       error ("plsregress: invalid NAME argument.");
@@ -192,15 +210,18 @@ function [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = ...
     print_usage ();
   endif
 
-  ## Mean centering Data matrix
-  Xmeans = mean (X);
+  ## Mean centering Data matrix and responses, unless intercept is excluded
+  if (intercept)
+    Xmeans = mean (X);
+    Ymeans = mean (Y);
+  else
+    Xmeans = zeros (1, npred);
+    Ymeans = zeros (1, nresp);
+  endif
   X0 = bsxfun (@minus, X, Xmeans);
-
-  ## Mean centering responses
-  Ymeans = mean (Y);
   Y0 = bsxfun (@minus, Y, Ymeans);
 
-  [P, Q, T, U, W] = simpls (X0, Y0, NCOMP);
+  [P, Q, T, U, W] = simpls (X0, Y0, NCOMP, intercept);
 
   ## Store output arguments
   xload  = P;
@@ -211,7 +232,9 @@ function [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = ...
   ## Compute regression coefficients
   if (nargout > 4)
     coef = W * Q';
-    coef = [Ymeans - Xmeans * coef; coef];
+    if (intercept)
+      coef = [Ymeans - Xmeans * coef; coef];
+    endif
   endif
 
   ## Compute the percent of variance explained for X and Y
@@ -242,7 +265,7 @@ function [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = ...
         NCOMP = NCOMPmax;
       endif
       ## Create function handle with NCOMP extra argument
-      F = @(xtr, ytr, xte, yte) sseCV (xtr, ytr, xte, yte, NCOMP);
+      F = @(xtr, ytr, xte, yte) sseCV (xtr, ytr, xte, yte, NCOMP, intercept);
       ## Apply cross validation
       sse = crossval (F, X, Y, type, cvarg, 'mcreps', mcreps);
       ## Compute MSE from the SSEs collected from each cross validation set
@@ -287,7 +310,7 @@ function [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = ...
 endfunction
 
 ## SIMPLS algorithm
-function [P, Q, T, U, W] = simpls (X0, Y0, NCOMP)
+function [P, Q, T, U, W] = simpls (X0, Y0, NCOMP, intercept)
   ## Get size of predictor and response inputs
   [nobs, npred] = size (X0);
   [Yobs, nresp] = size (Y0);
@@ -305,7 +328,9 @@ function [P, Q, T, U, W] = simpls (X0, Y0, NCOMP)
     q  = eigvec(:,domindex);
     w  = S * q;                           # X block factor weights
     t  = X0 * w;                          # X block factor scores
-    t  = t - mean (t);
+    if (intercept)
+      t  = t - mean (t);
+    endif
     nt = sqrt (t' * t);                   # compute norm
     t  = t / nt;
     w  = w / nt;                          # normalize
@@ -331,17 +356,22 @@ function [P, Q, T, U, W] = simpls (X0, Y0, NCOMP)
 endfunction
 
 ## Helper function for SSE cross-validation
-function sse = sseCV (XTR, YTR, XTE, YTE, NCOMP)
-  ## Center train data
-  XTRmeans = mean (XTR);
-  YTRmeans = mean (YTR);
+function sse = sseCV (XTR, YTR, XTE, YTE, NCOMP, intercept)
+  ## Center train data, unless intercept is excluded
+  if (intercept)
+    XTRmeans = mean (XTR);
+    YTRmeans = mean (YTR);
+  else
+    XTRmeans = zeros (1, columns (XTR));
+    YTRmeans = zeros (1, columns (YTR));
+  endif
   X0TR = bsxfun (@minus, XTR, XTRmeans);
   Y0TR = bsxfun (@minus, YTR, YTRmeans);
   ## Center test data
   X0TE = bsxfun (@minus, XTE, XTRmeans);
   Y0TE = bsxfun (@minus, YTE, YTRmeans);
   ## Fit the full model
-  [xload, yload, ~, ~, W] = simpls (X0TR, Y0TR, NCOMP);
+  [xload, yload, ~, ~, W] = simpls (X0TR, Y0TR, NCOMP, intercept);
   XTEscore = X0TE * W;
   ## Preallocate SSE matrix
   sse = zeros (2, NCOMP + 1);
@@ -451,6 +481,136 @@ endfunction
 %! assert_equal (xscore(1,:), xscore1_out, 1e-4);
 %! assert_equal (yscore(1,:), yscore1_out, 1e-4);
 
+## Test Intercept option
+%!shared Xi, Yi
+%! Xi = [1 2 4; 2 1 3; 3 5 2; 4 3 6; 5 6 5; 6 4 9; 7 8 7; 8 7 10];
+%! Yi = [3 1; 2 4; 6 2; 5 7; 9 5; 8 9; 12 8; 11 11];
+%!test
+%! [xload, yload, xscore, yscore, coef] = plsregress (Xi, Yi, 2, ...
+%!                                                    'Intercept', false);
+%! xload_out = [-14.2220866289987, -0.382908357308142; ...
+%!              -13.7943470180713, -3.6736441811456; ...
+%!              -17.5828395894702, 3.22646836023154];
+%! yload_out = [-21.7155246617638, -3.37516200500198; ...
+%!              -18.5549450196154, 2.92602803399922];
+%! xscore_out = [-0.159463240281499, 0.176166759987928; ...
+%!               -0.135201662297805, 0.219123900595871; ...
+%!               -0.209658303362604, -0.554109815239913; ...
+%!               -0.290146968405309, 0.275009629902996; ...
+%!               -0.344859965660409, -0.334985914644042; ...
+%!               -0.425348630703114, 0.494133530498867; ...
+%!               -0.474906494400693, -0.403685011986161; ...
+%!               -0.550240025885877, 0.137611435218759];
+%! yscore_out = [-83.7015190049069, -4.16947710556566; ...
+%!               -117.650829401989, 7.52277173856108; ...
+%!               -167.403038009814, -10.4151724456727; ...
+%!               -238.462238446127, 9.11950487145006; ...
+%!               -288.214447053951, -9.19359074611281; ...
+%!               -340.718702470649, 7.41505853701072; ...
+%!               -409.025856098089, -8.06996238088916; ...
+%!               -442.975166495171, 5.51470553389892];
+%! coef_out = [0.42805469436003, 0.390758452559943; ...
+%!             0.979698857562371, -0.111297240033807; ...
+%!             0.120196040659335, 0.826534140491024];
+%! assert_equal (xload, xload_out, 1e-10);
+%! assert_equal (yload, yload_out, 1e-10);
+%! assert_equal (xscore, xscore_out, 1e-10);
+%! assert_equal (yscore, yscore_out, 1e-10);
+%! assert_equal (coef, coef_out, 1e-10);
+%!test
+%! [~, ~, ~, ~, ~, pctVar, mse] = plsregress (Xi, Yi, 2, 'Intercept', false);
+%! pctVar_out = [0.963884623305986, 0.0330389814001876; ...
+%!               0.965502953865825, 0.0236134421488264];
+%! mse_out = [91, 3.28649927915526, 0.27995197173819; ...
+%!            105.625, 3.64375049792233, 1.14958067095253];
+%! assert_equal (pctVar, pctVar_out, 1e-10);
+%! assert_equal (mse, mse_out, 1e-10);
+%!test
+%! [~, ~, ~, ~, ~, ~, ~, stats] = plsregress (Xi, Yi, 2, 'Intercept', false);
+%! W_out = [-0.0203808431932239, 0.00430379596844149; ...
+%!          -0.0197436438096987, -0.163238171288745; ...
+%!          -0.0248987773672195, 0.124584826649244];
+%! T2_out = [1.31872433173103; 1.12791712302996; 4.05334038679012; ...
+%!           4.17604263860742; 5.93709890387945; 9.54610820786475; ...
+%!           10.9102185426489; 13.247290390847];
+%! Xres_out = [-1.20044429274505, 0.447482719671833, 0.627786948487707; ...
+%!             0.161054619240101, -0.0600354047820661, -0.0842254726551177; ...
+%!             -0.193951832033687, 0.0722983097243972, 0.101429470340183; ...
+%!             -0.021191834171586, 0.00789955822793997, 0.0110825275173898; ...
+%!             -0.0328972127935856, 0.0122629049423306, 0.0172039976850655; ...
+%!             0.139862785068515, -0.0521358465541262, -0.0731429451377288; ...
+%!             0.0912643311496959, -0.0340200801975641, -0.0477277923719566; ...
+%!             0.227131253714974, -0.0846664120518552, -0.118781052596658];
+%! Yres_out = [0.131763427877889, -2.47430053445642; ...
+%!             -0.196396368260435, 0.85017791344085; ...
+%!             -0.423050452210615, -0.268857438492841; ...
+%!             -0.372491594083243, 0.811653066915507; ...
+%!             0.380553179528951, -0.41867952505199; ...
+%!             0.431112037656321, -0.338169019643642; ...
+%!             0.32465399436548, 0.369329768913692; ...
+%!             -0.484289964410188, 0.387671654846869];
+%! assert_equal (stats.W, W_out, 1e-10);
+%! assert_equal (stats.T2, T2_out, 1e-10);
+%! assert_equal (stats.Xresiduals, Xres_out, 1e-10);
+%! assert_equal (stats.Yresiduals, Yres_out, 1e-10);
+%!test
+%! [~, ~, ~, ~, coef] = plsregress (Xi, Yi, 2);
+%! coef_out = [-0.0955463955587028, -0.810241454727286; ...
+%!             0.502555885912014, 0.483878040247745; ...
+%!             0.950692448939054, -0.0936986428112594; ...
+%!             0.0966832849963297, 0.857292898480539];
+%! assert_equal (coef, coef_out, 1e-10);
+%!test
+%! Xc = Xi - mean (Xi);
+%! Yc = Yi - mean (Yi);
+%! [xl1, yl1, xs1, ys1, c1] = plsregress (Xc, Yc, 2, 'Intercept', false);
+%! [xl2, yl2, xs2, ys2, c2] = plsregress (Xc, Yc, 2);
+%! assert_equal (xl1, xl2, 1e-10);
+%! assert_equal (yl1, yl2, 1e-10);
+%! assert_equal (xs1, xs2, 1e-10);
+%! assert_equal (ys1, ys2, 1e-10);
+%! assert_equal (c1, c2(2:end,:), 1e-10);
+%! assert_equal (c2(1,:), [0, 0], 1e-10);
+%!test
+%! [~, ~, ~, ~, coef] = plsregress (Xi, Yi, 2, 'Intercept', 'OFF');
+%! assert_equal (size (coef), [3, 2]);
+%! [~, ~, ~, ~, coef] = plsregress (Xi, Yi, 2, 'Intercept', 'On');
+%! assert_equal (size (coef), [4, 2]);
+%!test
+%! [~, ~, ~, ~, coef] = plsregress (Xi, Yi, 2, 'Intercept', int8 (0));
+%! assert_equal (size (coef), [3, 2]);
+%! [~, ~, ~, ~, coef] = plsregress (Xi, Yi, 2, 'Intercept', uint8 (1));
+%! assert_equal (size (coef), [4, 2]);
+%!test
+%! [~, ~, ~, ~, ~, ~, mse] = plsregress (Xi, Yi, 2, 'Intercept', false, ...
+%!                                       'CV', 8);
+%! mse_out = [91, 4.32192776866963, 0.340549626995997; ...
+%!            105.625, 4.71960207316224, 1.60619414427168];
+%! assert_equal (mse, mse_out, 1e-10);
+%!test
+%! [~, ~, ~, ~, ~, ~, mse] = plsregress (Xi, Yi, 2, 'CV', 8);
+%! mse_out = [22.7755102040816, 5.53413798133651, 0.437067443370619; ...
+%!            28.8775510204082, 6.35600933981599, 2.45515345309489];
+%! assert_equal (mse, mse_out, 1e-10);
+%!warning<plsregress: NCOMP exceeds maximum components for cross validation.>
+%! [~, ~, ~, ~, ~, ~, mse] = plsregress (Xi(1:4,:), Yi(1:4,:), 3, ...
+%!                                       'Intercept', false, 'CV', 4);
+%! mse_out = [33.5, 6.11816888105823, 4.40871978441352; ...
+%!            36, 8.82425775321653, 7.84649635299314];
+%! assert_equal (mse(:,1:3), mse_out, 1e-10);
+%! assert_equal (isnan (mse(:,4)), [true; true]);
+%!test
+%! [~, yload, ~, ~, coef, ~, ~, stats] = plsregress (Xi, Yi(:,1), 2, ...
+%!                                                   'Intercept', false);
+%! yload_out = [21.7303444547984, 3.27301621090877];
+%! coef_out = [0.490175387381509; 0.948569023203085; 0.0943735846723177];
+%! Yres_out = [0.235192227523052; -0.212040551983055; -0.402118447504584; ...
+%!             -0.372650127169194; 0.385841000512361; 0.415309320847751; ...
+%!             0.319605009998538; -0.505122108196838];
+%! assert_equal (yload, yload_out, 1e-10);
+%! assert_equal (coef, coef_out, 1e-10);
+%! assert_equal (stats.Yresiduals, Yres_out, 1e-10);
+
 ## Test input validation
 %!error<plsregress: function called with too few input arguments.>
 %! plsregress (1)
@@ -490,6 +650,16 @@ endfunction
 %! plsregress (ones (20,3), ones (20,1), 3, 'mcreps', 2)
 %!error<plsregress: 'mcreps' must be 1 when 'resubstitution' is specified> ...
 %! plsregress (ones (20,3), ones (20,1), 3, 'cv', 'resubstitution', 'mcreps', 2)
+%!error<plsregress: invalid VALUE for 'intercept' optional argument.> ...
+%! plsregress (ones (20,3), ones (20,1), 3, 'Intercept', 2)
+%!error<plsregress: invalid VALUE for 'intercept' optional argument.> ...
+%! plsregress (ones (20,3), ones (20,1), 3, 'Intercept', 'true')
+%!error<plsregress: invalid VALUE for 'intercept' optional argument.> ...
+%! plsregress (ones (20,3), ones (20,1), 3, 'Intercept', [true, false])
+%!error<plsregress: invalid VALUE for 'intercept' optional argument.> ...
+%! plsregress (ones (20,3), ones (20,1), 3, 'Intercept', {false})
+%!error<plsregress: invalid VALUE for 'intercept' optional argument.> ...
+%! plsregress (ones (20,3), ones (20,1), 3, 'Intercept', ['off'; 'off'])
 %!test
 %! ## A single output returns the predictor loadings, as MATLAB allows;
 %! ## fewer than two outputs used to be refused outright.
