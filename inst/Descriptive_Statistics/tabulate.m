@@ -39,7 +39,8 @@
 ## Similarly, undefined elements in categorical arrays, missing elements in
 ## string arrays, @qcode{NaT} elements in datetime arrays, and @qcode{NaN}
 ## elements in duration arrays are ignored.  The values of a datetime or
-## duration vector are listed in sorted order.
+## duration vector are listed in sorted order.  MATLAB tabulates each
+## @qcode{NaN} duration instead, as a value of its own counted once.
 ##
 ## If all the elements of @var{x} are positive integers, then the frequency
 ## table includes 0 counts for the integers between 1 and @qcode{max (@var{x})}
@@ -53,13 +54,13 @@
 ## observations out of none at all is @qcode{NaN} rather than zero: there is no
 ## total to take a proportion of.  A @qcode{categorical} carries its categories
 ## independently of its data, so an all-undefined one still tabulates every
-## category with a zero count; a string array has no levels beyond those its
-## data carries, so an all-missing one tabulates to an empty table.  MATLAB
-## agrees on the categorical case but returns a malformed @math{1}-by-@math{2}
-## cell for the all-missing string, lacking the label column its own
-## documentation describes, while returning a well-formed
-## @math{0}-by-@math{3} for an empty string array.  This implementation returns
-## the empty table in both.
+## category with a zero count; a string, datetime or duration array has no
+## levels beyond those its data carries, so an all-missing one tabulates to an
+## empty table.  MATLAB agrees on the categorical case but returns a malformed
+## @math{1}-by-@math{2} cell for an all-missing string or datetime array,
+## lacking the label column its own documentation describes, while returning a
+## well-formed @math{0}-by-@math{3} for an empty one.  This implementation
+## returns the empty table in both.
 ##
 ## @seealso{bar, pareto}
 ## @end deftypefn
@@ -115,33 +116,17 @@ function tbl = tabulate (x)
     out(:,2) = num2cell (counts);
     out(:,3) = num2cell (percents);
 
-  elseif (isa (x, 'string'))
-    ## Handle string arrays
+  elseif (isa (x, 'string') || isdatetime (x) || isduration (x))
+    ## Handle string, datetime and duration arrays: grp2idx keeps strings in
+    ## order of first appearance and sorts the others
     x(ismissing (x)) = [];
 
     if (isempty (x))
       out = cell (0, 3);
     else
-      ## Convert to cellstr and use grp2idx which is robust
-      [idx, vals] = grp2idx (cellstr (x));
-
-      counts = accumarray (idx, 1);
-      total = sum (counts);
-      percents = 100 * counts ./ total;
-
-      out = cell (length (vals), 3);
-      out(:,1) = vals;
-      out(:,2) = num2cell (counts);
-      out(:,3) = num2cell (percents);
-    endif
-
-  elseif (isdatetime (x) || isduration (x))
-    ## Handle datetime and duration arrays, whose groups grp2idx sorts
-    x(ismissing (x)) = [];
-
-    if (isempty (x))
-      out = cell (0, 3);
-    else
+      if (isa (x, 'string'))
+        x = cellstr (x);
+      endif
       [idx, vals] = grp2idx (x);
 
       counts = accumarray (idx, 1);
@@ -475,8 +460,9 @@ endfunction
 %! assert_equal ([tbl{:,2}]', [2; 1]);
 %! assert_equal ([tbl{:,3}]', [66.6667; 33.3333], 1e-4);
 
-## Test datetime and duration vectors.  Values are R2026b's: groups are sorted,
-## and a missing element is left out of both the counts and the total.
+## Test datetime and duration vectors.  The tables of d and h are R2024a's:
+## groups are sorted, and a NaT is left out of both the counts and the total.
+## A NaN duration and an all-missing vector deviate, as the help text states.
 %!shared d, h
 %! d = repmat ([datetime(2026, 1, 5); datetime(2025, 3, 1); ...
 %!              datetime(2026, 10, 13)], 6, 1);
@@ -507,6 +493,9 @@ endfunction
 %! tbl = tabulate (NaT (0, 1));
 %! assert_equal (iscell (tbl), true);
 %! assert_equal (isempty (tbl), true);
+%!test
+%! tbl = tabulate (hours (NaN (3, 1)));
+%! assert_equal (size (tbl), [0, 3]);
 %!test
 %! out = evalc ('tabulate (d)');
 %! assert_equal (isempty (strfind (out, '05-Jan-2026')), false);

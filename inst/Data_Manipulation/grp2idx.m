@@ -58,7 +58,8 @@
 ## same data type as @var{s}.
 ##
 ## Note that standard missing values in @var{s}, such as NaN or NaT, appear as
-## NaN in @var{g} and are not present on either @var{gn} and @var{gl}.
+## NaN in @var{g} and are not present on either @var{gn} and @var{gl}.  This
+## includes a @qcode{NaN} duration, which MATLAB makes a group of its own.
 ##
 ## An empty @var{s} returns @var{g}, @var{gn} and @var{gl} as 0-by-1 arrays,
 ## whereas MATLAB returns a 0-by-0 @var{gn} for an empty categorical @var{s}.

@@ -29,7 +29,8 @@
 ## The inputs @var{x1}, @var{x2}, ... @var{xn} must be vectors of equal length
 ## with a data type of numeric, logical, char array, categorical, strings,
 ## datetime, duration, or cell array of character vectors.  Missing values,
-## such as @qcode{NaN} or @qcode{NaT}, are not counted.
+## such as @qcode{NaN} or @qcode{NaT}, are not counted.  A @qcode{NaN}
+## duration is missing too, whereas MATLAB counts it as a group of its own.
 ##
 ## As additional return values @code{crosstab} returns the chi-square statistics
 ## @var{chisq}, its p-value @var{p} and a cell array @var{labels}, containing
@@ -76,7 +77,10 @@ function [t, chisq, p, labels] = crosstab (varargin)
       endif
       vector = vector(:);
       unique_vals = unique (vector(! isnan (vector)));
-      labels_data{i} = cellstr (num2str (unique_vals));
+      labels_data{i} = arrayfun (@num2str, unique_vals, 'UniformOutput',
+                                 false);
+      ## X is double: an integer vector would convert the others to its type
+      vector = double (vector);
     else
       error ("crosstab: unsupported type for data vector.");
     endif
@@ -392,7 +396,7 @@ endfunction
 %! assert_equal (chisq, 12.00000000, 1e-14);
 %! assert_equal (p, 0.01735127, 1e-8);
 %!test
-%! ## datetime and duration, against MATLAB R2026b
+%! ## datetime and duration, against MATLAB R2024a
 %! d = repmat ([datetime(2026, 1, 5); datetime(2025, 3, 1); ...
 %!              datetime(2026, 10, 13)], 6, 1);
 %! d(4) = NaT;
@@ -406,3 +410,38 @@ endfunction
 %! assert_equal (p, 7.4519e-07, 1e-11);
 %! assert_equal (labels, {'01-Mar-2025', '1 hr'; '05-Jan-2026', '2 hr'; ...
 %!                        '13-Oct-2026', '3 hr'});
+%!test
+%! ## a NaN duration is missing, where R2024a makes it a group of its own
+%! w = warning ();
+%! warning ('off');
+%! [t, chisq, p, labels] = crosstab (hours ([1; NaN; 2]), [1; 2; 2]);
+%! warning (w);
+%! assert_equal (t, [1 0; 0 1]);
+%! assert_equal (labels, {'1 hr', '1'; '2 hr', '2'});
+%!test
+%! ## numeric labels without padding, as R2024a's
+%! w = warning ();
+%! warning ('off');
+%! [~, ~, ~, labels] = crosstab ([1.5 2 10.25 1.5], [1 2 3 1]);
+%! warning (w);
+%! assert_equal (labels, {'1.5', '1'; '2', '2'; '10.25', '3'});
+%!test
+%! w = warning ();
+%! warning ('off');
+%! [~, ~, ~, labels] = crosstab ([1e-5 1e6 1e-5], int8 ([1 2 1]));
+%! warning (w);
+%! assert_equal (labels, {'1e-05', '1'; '1000000', '2'});
+%!test
+%! [t, chisq, p, labels] = crosstab (zeros (0, 1), zeros (0, 1));
+%! assert_equal (t, []);
+%! assert_equal (chisq, NaN);
+%! assert_equal (p, NaN);
+%! assert_equal (labels, cell (0, 2));
+%!test
+%! w = warning ();
+%! warning ('off');
+%! [t, chisq, p, labels] = crosstab (int8 ([1 2 10 1]), [-1 0.5 2 -1]);
+%! warning (w);
+%! assert_equal (t, [2 0 0; 0 1 0; 0 0 1]);
+%! assert_equal (chisq, 8, 1e-12);
+%! assert_equal (labels, {'1', '-1'; '2', '0.5'; '10', '2'});
