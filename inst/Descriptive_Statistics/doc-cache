@@ -1486,7 +1486,7 @@ tabulate
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1848
+# length: 2025
 statistics: tabulate (x)
 statistics: tbl = tabulate (x)
 Create a frequency table of unique values in vector x.
@@ -1494,7 +1494,7 @@ Create a frequency table of unique values in vector x.
 tabulate (x) displays a frequency table of the data in the vector
 x. The input x can be a numeric vector, a logical vector, a
 character matrix, a cell vector of character vectors, a categorical vector,
-or a string vector.
+a string vector, a datetime vector, or a duration vector.
 
 The table displays the value, the number of instances (count), and the
 percentage of that value in x. If no output argument is requested,
@@ -1505,8 +1505,10 @@ tbl, as a numeric matrix when x is numeric and as a cell array
 otherwise.
 
 If x is numeric, any missing values (NaNs) are ignored.
-Similarly, undefined elements in categorical arrays and missing elements in
-string arrays are ignored.
+Similarly, undefined elements in categorical arrays, missing elements in
+string arrays, NaT elements in datetime arrays, and NaN
+elements in duration arrays are ignored. The values of a datetime or
+duration vector are listed in sorted order.
 
 If all the elements of x are positive integers, then the frequency
 table includes 0 counts for the integers between 1 and max (x)

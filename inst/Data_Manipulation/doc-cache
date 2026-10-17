@@ -40,15 +40,16 @@ crosstab
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 838
+# length: 911
 statistics: t = crosstab (x1, x2)
 statistics: t = crosstab (x1, ..., xn)
 statistics: [t, chisq, p, labels] = crosstab (...)
 Create a cross-tabulation (contingency table) t from data vectors.
 
 The inputs x1, x2, ... xn must be vectors of equal length
-with a data type of numeric, logical, char array, categorical, strings, or
-cell array of character vectors.
+with a data type of numeric, logical, char array, categorical, strings,
+datetime, duration, or cell array of character vectors. Missing values,
+such as NaN or NaT, are not counted.
 
 As additional return values crosstab returns the chi-square statistics
 chisq, its p-value p and a cell array labels, containing

@@ -25,7 +25,7 @@
 ## @code{tabulate (x)} displays a frequency table of the data in the vector
 ## @var{x}.  The input @var{x} can be a numeric vector, a logical vector, a
 ## character matrix, a cell vector of character vectors, a categorical vector,
-## or a string vector.
+## a string vector, a datetime vector, or a duration vector.
 ##
 ## The table displays the value, the number of instances (count), and the
 ## percentage of that value in @var{x}.  If no output argument is requested,
@@ -36,8 +36,10 @@
 ## otherwise.
 ##
 ## If @var{x} is numeric, any missing values (@qcode{NaNs}) are ignored.
-## Similarly, undefined elements in categorical arrays and missing elements in
-## string arrays are ignored.
+## Similarly, undefined elements in categorical arrays, missing elements in
+## string arrays, @qcode{NaT} elements in datetime arrays, and @qcode{NaN}
+## elements in duration arrays are ignored.  The values of a datetime or
+## duration vector are listed in sorted order.
 ##
 ## If all the elements of @var{x} are positive integers, then the frequency
 ## table includes 0 counts for the integers between 1 and @qcode{max (@var{x})}
@@ -64,16 +66,18 @@
 
 function tbl = tabulate (x)
 
-  ## Check input for being numeric, logical, categorical, or text
-  ## All types but char array must be vectors
+  ## Check input for being numeric, logical, categorical, datetime, duration,
+  ## or text.  All types but char array must be vectors
   if (ischar (x) && ! ismatrix (x))
     error ("tabulate: char array input must be a matrix.");
   elseif (! isvector (x) && ! isempty (x) && ! ischar (x))
     error ("tabulate: input must be a vector except for char array.");
   elseif (! (isnumeric (x) || islogical (x) || iscellstr (x) ||
-             iscategorical (x) || isa (x, 'string')) && ! ischar (x))
+             iscategorical (x) || isa (x, 'string') || isdatetime (x) ||
+             isduration (x)) && ! ischar (x))
     error (strcat ("tabulate: X must be numeric, logical, categorical,", ...
-                   " cellstring, string, or a char array."));
+                   " datetime, duration, cellstring, string, or a char", ...
+                   " array."));
   endif
 
   ## Ensure vector input
@@ -120,6 +124,25 @@ function tbl = tabulate (x)
     else
       ## Convert to cellstr and use grp2idx which is robust
       [idx, vals] = grp2idx (cellstr (x));
+
+      counts = accumarray (idx, 1);
+      total = sum (counts);
+      percents = 100 * counts ./ total;
+
+      out = cell (length (vals), 3);
+      out(:,1) = vals;
+      out(:,2) = num2cell (counts);
+      out(:,3) = num2cell (percents);
+    endif
+
+  elseif (isdatetime (x) || isduration (x))
+    ## Handle datetime and duration arrays, whose groups grp2idx sorts
+    x(ismissing (x)) = [];
+
+    if (isempty (x))
+      out = cell (0, 3);
+    else
+      [idx, vals] = grp2idx (x);
 
       counts = accumarray (idx, 1);
       total = sum (counts);
@@ -452,6 +475,42 @@ endfunction
 %! assert_equal ([tbl{:,2}]', [2; 1]);
 %! assert_equal ([tbl{:,3}]', [66.6667; 33.3333], 1e-4);
 
+## Test datetime and duration vectors.  Values are R2026b's: groups are sorted,
+## and a missing element is left out of both the counts and the total.
+%!shared d, h
+%! d = repmat ([datetime(2026, 1, 5); datetime(2025, 3, 1); ...
+%!              datetime(2026, 10, 13)], 6, 1);
+%! d(4) = NaT;
+%! h = hours (repmat ([1; 2; 3], 6, 1));
+%!test
+%! tbl = tabulate (d);
+%! assert_equal (tbl(:,1), {'01-Mar-2025'; '05-Jan-2026'; '13-Oct-2026'});
+%! assert_equal ([tbl{:,2}]', [6; 5; 6]);
+%! assert_equal ([tbl{:,3}]', [35.2941; 29.4118; 35.2941], 1e-4);
+%!test
+%! tbl = tabulate (h);
+%! assert_equal (tbl(:,1), {'1 hr'; '2 hr'; '3 hr'});
+%! assert_equal ([tbl{:,2}]', [6; 6; 6]);
+%! assert_equal ([tbl{:,3}]', [33.3333; 33.3333; 33.3333], 1e-4);
+%!test
+%! h(2) = NaN;
+%! tbl = tabulate (h);
+%! assert_equal ([tbl{:,2}]', [6; 5; 6]);
+%!test
+%! tbl = tabulate (d.');
+%! assert_equal ([tbl{:,2}]', [6; 5; 6]);
+%!test
+%! tbl = tabulate (NaT (3, 1));
+%! assert_equal (iscell (tbl), true);
+%! assert_equal (isempty (tbl), true);
+%!test
+%! tbl = tabulate (NaT (0, 1));
+%! assert_equal (iscell (tbl), true);
+%! assert_equal (isempty (tbl), true);
+%!test
+%! out = evalc ('tabulate (d)');
+%! assert_equal (isempty (strfind (out, '05-Jan-2026')), false);
+
 ## Test input validation
 %!error<tabulate: char array input must be a matrix.> ...
 %! tabulate (repmat ('a', 3, 3, 3))
@@ -465,5 +524,9 @@ endfunction
 %! tabulate (categorical ([true, true; false, true]))
 %!error<tabulate: input must be a vector except for char array.> ...
 %! tabulate (string ({'a', 'b'; 'a', 'c'}))
-%!error<tabulate: X must be numeric, logical, categorical, cellstring, string, or a char array.> ...
+%!error<tabulate: input must be a vector except for char array.> ...
+%! tabulate (repmat (datetime (2026, 1, 1), 2, 2))
+%!error<tabulate: input must be a vector except for char array.> ...
+%! tabulate (hours ([1, 2; 3, 4]))
+%!error<tabulate: X must be numeric, logical, categorical, datetime, duration, cellstring, string, or a char array.> ...
 %! tabulate ({3, 3, 3, 3})

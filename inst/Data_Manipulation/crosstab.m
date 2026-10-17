@@ -27,8 +27,9 @@
 ## Create a cross-tabulation (contingency table) @var{t} from data vectors.
 ##
 ## The inputs @var{x1}, @var{x2}, ... @var{xn} must be vectors of equal length
-## with a data type of numeric, logical, char array, categorical, strings, or
-## cell array of character vectors.
+## with a data type of numeric, logical, char array, categorical, strings,
+## datetime, duration, or cell array of character vectors.  Missing values,
+## such as @qcode{NaN} or @qcode{NaT}, are not counted.
 ##
 ## As additional return values @code{crosstab} returns the chi-square statistics
 ## @var{chisq}, its p-value @var{p} and a cell array @var{labels}, containing
@@ -59,9 +60,10 @@ function [t, chisq, p, labels] = crosstab (varargin)
 
   for i = 1:nargin
     vector = varargin{i};
-    ## Convert char, cellstr, or categorical to indexed numeric vector
-    if (ischar (vector) || iscellstr (vector) ||
-                           iscategorical (vector) || isstring (vector))
+    ## Convert char, cellstr, categorical, string, datetime, or duration to
+    ## indexed numeric vector
+    if (ischar (vector) || iscellstr (vector) || iscategorical (vector) ||
+        isstring (vector) || isdatetime (vector) || isduration (vector))
       try
         [vector, gnames] = grp2idx (vector);
         labels_data{i} = gnames;
@@ -157,6 +159,10 @@ endfunction
 %!error <x1, x2 .* must be vectors of the same length> crosstab ([1], [1 2])
 %!error <x1, x2 .* must be vectors of the same length> crosstab ([1 2], [1])
 %!error <crosstab: unsupported type for data vector.> crosstab ([1 2], {1, 2})
+%!error <crosstab: x1, x2 ... xn must be vectors.> ...
+%! crosstab (repmat (datetime (2026, 1, 1), 2, 2), [1 2 3 4])
+%!error <crosstab: x1, x2 ... xn must be vectors.> ...
+%! crosstab (hours ([1 2; 3 4]), [1 2 3 4])
 %!test
 %! load carbig
 %! [t, chisq, p, labels] = crosstab (cyl4, when, org);
@@ -385,3 +391,18 @@ endfunction
 %! assert_equal (t, [3 0 0; 0 2 0; 0 0 1]);
 %! assert_equal (chisq, 12.00000000, 1e-14);
 %! assert_equal (p, 0.01735127, 1e-8);
+%!test
+%! ## datetime and duration, against MATLAB R2026b
+%! d = repmat ([datetime(2026, 1, 5); datetime(2025, 3, 1); ...
+%!              datetime(2026, 10, 13)], 6, 1);
+%! d(4) = NaT;
+%! h = hours (repmat ([1; 2; 3], 6, 1));
+%! w = warning ();
+%! warning ('off');
+%! [t, chisq, p, labels] = crosstab (d, h);
+%! warning (w);
+%! assert_equal (t, [0 6 0; 5 0 0; 0 0 6]);
+%! assert_equal (chisq, 34, 1e-12);
+%! assert_equal (p, 7.4519e-07, 1e-11);
+%! assert_equal (labels, {'01-Mar-2025', '1 hr'; '05-Jan-2026', '2 hr'; ...
+%!                        '13-Oct-2026', '3 hr'});
