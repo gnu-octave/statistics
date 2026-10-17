@@ -40,9 +40,11 @@
 ##
 ## The order of the rows and columns can be specified by setting the
 ## @var{grouporder} variable. The data type of @var{grouporder} must be the
-## same of @var{group} and @var{grouphat}.  For logical inputs, the default
-## order is @code{false} followed by @code{true}, and @var{grouporder} must
-## contain both values.
+## same of @var{group} and @var{grouphat}, except that a numeric
+## @var{grouporder} for logical inputs is converted to logical.  For logical
+## inputs, the default order is @code{false} followed by @code{true}, and
+## @var{grouporder} must contain both values.  @var{grouporder} cannot contain
+## duplicated values.
 ##
 ## @seealso{crosstab}
 ## @end deftypefn
@@ -77,6 +79,10 @@ function [C, order] = confusionmat (group, grouphat, opt = 'Order', grouporder)
 
   if ((nargin > 3) && strcmp (opt, 'Order'))
     unique_tokens = grouporder;
+    ## A numeric order for logical data is taken as logical
+    if (islogical (y_true) && isnumeric (unique_tokens))
+      unique_tokens = logical (unique_tokens);
+    endif
 
     if (! strcmp (class (y_true), class (unique_tokens)))
       error ("confusionmat: group and grouporder must be of the same data type.");
@@ -111,6 +117,9 @@ function [C, order] = confusionmat (group, grouphat, opt = 'Order', grouporder)
       unique_tokens = unique_tokens(:);
     else
       error ("confusionmat: grouporder must be a vector or character array.");
+    endif
+    if (numel (unique (unique_tokens)) < numel (unique_tokens))
+      error ("confusionmat: ORDER can't contain duplicated values.");
     endif
   endif
 
@@ -500,6 +509,21 @@ endfunction
 %! assert_equal (C, [1 0; 0 0]);
 %! assert_equal (order, [true; false]);
 
+## Test 29: Logical (Numeric Order)
+%!test
+%! [C, order] = confusionmat (true, true, 'Order', [1; 0]);
+%! assert_equal (C, [1 0; 0 0]);
+%! assert_equal (order, [true; false]);
+%!test
+%! [C, order] = confusionmat ([true; false], [true; true], ...
+%!                           'Order', int8 ([0; 1]));
+%! assert_equal (C, [0 1; 0 1]);
+%! assert_equal (order, [false; true]);
+%!test
+%! [C, order] = confusionmat ([true; false], [true; true], 'Order', [0; 2]);
+%! assert_equal (C, [0 1; 0 1]);
+%! assert_equal (order, [false; true]);
+
 ## Teset input validation
 %!error <confusionmat: group and grouphat must be of the same data type.>
 %! confusionmat ([1; 2], {'A'; 'B'})
@@ -518,3 +542,21 @@ endfunction
 %! confusionmat (true, true, 'Order', true)
 %!error <confusionmat: ORDER should contain all the labels appearing in G or GHAT.> ...
 %! confusionmat (true, true, 'Order', false)
+%!error <confusionmat: ORDER can't contain duplicated values.> ...
+%! confusionmat ([1; 2], [1; 2], 'Order', [2; 1; 2])
+%!error <confusionmat: ORDER can't contain duplicated values.> ...
+%! confusionmat ({'a'; 'b'}, {'a'; 'b'}, 'Order', {'b'; 'a'; 'b'})
+%!error <confusionmat: ORDER can't contain duplicated values.> ...
+%! confusionmat (['a'; 'b'], ['a'; 'b'], 'Order', ['b'; 'a'; 'b'])
+%!error <confusionmat: ORDER can't contain duplicated values.> ...
+%! confusionmat (string ({'a'; 'b'}), string ({'a'; 'b'}), ...
+%!               'Order', string ({'b'; 'a'; 'b'}))
+%!error <confusionmat: ORDER can't contain duplicated values.> ...
+%! confusionmat (categorical ({'a'; 'b'}), categorical ({'a'; 'b'}), ...
+%!               'Order', categorical ({'b'; 'a'; 'b'}))
+%!error <confusionmat: ORDER can't contain duplicated values.> ...
+%! confusionmat (true, true, 'Order', [true; true])
+%!error <confusionmat: ORDER can't contain duplicated values.> ...
+%! confusionmat (true, true, 'Order', [1; 0; 1])
+%!error <confusionmat: ORDER can't contain duplicated values.> ...
+%! confusionmat ([true; false], [true; true], 'Order', [0.5; 1])
