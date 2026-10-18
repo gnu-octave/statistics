@@ -38,7 +38,9 @@
 ## observations whose distance exceeds @code{sqrt (chi2inv (0.975, @var{P}))},
 ## and a structure @var{s} holding the estimate metadata.  @var{mah} and
 ## @var{outliers} have one row per row of @var{X}; for removed rows, @var{mah}
-## is @code{NaN} and @var{outliers} is @code{false}.
+## is @code{NaN} and @var{outliers} is @code{false}.  When @var{sig} is not
+## positive definite, every distance is 0, removed rows included, and no
+## observation is flagged.
 ##
 ## Additional parameters can be specified by @qcode{Name-Value} pair arguments.
 ##
@@ -66,8 +68,8 @@
 ## @qcode{'ogk'}.
 ##
 ## @item @qcode{'BiasCorrection'} @tab a logical scalar (default @code{true})
-## that applies the small-sample bias correction to the @qcode{'fmcd'} estimate.
-## Only valid for @qcode{'fmcd'}.
+## that applies the small-sample bias correction to the raw and the reweighted
+## @qcode{'fmcd'} estimate.  Only valid for @qcode{'fmcd'}.
 ##
 ## @item @qcode{'NumOGKIterations'} @tab the number of orthogonalization
 ## iterations for @qcode{'ogk'}, a positive integer (default 2).  Only valid
@@ -95,10 +97,20 @@
 ## start of @qcode{'olivehawkins'} draw random subsets, so their exact estimate
 ## depends on the random number generator and is not identical to
 ## MATLAB's on data where the optimal subset is ambiguous; on well-separated
-## data both converge to the same estimate.  For @qcode{'fmcd'} with
-## @qcode{'BiasCorrection'} enabled, the small-sample factor uses the published
-## Pison-Van Aelst-Willems asymptotic formula, which differs from MATLAB's
-## tabulated simulation values by up to about 1.6% for very small samples.
+## data both converge to the same estimate.
+##
+## @strong{Small-sample correction.} With @qcode{'BiasCorrection'} enabled,
+## @qcode{'fmcd'} scales the raw and the reweighted covariance by the
+## small-sample factors of Pison, Van Aelst and Willems (2002), interpolated
+## over @math{1 - @var{OutlierFraction}}, as the @code{covMcd} function of the
+## R package robustbase computes them.  Where those formulas give negative or
+## very large factors, at the default @qcode{'OutlierFraction'} for up to 9
+## variables and small samples, the simulated factors of robustbase are used
+## instead.  MATLAB applies the formulas there as well, so it can return a
+## covariance with negative variances (for example, with 3 variables and 6 to
+## 8 observations), and for 2 variables it uses other factors, so its estimate
+## differs from this one at every sample size.  When the subset is the whole
+## sample, the classical estimate is reweighted with no small-sample factor.
 ##
 ## @strong{Singular subsets.} If @qcode{'olivehawkins'} finds a singular
 ## subset, a warning is issued and the selected estimate is returned without
@@ -252,10 +264,23 @@ function [sig, mu, mah, outliers, s] = robustcov (X, varargin)
   cutoff = chi2inv (0.975, p);
 
   if (strcmp (method, "fmcd"))
-    ## Raw Fast-MCD subset and its robust distances.
     h = subsetsize (n, p, outlierfrac);
-    [Traw, Sraw] = fastmcd (X, h, numtrials);
-    Sraw = mcdcons (p, h / n) * mcdcnp2raw (p, n) * Sraw;
+    alpha = 1 - outlierfrac;
+    if (h == n)
+      ## The whole sample is the only subset: classical estimates, and no
+      ## small-sample factor at either step.
+      Traw = mean (X);
+      Sraw = cov (X);
+      correct = false;
+    else
+      ## Raw Fast-MCD subset and its robust distances.
+      [Traw, Sraw] = fastmcd (X, h, numtrials);
+      Sraw = mcdcons (p, h / n) * Sraw;
+      correct = biascorrection;
+      if (correct)
+        Sraw = mcdcnp2 (p, n, alpha, "raw") * Sraw;
+      endif
+    endif
     ## Reweighting: keep observations within the 0.975 cutoff.
     d2 = mahal2 (X, Traw, Sraw);
     keep = d2 <= cutoff;
@@ -263,8 +288,8 @@ function [sig, mu, mah, outliers, s] = robustcov (X, varargin)
     C  = cov (X(keep, :));
     hk = sum (keep);
     fac = mcdcons (p, hk / n);
-    if (biascorrection)
-      fac *= mcdcnp2rew (p, n);
+    if (correct)
+      fac *= mcdcnp2 (p, n, alpha, "rew");
     endif
     sig = fac * C;
   elseif (strcmp (method, "ogk"))
@@ -413,32 +438,91 @@ function c = mcdcons (p, alpha)
   endif
 endfunction
 
-## Raw MCD small-sample correction factor (Pison et al.), alpha = 0.5.
-function f = mcdcnp2raw (p, n)
-  if (p == 1)
-    fp = 1 - exp (0.262024211897096) / n ^ 0.604756680630497;
-  elseif (p == 2)
-    fp = 1 - exp (0.673292623522027) / n ^ 0.691365864961895;
+## Small-sample correction factor (Pison et al.) of the raw or the reweighted
+## MCD, as robustbase's covMcd computes it: the formulas at alpha 0.5 and
+## 0.875, interpolated linearly in alpha and to 1 at alpha 1.  At alpha 0.5,
+## where the formulas give negative or very large factors (p up to 9, n from
+## 2p to NMAX), the factors simulated for robustbase are used instead.  For
+## p = 1 that would be n = 2 alone, where h = n and no factor is applied.
+function f = mcdcnp2 (p, n, alpha, kind)
+  if (strcmp (kind, "raw"))
+    p1 = [0.262024211897096, 0.604756680630497; ...
+          -0.351584646688712, 1.01646567502486];
+    p2 = [0.673292623522027, 0.691365864961895; ...
+          0.446537815635445, 1.06690782995919];
+    c500 = [-1.42764571687802, 1.26263336932151, 2; ...
+            -1.06141115981725, 1.28907991440387, 3];
+    c875 = [-0.455179464070565, 1.11192541278794, 2; ...
+            -0.294241208320834, 1.09649329149811, 3];
   else
-    coeff = [-1.42764571687802, 1.26263336932151, 2; ...
-             -1.06141115981725, 1.28907991440387, 3];
-    fp = mcdcnp2_solve (coeff, p, n);
+    p1 = [1.11098143415027, 1.5182890270453; ...
+          -0.66046776772861, 0.88939595831888];
+    p2 = [3.11101712909049, 1.91401056721863; ...
+          0.79473550581058, 1.10081930350091];
+    c500 = [-1.02842572724793, 1.67659883081926, 2; ...
+            -0.26800273450853, 1.35968562893582, 3];
+    c875 = [-0.544482443573914, 1.25994483222292, 2; ...
+            -0.343791072183285, 1.25159004257133, 3];
+  endif
+  if (p == 1)
+    fp500 = 1 - exp (p1(1,1)) / n ^ p1(1,2);
+    fp875 = 1 - exp (p1(2,1)) / n ^ p1(2,2);
+  elseif (p == 2)
+    fp500 = 1 - exp (p2(1,1)) / n ^ p2(1,2);
+    fp875 = 1 - exp (p2(2,1)) / n ^ p2(2,2);
+  else
+    fp500 = mcdcnp2_solve (c500, p, n);
+    fp875 = mcdcnp2_solve (c875, p, n);
+  endif
+  if (alpha == 0.5)
+    fsim = mcdcnp2_sim (p, n, kind);
+    if (! isempty (fsim))
+      fp500 = 1 / fsim;
+    endif
+  endif
+  if (alpha <= 0.875)
+    fp = fp500 + (fp875 - fp500) / 0.375 * (alpha - 0.5);
+  else
+    fp = fp875 + (1 - fp875) / 0.125 * (alpha - 0.875);
   endif
   f = 1 / fp;
 endfunction
 
-## Reweighted MCD small-sample correction factor (Pison et al.), alpha = 0.5.
-function f = mcdcnp2rew (p, n)
-  if (p == 1)
-    fp = 1 - exp (1.11098143415027) / n ^ 1.5182890270453;
-  elseif (p == 2)
-    fp = 1 - exp (3.11101712909049) / n ^ 1.91401056721863;
-  else
-    coeff = [-1.02842572724793, 1.67659883081926, 2; ...
-             -0.26800273450853, 1.35968562893582, 3];
-    fp = mcdcnp2_solve (coeff, p, n);
+## Simulated small-sample factors at alpha 0.5, from the MCDcnp2s table of
+## robustbase (covMcd.R): one row per p from 2 to 9, n from 2p to NMAX.
+## Empty outside the table.
+function f = mcdcnp2_sim (p, n, kind)
+  nmax = [6, 10, 13, 16, 18, 20, 20, 20];
+  f = [];
+  if (p < 2 || p > 9 || n > nmax(p - 1))
+    return;
   endif
-  f = 1 / fp;
+  if (strcmp (kind, "raw"))
+    tab = {[3.15342, 1.799889, 2.258497], ...
+           [2.12777, 2.718898, 1.993509, 2.220433, 1.820585], ...
+           [2.950549, 2.145387, 2.382224, 1.927077, 2.032489, 1.8371], ...
+           [2.229573, 2.494447, 2.016117, 2.190061, 1.877996, 1.978964, ...
+            1.767284], ...
+           [2.580264, 2.109121, 2.240741, 1.944719, 2.043397, 1.821808, ...
+            1.89725], ...
+           [2.165233, 2.320281, 2.007836, 2.086471, 1.884052, 1.950563, ...
+            1.76926], ...
+           [2.340443, 2.048262, 2.161097, 1.926082, 1.995422], ...
+           [2.093386, 2.185793, 1.948989]};
+  else
+    tab = {[2.216302, 1.418526, 1.635601], ...
+           [1.73511, 2.06681, 1.545905, 1.659655, 1.456835], ...
+           [2.388892, 1.847626, 1.96998, 1.630723, 1.701272, 1.521008], ...
+           [1.968153, 2.168931, 1.784373, 1.894409, 1.667912, 1.693007, ...
+            1.545176], ...
+           [2.275891, 1.866587, 2.014249, 1.750567, 1.829363, 1.650019, ...
+            1.689043], ...
+           [1.95771, 2.074066, 1.847385, 1.905408, 1.71393, 1.768425, ...
+            1.63908], ...
+           [2.164121, 1.871024, 1.979485, 1.782417, 1.84489], ...
+           [1.938822, 2.050409, 1.834863]};
+  endif
+  f = tab{p - 1}(n - 2 * p + 1);
 endfunction
 
 ## Shared p > 2 interpolation for the Pison correction coefficients.  Each row
@@ -1338,6 +1422,45 @@ endfunction
 %! assert_equal (sig, sig', 1e-12);
 %! assert_equal (all (eig (sig) > 0, 'all'), true);
 %! assert_equal (ol(11:12), logical ([1;1]));
+
+## FMCD small-sample factors, as robustbase's covMcd computes them
+%!test
+%! ## BiasCorrection off drops the raw factor too: values from MATLAB R2024a
+%! X = [0.34 0.6; 0.32 0.96; -0.49 0.23; -0.84 -0.8; 2.77 -0.6; -0.21 -1.31; ...
+%!      -1.57 -2.15; -0.76 1.76; -0.57 0.68; -0.88 -0.18; -1.39 -0.6; ...
+%!      1.75 0.58; -0.54 0.15; -0.52 -0.7; -1.7 0.16; 1.26 -0.11];
+%! sig = robustcov (X, "BiasCorrection", false);
+%! assert_equal (sig, [0.803778168945674 0.56638131840886; ...
+%!                     0.56638131840886 1.51698276152923], 1e-12);
+%!test
+%! ## Simulated factors where the formula fails; MATLAB R2024a returns
+%! ## negative variances here
+%! X = [0.34 0.6 0.7156; 0.32 0.96 1.0624; -0.49 0.23 0.4701; ...
+%!      -0.84 -0.8 -0.0944; 2.77 -0.6 7.0729; -0.21 -1.31 -1.2659];
+%! [sig, mu] = robustcov (X);
+%! assert_equal (sig, [0.642130715611748 0.786276534802183 ...
+%!                     0.521007489038906; ...
+%!                     0.786276534802183 2.23824866274835 2.04183516457436; ...
+%!                     0.521007489038906 2.04183516457436 2.02201013312305], ...
+%!               1e-12);
+%! assert_equal (mu, [-0.176 -0.064 0.17756], 1e-12);
+%!test
+%! X = [0.34 0.6; 0.32 0.96; -0.49 0.23; -0.84 -0.8; 2.77 -0.6];
+%! [sig, mu] = robustcov (X);
+%! assert_equal (sig, [0.831907348545357 0.978157210290628; ...
+%!                     0.978157210290628 1.36832826422452], 1e-12);
+%! assert_equal (mu, [-0.1675 0.2475], 1e-12);
+%!test
+%! ## The whole sample as subset takes no small-sample factor, as in R2024a
+%! assert_equal (robustcov ([0.34; 0.32]), 0.0002, 1e-15);
+%!test
+%! ## The factor is interpolated over 1 - OUTLIERFRACTION
+%! i = (1:20)';
+%! X = [norminv(0.001 + 0.998 * mod (i * 0.6180339887, 1)), ...
+%!      norminv(0.001 + 0.998 * mod (i * 0.7548776662, 1))];
+%! s1 = robustcov (X, "OutlierFraction", 0.25);
+%! s0 = robustcov (X, "OutlierFraction", 0.25, "BiasCorrection", false);
+%! assert_equal (s1 ./ s0, 1.08548960970478 * ones (2), 1e-12);
 
 ## Rows with NaN values are removed with a warning and padded in the outputs
 %!warning <robustcov: rows with missing data were removed.> ...
