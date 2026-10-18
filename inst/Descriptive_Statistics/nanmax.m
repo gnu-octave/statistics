@@ -81,7 +81,7 @@ function [v, idx] = nanmax (x, y, dim)
     endif
   elseif (nargin == 3 && isempty (y))
     if (isscalar (dim))
-      if (! isnumeric (dim) || fix (dim) != dim || dim <= 0)
+      if (! isnumeric (dim) || ! isfinite (dim) || fix (dim) != dim || dim <= 0)
         error ("nanmax: DIM must be a positive integer.");
       endif
       nanvals = isnan (x);
@@ -93,7 +93,8 @@ function [v, idx] = nanmax (x, y, dim)
     else
       if (! (isnumeric (dim) && isvector (dim)))
         error ("nanmax: invalid DIM argument.");
-      elseif (any (fix (dim) != dim) || any (dim <= 0))
+      elseif (any (! isfinite (dim)) || any (fix (dim) != dim) ||
+              any (dim <= 0))
         error ("nanmax: VECDIM must be a vector of positive integers.");
       endif
       vecdim = sort (dim);
@@ -253,6 +254,9 @@ endfunction
 ## Test input validation
 %!error <nanmax: DIM must be a positive integer.> nanmax (ones (3), [], 0)
 %!error <nanmax: DIM must be a positive integer.> nanmax (ones (3), [], 1.5)
+%!error <nanmax: DIM must be a positive integer.> nanmax (ones (3), [], Inf)
+%!error <nanmax: VECDIM must be a vector of positive integers.> ...
+%! nanmax (ones (3), [], [1, Inf])
 %!error <nanmax: DIM must be a positive integer.> nanmax (ones (3), [], true)
 %!error <nanmax: VECDIM must be a vector of positive integers.> ...
 %! nanmax (ones (3, 3, 3), [], [2, 2.5])

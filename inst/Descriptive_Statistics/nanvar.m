@@ -99,11 +99,11 @@ function v = nanvar (x, w, dim)
   elseif (ischar (dim) && strcmpi (dim, 'all'))
     dimall = true;
   elseif (isscalar (dim))
-    if (! isnumeric (dim) || fix (dim) != dim || dim <= 0)
+    if (! isnumeric (dim) || ! isfinite (dim) || fix (dim) != dim || dim <= 0)
       error ("nanvar: DIM must be a positive integer.");
     endif
   elseif (isnumeric (dim) && isvector (dim))
-    if (any (fix (dim) != dim) || any (dim <= 0))
+    if (any (! isfinite (dim)) || any (fix (dim) != dim) || any (dim <= 0))
       error ("nanvar: VECDIM must be a vector of positive integers.");
     endif
     dim = sort (dim);
@@ -202,6 +202,9 @@ endfunction
 %!error <nanvar: weight vector W must contain nonnegative values.> ...
 %! nanvar (ones (1, 3), [1, -1, 2])
 %!error <nanvar: DIM must be a positive integer.> nanvar (ones (3), 0, 1.5)
+%!error <nanvar: DIM must be a positive integer.> nanvar (ones (3), 0, Inf)
+%!error <nanvar: VECDIM must be a vector of positive integers.> ...
+%! nanvar (ones (3), 0, [1, Inf])
 %!error <nanvar: DIM must be a positive integer.> nanvar (ones (3), 0, true)
 %!error <nanvar: VECDIM must contain non-repeating positive integers.> ...
 %! nanvar (ones (3, 3, 3), 0, [2, 2, 3])

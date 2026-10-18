@@ -35,7 +35,8 @@
 ## of @code{nanmean (@var{x}(:))}.
 ##
 ## @code{@var{s} = nanmean (@var{x}, @var{dim})} operates along the dimension
-## @var{dim} of @var{x}.
+## @var{dim} of @var{x}.  A logical @var{dim} or @var{vecdim} is an error,
+## although MATLAB accepts @code{true} as dimension 1.
 ##
 ## @code{@var{s} = nanmean (@var{x}, @var{vecdim})} returns the mean over the
 ## dimensions specified in the vector @var{vecdim}.  Each element of
@@ -81,11 +82,11 @@ function y = nanmean (x, dim)
       x = x(:);
       dim = 1;
     elseif (isscalar (dim))
-      if (! isnumeric (dim) || fix (dim) != dim || dim <= 0)
+      if (! isnumeric (dim) || ! isfinite (dim) || fix (dim) != dim || dim <= 0)
         error ("nanmean: DIM must be a positive integer.");
       endif
     elseif (isnumeric (dim) && isvector (dim))
-      if (any (fix (dim) != dim) || any (dim <= 0))
+      if (any (! isfinite (dim)) || any (fix (dim) != dim) || any (dim <= 0))
         error ("nanmean: VECDIM must be a vector of positive integers.");
       endif
       dim = sort (dim);
@@ -178,6 +179,9 @@ endfunction
 %!error <nanmean: X must be numeric or logical.> nanmean ("str")
 %!error <nanmean: DIM must be a positive integer.> nanmean (ones (3), 0)
 %!error <nanmean: DIM must be a positive integer.> nanmean (ones (3), 1.5)
+%!error <nanmean: DIM must be a positive integer.> nanmean (ones (3), Inf)
+%!error <nanmean: VECDIM must be a vector of positive integers.> ...
+%! nanmean (ones (3), [1, Inf])
 %!error <nanmean: DIM must be a positive integer.> nanmean (ones (3), true)
 %!error <nanmean: VECDIM must be a vector of positive integers.> nanmean (ones (3), [1, -1])
 %!error <nanmean: VECDIM must contain non-repeating positive integers.> ...
