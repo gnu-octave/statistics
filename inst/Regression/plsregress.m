@@ -323,8 +323,8 @@ function [P, Q, T, U, W] = simpls (X0, Y0, NCOMP, intercept)
   ## Models with 1:NCOMP components
   for a = 1:NCOMP
     [eigvec, eigval] = eig (S' * S);      # Y factor weights
-    ## Get max eigenvector
-    domindex = find (diag (eigval) == max (diag (eigval)));
+    ## Get max eigenvector, the first one when several tie
+    [~, domindex] = max (diag (eigval));
     q  = eigvec(:,domindex);
     w  = S * q;                           # X block factor weights
     t  = X0 * w;                          # X block factor scores
@@ -332,8 +332,8 @@ function [P, Q, T, U, W] = simpls (X0, Y0, NCOMP, intercept)
       t  = t - mean (t);
     endif
     nt = sqrt (t' * t);                   # compute norm
-    t  = t / nt;
-    w  = w / nt;                          # normalize
+    t  = t ./ nt;
+    w  = w ./ nt;                         # normalize
     p  = X0' * t;                         # X block factor loadings
     q  = Y0' * t;                         # Y block factor loadings
     u  = Y0 * q;                          # Y block factor scores
@@ -343,7 +343,7 @@ function [P, Q, T, U, W] = simpls (X0, Y0, NCOMP, intercept)
       v = v - V * (V' * p);
       u = u - T * (T' * u);
     endif
-    v = v / sqrt (v' * v);    # normalize orthogonal loadings
+    v = v ./ sqrt (v' * v);   # normalize orthogonal loadings
     S = S - v * (v' * S);     # deflate S wrt loadings
     V(:,a) = v;
     ## Store data
@@ -610,6 +610,25 @@ endfunction
 %! assert_equal (yload, yload_out, 1e-10);
 %! assert_equal (coef, coef_out, 1e-10);
 %! assert_equal (stats.Yresiduals, Yres_out, 1e-10);
+%!test
+%! Y = [1:6; (1:6) .^ 2]';
+%! [~, ~, ~, ~, b, pv, mse, st] = plsregress (ones (6, 2), Y, 1);
+%! assert_equal (b, NaN (3, 2));
+%! assert_equal (pv, [NaN; NaN]);
+%! assert_equal (mse, [0, NaN; 152.055555555556, NaN], 1e-12);
+%! assert_equal (st.T2, NaN (6, 1));
+%!test
+%! X = [ones(6, 1), (1:6)'];
+%! Y = [1:6; (1:6) .^ 2]';
+%! [xl, yl, ~, ~, b, pv, mse, st] = plsregress (X, Y, 2);
+%! assert_equal (abs (xl), [0, NaN; 4.18330013267038, NaN], 1e-12);
+%! assert_equal (abs (yl), [4.18330013267038, NaN; 29.2831009286927, NaN], ...
+%!               1e-12);
+%! assert_equal (b, NaN (3, 2));
+%! assert_equal (pv, [1, NaN; 0.959079283887468, NaN], 1e-12);
+%! assert_equal (mse, [2.91666666666667, 0, NaN; ...
+%!                     152.055555555556, 6.22222222222222, NaN], 1e-12);
+%! assert_equal (st.T2, NaN (6, 1));
 
 ## Test input validation
 %!error<plsregress: function called with too few input arguments.>
