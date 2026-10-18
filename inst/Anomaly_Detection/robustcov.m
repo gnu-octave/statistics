@@ -286,11 +286,8 @@ function [sig, mu, mah, outliers, s] = robustcov (X, varargin)
 
   ## Final robust Mahalanobis distances and outlier flags.
   md2 = mahal2 (X, mu, sig);
-  mah = sqrt (md2);
+  mah = double (sqrt (md2));
   outliers = md2 > cutoff;
-  if (strcmp (method, "olivehawkins"))
-    mah = double (mah);
-  endif
 
   ## Restore one row per row of the input for rows removed as missing.
   if (any (nanrows))
@@ -1304,11 +1301,22 @@ endfunction
 %! assert_equal (sig, ones (3));
 %! assert_equal (mu, [-0.23 0.405 -0.23], 1e-12);
 %!test
-%! [sig, mu, mah, ol] = robustcov (single (A), "Method", "olivehawkins");
+%! [sig, mu, ~, ol] = robustcov (single (A), "Method", "olivehawkins");
 %! assert_equal (class (sig), "single");
 %! assert_equal (class (mu), "single");
-%! assert_equal (class (mah), "double");
 %! assert_equal (class (ol), "logical");
+
+## mah is double for single input and keeps the values of the double run
+%!test
+%! X = [0.1 0.2; -0.3 0.5; 0.4 -0.1; 0.2 0.3; -0.2 -0.4; 0.5 0.1; -0.1 0.2; ...
+%!      0.3 -0.3; -0.4 0.1; 0.2 -0.2; 0.1 0.4; -0.3 -0.2; 5 5; -6 4];
+%! for m = {"fmcd", "ogk", "olivehawkins"}
+%!   [~, ~, mah0, ol0] = robustcov (X, "Method", m{1});
+%!   [~, ~, mah, ol] = robustcov (single (X), "Method", m{1});
+%!   assert_equal (class (mah), "double");
+%!   assert_equal (mah, mah0, 1e-3);
+%!   assert_equal (ol, ol0);
+%! endfor
 
 ## FMCD in 3-D returns a symmetric positive-definite estimate (p > 2 path)
 %!test
