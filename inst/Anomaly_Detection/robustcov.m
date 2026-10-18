@@ -98,6 +98,10 @@
 ## Pison-Van Aelst-Willems asymptotic formula, which differs from MATLAB's
 ## tabulated simulation values by up to about 1.6% for very small samples.
 ##
+## @strong{Singular subsets.} If @qcode{'olivehawkins'} finds a singular
+## subset, a warning is issued and the selected estimate is returned without
+## reweighting.  A singular estimate gives zero robust distances.
+##
 ## @seealso{mahal, cov, mad, dbscan}
 ## @end deftypefn
 
@@ -301,7 +305,7 @@ endfunction
 
 ## Squared Mahalanobis distances of the rows of X to (T, S).
 function d2 = mahal2 (X, T, S)
-  if (! any (S(:)))
+  if (! ispdmat (S))
     d2 = zeros (rows (X), 1);
     return;
   endif
@@ -529,12 +533,12 @@ function tf = isposint (x)
        && x >= 1 && x == fix (x);
 endfunction
 
-## True for a finite, symmetric positive definite matrix.
+## True for a finite, numerically positive definite matrix.
 function tf = ispdmat (S)
   tf = all (isfinite (S(:)));
   if (tf)
     [~, flag] = chol (S);
-    tf = (flag == 0);
+    tf = (flag == 0 && rank (S) == rows (S));
   endif
 endfunction
 
@@ -595,14 +599,14 @@ function [T, S] = oh_start (X, spec, h)
   endif
 endfunction
 
-## K concentration steps from (T, S); OK is true after one completed step.
-function [T, S, ok, sing, zc] = oh_conc (X, T, S, h, k)
+## K concentration steps from (T, S); a start with a finite singular scatter
+## is kept as it is.
+function [T, S, ok, sing] = oh_conc (X, T, S, h, k)
   ok = false;
   sing = false;
-  zc = false;
   if (! ispdmat (S))
     sing = true;
-    zc = all (S(:) == 0);
+    ok = all (isfinite ([T(:); S(:)]));
     return;
   endif
   for i = 1:k
@@ -612,7 +616,6 @@ function [T, S, ok, sing, zc] = oh_conc (X, T, S, h, k)
     Sn = cov (X(idx, :));
     if (! ispdmat (Sn))
       sing = true;
-      zc = all (Sn(:) == 0);
       return;
     endif
     T = Tn;
@@ -623,31 +626,18 @@ endfunction
 
 ## Olive-Hawkins estimate: attractors from each start, selection, reweighting.
 function [T, S] = olivehawkins (X, hs, k, starts, rewmethod)
-  p = columns (X);
   nst = numel (starts);
   Ts = cell (1, nst);
   Ss = cell (1, nst);
   ok = false (1, nst);
   sing = false;
-  zc = true;
   for i = 1:nst
     hi = hs(1 + ! (ischar (starts{i}) && strcmp (starts{i}, "classical")));
     [T0, S0] = oh_start (X, starts{i}, hi);
-    [Ts{i}, Ss{i}, ok(i), si, zi] = oh_conc (X, T0, S0, hi, k);
+    [Ts{i}, Ss{i}, ok(i), si] = oh_conc (X, T0, S0, hi, k);
     sing = sing || si;
-    if (! ok(i))
-      zc = zc && zi;
-    endif
   endfor
   if (! any (ok))
-    if (zc)
-      warning ("robustcov:singularSubset", ...
-               ["robustcov: a singular subset was found while running the ", ...
-                "Olive-Hawkins estimate."]);
-      T = mean (X);
-      S = zeros (p);
-      return;
-    endif
     error ("robustcov: unable to find a positive definite covariance estimate.");
   endif
   if (sing)
@@ -1196,10 +1186,24 @@ endfunction
 %!                     1.22201620084884; 12.9622207511509; 4.28863012812016], ...
 %!               1e-11);
 %! assert_equal (find (ol)', [5 6]);
+%!warning <singular subset> ...
+%! [sig, mu, mah, ol] = robustcov (A(1:4,:), "Method", "olivehawkins");
+%! assert_equal (sig, [0.34445 0.15355; 0.15355 0.06845], 1e-12);
+%! assert_equal (mu, [-0.075 0.415], 1e-12);
+%! assert_equal (mah, zeros (4, 1));
+%! assert_equal (ol, false (4, 1));
+%!warning <singular subset> ...
+%! [sig, mu, mah] = robustcov (B(1:6,:), "Method", "olivehawkins");
+%! assert_equal (sig, [0.34013333 0.44226667 -0.20316667; ...
+%!                     0.44226667 0.57843333 -0.21868333; ...
+%!                     -0.20316667 -0.21868333 0.73623333], 1e-7);
+%! assert_equal (mu, [-0.36666667 -0.46333333 -0.60666667], 1e-7);
+%! assert_equal (mah, zeros (6, 1));
 %!test
-%! warning ("off", "robustcov:singularSubset", "local");
-%! sig = robustcov (A(1:4,:), "Method", "olivehawkins");
-%! assert_equal (size (sig), [2 2]);
+%! [sig, mu] = robustcov (A(1:4,:), "Method", "olivehawkins", ...
+%!                        "StartMethod", "classical");
+%! assert_equal (sig, [0.21566688 0.14285887; 0.14285887 0.12814338], 1e-7);
+%! assert_equal (mu, [0.056666667 0.59666667], 1e-7);
 %!warning <singular subset> ...
 %! robustcov (ones (10,2), "Method", "olivehawkins");
 %!warning <singular subset> ...
