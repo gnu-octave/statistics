@@ -29,14 +29,16 @@
 ## the covariance matrix of the @math{N*P} data matrix @var{X}, computed so that
 ## it is not distorted by outlying observations.  Rows of @var{X} are
 ## observations and columns are variables.  Rows containing @code{NaN} values
-## are removed.
+## are removed with a warning.
 ##
 ## @code{[@var{sig}, @var{mu}, @var{mah}, @var{outliers}, @var{s}] = robustcov
 ## (@dots{})} also returns the robust mean @var{mu} (@math{1*P}), the robust
 ## Mahalanobis distances @var{mah} (@math{N*1}) of each observation from the
 ## estimated distribution, a logical vector @var{outliers} (@math{N*1}) flagging
 ## observations whose distance exceeds @code{sqrt (chi2inv (0.975, @var{P}))},
-## and a structure @var{s} holding the estimate metadata.
+## and a structure @var{s} holding the estimate metadata.  @var{mah} and
+## @var{outliers} have one row per row of @var{X}; for removed rows, @var{mah}
+## is @code{NaN} and @var{outliers} is @code{false}.
 ##
 ## Additional parameters can be specified by @qcode{Name-Value} pair arguments.
 ##
@@ -118,7 +120,11 @@ function [sig, mu, mah, outliers, s] = robustcov (X, varargin)
   if (! isnumeric (X) || ! isreal (X) || ndims (X) != 2 || isempty (X))
     error ("robustcov: X must be a nonempty real numeric matrix.");
   endif
-  X = X(! any (isnan (X), 2), :);
+  nanrows = any (isnan (X), 2);
+  if (any (nanrows))
+    warning ("robustcov: rows with missing data were removed.");
+  endif
+  X = X(! nanrows, :);
   [n, p] = size (X);
 
   ## Defaults
@@ -284,6 +290,19 @@ function [sig, mu, mah, outliers, s] = robustcov (X, varargin)
   outliers = md2 > cutoff;
   if (strcmp (method, "olivehawkins"))
     mah = double (mah);
+  endif
+
+  ## Restore one row per row of the input for rows removed as missing.
+  if (any (nanrows))
+    dall = zeros (numel (nanrows), 1);
+    oall = false (numel (nanrows), 1);
+    if (ispdmat (sig))
+      dall(nanrows) = NaN;
+      dall(! nanrows) = mah;
+      oall(! nanrows) = outliers;
+    endif
+    mah = dall;
+    outliers = oall;
   endif
 
   if (nargout > 4)
@@ -1302,11 +1321,60 @@ endfunction
 %! assert_equal (all (eig (sig) > 0, 'all'), true);
 %! assert_equal (ol(11:12), logical ([1;1]));
 
-## Rows with NaN values are dropped before estimation
-%!test
-%! X = [randn(30,2); NaN 1; 2 NaN];
-%! [sig, mu, mah] = robustcov (X);
-%! assert_equal (numel (mah), 30);
+## Rows with NaN values are removed with a warning and padded in the outputs
+%!warning <robustcov: rows with missing data were removed.> ...
+%! Xn = A;
+%! Xn(3,1) = NaN;
+%! keep = [1:2, 4:24];
+%! for m = {"ogk", "olivehawkins"}
+%!   [sig, mu, mah, ol, s] = robustcov (Xn, "Method", m{1});
+%!   [sig0, mu0, mah0, ol0] = robustcov (A(keep,:), "Method", m{1});
+%!   assert_equal (find (isnan (mah)), 3);
+%!   assert_equal (size (mah), [24 1]);
+%!   assert_equal (ol(3), false);
+%!   assert_equal (sig, sig0);
+%!   assert_equal (mu, mu0);
+%!   assert_equal (mah(keep), mah0);
+%!   assert_equal (ol(keep), ol0);
+%!   assert_equal (size (s.Distances), [24 1]);
+%!   assert_equal (size (s.Outliers), [24 1]);
+%! endfor
+%!warning <robustcov: rows with missing data were removed.> ...
+%! Xn = A;
+%! Xn(3,1) = NaN;
+%! [~, ~, mah, ol, s] = robustcov (Xn);
+%! assert_equal (find (isnan (mah)), 3);
+%! assert_equal (size (mah), [24 1]);
+%! assert_equal (ol(3), false);
+%! assert_equal (size (s.Outliers), [24 1]);
+%!warning <robustcov: rows with missing data were removed.> ...
+%! Xn = A(1:12,:);
+%! Xn(3,:) = NaN;
+%! Xn(7,2) = NaN;
+%! [sig, ~, mah, ol] = robustcov (Xn, "Method", "ogk");
+%! assert_equal (find (isnan (mah))', [3 7]);
+%! assert_equal (sum (ol), 2);
+%! assert_equal (robustcov (Xn, "Method", "ogk"), sig);
+%!error <robustcov: X must have at least twice as many rows as columns.> ...
+%! robustcov ([NaN(9,1), A(1:9,2); A(10:12,:)])
+%!warning <robustcov: rows with missing data were removed.> ...
+%! Xn = A(1:12,:);
+%! Xn(1:8,1) = NaN;
+%! [~, ~, mah, ol] = robustcov (Xn, "Method", "ogk");
+%! assert_equal (find (isnan (mah))', 1:8);
+%! assert_equal (mah(9:12), [1.41421; 1.41421; 1.41421; 20.939], 1e-4);
+%! assert_equal (find (ol)', 12);
+%!warning <robustcov: a singular subset was found while running the Olive-Hawkins estimate.> ...
+%! Xn = [A(1:12,:), A(1:12,1)];
+%! Xn(3,1) = NaN;
+%! [~, ~, mah, ol] = robustcov (Xn, "Method", "olivehawkins");
+%! assert_equal (mah, zeros (12, 1));
+%! assert_equal (ol, false (12, 1));
+%! Xn = A(1:12,:);
+%! Xn(1:8,1) = NaN;
+%! [~, ~, mah, ol] = robustcov (Xn, "Method", "olivehawkins");
+%! assert_equal (mah, zeros (12, 1));
+%! assert_equal (ol, false (12, 1));
 
 ## Test input validation
 %!error <robustcov: too few input arguments.> robustcov ()
