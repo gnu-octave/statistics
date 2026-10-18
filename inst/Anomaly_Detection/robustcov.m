@@ -100,7 +100,9 @@
 ##
 ## @strong{Singular subsets.} If @qcode{'olivehawkins'} finds a singular
 ## subset, a warning is issued and the selected estimate is returned without
-## reweighting.  A singular estimate gives zero robust distances.
+## reweighting.  A singular estimate gives zero robust distances.  When
+## several starts end in singular subsets, the @qcode{'medianball'} start is
+## selected if present, otherwise the first one listed in @qcode{'StartMethod'}.
 ##
 ## @seealso{mahal, cov, mad, dbscan}
 ## @end deftypefn
@@ -654,9 +656,18 @@ function [T, S] = olivehawkins (X, hs, k, starts, rewmethod)
       idx = idx(inball);
     endif
   endif
-  [~, j] = min (cellfun (@det, Ss(idx)));
-  T = Ts{idx(j)};
-  S = Ss{idx(j)};
+  dets = zeros (1, numel (idx));
+  for i = 1:numel (idx)
+    if (ispdmat (Ss{idx(i)}))
+      dets(i) = det (Ss{idx(i)});
+    endif
+  endfor
+  ismb = cellfun (@(t) ischar (t) && strcmp (t, "medianball"), starts(idx));
+  ord = [find(ismb), find(! ismb)];
+  [~, j] = min (dets(ord));
+  j = idx(ord(j));
+  T = Ts{j};
+  S = Ss{j};
   if (! sing)
     [T, S] = oh_reweight (X, T, S, rewmethod);
   endif
@@ -1223,6 +1234,56 @@ endfunction
 %! assert_equal (mu, [-0.507142857142857 0.425], 1e-12);
 %! assert_equal (mah(25), Inf);
 %! assert_equal (find (ol)', [5 7 12 16 19 20 21 22 23 25]);
+%!warning <robustcov: a singular subset was found while running the Olive-Hawkins estimate.> ...
+%! Xc = [A, A(:,1)];
+%! [sig, mu, mah, ol] = robustcov (Xc, "Method", "olivehawkins");
+%! assert_equal (sig, [0.19422652 0.049432576 0.19422652; ...
+%!                     0.049432576 0.92357197 0.049432576; ...
+%!                     0.19422652 0.049432576 0.19422652], 1e-7);
+%! assert_equal (mu, [-0.45416667 0.32916667 -0.45416667], 1e-7);
+%! assert_equal (mah, zeros (24, 1));
+%! assert_equal (ol, false (24, 1));
+%!warning <robustcov: a singular subset was found while running the Olive-Hawkins estimate.> ...
+%! [sig, mu] = robustcov ([A, 2 * A(:,1)], "Method", "olivehawkins");
+%! assert_equal (sig, [0.19422652 0.049432576 0.38845303; ...
+%!                     0.049432576 0.92357197 0.098865152; ...
+%!                     0.38845303 0.098865152 0.77690606], 1e-7);
+%! assert_equal (mu, [-0.45416667 0.32916667 -0.90833333], 1e-7);
+%!warning <robustcov: a singular subset was found while running the Olive-Hawkins estimate.> ...
+%! [sig, mu] = robustcov ([A, A(:,1) + A(:,2)], "Method", "olivehawkins");
+%! assert_equal (sig, [0.57159015 -0.25405606 0.31753409; ...
+%!                     -0.25405606 0.78003333 0.52597727; ...
+%!                     0.31753409 0.52597727 0.84351136], 1e-7);
+%! assert_equal (mu, [-0.17083333 0.39833333 0.2275], 1e-7);
+%!warning <robustcov: a singular subset was found while running the Olive-Hawkins estimate.> ...
+%! Xc = [A, A(:,1)];
+%! sig1 = robustcov (Xc, "Method", "olivehawkins", ...
+%!                   "StartMethod", {"classical", "medianball"});
+%! sig2 = robustcov (Xc, "Method", "olivehawkins", ...
+%!                   "StartMethod", {"medianball", "classical"});
+%! assert_equal (sig1, sig2);
+%! assert_equal (sig1(1,1), 0.19422652, 1e-7);
+%!warning <robustcov: a singular subset was found while running the Olive-Hawkins estimate.> ...
+%! Xc = [A, A(:,1)];
+%! hX = @(x) deal (median (x), ones (size (x, 2)));
+%! [sig, mu] = robustcov (Xc, "Method", "olivehawkins", ...
+%!                        "StartMethod", {hX, "medianball"});
+%! assert_equal (sig(1,1), 0.19422652, 1e-7);
+%! assert_equal (mu, [-0.45416667 0.32916667 -0.45416667], 1e-7);
+%!warning <robustcov: a singular subset was found while running the Olive-Hawkins estimate.> ...
+%! Xc = [A, A(:,1)];
+%! hX = @(x) deal (median (x), ones (size (x, 2)));
+%! [sig, mu] = robustcov (Xc, "Method", "olivehawkins", ...
+%!                        "StartMethod", {"classical", hX});
+%! assert_equal (sig(1,1), 2.0378775, 1e-7);
+%! assert_equal (mu, [0.29583333 0.56125 0.29583333], 1e-7);
+%!warning <robustcov: a singular subset was found while running the Olive-Hawkins estimate.> ...
+%! Xc = [A, A(:,1)];
+%! hX = @(x) deal (median (x), ones (size (x, 2)));
+%! [sig, mu] = robustcov (Xc, "Method", "olivehawkins", ...
+%!                        "StartMethod", {hX, "classical"});
+%! assert_equal (sig, ones (3));
+%! assert_equal (mu, [-0.23 0.405 -0.23], 1e-12);
 %!test
 %! [sig, mu, mah, ol] = robustcov (single (A), "Method", "olivehawkins");
 %! assert_equal (class (sig), "single");
