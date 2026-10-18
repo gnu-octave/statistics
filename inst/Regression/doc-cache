@@ -11904,7 +11904,7 @@ plsregress
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4281
+# length: 4603
 statistics: [xload, yload] = plsregress (X, Y)
 statistics: [xload, yload] = plsregress (X, Y, NCOMP)
 statistics: [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = plsregress (X, Y, NCOMP)
@@ -11912,10 +11912,10 @@ statistics: [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = plsregres
 Calculate partial least squares regression using SIMPLS algorithm.
 
 plsregress uses the SIMPLS algorithm, and first centers X and
-Y by subtracting off column means to get centered variables. However,
-it does not rescale the columns. To perform partial least squares regression
-with standardized variables, use zscore to normalize X and
-Y.
+Y by subtracting off column means to get centered variables, unless
+'Intercept' is false. However, it does not rescale the
+columns. To perform partial least squares regression with standardized
+variables, use zscore to normalize X and Y.
 
 [xload, yload] = plsregress (X, Y) computes a
 partial least squares regression of Y on X, using NCOMP
@@ -11954,7 +11954,9 @@ scores, i.e., the linear combinations of the responses with which the PLS
 components xscore have maximum covariance, with rows corresponding to
 observations and columns corresponding to components.
 coef is a (P+1)xM matrix with the PLS regression
-coefficients, containing the intercepts in the first row.
+coefficients, containing the intercepts in the first row. If
+'Intercept' is false, coef is a PxM matrix
+without the intercepts.
 pctVar is a 2xNCOMP matrix containing the percentage of
 the variance explained by the model with the first row containing the
 percentage of explained varianced in X by each PLS component and the
@@ -11991,6 +11993,10 @@ Value = 1. A different 'MCReps' value is only
 meaningful when using the 'HoldOut' method for cross-validation,
 previously set by a cvpartition object. If no cross-validation method
 is used, then 'MCReps' must be 1.
+'Intercept' A logical scalar, or 'on' or
+'off', specifying whether the model includes a constant term. When
+the constant term is excluded, X and Y are not centered and
+coef contains no intercepts. By default, Value = true.
 
 Further information about the PLS regression can be found at
 https://en.wikipedia.org/wiki/Partial_least_squares_regression

@@ -40,7 +40,7 @@ crosstab
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 911
+# length: 990
 statistics: t = crosstab (x1, x2)
 statistics: t = crosstab (x1, ..., xn)
 statistics: [t, chisq, p, labels] = crosstab (...)
@@ -49,7 +49,8 @@ Create a cross-tabulation (contingency table) t from data vectors.
 The inputs x1, x2, ... xn must be vectors of equal length
 with a data type of numeric, logical, char array, categorical, strings,
 datetime, duration, or cell array of character vectors. Missing values,
-such as NaN or NaT, are not counted.
+such as NaN or NaT, are not counted. A NaN
+duration is missing too, whereas MATLAB counts it as a group of its own.
 
 As additional return values crosstab returns the chi-square statistics
 chisq, its p-value p and a cell array labels, containing
@@ -390,7 +391,7 @@ grp2idx
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1990
+# length: 2059
 statistics: g = grp2idx (s)
 statistics: [g, gn] = grp2idx (s)
 statistics: [g, gn, gl] = grp2idx (s)
@@ -429,7 +430,8 @@ column vector gl representing the list of the group levels with the
 same data type as s.
 
 Note that standard missing values in s, such as NaN or NaT, appear as
-NaN in g and are not present on either gn and gl.
+NaN in g and are not present on either gn and gl. This
+includes a NaN duration, which MATLAB makes a group of its own.
 
 An empty s returns g, gn and gl as 0-by-1 arrays,
 whereas MATLAB returns a 0-by-0 gn for an empty categorical s.

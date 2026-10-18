@@ -49934,7 +49934,7 @@ shapley
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3053
+# length: 3339
 statistics: shapley
 Shapley values for a fitted model at one or more query points.
 
@@ -49993,7 +49993,11 @@ by default, which averages over the observations as they stand.
 'conditional' averages instead over the tenth of them lying
 nearest the query point in the predictors being held, which stands in
 for conditioning on those predictors. It asks more of the data and is
-the dearer of the two.
+the dearer of the two. Observations at the same distance are taken in
+their order in the data, and distances equal to within rounding count
+as tied, so the result does not depend on the platform. MATLAB lets
+rounding decide such ties, so on data on a coarse grid the values can
+differ slightly from MATLAB's.
 
 'UseParallel' is not implemented and is refused rather than
 ignored.

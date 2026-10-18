@@ -913,7 +913,7 @@ nanmax
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1717
+# length: 1799
 statistics: v = nanmax (x)
 statistics: v = nanmax (x, [], dim)
 statistics: [v, idx] = nanmax (...)
@@ -930,7 +930,8 @@ along the first nonsingleton dimension. If all values in a column are
 NaN, the maximum is returned as NaN rather than [].
 
 v = nanmax (x, [], dim) operates along the dimension
-dim of x.
+dim of x. A logical dim or vecdim is an error,
+although MATLAB accepts true as dimension 1.
 
 [v, idx] = nanmax (...) also returns the row indices
 of the maximum values for each column in the vector idx. When x
@@ -977,7 +978,7 @@ nanmean
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1710
+# length: 1792
 statistics: s = nanmean (x)
 statistics: s = nanmean (x, 'all')
 statistics: s = nanmean (x, dim)
@@ -996,7 +997,8 @@ elements of x, after removing NaN values. It is the equivalent
 of nanmean (x(:)).
 
 s = nanmean (x, dim) operates along the dimension
-dim of x.
+dim of x. A logical dim or vecdim is an error,
+although MATLAB accepts true as dimension 1.
 
 s = nanmean (x, vecdim) returns the mean over the
 dimensions specified in the vector vecdim. Each element of
@@ -1043,7 +1045,7 @@ nanmedian
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1142
+# length: 1193
 statistics: m = nanmedian (x)
 statistics: m = nanmedian (x, 'all')
 statistics: m = nanmedian (x, dim)
@@ -1062,7 +1064,8 @@ elements of x, after removing NaN values. It is the equivalent
 of nanmedian (x(:)).
 
 m = nanmedian (x, dim) operates along the dimension
-dim of x.
+dim of x. A logical dim or vecdim is an error, as in
+MATLAB.
 
 m = nanmedian (x, vecdim) returns the median over
 the dimensions specified in the vector vecdim. Each element of
@@ -1096,7 +1099,7 @@ nanmin
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1717
+# length: 1799
 statistics: v = nanmin (x)
 statistics: v = nanmin (x, [], dim)
 statistics: [v, idx] = nanmin (...)
@@ -1113,7 +1116,8 @@ along the first nonsingleton dimension. If all values in a column are
 NaN, the minimum is returned as NaN rather than [].
 
 v = nanmin (x, [], dim) operates along the dimension
-dim of x.
+dim of x. A logical dim or vecdim is an error,
+although MATLAB accepts true as dimension 1.
 
 [v, idx] = nanmin (...) also returns the row indices
 of the minimum values for each column in the vector idx. When x
@@ -1160,7 +1164,7 @@ nanstd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1556
+# length: 1638
 statistics: s = nanstd (x)
 statistics: s = nanstd (x, w)
 statistics: s = nanstd (x, w, 'all')
@@ -1190,7 +1194,8 @@ values. Use an empty value, w = [], to pass the default
 normalization.
 
 s = nanstd (x, w, dim) operates along the
-dimension dim of x.
+dimension dim of x. A logical dim or vecdim is an
+error, although MATLAB accepts true as dimension 1.
 
 s = nanstd (x, w, vecdim) returns the standard
 deviation over the dimensions specified in the vector vecdim. A weight
@@ -1222,7 +1227,7 @@ nansum
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1350
+# length: 1432
 statistics: s = nansum (x)
 statistics: s = nansum (x, 'all')
 statistics: s = nansum (x, dim)
@@ -1241,7 +1246,8 @@ elements of x, after removing NaN values. It is the equivalent
 of nansum (x(:)).
 
 s = nansum (x, dim) operates along the dimension
-dim of x.
+dim of x. A logical dim or vecdim is an error,
+although MATLAB accepts true as dimension 1.
 
 s = nansum (x, vecdim) returns the sum over the
 dimensions specified in the vector vecdim. Each element of
@@ -1279,7 +1285,7 @@ nanvar
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1476
+# length: 1558
 statistics: v = nanvar (x)
 statistics: v = nanvar (x, w)
 statistics: v = nanvar (x, w, 'all')
@@ -1307,7 +1313,8 @@ variance of all elements of x, after removing NaN values. Use
 an empty value, w = [], to pass the default normalization.
 
 v = nanvar (x, w, dim) operates along the
-dimension dim of x.
+dimension dim of x. A logical dim or vecdim is an
+error, although MATLAB accepts true as dimension 1.
 
 v = nanvar (x, w, vecdim) returns the variance
 over the dimensions specified in the vector vecdim. A weight vector is
@@ -1486,7 +1493,7 @@ tabulate
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2025
+# length: 2135
 statistics: tabulate (x)
 statistics: tbl = tabulate (x)
 Create a frequency table of unique values in vector x.
@@ -1508,7 +1515,8 @@ If x is numeric, any missing values (NaNs) are ignored.
 Similarly, undefined elements in categorical arrays, missing elements in
 string arrays, NaT elements in datetime arrays, and NaN
 elements in duration arrays are ignored. The values of a datetime or
-duration vector are listed in sorted order.
+duration vector are listed in sorted order. MATLAB tabulates each
+NaN duration instead, as a value of its own counted once.
 
 If all the elements of x are positive integers, then the frequency
 table includes 0 counts for the integers between 1 and max (x)
@@ -1522,13 +1530,13 @@ count / total * 100 taken literally, so a category with no
 observations out of none at all is NaN rather than zero: there is no
 total to take a proportion of. A categorical carries its categories
 independently of its data, so an all-undefined one still tabulates every
-category with a zero count; a string array has no levels beyond those its
-data carries, so an all-missing one tabulates to an empty table. MATLAB
-agrees on the categorical case but returns a malformed 1-by-2
-cell for the all-missing string, lacking the label column its own
-documentation describes, while returning a well-formed
-0-by-3 for an empty string array. This implementation returns
-the empty table in both.
+category with a zero count; a string, datetime or duration array has no
+levels beyond those its data carries, so an all-missing one tabulates to an
+empty table. MATLAB agrees on the categorical case but returns a malformed
+1-by-2 cell for an all-missing string or datetime array,
+lacking the label column its own documentation describes, while returning a
+well-formed 0-by-3 for an empty one. This implementation
+returns the empty table in both.
 
 See also:
 bar,

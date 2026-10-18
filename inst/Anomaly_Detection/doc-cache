@@ -955,7 +955,7 @@ robustcov
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2306
+# length: 4456
 statistics: sig = robustcov (X)
 statistics: [sig, mu] = robustcov (X)
 statistics: [sig, mu, mah] = robustcov (X)
@@ -968,42 +968,83 @@ sig = robustcov (X) returns a robust estimate sig of
 the covariance matrix of the NxP data matrix X, computed so that
 it is not distorted by outlying observations. Rows of X are
 observations and columns are variables. Rows containing NaN values
-are removed.
+are removed with a warning.
 
 [sig, mu, mah, outliers, s] = robustcov
 (...) also returns the robust mean mu (1xP), the robust
 Mahalanobis distances mah (Nx1) of each observation from the
 estimated distribution, a logical vector outliers (Nx1) flagging
 observations whose distance exceeds sqrt (chi2inv (0.975, P)),
-and a structure s holding the estimate metadata.
+and a structure s holding the estimate metadata. mah and
+outliers have one row per row of X; for removed rows, mah
+is NaN and outliers is false. When sig is not
+positive definite, every distance is 0, removed rows included, and no
+observation is flagged.
 
 Additional parameters can be specified by Name-Value pair arguments.
 
 Name Value
-'Method' the estimator, either 'fmcd' (default,
-the Fast Minimum Covariance Determinant algorithm) or 'ogk' (the
-Orthogonalized Gnanadesikan-Kettenring estimator). 'olivehawkins' is
-not implemented.
+'Method' the estimator, one of 'fmcd' (default,
+the Fast Minimum Covariance Determinant algorithm), 'ogk' (the
+Orthogonalized Gnanadesikan-Kettenring estimator) or
+'olivehawkins' (the Olive-Hawkins concentration algorithm). If any
+of 'ReweightingMethod', 'StartMethod' or
+'NumConcentrationSteps' is given and 'Method' is not, the
+method is 'olivehawkins'.
 'OutlierFraction' the maximum fraction of outliers, a
 scalar in [0, 0.5] (default 0.5), used to set the size of the
-elemental subsets in 'fmcd'.
-'NumTrials' the number of random elemental subsets drawn
-by 'fmcd', a positive integer (default 500).
+subsets in 'fmcd' and 'olivehawkins'. It is not valid for
+'ogk'.
+'NumTrials' a positive integer. For 'fmcd' it is
+the number of random elemental subsets drawn (default 500). For
+'olivehawkins' it is the number of starts and must equal the number
+of starts in 'StartMethod' (default 2); with 'elemental'
+alone it is the number of random starts. It is not valid for
+'ogk'.
 'BiasCorrection' a logical scalar (default true)
-that applies the small-sample bias correction to the 'fmcd' estimate.
+that applies the small-sample bias correction to the raw and the reweighted
+'fmcd' estimate. Only valid for 'fmcd'.
 'NumOGKIterations' the number of orthogonalization
-iterations for 'ogk', a positive integer (default 2).
+iterations for 'ogk', a positive integer (default 2). Only valid
+for 'ogk'.
 'UnivariateEstimator' the robust univariate
 location/scale estimator used by 'ogk', either 'tauscale'
-(default) or 'qn'.
+(default) or 'qn'. Only valid for 'ogk'.
+'ReweightingMethod' the reweighting used by
+'olivehawkins', either 'rfch' (default) or 'rmvn'.
+'NumConcentrationSteps' the number of concentration
+steps taken from each start by 'olivehawkins', a positive integer
+(default 10).
+'StartMethod' the starts of 'olivehawkins': one of
+'classical', 'medianball' or 'elemental', a function
+handle [T, C] = f (X) returning a 1xP location and a
+PxP scatter, or a cell array of these. The default is
+{'classical', 'medianball'}.
 
-Note on reproducibility. 'fmcd' draws random subsets, so its
-exact estimate depends on the random number generator and is not identical to
+Note on reproducibility. 'fmcd' and the 'elemental'
+start of 'olivehawkins' draw random subsets, so their exact estimate
+depends on the random number generator and is not identical to
 MATLAB's on data where the optimal subset is ambiguous; on well-separated
-data both converge to the same estimate. For 'fmcd' with
-'BiasCorrection' enabled, the small-sample factor uses the published
-Pison-Van Aelst-Willems asymptotic formula, which differs from MATLAB's
-tabulated simulation values by up to about 1.6% for very small samples.
+data both converge to the same estimate.
+
+Small-sample correction. With 'BiasCorrection' enabled,
+'fmcd' scales the raw and the reweighted covariance by the
+small-sample factors of Pison, Van Aelst and Willems (2002), interpolated
+over 1 - OutlierFraction, as the covMcd function of the
+R package robustbase computes them. Where those formulas give negative or
+very large factors, at the default 'OutlierFraction' for up to 9
+variables and small samples, the simulated factors of robustbase are used
+instead. MATLAB applies the formulas there as well, so it can return a
+covariance with negative variances (for example, with 3 variables and 6 to
+8 observations), and for 2 variables it uses other factors, so its estimate
+differs from this one at every sample size. When the subset is the whole
+sample, the classical estimate is reweighted with no small-sample factor.
+
+Singular subsets. If 'olivehawkins' finds a singular
+subset, a warning is issued and the selected estimate is returned without
+reweighting. A singular estimate gives zero robust distances. When
+several starts end in singular subsets, the 'medianball' start is
+selected if present, otherwise the first one listed in 'StartMethod'.
 
 See also:
 mahal,

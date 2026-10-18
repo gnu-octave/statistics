@@ -99,7 +99,7 @@ hmmestimate
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3657
+# length: 3659
 statistics: [transprobest, outprobest] = hmmestimate (sequence, states)
 statistics: [...] = hmmestimate (..., "statenames", statenames)
 statistics: [...] = hmmestimate (..., "symbols", symbols)
@@ -152,7 +152,7 @@ Use this if you have transitions that are very unlikely to occur.
 If 'pseudoemissions' is specified then the integer matrix
 pseudoemissions is used as an initial number of counted outputs.
 pseudoemissions(i, j) is the initial number of counted outputs
-j given state i. If 'pseudoemissions' is also
+j given state i. If 'pseudotransitions' is also
 specified then the number of rows of pseudoemissions must be the
 same as the number of rows of pseudotransitions. outprobest
 will have the same size as pseudoemissions. Use this if you have
@@ -171,8 +171,8 @@ statenames = {"One", "Two"};
 "symbols", symbols, ...
 "statenames", statenames);
 [transprobest, outprobest] = hmmestimate (sequence, states, ...
-"symbols', symbols, ...
-"statenames', statenames)
+"symbols", symbols, ...
+"statenames", statenames)
 
 pseudotransitions = [8, 2; 4, 6];
 pseudoemissions = [2, 4, 4; 7, 2, 1];

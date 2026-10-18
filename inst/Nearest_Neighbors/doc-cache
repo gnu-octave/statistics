@@ -1763,7 +1763,7 @@ squareform
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1164
+# length: 1431
 statistics: zOut = squareform (yIn)
 statistics: yOut = squareform (zIn)
 statistics: zOut = squareform (yIn, 'tovector')
@@ -1780,7 +1780,10 @@ if input is a matrix.
 If x is a numeric or logical vector, its number of elements must fit
 into the triangular part of a matrix (main diagonal excluded). In other
 words, numel (x) = n * (n - 1) / 2 for some integer
-n. The resulting matrix will be n by n.
+n. The resulting matrix will be n by n. An empty vector
+is the distance vector of a single observation, so it returns the 1-by-1
+distance matrix 0 and squareform (pdist (x)) holds for a
+single row x. MATLAB returns an empty matrix instead.
 
 If x is a numeric or logical distance matrix, it must be square and the
 diagonal entries of x must all be zeros. If x is not symmetric,
@@ -1789,7 +1792,8 @@ only the lower triangular part is used.
 The second argument is used to specify the output type in case the distance
 input is a scalar. Accepted values are 'tomatrix' (or 'tom')
 and 'tovector' (or 'tov'). If not specified, it defaults to
-'tomatrix' otherwise.
+'tomatrix' otherwise. When 'tomatrix' is specified, the
+distance input must be a vector.
 
 See also:
 pdist

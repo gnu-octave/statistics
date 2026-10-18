@@ -746,7 +746,7 @@ confusionmat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1237
+# length: 1465
 statistics: C = confusionmat (group, grouphat)
 statistics: C = confusionmat (group, grouphat, "Order", grouporder)
 statistics: [C, order] = confusionmat (group, grouphat)
@@ -769,7 +769,11 @@ string arrays, cell arrays of strings, and categorical arrays.
 
 The order of the rows and columns can be specified by setting the
 grouporder variable. The data type of grouporder must be the
-same of group and grouphat.
+same of group and grouphat, except that a numeric
+grouporder for logical inputs is converted to logical. For logical
+inputs, the default order is false followed by true, and
+grouporder must contain both values. grouporder cannot contain
+duplicated values.
 
 See also:
 crosstab

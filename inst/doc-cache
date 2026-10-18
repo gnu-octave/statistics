@@ -134,7 +134,7 @@ makima
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1709
+# length: 1776
 statistics: yi = makima (x, y, xq)
 statistics: yi = makima (y, xq)
 statistics: yi = makima (..., 'extrap')
@@ -155,7 +155,8 @@ y accordingly.
 The sample values y can be a scalar, vector, or an N-dimensional
 array. If y is an N-dimensional array, the interpolation is
 performed along its last dimension, which must have the same length as
-x. Complex values for y are supported. Sample points where
+x. Complex values for y are supported, and their real and
+imaginary parts are interpolated independently. Sample points where
 x or y is NaN are dropped in pairs before the fit,
 and a warning is issued.
 
