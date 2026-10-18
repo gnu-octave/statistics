@@ -78,7 +78,7 @@
 ## If @code{'pseudoemissions'} is specified then the integer matrix
 ## @var{pseudoemissions} is used as an initial number of counted outputs.
 ## @code{pseudoemissions(i, j)} is the initial number of counted outputs
-## @code{j} given state @code{i}. If @code{'pseudoemissions'} is also
+## @code{j} given state @code{i}. If @code{'pseudotransitions'} is also
 ## specified then the number of rows of @var{pseudoemissions} must be the
 ## same as the number of rows of @var{pseudotransitions}. @var{outprobest}
 ## will have the same size as @var{pseudoemissions}. Use this if you have
@@ -101,8 +101,8 @@
 ##                                   "symbols", symbols, ...
 ##                                   "statenames", statenames);
 ## [transprobest, outprobest] = hmmestimate (sequence, states, ...
-##                                   "symbols', symbols, ...
-##                                   "statenames', statenames)
+##                                   "symbols", symbols, ...
+##                                   "statenames", statenames)
 ## @end group
 ##
 ## @group
