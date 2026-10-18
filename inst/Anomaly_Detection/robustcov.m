@@ -663,9 +663,8 @@ function [T, S] = olivehawkins (X, hs, k, starts, rewmethod)
     error ("robustcov: unable to find a positive definite covariance estimate.");
   endif
   if (sing)
-    warning ("robustcov:singularSubset", ...
-             ["robustcov: a singular subset was found while running the ", ...
-              "Olive-Hawkins estimate."]);
+    warning (strcat ("robustcov: a singular subset was found while", ...
+                     " running the Olive-Hawkins estimate."));
   endif
   idx = find (ok);
   if (any (cellfun (@(t) ischar (t) && strcmp (t, "medianball"), starts)))
@@ -1217,13 +1216,13 @@ endfunction
 %!                     1.22201620084884; 12.9622207511509; 4.28863012812016], ...
 %!               1e-11);
 %! assert_equal (find (ol)', [5 6]);
-%!warning <singular subset> ...
+%!warning <robustcov: a singular subset was found while running the Olive-Hawkins estimate.> ...
 %! [sig, mu, mah, ol] = robustcov (A(1:4,:), "Method", "olivehawkins");
 %! assert_equal (sig, [0.34445 0.15355; 0.15355 0.06845], 1e-12);
 %! assert_equal (mu, [-0.075 0.415], 1e-12);
 %! assert_equal (mah, zeros (4, 1));
 %! assert_equal (ol, false (4, 1));
-%!warning <singular subset> ...
+%!warning <robustcov: a singular subset was found while running the Olive-Hawkins estimate.> ...
 %! [sig, mu, mah] = robustcov (B(1:6,:), "Method", "olivehawkins");
 %! assert_equal (sig, [0.34013333 0.44226667 -0.20316667; ...
 %!                     0.44226667 0.57843333 -0.21868333; ...
@@ -1235,19 +1234,13 @@ endfunction
 %!                        "StartMethod", "classical");
 %! assert_equal (sig, [0.21566688 0.14285887; 0.14285887 0.12814338], 1e-7);
 %! assert_equal (mu, [0.056666667 0.59666667], 1e-7);
-%!warning <singular subset> ...
-%! robustcov (ones (10,2), "Method", "olivehawkins");
-%!warning <singular subset> ...
-%! robustcov ([A; Inf 1], "Method", "olivehawkins");
-%!test
-%! warning ("off", "robustcov:singularSubset", "local");
+%!warning <robustcov: a singular subset was found while running the Olive-Hawkins estimate.> ...
 %! [sig, mu, mah, ol] = robustcov (ones (10,2), "Method", "olivehawkins");
 %! assert_equal (sig, zeros (2));
 %! assert_equal (mu, [1 1]);
 %! assert_equal (mah, zeros (10, 1));
 %! assert_equal (ol, false (10, 1));
-%!test
-%! warning ("off", "robustcov:singularSubset", "local");
+%!warning <robustcov: a singular subset was found while running the Olive-Hawkins estimate.> ...
 %! [sig, mu, mah, ol] = robustcov ([A; Inf 1], "Method", "olivehawkins");
 %! assert_equal (sig, [0.561683516483517 0.264930769230769; ...
 %!                     0.264930769230769 0.682857692307692], 1e-12);
