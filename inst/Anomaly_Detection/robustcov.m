@@ -240,8 +240,8 @@ function [sig, mu, mah, outliers, s] = robustcov (X, varargin)
       if (isempty (numtrials))
         numtrials = numel (starts);
       elseif (numtrials != numel (starts))
-        error (["robustcov: NUMTRIALS must equal the number of starts ", ...
-                "specified in STARTMETHOD."]);
+        error (strcat ("robustcov: NUMTRIALS must equal the number of", ...
+                       " starts specified in STARTMETHOD."));
       endif
     endif
   elseif (isempty (numtrials))
@@ -567,8 +567,8 @@ endfunction
 ## Normalize STARTMETHOD into a cell array of start names and function handles.
 function starts = oh_start_list (startmethod)
   names = {"classical", "medianball", "elemental"};
-  msg = ["robustcov: STARTMETHOD must be a name, a function handle, or a ", ...
-         "cell array of them."];
+  msg = strcat ("robustcov: STARTMETHOD must be a name, a function", ...
+                " handle, or a cell array of them.");
   if (isnumeric (startmethod) && isempty (startmethod))
     starts = {"classical", "medianball"};
   elseif (ischar (startmethod) || is_function_handle (startmethod))
@@ -596,8 +596,8 @@ function [T, S] = oh_start (X, spec, h)
   if (is_function_handle (spec))
     [T, S] = spec (X);
     if (! isequal (size (T), [1, p]) || ! isequal (size (S), [p, p]))
-      error (["robustcov: STARTMETHOD function must return a 1xP location ", ...
-              "and a PxP scatter."]);
+      error (strcat ("robustcov: STARTMETHOD function must return a", ...
+                     " 1xP location and a PxP scatter."));
     endif
   elseif (strcmp (spec, "classical"))
     T = mean (X);
