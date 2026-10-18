@@ -92,7 +92,13 @@ function [r, tieadj] = tiedrank (x, tieflag, bidir, tol)
     sz = size (x);
     xm = reshape (x, sz(1), prod (sz(2:end)));
     tm = reshape (tol, sz(1), prod (sz(2:end)));
-    rm = zeros (size (xm), class (x));
+    ## Tied ranks are fractional, so only single precision is preserved; any
+    ## other class (integer, logical, char) gives double, as for a vector
+    if (isa (x, 'single'))
+      rm = zeros (size (xm), 'single');
+    else
+      rm = zeros (size (xm));
+    endif
     tieadj = [];
     for j = 1:columns (xm)
       [rj, tj] = rank_vector (xm(:,j), tieflag, bidir, tm(:,j));
@@ -257,6 +263,42 @@ endfunction
 %! [r, tieadj] = tiedrank (y);
 %! assert_equal (r(:,:,1), [1, 1; 2, 2]);
 %! assert_equal (r(:,:,2), [1, 1; 2, 2]);
+%! assert_equal (size (tieadj), [1, 2, 2]);
+
+%!test
+%! ## Tied ranks are fractional, so an integer matrix gives double ranks, as
+%! ## the same data does as a vector, instead of ranks truncated to integers
+%! x = int8 ([1, 1; 1, 2; 2, 2]);
+%! r = tiedrank (x);
+%! assert (class (r), "double");
+%! assert_equal (r, [1.5, 1; 1.5, 2.5; 3, 2.5]);
+%! assert_equal (r(:,1), tiedrank (x(:,1)));
+%! assert_equal (r(:,2), tiedrank (x(:,2)));
+
+%!test
+%! ## A logical matrix is ranked, not collapsed to a logical array of ones
+%! x = logical ([1, 0; 0, 0; 1, 1]);
+%! r = tiedrank (x);
+%! assert (class (r), "double");
+%! assert_equal (r, [2.5, 1.5; 1, 1.5; 2.5, 3]);
+%! assert_equal (r(:,1), tiedrank (x(:,1)));
+
+%!test
+%! ## Single precision is preserved, other classes give double
+%! x = [1, 1; 1, 2; 2, 2];
+%! assert (class (tiedrank (single (x))), "single");
+%! assert (class (tiedrank (uint8 (x))), "double");
+%! assert (class (tiedrank (uint8 (x(:,1)))), "double");
+%! assert_equal (tiedrank (uint8 (x)), tiedrank (x));
+%! assert_equal (tiedrank (single (x)), single (tiedrank (x)));
+
+%!test
+%! ## An integer N-D array is ranked along its first dimension as double
+%! y = uint8 (cat (3, [1, 1; 2, 2], [3, 3; 3, 4]));
+%! [r, tieadj] = tiedrank (y);
+%! assert (class (r), "double");
+%! assert_equal (r(:,:,1), [1, 1; 2, 2]);
+%! assert_equal (r(:,:,2), [1.5, 1; 1.5, 2]);
 %! assert_equal (size (tieadj), [1, 2, 2]);
 
 %!error <tiedrank: TIEFLAG must be a numeric or boolean scalar.> ...
