@@ -1111,13 +1111,17 @@
 </p>
 <p> The order of the rows and columns can be specified by setting the
  <var>grouporder</var> variable. The data type of <var>grouporder</var> must be the
- same of <var>group</var> and <var>grouphat</var>.
+ same of <var>group</var> and <var>grouphat</var>, except that a numeric
+ <var>grouporder</var> for logical inputs is converted to logical.  For logical
+ inputs, the default order is <code>false</code> followed by <code>true</code>, and
+ <var>grouporder</var> must contain both values.  <var>grouporder</var> cannot contain
+ duplicated values.
 </p>
 <p> <strong>See also: </strong>
   <a href="crosstab.html">crosstab</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Model_Evaluation/confusionmat.m">confusionmat</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Model_Evaluation/confusionmat.m">confusionmat</a>
 </p>
 </div>
 

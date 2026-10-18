@@ -1138,7 +1138,7 @@
   <a href="tlsstat.html">tlsstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Distribution_Classes/+prob/tLocationScaleDistribution.m">prob.tLocationScaleDistribution</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Distribution_Classes/+prob/tLocationScaleDistribution.m">prob.tLocationScaleDistribution</a>
 </p>
 </div>
         <p class="lead my-3">The <code>prob.tLocationScaleDistribution</code> class contains the following properties:</p>
@@ -3066,8 +3066,18 @@ Truncate a probability distribution.
  data_all = tlsrnd (0, 1, 5, 20000, 1);
  data = data_all(data_all &gt;= -1 &amp; data_all &lt;= 1);
  data = data(1:10000);
- pd = fitdist (data, "tLocationScale");
- t = truncate (pd, -1, 1);
+ pd = fitdist (data, "tLocationScale");</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: tlsfit: maximum number of function evaluations are exceeded.
+warning: called from
+    tlsfit at line 140 column 7
+    fit at line 811 column 8
+    fitdist at line 735 column 9
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    classdef_texi2html at line 403 column 9
+    package_texi2html at line 344 column 11</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> t = truncate (pd, -1, 1);
  [counts, centers] = hist (data, 50);
  bin_width = centers(2) - centers(1);
  bar (centers, counts / (sum (counts) * bin_width), 1);

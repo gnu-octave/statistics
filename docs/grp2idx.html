@@ -1102,21 +1102,22 @@
 <li> categorical vector
 </li><li> cell array of character vectors
 </li><li> character array
+</li><li> datetime vector
 </li><li> duration vector
 </li><li> logical vector
 </li><li> numeric vector
 </li></ul>
 
 <p> <var>s</var> must be a vector, unless it is a 2-D character array.  In the case of
- numerical and logical data types, the group indices are ordered in sorted
- order of <var>s</var>.  In the case of categorical arrays, the group indices are
- allocated by the order of the categories in <var>s</var>.  For the rest of the
- data types, the group indices are allocated by order of first appearance in
- <var>s</var>.  Note that in case of a categorical grouping variable, the indexing
- integer values might not be continuous, since <var>s</var> may contain unassigned
- categories.  For every other data type, <var>g</var> will contain integer values
- in the range <em class="math">[1:K]</em>, where <em class="math">K</em> is the number of distinct groups
- in <var>s</var>.
+ numerical, logical, datetime, and duration data types, the group indices are
+ ordered in sorted order of <var>s</var>.  In the case of categorical arrays, the
+ group indices are allocated by the order of the categories in <var>s</var>.  For
+ the rest of the data types, the group indices are allocated by order of first
+ appearance in <var>s</var>.  Note that in case of a categorical grouping variable,
+ the indexing integer values might not be continuous, since <var>s</var> may
+ contain unassigned categories.  For every other data type, <var>g</var> will
+ contain integer values in the range <em class="math">[1:K]</em>, where <em class="math">K</em> is the
+ number of distinct groups in <var>s</var>.
 </p>
 <p> <code>[<var>g</var>, <var>gn</var>] = grp2idx (<var>s</var>)</code> also returns a cell array of
  character vectors <var>gn</var> representing the list of group names.  The order
@@ -1127,8 +1128,9 @@
  column vector <var>gl</var> representing the list of the group levels with the
  same data type as <var>s</var>.
 </p>
-<p> Note that standard missing values in <var>s</var> appear as NaN in <var>g</var> and are
- not present on either <var>gn</var> and <var>gl</var>.
+<p> Note that standard missing values in <var>s</var>, such as NaN or NaT, appear as
+ NaN in <var>g</var> and are not present on either <var>gn</var> and <var>gl</var>.  This
+ includes a <code>NaN</code> duration, which MATLAB makes a group of its own.
 </p>
 <p> An empty <var>s</var> returns <var>g</var>, <var>gn</var> and <var>gl</var> as 0-by-1 arrays,
  whereas MATLAB returns a 0-by-0 <var>gn</var> for an empty categorical <var>s</var>.
@@ -1141,7 +1143,7 @@
   <a href="grpstats.html">grpstats</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Data_Manipulation/grp2idx.m">grp2idx</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Data_Manipulation/grp2idx.m">grp2idx</a>
 </p>
 </div>
 

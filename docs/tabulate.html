@@ -1096,7 +1096,7 @@
 <p> <code>tabulate (x)</code> displays a frequency table of the data in the vector
  <var>x</var>.  The input <var>x</var> can be a numeric vector, a logical vector, a
  character matrix, a cell vector of character vectors, a categorical vector,
- or a string vector.
+ a string vector, a datetime vector, or a duration vector.
 </p>
 <p> The table displays the value, the number of instances (count), and the
  percentage of that value in <var>x</var>.  If no output argument is requested,
@@ -1107,8 +1107,11 @@
  otherwise.
 </p>
 <p> If <var>x</var> is numeric, any missing values (<code>NaNs</code>) are ignored.
- Similarly, undefined elements in categorical arrays and missing elements in
- string arrays are ignored.
+ Similarly, undefined elements in categorical arrays, missing elements in
+ string arrays, <code>NaT</code> elements in datetime arrays, and <code>NaN</code>
+ elements in duration arrays are ignored.  The values of a datetime or
+ duration vector are listed in sorted order.  MATLAB tabulates each
+ <code>NaN</code> duration instead, as a value of its own counted once.
 </p>
 <p> If all the elements of <var>x</var> are positive integers, then the frequency
  table includes 0 counts for the integers between 1 and <code>max (<var>x</var>)</code>
@@ -1122,20 +1125,20 @@
  observations out of none at all is <code>NaN</code> rather than zero: there is no
  total to take a proportion of.  A <code>categorical</code> carries its categories
  independently of its data, so an all-undefined one still tabulates every
- category with a zero count; a string array has no levels beyond those its
- data carries, so an all-missing one tabulates to an empty table.  MATLAB
- agrees on the categorical case but returns a malformed <em class="math">1</em>-by-<em class="math">2</em>
- cell for the all-missing string, lacking the label column its own
- documentation describes, while returning a well-formed
- <em class="math">0</em>-by-<em class="math">3</em> for an empty string array.  This implementation returns
- the empty table in both.
+ category with a zero count; a string, datetime or duration array has no
+ levels beyond those its data carries, so an all-missing one tabulates to an
+ empty table.  MATLAB agrees on the categorical case but returns a malformed
+ <em class="math">1</em>-by-<em class="math">2</em> cell for an all-missing string or datetime array,
+ lacking the label column its own documentation describes, while returning a
+ well-formed <em class="math">0</em>-by-<em class="math">3</em> for an empty one.  This implementation
+ returns the empty table in both.
 </p>
 <p> <strong>See also: </strong>
 bar, 
 pareto
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Descriptive_Statistics/tabulate.m">tabulate</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Descriptive_Statistics/tabulate.m">tabulate</a>
 </p>
 </div>
         <div class="card rounded my-4">

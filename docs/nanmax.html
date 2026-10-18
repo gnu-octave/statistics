@@ -1105,7 +1105,8 @@
  <code>NaN</code>, the maximum is returned as <code>NaN</code> rather than <code>[]</code>.
 </p>
 <p> <code><var>v</var> = nanmax (<var>x</var>, [], <var>dim</var>)</code> operates along the dimension
- <var>dim</var> of <var>x</var>.
+ <var>dim</var> of <var>x</var>.  A logical <var>dim</var> or <var>vecdim</var> is an error,
+ although MATLAB accepts <code>true</code> as dimension 1.
 </p>
 <p> <code>[<var>v</var>, <var>idx</var>] = nanmax (&hellip;)</code> also returns the row indices
  of the maximum values for each column in the vector <var>idx</var>.  When <var>x</var>
@@ -1134,7 +1135,7 @@ max,
   <a href="nansum.html">nansum</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Descriptive_Statistics/nanmax.m">nanmax</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Descriptive_Statistics/nanmax.m">nanmax</a>
 </p>
 </div>
         <div class="card rounded my-4">

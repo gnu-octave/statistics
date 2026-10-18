@@ -1105,7 +1105,10 @@
 <p> If <var>x</var> is a numeric or logical vector, its number of elements must fit
  into the triangular part of a matrix (main diagonal excluded).  In other
  words, <code>numel (<var>x</var>) = <var>n</var> * (<var>n</var> - 1) / 2</code> for some integer
- <var>n</var>.  The resulting matrix will be <var>n</var> by <var>n</var>.
+ <var>n</var>.  The resulting matrix will be <var>n</var> by <var>n</var>.  An empty vector
+ is the distance vector of a single observation, so it returns the 1-by-1
+ distance matrix <code>0</code> and <code>squareform (pdist (<var>x</var>))</code> holds for a
+ single row <var>x</var>.  MATLAB returns an empty matrix instead.
 </p>
 <p> If <var>x</var> is a numeric or logical distance matrix, it must be square and the
  diagonal entries of <var>x</var> must all be zeros.  If <var>x</var> is not symmetric,
@@ -1114,13 +1117,14 @@
 <p> The second argument is used to specify the output type in case the distance
  input is a scalar.  Accepted values are <code>'tomatrix'</code> (or <code>'tom'</code>)
  and <code>'tovector'</code> (or <code>'tov'</code>).  If not specified, it defaults to
- <code>'tomatrix'</code> otherwise.
+ <code>'tomatrix'</code> otherwise.  When <code>'tomatrix'</code> is specified, the
+ distance input must be a vector.
 </p>
 <p> <strong>See also: </strong>
   <a href="pdist.html">pdist</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Nearest_Neighbors/squareform.m">squareform</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Nearest_Neighbors/squareform.m">squareform</a>
 </p>
 </div>
 

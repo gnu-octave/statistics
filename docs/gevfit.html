@@ -1158,7 +1158,7 @@
   <a href="gevstat.html">gevstat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Distribution_Fitting/gevfit.m">gevfit</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Distribution_Fitting/gevfit.m">gevfit</a>
 </p>
 </div>
         <div class="card rounded my-4">
@@ -1190,6 +1190,15 @@
                 <p>Estimate their k, sigma, and mu parameters</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> k_sigma_muA = gevfit (r(:,1));
  k_sigma_muB = gevfit (r(:,2));</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: matrix singular to machine precision, rcond = 1.25501e-18
+warning: called from
+    polyfit at line 178 column 3
+    gevfit at line 176 column 3
+    __eval_demo__ at line 84 column 9
+    __demo_notebook__ at line 43 column 3
+    __build_demos__ at line 79 column 7
+    function_texi2html at line 138 column 5
+    package_texi2html at line 350 column 9</pre>
                 <p>Plot their estimated PDFs</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-10:0.5:20];
  y = gevpdf (x, k_sigma_muA(1), k_sigma_muA(2), k_sigma_muA(3));

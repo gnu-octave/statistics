@@ -1096,10 +1096,10 @@
 </p>
 <div class="ms-5">
 <p> <code>plsregress</code> uses the SIMPLS algorithm, and first centers <var>X</var> and
- <var>Y</var> by subtracting off column means to get centered variables.  However,
- it does not rescale the columns.  To perform partial least squares regression
- with standardized variables, use <code>zscore</code> to normalize <var>X</var> and
- <var>Y</var>.
+ <var>Y</var> by subtracting off column means to get centered variables, unless
+ <code>'Intercept'</code> is <code>false</code>.  However, it does not rescale the
+ columns.  To perform partial least squares regression with standardized
+ variables, use <code>zscore</code> to normalize <var>X</var> and <var>Y</var>.
 </p>
 <p> <code>[<var>xload</var>, <var>yload</var>] = plsregress (<var>X</var>, <var>Y</var>)</code> computes a
  partial least squares regression of  <var>Y</var> on <var>X</var>, using <var>NCOMP</var>
@@ -1141,7 +1141,9 @@
  components <var>xscore</var> have maximum covariance, with rows corresponding to
  observations and columns corresponding to components.
 </li><li> <var>coef</var> is a <em class="math">(P+1)&times;M</em> matrix with the PLS regression
- coefficients, containing the intercepts in the first row.
+ coefficients, containing the intercepts in the first row.  If
+ <code>'Intercept'</code> is <code>false</code>, <var>coef</var> is a <em class="math">P&times;M</em> matrix
+ without the intercepts.
 </li><li> <var>pctVar</var> is a <em class="math">2&times;NCOMP</em> matrix containing the percentage of
  the variance explained by the model with the first row containing the
  percentage of explained varianced in <var>X</var> by each PLS component and the
@@ -1184,6 +1186,10 @@
  meaningful when using the <code>'HoldOut'</code> method for cross-validation,
  previously set by a <code>cvpartition</code> object.  If no cross-validation method
  is used, then <code>'MCReps'</code> must be <code>1</code>.</td></tr>
+<tr><td width="20%"><code>'Intercept'</code></td><td width="75%">A logical scalar, or <code>'on'</code> or
+ <code>'off'</code>, specifying whether the model includes a constant term.  When
+ the constant term is excluded, <var>X</var> and <var>Y</var> are not centered and
+ <var>coef</var> contains no intercepts.  By default, <code><var>Value</var> = true</code>.</td></tr>
 </table>
 </div>
 
@@ -1200,7 +1206,7 @@
 </li></ol>
 
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Regression/plsregress.m">plsregress</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Regression/plsregress.m">plsregress</a>
 </p>
 </div>
         <div class="card rounded my-4">

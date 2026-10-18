@@ -1095,8 +1095,10 @@
 </p>
 <div class="ms-5">
 <p> The inputs <var>x1</var>, <var>x2</var>, ... <var>xn</var> must be vectors of equal length
- with a data type of numeric, logical, char array, categorical, strings, or
- cell array of character vectors.
+ with a data type of numeric, logical, char array, categorical, strings,
+ datetime, duration, or cell array of character vectors.  Missing values,
+ such as <code>NaN</code> or <code>NaT</code>, are not counted.  A <code>NaN</code>
+ duration is missing too, whereas MATLAB counts it as a group of its own.
 </p>
 <p> As additional return values <code>crosstab</code> returns the chi-square statistics
  <var>chisq</var>, its p-value <var>p</var> and a cell array <var>labels</var>, containing
@@ -1113,7 +1115,7 @@
   <a href="tabulate.html">tabulate</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Data_Manipulation/crosstab.m">crosstab</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Data_Manipulation/crosstab.m">crosstab</a>
 </p>
 </div>
 

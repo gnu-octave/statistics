@@ -1101,46 +1101,87 @@
  the covariance matrix of the <em class="math">N&times;P</em> data matrix <var>X</var>, computed so that
  it is not distorted by outlying observations.  Rows of <var>X</var> are
  observations and columns are variables.  Rows containing <code>NaN</code> values
- are removed.
+ are removed with a warning.
 </p>
 <p> <code>[<var>sig</var>, <var>mu</var>, <var>mah</var>, <var>outliers</var>, <var>s</var>] = robustcov
  (&hellip;)</code> also returns the robust mean <var>mu</var> (<em class="math">1&times;P</em>), the robust
  Mahalanobis distances <var>mah</var> (<em class="math">N&times;1</em>) of each observation from the
  estimated distribution, a logical vector <var>outliers</var> (<em class="math">N&times;1</em>) flagging
  observations whose distance exceeds <code>sqrt (chi2inv (0.975, <var>P</var>))</code>,
- and a structure <var>s</var> holding the estimate metadata.
+ and a structure <var>s</var> holding the estimate metadata.  <var>mah</var> and
+ <var>outliers</var> have one row per row of <var>X</var>; for removed rows, <var>mah</var>
+ is <code>NaN</code> and <var>outliers</var> is <code>false</code>.  When <var>sig</var> is not
+ positive definite, every distance is 0, removed rows included, and no
+ observation is flagged.
 </p>
 <p> Additional parameters can be specified by <code>Name-Value</code> pair arguments.
 </p>
 <div class="table-responsive">
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="22%"><var>Name</var></th><th width="76%"><var>Value</var></th></tr></thead>
-<tr><td width="22%"><code>'Method'</code></td><td width="76%">the estimator, either <code>'fmcd'</code> (default,
- the Fast Minimum Covariance Determinant algorithm) or <code>'ogk'</code> (the
- Orthogonalized Gnanadesikan-Kettenring estimator).  <code>'olivehawkins'</code> is
- not implemented.</td></tr>
+<tr><td width="22%"><code>'Method'</code></td><td width="76%">the estimator, one of <code>'fmcd'</code> (default,
+ the Fast Minimum Covariance Determinant algorithm), <code>'ogk'</code> (the
+ Orthogonalized Gnanadesikan-Kettenring estimator) or
+ <code>'olivehawkins'</code> (the Olive-Hawkins concentration algorithm).  If any
+ of <code>'ReweightingMethod'</code>, <code>'StartMethod'</code> or
+ <code>'NumConcentrationSteps'</code> is given and <code>'Method'</code> is not, the
+ method is <code>'olivehawkins'</code>.</td></tr>
 <tr><td width="22%"><code>'OutlierFraction'</code></td><td width="76%">the maximum fraction of outliers, a
  scalar in <em class="math">[0, 0.5]</em> (default 0.5), used to set the size of the
- elemental subsets in <code>'fmcd'</code>.</td></tr>
-<tr><td width="22%"><code>'NumTrials'</code></td><td width="76%">the number of random elemental subsets drawn
- by <code>'fmcd'</code>, a positive integer (default 500).</td></tr>
+ subsets in <code>'fmcd'</code> and <code>'olivehawkins'</code>.  It is not valid for
+ <code>'ogk'</code>.</td></tr>
+<tr><td width="22%"><code>'NumTrials'</code></td><td width="76%">a positive integer.  For <code>'fmcd'</code> it is
+ the number of random elemental subsets drawn (default 500).  For
+ <code>'olivehawkins'</code> it is the number of starts and must equal the number
+ of starts in <code>'StartMethod'</code> (default 2); with <code>'elemental'</code>
+ alone it is the number of random starts.  It is not valid for
+ <code>'ogk'</code>.</td></tr>
 <tr><td width="22%"><code>'BiasCorrection'</code></td><td width="76%">a logical scalar (default <code>true</code>)
- that applies the small-sample bias correction to the <code>'fmcd'</code> estimate.</td></tr>
+ that applies the small-sample bias correction to the raw and the reweighted
+ <code>'fmcd'</code> estimate.  Only valid for <code>'fmcd'</code>.</td></tr>
 <tr><td width="22%"><code>'NumOGKIterations'</code></td><td width="76%">the number of orthogonalization
- iterations for <code>'ogk'</code>, a positive integer (default 2).</td></tr>
+ iterations for <code>'ogk'</code>, a positive integer (default 2).  Only valid
+ for <code>'ogk'</code>.</td></tr>
 <tr><td width="22%"><code>'UnivariateEstimator'</code></td><td width="76%">the robust univariate
  location/scale estimator used by <code>'ogk'</code>, either <code>'tauscale'</code>
- (default) or <code>'qn'</code>.</td></tr>
+ (default) or <code>'qn'</code>.  Only valid for <code>'ogk'</code>.</td></tr>
+<tr><td width="22%"><code>'ReweightingMethod'</code></td><td width="76%">the reweighting used by
+ <code>'olivehawkins'</code>, either <code>'rfch'</code> (default) or <code>'rmvn'</code>.</td></tr>
+<tr><td width="22%"><code>'NumConcentrationSteps'</code></td><td width="76%">the number of concentration
+ steps taken from each start by <code>'olivehawkins'</code>, a positive integer
+ (default 10).</td></tr>
+<tr><td width="22%"><code>'StartMethod'</code></td><td width="76%">the starts of <code>'olivehawkins'</code>: one of
+ <code>'classical'</code>, <code>'medianball'</code> or <code>'elemental'</code>, a function
+ handle <code>[T, C] = f (X)</code> returning a <em class="math">1&times;P</em> location and a
+ <em class="math">P&times;P</em> scatter, or a cell array of these.  The default is
+ <code>{'classical', 'medianball'}</code>.</td></tr>
 </table>
 </div>
 
-<p> <strong>Note on reproducibility.</strong> <code>'fmcd'</code> draws random subsets, so its
- exact estimate depends on the random number generator and is not identical to
+<p> <strong>Note on reproducibility.</strong> <code>'fmcd'</code> and the <code>'elemental'</code>
+ start of <code>'olivehawkins'</code> draw random subsets, so their exact estimate
+ depends on the random number generator and is not identical to
  MATLAB&rsquo;s on data where the optimal subset is ambiguous; on well-separated
- data both converge to the same estimate.  For <code>'fmcd'</code> with
- <code>'BiasCorrection'</code> enabled, the small-sample factor uses the published
- Pison-Van Aelst-Willems asymptotic formula, which differs from MATLAB&rsquo;s
- tabulated simulation values by up to about 1.6% for very small samples.
+ data both converge to the same estimate.
+</p>
+<p> <strong>Small-sample correction.</strong> With <code>'BiasCorrection'</code> enabled,
+ <code>'fmcd'</code> scales the raw and the reweighted covariance by the
+ small-sample factors of Pison, Van Aelst and Willems (2002), interpolated
+ over <em class="math">1 - <var>OutlierFraction</var></em>, as the <code>covMcd</code> function of the
+ R package robustbase computes them.  Where those formulas give negative or
+ very large factors, at the default <code>'OutlierFraction'</code> for up to 9
+ variables and small samples, the simulated factors of robustbase are used
+ instead.  MATLAB applies the formulas there as well, so it can return a
+ covariance with negative variances (for example, with 3 variables and 6 to
+ 8 observations), and for 2 variables it uses other factors, so its estimate
+ differs from this one at every sample size.  When the subset is the whole
+ sample, the classical estimate is reweighted with no small-sample factor.
+</p>
+<p> <strong>Singular subsets.</strong> If <code>'olivehawkins'</code> finds a singular
+ subset, a warning is issued and the selected estimate is returned without
+ reweighting.  A singular estimate gives zero robust distances.  When
+ several starts end in singular subsets, the <code>'medianball'</code> start is
+ selected if present, otherwise the first one listed in <code>'StartMethod'</code>.
 </p>
 <p> <strong>See also: </strong>
   <a href="mahal.html">mahal</a>, 
@@ -1149,7 +1190,7 @@ mad,
   <a href="dbscan.html">dbscan</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Anomaly_Detection/robustcov.m">robustcov</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Anomaly_Detection/robustcov.m">robustcov</a>
 </p>
 </div>
         <div class="card rounded my-4">
@@ -1189,6 +1230,74 @@ mad,
  -- legend (HLEG, ...)
  -- HLEG = legend (...)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> title ("robustcov: inliers vs. flagged outliers");</pre>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#robustcov-example2" aria-expanded="true"
+                  aria-controls="robustcov-example2">
+                Example: 2
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse show" id="robustcov-example2">
+            <div class="card-body">
+                <p>Olive-Hawkins robust distances expose outliers that the classical Mahalanobis distances mask.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ X = [randn(80,2); 6 + randn(10,2)];
+ [~, ~, mah, outliers] = robustcov (X, "Method", "olivehawkins");
+ dcl = sqrt (mahal (X, X));
+ plot (dcl(! outliers), mah(! outliers), "bo", ...
+       dcl(outliers), mah(outliers), "r+");
+ xlabel ("Classical Mahalanobis distance");
+ ylabel ("Robust distance");
+ legend ("inliers", "flagged outliers");</pre>
+                <div class="text-center">
+                  <img src="assets/robustcov-201.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#robustcov-example3" aria-expanded="true"
+                  aria-controls="robustcov-example3">
+                Example: 3
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse show" id="robustcov-example3">
+            <div class="card-body">
+                <p>Tolerance ellipses of the two Olive-Hawkins reweighting methods.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ X = [randn(80,2); 6 + randn(10,2)];
+ [s1, m1] = robustcov (X, "ReweightingMethod", "rfch");
+ [s2, m2] = robustcov (X, "ReweightingMethod", "rmvn");
+ t = linspace (0, 2 * pi, 100)';
+ c = sqrt (chi2inv (0.975, 2));
+ e1 = m1 + c * [cos(t), sin(t)] * chol (s1);
+ e2 = m2 + c * [cos(t), sin(t)] * chol (s2);
+ plot (X(:,1), X(:,2), "k.", e1(:,1), e1(:,2), "b-", e2(:,1), e2(:,2), "r-");
+ axis equal;
+ legend ("data", "rfch", "rmvn");</pre>
+                <div class="text-center">
+                  <img src="assets/robustcov-301.png" class="rounded img-thumbnail" width= "70%" alt="plotted figure">
+                </div><p></p>
 
             </div>
           </div>

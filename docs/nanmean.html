@@ -1107,7 +1107,8 @@
  of <code>nanmean (<var>x</var>(:))</code>.
 </p>
 <p> <code><var>s</var> = nanmean (<var>x</var>, <var>dim</var>)</code> operates along the dimension
- <var>dim</var> of <var>x</var>.
+ <var>dim</var> of <var>x</var>.  A logical <var>dim</var> or <var>vecdim</var> is an error,
+ although MATLAB accepts <code>true</code> as dimension 1.
 </p>
 <p> <code><var>s</var> = nanmean (<var>x</var>, <var>vecdim</var>)</code> returns the mean over the
  dimensions specified in the vector <var>vecdim</var>.  Each element of
@@ -1136,7 +1137,7 @@ mean,
   <a href="nanmax.html">nanmax</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Descriptive_Statistics/nanmean.m">nanmean</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Descriptive_Statistics/nanmean.m">nanmean</a>
 </p>
 </div>
         <div class="card rounded my-4">

@@ -1109,7 +1109,8 @@
 <p> The sample values <var>y</var> can be a scalar, vector, or an N-dimensional
  array. If <var>y</var> is an N-dimensional array, the interpolation is
  performed along its last dimension, which must have the same length as
- <var>x</var>. Complex values for <var>y</var> are supported.  Sample points where
+ <var>x</var>. Complex values for <var>y</var> are supported, and their real and
+ imaginary parts are interpolated independently.  Sample points where
  <var>x</var> or <var>y</var> is <code>NaN</code> are dropped in pairs before the fit,
  and a warning is issued.
 </p>
@@ -1133,7 +1134,7 @@ pchip,
 spline
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/makima.m">makima</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/makima.m">makima</a>
 </p>
 </div>
 

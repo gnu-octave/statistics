@@ -1149,7 +1149,7 @@
 <p> If <code>'pseudoemissions'</code> is specified then the integer matrix
  <var>pseudoemissions</var> is used as an initial number of counted outputs.
  <code>pseudoemissions(i, j)</code> is the initial number of counted outputs
- <code>j</code> given state <code>i</code>. If <code>'pseudoemissions'</code> is also
+ <code>j</code> given state <code>i</code>. If <code>'pseudotransitions'</code> is also
  specified then the number of rows of <var>pseudoemissions</var> must be the
  same as the number of rows of <var>pseudotransitions</var>. <var>outprobest</var>
  will have the same size as <var>pseudoemissions</var>. Use this if you have
@@ -1169,8 +1169,8 @@
                                    &quot;symbols&quot;, symbols, ...
                                    &quot;statenames&quot;, statenames);
  [transprobest, outprobest] = hmmestimate (sequence, states, ...
-                                   &quot;symbols', symbols, ...
-                                   &quot;statenames', statenames)
+                                   &quot;symbols&quot;, symbols, ...
+                                   &quot;statenames&quot;, statenames)
 
  pseudotransitions = [8, 2; 4, 6];
  pseudoemissions = [2, 4, 4; 7, 2, 1];
@@ -1195,7 +1195,7 @@
 </li></ol>
 
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Markov_Models/hmmestimate.m">hmmestimate</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Markov_Models/hmmestimate.m">hmmestimate</a>
 </p>
 </div>
         <div class="card rounded my-4">

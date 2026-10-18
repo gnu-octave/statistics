@@ -1149,7 +1149,11 @@
  <code>'conditional'</code> averages instead over the tenth of them lying
  nearest the query point in the predictors being held, which stands in
  for conditioning on those predictors.  It asks more of the data and is
- the dearer of the two.</td></tr>
+ the dearer of the two.  Observations at the same distance are taken in
+ their order in the data, and distances equal to within rounding count
+ as tied, so the result does not depend on the platform.  MATLAB lets
+ rounding decide such ties, so on data on a coarse grid the values can
+ differ slightly from MATLAB&rsquo;s.</td></tr>
 </table>
 </div>
 
@@ -1162,7 +1166,7 @@
   <a href="PredictiveModel.html">PredictiveModel</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/86d9927/inst/Machine_Learning/shapley.m">shapley</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Machine_Learning/shapley.m">shapley</a>
 </p>
 </div>
         <p class="lead my-3">The <code>shapley</code> class contains the following properties:</p>
