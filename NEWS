@@ -275,3 +275,87 @@
  ** ztest2:
     a confidence interval for the difference in proportions, and `stats`
     with Cohen's h and its interval.
+
+ Summary of important user-visible changes for statistics 2.0.1:
+-------------------------------------------------------------------
+
+ Backwards incompatible improvements:
+ ====================================
+
+ ** nanmax, nanmean, nanmedian, nanmin, nanstd, nansum, nanvar:
+    DIM is validated alike in all seven: a logical, non-integer, infinite,
+    empty or matrix DIM and a VECDIM with repeated or infinite dimensions
+    raise an error, where some were accepted or failed with an unrelated
+    message.
+
+ ** robustcov:
+    MAH and OUTLIERS have one row per row of X, rows with missing data
+    padded with NaN and false, where those rows were dropped silently (#520).
+
+ Bug fixes:
+ ==========
+
+ ** confusionmat:
+    logical input always gives a 2-by-2 matrix with order [false; true], as
+    MATLAB since R2024b (#523); a numeric Order for logical input is taken
+    as logical, where it raised an error; a duplicated Order raises an
+    error, where it gave extra rows and columns.
+
+ ** crosstab:
+    numeric labels are written without padding, '1' beside '10' where it gave
+    ' 1'; an empty numeric input gives no labels, where it gave one empty
+    name; an integer-typed input beside other numbers raised an error.
+
+ ** fitctree, ClassificationTree:
+    on i386, merging leaves left some leaf pairs unmerged, so a tree kept
+    extra nodes (#514).
+
+ ** fitrgam, fitcgam, RegressionGAM, ClassificationGAM:
+    on i386, boosting interactions could accept a round in which no pair grew
+    a tree, so a pair whose trees all split one predictor was kept (#514).
+
+ ** makima:
+    complex y with more than one series raised an error, or returned wrong
+    values when the number of series equalled the number of sample points
+    (#524); the pp form of an N-dimensional y returned its series in the wrong
+    order.
+
+ ** nanmax, nanmean, nanmin, nansum:
+    logical input is accepted, as in the rest of the family; `nanmax` and
+    `nanmin` return a logical result, as in MATLAB (#516).
+
+ ** plsregress:
+    a component that cannot be formed, as with a constant X, is NaN, as in
+    MATLAB, where X with several responses raised an error.
+
+ ** robustcov:
+    X with fewer rows than twice its columns raises an error, where 'fmcd'
+    and 'ogk' failed inside chol (#520); small samples in 'fmcd' no longer
+    give a covariance that is not positive definite, its small-sample
+    factors now following the R package robustbase; 'BiasCorrection' false
+    drops both factors, as in MATLAB.
+
+ ** shapley:
+    the 'conditional' method counts distances equal to within rounding as
+    tied, so the neighbours kept no longer depend on the platform (#514).
+
+ ** squareform:
+    'tomatrix' with a matrix input raises an error, where it returned a
+    distance matrix built from the matrix's elements (#521).
+
+ Improvements:
+ =============
+
+ ** crosstab, tabulate:
+    datetime and duration inputs are accepted, NaT and NaN durations counted
+    as missing (#525).
+
+ ** grp2idx:
+    datetime grouping variables are accepted, numbered in sorted order, with
+    NaT as missing (#522).
+
+ ** plsregress:
+    new 'Intercept' option fits without centering the data (#526).
+
+ ** robustcov:
+    new 'olivehawkins' method (#520).
