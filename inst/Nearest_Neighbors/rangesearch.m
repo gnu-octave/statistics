@@ -434,6 +434,13 @@ endfunction
 %! [idx, D] = rangesearch (x, y, 4, 'NSMethod', 'kdtree', 'SortIndices', false);
 %! assert_equal (idx, {[1, 2, 4]; [1, 4]});
 %! assert_equal (D, {[1.7321, 3.4641, 3.3166]; [2, 3.4641]}, 1e-4);
+%!test
+%! ## A Minkowski exponent of Inf is the Chebyshev distance, as in MATLAB R2026b
+%! X = [1, 2; 4, 6; 0, 0];
+%! [idx, D] = rangesearch (X(2:3,:), X(1,:), 4.5, 'Distance', 'minkowski', ...
+%!                         'P', Inf, 'NSMethod', 'exhaustive');
+%! assert_equal (idx, {[2, 1]});
+%! assert_equal (D, {[2, 4]});
 
 ## Test input validation
 %!error<rangesearch: too few input arguments.> rangesearch (1)

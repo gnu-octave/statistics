@@ -1442,7 +1442,7 @@ pdist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2963
+# length: 3012
 statistics: D = pdist (X)
 statistics: D = pdist (X, Distance)
 statistics: D = pdist (X, Distance, DistParameter)
@@ -1478,7 +1478,8 @@ specified with the subsequent DistParameter input argument.
 'cityblock' City block distance.
 'minkowski' Minkowski distance. The default exponent
 is 2. A different exponent can be specified with the subsequent
-DistParameter input argument.
+DistParameter input argument. An exponent of Inf gives the
+Chebychev distance.
 'chebychev' Chebychev distance (maximum coordinate
 difference).
 'cosine' One minus the cosine of the included angle
@@ -1530,7 +1531,7 @@ pdist2
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3840
+# length: 3889
 statistics: D = pdist2 (X, Y)
 statistics: D = pdist2 (X, Y, Distance)
 statistics: D = pdist2 (X, Y, Distance, DistParameter)
@@ -1568,7 +1569,8 @@ specified with the subsequent DistParameter input argument.
 'cityblock' City block distance.
 'minkowski' Minkowski distance. The default exponent
 is 2. A different exponent can be specified with the subsequent
-DistParameter input argument.
+DistParameter input argument. An exponent of Inf gives the
+Chebychev distance.
 'chebychev' Chebychev distance (maximum coordinate
 difference).
 'cosine' One minus the cosine of the included angle
