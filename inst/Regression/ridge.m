@@ -26,7 +26,10 @@
 ## @var{X} to the response vector @var{y}.  Each value of @var{b} is the
 ## coefficient for the respective ridge parameter given @var{k}.  By default,
 ## @var{b} is calculated after centering and scaling the predictors to have a
-## zero mean and standard deviation 1.
+## zero mean and standard deviation 1.  A predictor whose standard deviation is
+## below @code{sqrt (eps)} is treated as a constant: it is neither centered nor
+## scaled, so it enters the model as a column of ones and its coefficient is
+## returned unrescaled.
 ##
 ## @code{@var{b} = ridge (@var{y}, @var{X}, @var{k}, @var{scaled})} performs the
 ## regression with the specified scaling of the coefficient estimates @var{b}.
@@ -93,7 +96,12 @@ function b = ridge (y, X, k, scaled)
   m = mean (X);
   stdx = std (X, 0, 1);
 
+  ## Columns without variation are treated as a constant term
+  isconst = stdx < sqrt (eps);
+  stdx(isconst) = 1;
+
   z = (X - m) ./ stdx;
+  z(:,isconst) = 1;
 
   ## Add pseudo observations
   p = columns (X);
@@ -223,6 +231,34 @@ endfunction
 %! x = [x1, x2, x3];
 %! b = ridge (y, x, 0.01);
 %! assert_equal (b,[10.1497;1.9695;-0.6761],1e-4);
+%!test
+%! y = [1 3 2 5 4]';
+%! X = [-2 * ones(5,1), (1:5)'];
+%! b = ridge (y, X, 0.1);
+%! assert_equal (b, [2.941176471; 1.234059575], 1e-8);
+%!test
+%! y = [1 3 2 5 4]';
+%! X = [3 * ones(5,1), (1:5)'];
+%! b = ridge (y, X, 0.1, 0);
+%! assert_equal (b, [-8.164992826; 2.941176471; 0.7804878049], 1e-8);
+%!test
+%! y = [1 3 2 5 4]';
+%! X = [ones(5,1), 2 * ones(5,1), (1:5)'];
+%! b = ridge (y, X, 0.1);
+%! assert_equal (b, [1.485148515; 1.485148515; 1.234059575], 1e-8);
+%!test
+%! y = [1 3 NaN 5 4]';
+%! X = [1 1 7 1 1; 1 2 3 4 5]';
+%! b = ridge (y, X, 0.1);
+%! assert_equal (b, [3.170731707; 1.413477568], 1e-8);
+%!test
+%! x = (1:10)';
+%! y = x / 2 + sin (x);
+%! bc = ridge (y, [ones(10,1), x], 0.1);
+%! c = 1.45e-8 * (x - mean (x)) / std (x);
+%! assert_equal (ridge (y, [c, x], 0.1), bc, 1e-6);
+%! c = 1.53e-8 * (x - mean (x)) / std (x);
+%! assert_equal (all (abs (ridge (y, [c, x], 0.1) - bc) < 1e-6), false);
 
 ## Test input validation
 %!error<ridge: function called with too few input arguments.> ridge (1)
