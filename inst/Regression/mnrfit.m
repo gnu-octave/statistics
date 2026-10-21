@@ -39,16 +39,24 @@
 ## can be an @math{N*K} numeric or logical matrix of 1s and 0s, with a column
 ## for each of the @math{K} categories, or an @math{N*1} vector of positive
 ## integers, logical values, character vectors in a cell array, strings, or
-## categorical values.  @var{Y} can also be a character matrix with each row
-## holding the label of an observation of @var{X}.
+## categorical values.  A cell array, string, or categorical @var{Y} can also be
+## a row vector.  @var{Y} can also be a character matrix with each row holding
+## the label of an observation of @var{X}.
 ##
 ## The categories of a numeric or logical @var{Y} are taken in sorted order,
 ## those of a cell array, string, or character matrix in order of first
 ## appearance, and those of a categorical @var{Y} in the order of its
-## categories, a category without observations being ignored.  The last
-## category is the reference category of a nominal model.  An observation whose
-## label is missing (an empty character vector, @qcode{<missing>}, or
-## @qcode{<undefined>}), or whose predictors hold a @qcode{NaN}, is left out.
+## categories.  A category without observations is ignored wherever it lies
+## among the categories of a categorical @var{Y}; MATLAB ignores only a last one
+## and fits coefficients for any other.  The last category is the reference
+## category of a nominal model.  An observation whose label is missing (an empty
+## character vector, @qcode{<missing>}, or @qcode{<undefined>}), or whose
+## predictors hold a @qcode{NaN}, is left out of the fit, and its rows of the
+## residuals in @var{stats} are @qcode{NaN}.
+##
+## A @var{Y} with a single category leaves nothing to fit: a nominal or
+## hierarchical model returns a @var{B} with no columns, a deviance of 0 and
+## residuals of 0, and an ordinal model is an error.
 ##
 ## @code{@var{B} = mnrfit (@var{X}, @var{Y}, @var{name}, @var{value})} returns a
 ## matrix, @var{B}, of coefficient estimates for a multinomial model fit with
@@ -101,6 +109,10 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
   endif
   if (isscalar (Y) || (ndims (Y) > 2))
     error ("mnrfit: Response must be a vector or a 2D matrix.")
+  endif
+  ## A row vector of text or categories holds one label per observation
+  if ((iscellstr (Y) || isstring (Y) || iscategorical (Y)) && isrow (Y))
+    Y = Y(:);
   endif
   [N, P] = size (X);
   [n, K] = size (Y);
@@ -223,9 +235,15 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
       if (! strcmp (LINK, 'logit'))
         error ("mnrfit: nominal models support only the logit link.");
       endif
-      [B, DEV, STATS] = mnrfit_nominal_ (X, YN, n, dispopt);
+      if (n == 1)
+        [B, DEV, STATS] = mnrfit_empty_ (X, estdisp);
+      else
+        [B, DEV, STATS] = mnrfit_nominal_ (X, YN, n, dispopt);
+      endif
     case 'ordinal'
-      if (strcmp (LINK, 'logit'))
+      if (n == 1)
+        error ("mnrfit: an ordinal model needs at least two categories.");
+      elseif (strcmp (LINK, 'logit'))
         [INTERCEPT, SLOPE, DEV, ~, ~, ~, S] = logistic_regression (YN - 1, X, ...
                                                                    dispopt);
         B = cat (1, INTERCEPT, SLOPE);
@@ -247,16 +265,23 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
         [B, DEV, STATS] = mnrfit_ordinal_ (X, YN, n, LINK);
       endif
     case 'hierarchical'
-      [B, DEV, STATS] = mnrfit_hierarchical_ (X, YN, n, LINK);
+      if (n == 1)
+        [B, DEV, STATS] = mnrfit_empty_ (X, estdisp);
+      else
+        [B, DEV, STATS] = mnrfit_hierarchical_ (X, YN, n, LINK);
+      endif
     otherwise
       error ("mnrfit: model type not recognised.");
   endswitch
 
   ## Residuals and dispersion, computed from the fitted category probabilities
   ## (common to every model type; individual responses have sample size 1)
-  pihat = mnrval (B, X, 'model', lower (MODELTYPE), 'link', LINK);
-  [STATS.resid, STATS.residp, STATS.residd] = mnrfit_residuals_ (pihat, YN, n);
-  STATS.estdisp = estdisp;
+  if (n > 1)
+    pihat = mnrval (B, X, 'model', lower (MODELTYPE), 'link', LINK);
+    [STATS.resid, STATS.residp, STATS.residd] = ...
+                                    mnrfit_residuals_ (pihat, YN, n);
+    STATS.estdisp = estdisp;
+  endif
   if (! isempty (STATS.dfe) && STATS.dfe > 0)
     ## Standard Pearson dispersion estimate
     STATS.sfit = sqrt (sum (STATS.resid(:) .^ 2 ./ pihat(:)) / STATS.dfe);
@@ -269,6 +294,15 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
       STATS.t = STATS.beta ./ STATS.se;
       STATS.p = 2 * tcdf (- abs (STATS.t), STATS.dfe);
     endif
+  endif
+
+  ## Observations left out keep their rows in the residuals, as NaN
+  if (! all (RowsUsed))
+    for name = {'resid', 'residp', 'residd'}
+      R = NaN (numel (RowsUsed), columns (STATS.(name{1})));
+      R(RowsUsed,:) = STATS.(name{1});
+      STATS.(name{1}) = R;
+    endfor
   endif
 
 endfunction
@@ -432,6 +466,32 @@ function [resid, residp, residd] = mnrfit_residuals_ (pihat, YN, k)
   residp(isnan (residp)) = 0;              ## 0/0 at a saturated probability -> 0
   pobs = pihat (sub2ind ([nobs, k], (1:nobs)', YN(:)));
   residd = -2 * log (max (pobs, realmin));
+endfunction
+
+## The fit of a response with a single category, which leaves nothing to fit:
+## no coefficients, a deviance of 0, and residuals of 0, as MATLAB returns it.
+function [B, dev, stats] = mnrfit_empty_ (X, estdisp)
+  nobs = rows (X);
+  B = zeros (columns (X) + 1, 0);
+  dev = 0;
+  if (estdisp)
+    s = NaN;
+  else
+    s = 1;
+  endif
+  stats = struct ('beta', B, ...
+                  'dfe', 0, ...
+                  's', s, ...
+                  'sfit', NaN, ...
+                  'estdisp', estdisp, ...
+                  'coeffcorr', [], ...
+                  'covb', [], ...
+                  'se', B, ...
+                  't', B, ...
+                  'p', B, ...
+                  'resid', zeros (nobs, 1), ...
+                  'residp', zeros (nobs, 1), ...
+                  'residd', zeros (nobs, 1));
 endfunction
 
 ## Fit a cumulative-link (proportional-odds) ordinal model for a non-logit link
@@ -687,6 +747,55 @@ endfunction
 %! c = categorical (sp, {'setosa', 'versicolor', 'virginica'}, 'Ordinal', true);
 %! B = mnrfit (X, c, 'model', 'ordinal');
 %! assert_equal (B, [18.5691; 21.6898; -3.4524], 1e-4);
+%!test
+%! c = categorical (sp, {'extra', 'setosa', 'versicolor', 'virginica'});
+%! assert_equal (mnrfit (X, c), B1, 1e-4);
+%!test
+%! assert_equal (mnrfit (X, sp'), mnrfit (X, sp));
+%! assert_equal (mnrfit (X, string (sp)'), mnrfit (X, sp));
+%! assert_equal (mnrfit (X, categorical (sp)'), mnrfit (X, sp));
+
+## Test the residuals of observations left out against MATLAB R2024a
+%!test
+%! c = categorical (sp);
+%! c(1) = missing;
+%! [~, ~, s] = mnrfit (X, c);
+%! assert_equal (size (s.resid), [150, 3]);
+%! assert_equal (s.resid(1:2,:), [NaN, NaN, NaN; 0.084568478433509675, ...
+%!               -0.079375981712630134, -0.0051924967208795622], -1e-10);
+%! assert_equal (s.residp(1:2,:), [NaN, NaN, NaN; 0.3039424270334104, ...
+%!               -0.29363201424385138, -0.072246795596986726], -1e-10);
+%! assert_equal (s.residd(1:2), [NaN; 0.17671943321891109], -1e-10);
+%!test
+%! Xn = X;
+%! Xn(5) = NaN;
+%! [~, ~, s] = mnrfit (Xn, grp2idx (sp));
+%! assert_equal (size (s.resid), [150, 3]);
+%! assert_equal (s.resid(4:6,:), [0.020809847448850061, ...
+%!               -0.020095179210191657, -0.00071466823865832662; ...
+%!               NaN, NaN, NaN; 0.52496547239191615, ...
+%!               -0.44466304411132351, -0.080302428280592628], -1e-10);
+
+## Test a response with a single category against MATLAB R2024a
+%!test
+%! [B, dev, s] = mnrfit (X(1:50), sp(1:50));
+%! assert_equal (B, zeros (2, 0));
+%! assert_equal (dev, 0);
+%! assert_equal ([s.dfe, s.s, s.sfit], [0, 1, NaN]);
+%! assert_equal (s.resid, zeros (50, 1));
+%! assert_equal (s.residd, zeros (50, 1));
+%!test
+%! [B, dev] = mnrfit (X(1:50), sp(1:50), 'model', 'hierarchical');
+%! assert_equal (B, zeros (2, 0));
+%! assert_equal (dev, 0);
+%!test
+%! [~, ~, s] = mnrfit (X(1:50), sp(1:50), 'estdisp', 'on');
+%! assert_equal ([s.s, s.sfit], [NaN, NaN]);
+%!test
+%! y = sp(1:50);
+%! y{2} = '';
+%! [~, ~, s] = mnrfit (X(1:50), y);
+%! assert_equal (s.resid(1:3), [0; NaN; 0]);
 
 ## Test input validation
 %!error<mnrfit: too few input arguments.> mnrfit (ones (50,1))
@@ -720,6 +829,10 @@ endfunction
 %! mnrfit (ones (5, 4), [1; 2; 1; 2; 1], 'model', 'nominal', 'link', 'probit')
 %!error<mnrfit: 'estdisp' must be 'on' or 'off'.> ...
 %! mnrfit (ones (5, 4), [1; 2; 1; 2; 1], 'estdisp', 'maybe')
+%!error<mnrfit: an ordinal model needs at least two categories.> ...
+%! mnrfit ((1:5)', {'a'; 'a'; 'a'; 'a'; 'a'}, 'model', 'ordinal')
+%!error<mnrfit: Y must have the same number of rows as X.> ...
+%! mnrfit ((1:5)', [1, 2, 1, 2, 1])
 
 ## Edge cases with empty arrays
 %!error <mnrfit: X and Y must contain at least one observation.> ...

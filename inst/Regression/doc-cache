@@ -11334,7 +11334,7 @@ mnrfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2980
+# length: 3408
 statistics: B = mnrfit (X, Y)
 statistics: B = mnrfit (X, Y, name, value)
 statistics: [B, dev] = mnrfit (...)
@@ -11356,16 +11356,24 @@ predictor variables. Y contains the response category labels and it
 can be an NxK numeric or logical matrix of 1s and 0s, with a column
 for each of the K categories, or an Nx1 vector of positive
 integers, logical values, character vectors in a cell array, strings, or
-categorical values. Y can also be a character matrix with each row
-holding the label of an observation of X.
+categorical values. A cell array, string, or categorical Y can also be
+a row vector. Y can also be a character matrix with each row holding
+the label of an observation of X.
 
 The categories of a numeric or logical Y are taken in sorted order,
 those of a cell array, string, or character matrix in order of first
 appearance, and those of a categorical Y in the order of its
-categories, a category without observations being ignored. The last
-category is the reference category of a nominal model. An observation whose
-label is missing (an empty character vector, <missing>, or
-<undefined>), or whose predictors hold a NaN, is left out.
+categories. A category without observations is ignored wherever it lies
+among the categories of a categorical Y; MATLAB ignores only a last one
+and fits coefficients for any other. The last category is the reference
+category of a nominal model. An observation whose label is missing (an empty
+character vector, <missing>, or <undefined>), or whose
+predictors hold a NaN, is left out of the fit, and its rows of the
+residuals in stats are NaN.
+
+A Y with a single category leaves nothing to fit: a nominal or
+hierarchical model returns a B with no columns, a deviance of 0 and
+residuals of 0, and an ordinal model is an error.
 
 B = mnrfit (X, Y, name, value) returns a
 matrix, B, of coefficient estimates for a multinomial model fit with
