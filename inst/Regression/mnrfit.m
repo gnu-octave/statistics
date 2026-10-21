@@ -36,11 +36,19 @@
 ## numeric matrix the observations on predictor variables, where @math{N}
 ## corresponds to the number of observations and @math{P} corresponds to
 ## predictor variables.  @var{Y} contains the response category labels and it
-## either be an @math{N*P} categorical or numerical matrix (containing only 1s
-## and 0s) or an @math{N*1} numeric vector with positive integer values, a cell
-## array of character vectors and a logical vector.  @var{Y} can also be defined
-## as a character matrix with each row corresponding to an observation of
-## @var{X}.
+## can be an @math{N*K} numeric or logical matrix of 1s and 0s, with a column
+## for each of the @math{K} categories, or an @math{N*1} vector of positive
+## integers, logical values, character vectors in a cell array, strings, or
+## categorical values.  @var{Y} can also be a character matrix with each row
+## holding the label of an observation of @var{X}.
+##
+## The categories of a numeric or logical @var{Y} are taken in sorted order,
+## those of a cell array, string, or character matrix in order of first
+## appearance, and those of a categorical @var{Y} in the order of its
+## categories, a category without observations being ignored.  The last
+## category is the reference category of a nominal model.  An observation whose
+## label is missing (an empty character vector, @qcode{<missing>}, or
+## @qcode{<undefined>}), or whose predictors hold a @qcode{NaN}, is left out.
 ##
 ## @code{@var{B} = mnrfit (@var{X}, @var{Y}, @var{name}, @var{value})} returns a
 ## matrix, @var{B}, of coefficient estimates for a multinomial model fit with
@@ -104,10 +112,12 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
   if (n != N)
     error ("mnrfit: Y must have the same number of rows as X.")
   endif
-  if (! (isnumeric (Y) || islogical (Y) || ischar (Y) || iscellstr (Y)))
+  if (! (isnumeric (Y) || islogical (Y) || ischar (Y) || iscellstr (Y) ||
+         isstring (Y) || iscategorical (Y)))
     error (strcat ("mnrfit: Response labels must be a character array,", ...
-                   " a cell vector of strings, \nor a vector or", ...
-                   " matrix of doubles, singles or logical values."));
+                   " a cell vector of strings, a string or categorical", ...
+                   " vector, or a vector or matrix of doubles, singles or", ...
+                   " logical values."));
   endif
 
   ## Check supplied parameters
@@ -152,36 +162,34 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
       dispopt = false;
   endswitch
 
-  ## Categorize Y if it is a cellstring array
-  if (iscellstr (Y))
-    if (K > 1)
-      error ("mnrfit: Y must be a column vector when given as cellstr.");
+  ## Categorize Y if it holds text or categories.  Text is numbered by first
+  ## appearance and a categorical by its categories, as in MATLAB.  Each row of
+  ## a character array is one label, so its columns are not categories.
+  istext = ischar (Y) || iscellstr (Y) || isstring (Y) || iscategorical (Y);
+  if (istext)
+    if (ischar (Y))
+      Y = cellstr (Y);
+    elseif (K > 1)
+      if (iscellstr (Y))
+        ytype = 'cellstr';
+      else
+        ytype = class (Y);
+      endif
+      error ("mnrfit: Y must be a column vector when given as %s.", ytype);
     endif
-    ## Get groups in Y
-    [YN, ~, UY] = grp2idx (Y);  # this will also catch "" as missing values
+    ## Get groups in Y: "", <missing> and <undefined> are NaN
+    YN = grp2idx (Y);
     ## Remove missing values from X and Y
     RowsUsed  = ! logical (sum (isnan ([X, YN]), 2));
     Y         = Y(RowsUsed);
     X         = X(RowsUsed, :);
-    ## Renew groups in Y
-    [YN, ~, UY] = grp2idx (Y);  # in case a category is removed due to NaNs in X
+    ## Renew groups in Y, as a category may have lost all its observations,
+    ## and number them without gaps, as a categorical may hold unused ones
+    [UY, ~, YN] = unique (grp2idx (Y));
     n = numel (UY);
   endif
 
-  ## Categorize Y if it is a character array
-  if (ischar (Y))
-    ## Get groups in Y
-    [YN, ~, UY] = grp2idx (Y);  # this will also catch "" as missing values
-    ## Remove missing values from X and Y
-    RowsUsed  = ! logical (sum (isnan ([X, YN]), 2));
-    Y         = Y(RowsUsed);
-    X         = X(RowsUsed, :);
-    ## Renew groups in Y
-    [YN, ~, UY] = grp2idx (Y);  # in case a category is removed due to NaNs in X
-    n = numel (UY);
-  endif
-
-  if (K > 1)
+  if (K > 1 && ! istext)
     ## So far, if K > 1, Y must be a matrix of logical, singles or doubles
     if (! all (all (Y == 0 | Y == 1)))
       error ("mnrfit: Y must contain only 1 and 0 when given as a 2D matrix.");
@@ -191,7 +199,7 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
   endif
 
   ## Categorize Y in all other cases
-  if (! iscellstr (Y))
+  if (! istext)
     RowsUsed  = ! logical (sum (isnan ([X, Y]), 2));
     Y         = Y(RowsUsed);
     X         = X(RowsUsed, :);
@@ -636,6 +644,50 @@ endfunction
 %! assert_equal (s1.covb, s0.covb * s1.sfit ^ 2, 1e-10);
 %! assert_equal (s1.p, 2 * tcdf (- abs (s1.t), s1.dfe), 1e-12);
 
+## Test text and categorical responses against MATLAB R2026b.  Text responses
+## number their categories by first appearance and categorical ones by their
+## categories, the last category being the reference; a missing label drops
+## its observation, and a category without observations is ignored.
+%!shared X, sp, B1, Brev, Bmiss
+%! load fisheriris
+%! X = meas(:,1);
+%! sp = species;
+%! B1 = [38.7590, 12.6771; -6.8464, -2.0307];
+%! Brev = [-38.7590, -26.0819; 6.8464, 4.8157];
+%! Bmiss = [38.4986, 12.6788; -6.8013, -2.0310];
+%!test
+%! assert_equal (mnrfit (X, sp), B1, 1e-4);
+%! assert_equal (mnrfit (flipud (X), flipud (sp)), Brev, 1e-4);
+%!test
+%! assert_equal (mnrfit (X, string (sp)), B1, 1e-4);
+%! assert_equal (mnrfit (flipud (X), flipud (string (sp))), Brev, 1e-4);
+%!test
+%! assert_equal (mnrfit (X, char (sp)), B1, 1e-4);
+%! ## labels of different lengths, padded with blanks in the char matrix
+%! y = {'a'; 'bcd'; 'ef'}([2 * ones(50,1); ones(50,1); 3 * ones(50,1)]);
+%! assert_equal (mnrfit (X, char (y)), mnrfit (X, y), 1e-12);
+%!test
+%! assert_equal (mnrfit (X, categorical (sp)), B1, 1e-4);
+%! c = categorical (sp, {'virginica', 'setosa', 'versicolor'});
+%! assert_equal (mnrfit (X, c), [-12.6771, 26.0819; 2.0307, -4.8157], 1e-4);
+%! assert_equal (mnrfit (X, addcats (categorical (sp), 'extra')), B1, 1e-4);
+%!test
+%! c = categorical (sp);
+%! c(1) = missing;
+%! [B, dev] = mnrfit (X, c);
+%! assert_equal (B, Bmiss, 1e-4);
+%! assert_equal (dev, 181.6322, 1e-4);
+%!test
+%! s = string (sp);
+%! s(1) = missing;
+%! [B, dev] = mnrfit (X, s);
+%! assert_equal (B, Bmiss, 1e-4);
+%! assert_equal (dev, 181.6322, 1e-4);
+%!test
+%! c = categorical (sp, {'setosa', 'versicolor', 'virginica'}, 'Ordinal', true);
+%! B = mnrfit (X, c, 'model', 'ordinal');
+%! assert_equal (B, [18.5691; 21.6898; -3.4524], 1e-4);
+
 ## Test input validation
 %!error<mnrfit: too few input arguments.> mnrfit (ones (50,1))
 %!error<mnrfit: Predictors must be numeric.> ...
@@ -652,6 +704,10 @@ endfunction
 %! mnrfit (ones (5, 4), ones (5, 1), 'model')
 %!error<mnrfit: Y must be a column vector when given as cellstr.> ...
 %! mnrfit (ones (5, 4), {'q','q';'w','w';'q','q';'w','w';'q','q'})
+%!error<mnrfit: Y must be a column vector when given as categorical.> ...
+%! mnrfit (ones (5, 4), categorical ([1, 2; 1, 2; 1, 2; 1, 2; 1, 2]))
+%!error<mnrfit: Y must be a column vector when given as string.> ...
+%! mnrfit (ones (5, 4), string ({'q','q';'w','w';'q','q';'w','w';'q','q'}))
 %!error<mnrfit: Y must contain only 1 and 0 when given as a 2D matrix.> ...
 %! mnrfit (ones (5, 4), [1, 2; 1, 2; 1, 2; 1, 2; 1, 2])
 %!error<mnrfit: Y must contain positive integer category numbers.> ...

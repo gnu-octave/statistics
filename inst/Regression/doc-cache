@@ -11334,7 +11334,7 @@ mnrfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2494
+# length: 2980
 statistics: B = mnrfit (X, Y)
 statistics: B = mnrfit (X, Y, name, value)
 statistics: [B, dev] = mnrfit (...)
@@ -11353,11 +11353,19 @@ responses in Y on the predictors in X. X is an NxP
 numeric matrix the observations on predictor variables, where N
 corresponds to the number of observations and P corresponds to
 predictor variables. Y contains the response category labels and it
-either be an NxP categorical or numerical matrix (containing only 1s
-and 0s) or an Nx1 numeric vector with positive integer values, a cell
-array of character vectors and a logical vector. Y can also be defined
-as a character matrix with each row corresponding to an observation of
-X.
+can be an NxK numeric or logical matrix of 1s and 0s, with a column
+for each of the K categories, or an Nx1 vector of positive
+integers, logical values, character vectors in a cell array, strings, or
+categorical values. Y can also be a character matrix with each row
+holding the label of an observation of X.
+
+The categories of a numeric or logical Y are taken in sorted order,
+those of a cell array, string, or character matrix in order of first
+appearance, and those of a categorical Y in the order of its
+categories, a category without observations being ignored. The last
+category is the reference category of a nominal model. An observation whose
+label is missing (an empty character vector, <missing>, or
+<undefined>), or whose predictors hold a NaN, is left out.
 
 B = mnrfit (X, Y, name, value) returns a
 matrix, B, of coefficient estimates for a multinomial model fit with
