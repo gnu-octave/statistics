@@ -32,8 +32,11 @@
 ## @code{@var{B} = -1/2 * @var{J} * (@var{D}.^2) * @var{J}}, where
 ## @code{J = eye(@var{n}) - ones(@var{n},@var{n})/@var{n}}. @var{p}, the number
 ## of columns of @var{Y}, is equal to the number of positive real eigenvalues of
-## @var{B}. If @var{B} has no positive eigenvalues, which is the case when
-## every point in @var{D} is coincident, @var{Y} is a single column of zeros.
+## @var{B}, where an eigenvalue counts as positive only if it exceeds
+## @code{eps^(3/4)} times the largest eigenvalue magnitude, so that eigenvalues
+## which are numerically zero are discarded. If @var{B} has no positive
+## eigenvalues, which is the case when every point in @var{D} is coincident,
+## @var{Y} is a single column of zeros.
 ##
 ## The optional argument @var{p} is a positive integer between 1 and @var{n}
 ## that specifies the maximum dimensionality of the desired embedding @var{Y}.
@@ -133,7 +136,7 @@ function [Y, e] = cmdscale (D, p)
   Q = Q(:, ord);
 
   ## determine total strictly positive eigenvalues
-  tol = n * max (abs (etmp)) * eps;
+  tol = eps^(3/4) * max (abs (etmp));
   n_pos = sum (etmp > tol);
 
   if (n_pos == n)
@@ -265,6 +268,34 @@ endfunction
 %! [Y, e] = cmdscale (ones (3, 3));
 %! assert_equal (Y, zeros (3, 1));
 %! assert_equal (e, zeros (3, 1));
+%!test
+%! ## A numerically flat dimension is not counted as a positive eigenvalue
+%! X = [0 0 0; 1 0 0; 0 1 0; 1 1 1e-7; 2 1 -1e-7; 1 3 2e-7];
+%! D = pdist (X);
+%! [Y, e] = cmdscale (D);
+%! assert_equal (size (Y), [6, 2]);
+%! assert_equal (length (e), 6);
+%!test
+%! ## The cutoff lies between 1.78e-12 and 2.0e-12 times the largest eigenvalue
+%! X = [0 0 0; 1 0 0; 0 1 0; 1 1 1; 2 1 -1; 1 3 2];
+%! Y1 = cmdscale (pdist ([X(:,1:2), 2.36477e-6 * X(:,3)]));
+%! Y2 = cmdscale (pdist ([X(:,1:2), 2.50489e-6 * X(:,3)]));
+%! assert_equal ([columns(Y1), columns(Y2)], [2, 3]);
+%!test
+%! ## The cutoff is relative to the largest eigenvalue magnitude, which here
+%! ## is a negative one
+%! H = hadamard (16);
+%! z = sqrt (2.6e-12) * H(:,11);
+%! X = [H(:,2:10), z];
+%! D = sqrt (max (pdist (X) .^ 2 - pdist (sqrt (1.9) * H(:,12)) .^ 2, 0));
+%! Y = cmdscale (D);
+%! assert_equal (columns (Y), 9);
+%!test
+%! ## The cutoff does not depend on the scale of D or the number of points
+%! X = [0 0 0; 1 0 0; 0 1 0; 1 1 1; 2 1 -1; 1 3 2];
+%! X(:,3) = 3.16228e-6 * X(:,3);
+%! Y = cmdscale (pdist (1e3 * [X; X + [5 5 0]]));
+%! assert_equal (columns (Y), 2);
 %!error <cmdscale: input must be a numeric vector or matrix.> cmdscale ({'not', 'a', 'matrix'})
 %!error <matrix input must be square symmetric> cmdscale (rand (3, 4))
 %!error <entries must be nonnegative> cmdscale (-ones (3))
