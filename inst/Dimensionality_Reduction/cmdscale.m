@@ -33,8 +33,9 @@
 ## @code{J = eye(@var{n}) - ones(@var{n},@var{n})/@var{n}}. @var{p}, the number
 ## of columns of @var{Y}, is equal to the number of positive real eigenvalues of
 ## @var{B}, where an eigenvalue counts as positive only if it exceeds
-## @code{eps^(3/4)} times the largest eigenvalue magnitude, so that eigenvalues
-## which are numerically zero are discarded. If @var{B} has no positive
+## @code{eps (class (@var{D})) ^ (3/4)} times the largest eigenvalue magnitude,
+## so that eigenvalues which are numerically zero in the precision of @var{D}
+## are discarded. If @var{B} has no positive
 ## eigenvalues, which is the case when every point in @var{D} is coincident,
 ## @var{Y} is a single column of zeros.
 ##
@@ -136,7 +137,7 @@ function [Y, e] = cmdscale (D, p)
   Q = Q(:, ord);
 
   ## determine total strictly positive eigenvalues
-  tol = eps^(3/4) * max (abs (etmp));
+  tol = eps (class (etmp)) ^ (3/4) * max (abs (etmp));
   n_pos = sum (etmp > tol);
 
   if (n_pos == n)
@@ -296,6 +297,14 @@ endfunction
 %! X(:,3) = 3.16228e-6 * X(:,3);
 %! Y = cmdscale (pdist (1e3 * [X; X + [5 5 0]]));
 %! assert_equal (columns (Y), 2);
+%!test
+%! ## The cutoff follows the precision of single D, as in MATLAB R2024a
+%! X = [0 0 0; 1 0 0; 0 1 0; 1 1 3e-3];
+%! Y1 = cmdscale (single (pdist (X)));
+%! X(4,3) = 1e-2;
+%! Y2 = cmdscale (single (pdist (X)));
+%! assert_equal (class (Y1), 'single');
+%! assert_equal ([columns(Y1), columns(Y2)], [2, 3]);
 %!error <cmdscale: input must be a numeric vector or matrix.> cmdscale ({'not', 'a', 'matrix'})
 %!error <matrix input must be square symmetric> cmdscale (rand (3, 4))
 %!error <entries must be nonnegative> cmdscale (-ones (3))

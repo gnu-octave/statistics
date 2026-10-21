@@ -692,7 +692,7 @@ cmdscale
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3013
+# length: 3219
 statistics: Y = cmdscale (D)
 statistics: [Y, e] = cmdscale (D)
 statistics: Y = cmdscale (D, p)
@@ -707,8 +707,12 @@ the eigenvalues e of
 B = -1/2 * J * (D.^2) * J, where
 J = eye(n) - ones(n,n)/n. p, the number
 of columns of Y, is equal to the number of positive real eigenvalues of
-B. If B has no positive eigenvalues, which is the case when
-every point in D is coincident, Y is a single column of zeros.
+B, where an eigenvalue counts as positive only if it exceeds
+eps (class (D)) ^ (3/4) times the largest eigenvalue magnitude,
+so that eigenvalues which are numerically zero in the precision of D
+are discarded. If B has no positive
+eigenvalues, which is the case when every point in D is coincident,
+Y is a single column of zeros.
 
 The optional argument p is a positive integer between 1 and n
 that specifies the maximum dimensionality of the desired embedding Y.
