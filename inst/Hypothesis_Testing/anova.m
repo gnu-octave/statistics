@@ -4229,7 +4229,6 @@ endclassdef
 ## Unbalanced NaN cleanup preserves the anovan fallback results.
 %!test
 %! x = [1, 5; 2, 6; 3, 7; NaN, 8];
-%! warning ("off", "all", "local");
 %! a = anova (x, [], "Reps", 2, "ModelSpecification", "interactions");
 %! stats (a);
 %! assert_equal (a.Stats.source, "anovan");

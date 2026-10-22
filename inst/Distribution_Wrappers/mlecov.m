@@ -417,8 +417,9 @@ endfunction
 %!warning <mlecov: unable to compute a covariance matrix because the computed Hessian matrix is not positive definite.> ...
 %! mlecov (1, [1, 2, 3, 4, 5], 'nloglf', @(p, d, c, f) -sum (p(1) .* d));
 %!test
-%! warning ("off", "all", "local");
+%! S = warning ("off", "all");
 %! acov = mlecov (1, [1, 2, 3, 4, 5], 'nloglf', @(p, d, c, f) -sum (p(1) .* d));
+%! warning (S);
 %! assert_equal (all (isnan (acov), 'all'), true);
 
 ## Test input validation
