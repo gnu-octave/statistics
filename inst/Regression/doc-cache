@@ -12208,7 +12208,7 @@ ridge
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1233
+# length: 1421
 statistics: b = ridge (y, X, k)
 statistics: b = ridge (y, X, k, scaled)
 Ridge regression.
@@ -12218,7 +12218,10 @@ coefficient estimates by applying ridge regression from the predictor matrix
 X to the response vector y. Each value of b is the
 coefficient for the respective ridge parameter given k. By default,
 b is calculated after centering and scaling the predictors to have a
-zero mean and standard deviation 1.
+zero mean and standard deviation 1. A predictor whose standard deviation is
+below sqrt (eps), taken in the class of X, is treated as a
+constant term: it is replaced by a column of ones and its coefficient is
+never rescaled.
 
 b = ridge (y, X, k, scaled) performs the
 regression with the specified scaling of the coefficient estimates b.

@@ -27,9 +27,9 @@
 ## coefficient for the respective ridge parameter given @var{k}.  By default,
 ## @var{b} is calculated after centering and scaling the predictors to have a
 ## zero mean and standard deviation 1.  A predictor whose standard deviation is
-## below @code{sqrt (eps)} is treated as a constant: it is neither centered nor
-## scaled, so it enters the model as a column of ones and its coefficient is
-## returned unrescaled.
+## below @code{sqrt (eps)}, taken in the class of @var{X}, is treated as a
+## constant term: it is replaced by a column of ones and its coefficient is
+## never rescaled.
 ##
 ## @code{@var{b} = ridge (@var{y}, @var{X}, @var{k}, @var{scaled})} performs the
 ## regression with the specified scaling of the coefficient estimates @var{b}.
@@ -97,7 +97,7 @@ function b = ridge (y, X, k, scaled)
   stdx = std (X, 0, 1);
 
   ## Columns without variation are treated as a constant term
-  isconst = stdx < sqrt (eps);
+  isconst = stdx < sqrt (eps (class (stdx)));
   stdx(isconst) = 1;
 
   z = (X - m) ./ stdx;
@@ -254,11 +254,27 @@ endfunction
 %!test
 %! x = (1:10)';
 %! y = x / 2 + sin (x);
-%! bc = ridge (y, [ones(10,1), x], 0.1);
 %! c = 1.45e-8 * (x - mean (x)) / std (x);
-%! assert_equal (ridge (y, [c, x], 0.1), bc, 1e-6);
+%! b = ridge (y, [c, x], 0.1);
+%! assert_equal (b, ridge (y, [ones(10,1), x], 0.1), 1e-14);
+%!test
+%! x = (1:10)';
+%! y = x / 2 + sin (x);
 %! c = 1.53e-8 * (x - mean (x)) / std (x);
-%! assert_equal (all (abs (ridge (y, [c, x], 0.1) - bc) < 1e-6), false);
+%! b = ridge (y, [c, x], 0.1);
+%! assert_equal (b, [0.690800497259392; 0.690800497259375], 1e-10);
+%!test
+%! x = (1:10)';
+%! y = single (x / 2 + sin (x));
+%! c = single (1e-4 * (x - mean (x)) / std (x));
+%! b = ridge (y, [c, single(x)], 0.1);
+%! assert_equal (b, single ([2.86249389814040; 1.37400978026317]), 1e-5);
+%!test
+%! x = (1:10)';
+%! y = single (x / 2 + sin (x));
+%! c = single (1e-3 * (x - mean (x)) / std (x));
+%! b = ridge (y, [c, single(x)], 0.1);
+%! assert_equal (b, single ([0.6907972; 0.6908036]), 1e-5);
 
 ## Test input validation
 %!error<ridge: function called with too few input arguments.> ridge (1)
