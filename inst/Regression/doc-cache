@@ -12711,7 +12711,7 @@ mnrfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6544
+# length: 6444
 statistics: B = mnrfit (X, Y)
 statistics: B = mnrfit (X, Y, name, value)
 statistics: [B, dev] = mnrfit (...)
@@ -12800,8 +12800,6 @@ fraction of its value. The default is 1e-6.
 parameter, scaling the coefficient standard errors by it and testing the
 coefficients against the t distribution, or 'off' (default)
 for the theoretical dispersion of 1.
-'display' A flag to enable/disable displaying
-information about the fitted model. Default is 'off'.
 
 [B, dev, stats] = mnrfit (...) also returns the
 deviance of the fit, dev, and a structure stats with the fitted

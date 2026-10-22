@@ -114,9 +114,6 @@
 ## parameter, scaling the coefficient standard errors by it and testing the
 ## coefficients against the @math{t} distribution, or @qcode{'off'} (default)
 ## for the theoretical dispersion of @math{1}.
-##
-## @item @qcode{'display'} @tab A flag to enable/disable displaying
-## information about the fitted model.  Default is @qcode{'off'}.
 ## @end multitable
 ##
 ## @code{[@var{B}, @var{dev}, @var{stats}] = mnrfit (@dots{})} also returns the
@@ -196,7 +193,6 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
     error ("mnrfit: optional arguments must be in pairs.")
   endif
   MODELTYPE = 'nominal';
-  DISPLAY = 'off';
   LINK = 'logit';
   ESTDISP = 'off';
   INTERACTIONS = [];            ## resolved to a default per model below
@@ -209,8 +205,6 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
     switch (lower (name))
       case 'model'
         MODELTYPE = value;
-      case 'display'
-        DISPLAY = value;
       case 'link'
         LINK = value;
       case 'estdisp'
@@ -269,14 +263,6 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
     endif
     W = double (WEIGHTS(:));
   endif
-
-  ## Evaluate display input argument
-  switch (lower (DISPLAY))
-    case 'on'
-      dispopt = true;
-    case 'off'
-      dispopt = false;
-  endswitch
 
   ## Categorize Y if it holds text or categories.  Text is numbered by first
   ## appearance and a categorical by its categories, as in MATLAB.  Each row of
@@ -1239,3 +1225,5 @@ endfunction
 %! mnrfit (X6, Yc, 'iterationlimit', 2.5)
 %!error<mnrfit: 'tolerance' must be a positive scalar.> ...
 %! mnrfit (X6, Yc, 'tolerance', 0)
+%!warning<mnrfit: parameter display will be ignored> ...
+%! mnrfit (X6, Yc, 'display', 'on');
