@@ -1142,8 +1142,13 @@ classdef MultinomialRegression < PredictiveModel
     ## @headitem Type @tab Plot
     ## @item @qcode{'histogram'} @tab a histogram of the residuals (default)
     ## @item @qcode{'caseorder'} @tab the residuals against the row number
+    ## @item @qcode{'fitted'} @tab the residuals against the fitted
+    ## probability of the class
     ## @item @qcode{'lagged'} @tab each residual against the one before it
     ## @item @qcode{'probability'} @tab a normal probability plot
+    ## @item @qcode{'observed'} @tab the observed share of each row in the
+    ## class against its fitted probability, with the line @math{y = x} and a
+    ## segment from it to each row
     ## @item @qcode{'symmetry'} @tab the residuals above their median against
     ## those below it
     ## @end multitable
@@ -1155,9 +1160,11 @@ classdef MultinomialRegression < PredictiveModel
     ## @item @qcode{'ResidualType'} @tab @qcode{'deviance'} (default),
     ## @qcode{'raw'} or @qcode{'Pearson'}, a variable of @code{Residuals}.
     ## @item @qcode{'ClassToPlot'} @tab For raw and Pearson residuals, the
-    ## class whose column of residuals is plotted, a class named in
+    ## class whose column of residuals is plotted, and whose probability the
+    ## @qcode{'fitted'} and @qcode{'observed'} plots show, a class named in
     ## @code{ClassNames}; the first by default.  The residuals of an ordinal or
-    ## hierarchical model have no column for the last class.
+    ## hierarchical model have no column for the last class.  With deviance
+    ## residuals it is ignored, with a warning, and the first class shown.
     ## @item @qcode{'FaceColor'}, @qcode{'FaceAlpha'}, @qcode{'LineWidth'} @tab
     ## The fill color, transparency and edge width of the bars of a histogram.
     ## @item @qcode{'Color'}, @qcode{'LineStyle'}, @qcode{'Marker'} @tab The
@@ -1185,16 +1192,12 @@ classdef MultinomialRegression < PredictiveModel
         mdl = varargin{1};
         args = varargin(2:end);
       endif
-      ptypes = {'histogram', 'caseorder', 'lagged', 'probability', ...
-                'symmetry'};
+      ptypes = {'histogram', 'caseorder', 'fitted', 'lagged', ...
+                'probability', 'observed', 'symmetry'};
       ptype = 'histogram';
       if (! isempty (args) && ischar (args{1}) && mod (numel (args), 2) == 1)
         ptype = lower (args{1});
         args(1) = [];
-        if (any (strcmp (ptype, {'fitted', 'observed'})))
-          error (strcat ("MultinomialRegression.plotResiduals: plot type", ...
-                         " '%s' is not implemented."), ptype);
-        endif
         if (! any (strcmp (ptype, ptypes)))
           error (strcat ("MultinomialRegression.plotResiduals: unknown", ...
                          " plot type '%s'."), ptype);
@@ -1202,8 +1205,8 @@ classdef MultinomialRegression < PredictiveModel
       endif
       optNames = {'ResidualType', 'ClassToPlot', 'FaceColor', 'FaceAlpha', ...
                   'LineWidth', 'Color', 'LineStyle', 'Marker'};
-      dfValues = {'deviance', [], [0, 0.447, 0.741], 1, 0.5, ...
-                  [0, 0.447, 0.741], 'none', 'x'};
+      dfValues = {'deviance', [], [0.066, 0.443, 0.745], 1, 0.5, ...
+                  [0.066, 0.443, 0.745], 'none', 'x'};
       [rtype, cls, fc, fa, lw, col, ls, mk, rem] = ...
                               parsePairedArguments (optNames, dfValues, args);
       if (! isempty (rem))
@@ -1215,12 +1218,13 @@ classdef MultinomialRegression < PredictiveModel
                        " 'ResidualType' must be a character vector."));
       endif
       rtype = lower (char (rtype));
+      j = 1;
       switch (rtype)
         case 'deviance'
           if (! isempty (cls))
-            error (strcat ("MultinomialRegression.plotResiduals:", ...
-                           " 'ClassToPlot' applies to raw and Pearson", ...
-                           " residuals only."));
+            warning (strcat ("MultinomialRegression.plotResiduals:", ...
+                             " 'ClassToPlot' is ignored when", ...
+                             " 'ResidualType' is 'deviance'."));
           endif
           r = mdl.Residuals.Deviance;
         case {'raw', 'pearson'}
@@ -1229,7 +1233,6 @@ classdef MultinomialRegression < PredictiveModel
           else
             R = mdl.Residuals.Pearson;
           endif
-          j = 1;
           if (! isempty (cls))
             j = MultinomialRegression.classindex (mdl.ClassNames, cls);
             if (j == 0)
@@ -1275,6 +1278,32 @@ classdef MultinomialRegression < PredictiveModel
           xlabel (ax, 'Row number');
           ylabel (ax, 'Residuals');
           title (ax, 'Case order plot of residuals');
+
+        case 'fitted'
+          [f, ~] = mdl.fittedclass (j);
+          hold (ax, 'on');
+          h = plot (ax, f, r, plotargs{:});
+          h(2,1) = line (ax, xlim (ax), [0, 0], 'LineStyle', ':', ...
+                         'Color', [0, 0, 0]);
+          hold (ax, 'off');
+          xlabel (ax, 'Fitted values');
+          ylabel (ax, 'Residuals');
+          title (ax, 'Plot of residuals vs. fitted values');
+
+        case 'observed'
+          [f, obs] = mdl.fittedclass (j);
+          n = numel (f);
+          hold (ax, 'on');
+          h = plot (ax, f, obs, plotargs{:});
+          h(2,1) = line (ax, xlim (ax), xlim (ax), 'LineStyle', ':', ...
+                         'Color', [0, 0, 0]);
+          xv = reshape ([f(:)'; f(:)'; NaN(1, n)], 1, []);
+          yv = reshape ([f(:)'; obs(:)'; NaN(1, n)], 1, []);
+          h(3,1) = line (ax, xv, yv, 'LineStyle', '-', 'Color', col);
+          hold (ax, 'off');
+          xlabel (ax, 'Fitted values');
+          ylabel (ax, 'Observed response values');
+          title (ax, 'Plot of observed vs. fitted values');
 
         case 'lagged'
           hold (ax, 'on');
@@ -1583,6 +1612,21 @@ classdef MultinomialRegression < PredictiveModel
       else
         P = mnrval (B, Xd, args{:});
       endif
+    endfunction
+
+    ## The fitted probability of class J at each input row, and the share of
+    ## the row's observations in that class; NaN at a row left out of the fit
+    function [f, obs] = fittedclass (this, j)
+      subset = this.ObservationInfo.Subset;
+      n = numel (subset);
+      f = NaN (n, 1);
+      obs = NaN (n, 1);
+      X = this.rawcodes (this.Variables(subset,:), 'MultinomialRegression');
+      P = this.probabilities (this.designcodes (X), 'category');
+      f(subset) = P(:,j);
+      Y = this.Variables.(this.ResponseName);
+      [~, C] = MultinomialRegression.classesof (Y(subset,:));
+      obs(subset) = C(:,j) ./ sum (C, 2);
     endfunction
 
     ## The design matrix, without the intercept, of new predictor data
@@ -2391,6 +2435,58 @@ endclassdef
 %!   set (0, 'defaultfigurevisible', dv);
 %! end_unwind_protect
 
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotResiduals (m, 'fitted');
+%!   assert_equal (get (h(1), 'XData')(1:3), [0.851674439820703, ...
+%!                 0.886831611467944, 0.566508298983404], 1e-10);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotResiduals (m, 'fitted', 'ResidualType', 'raw', 'ClassToPlot', 2);
+%!   assert_equal (get (h(1), 'XData')(1:3), [0.143631440997612, ...
+%!                 0.101673529742502, 0.400052723700518], 1e-10);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotResiduals (m, 'observed');
+%!   assert_equal (get (h(1), 'YData')(1:6), [1, 1, 0, 1, 0, 0]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotResiduals (m, 'observed');
+%!   assert_equal (numel (h), 3);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   mo = fitmnr (Xm, y, 'ModelType', 'ordinal');
+%!   h = plotResiduals (mo, 'fitted');
+%!   assert_equal (get (h(1), 'XData')(1:3), [0.828677549406082, ...
+%!                 0.702194243013224, 0.555964442786868], 1e-6);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!warning<MultinomialRegression.plotResiduals: 'ClassToPlot' is ignored when 'ResidualType' is 'deviance'.> ...
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   plotResiduals (m, 'observed', 'ClassToPlot', 2);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
 ## Test input validation
 %!error<MultinomialRegression: too few input arguments.> MultinomialRegression (1)
 %!error<MultinomialRegression: invalid optional paired argument.> ...
@@ -2461,14 +2557,10 @@ endclassdef
 %! coefTest (m, [1, 0, 0, 0, 0, 0], [1; 2])
 %!error<MultinomialRegression.plotResiduals: unknown plot type 'boxes'.> ...
 %! plotResiduals (m, 'boxes')
-%!error<MultinomialRegression.plotResiduals: plot type 'fitted' is not implemented.> ...
-%! plotResiduals (m, 'fitted')
 %!error<MultinomialRegression.plotResiduals: invalid optional paired argument.> ...
 %! plotResiduals (m, 'caseorder', 'Foo', 1)
 %!error<MultinomialRegression.plotResiduals: unknown 'ResidualType' 'scaled'.> ...
 %! plotResiduals (m, 'ResidualType', 'scaled')
-%!error<MultinomialRegression.plotResiduals: 'ClassToPlot' applies to raw and Pearson residuals only.> ...
-%! plotResiduals (m, 'ClassToPlot', 2)
 %!error<MultinomialRegression.plotResiduals: 'ClassToPlot' names no class of the model.> ...
 %! plotResiduals (m, 'ResidualType', 'raw', 'ClassToPlot', 7)
 %!error<MultinomialRegression.plotResiduals: the residuals have no column for the last class.> ...

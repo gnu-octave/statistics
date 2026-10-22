@@ -9036,7 +9036,7 @@ MultinomialRegression.plotResiduals
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1480
+# length: 1832
 MultinomialRegression: plotResiduals (mdl)
 MultinomialRegression: plotResiduals (mdl, plotType)
 MultinomialRegression: plotResiduals (ax, ...)
@@ -9050,8 +9050,13 @@ residuals, as a probability density. plotType chooses the plot:
 Type Plot
 'histogram' a histogram of the residuals (default)
 'caseorder' the residuals against the row number
+'fitted' the residuals against the fitted
+probability of the class
 'lagged' each residual against the one before it
 'probability' a normal probability plot
+'observed' the observed share of each row in the
+class against its fitted probability, with the line y = x and a
+segment from it to each row
 'symmetry' the residuals above their median against
 those below it
 
@@ -9061,9 +9066,11 @@ Name Value
 'ResidualType' 'deviance' (default),
 'raw' or 'Pearson', a variable of Residuals.
 'ClassToPlot' For raw and Pearson residuals, the
-class whose column of residuals is plotted, a class named in
+class whose column of residuals is plotted, and whose probability the
+'fitted' and 'observed' plots show, a class named in
 ClassNames; the first by default. The residuals of an ordinal or
-hierarchical model have no column for the last class.
+hierarchical model have no column for the last class. With deviance
+residuals it is ignored, with a warning, and the first class shown.
 'FaceColor', 'FaceAlpha', 'LineWidth' The fill color, transparency and edge width of the bars of a histogram.
 'Color', 'LineStyle', 'Marker' The
 color, line style and marker of the residuals in the other plots.
