@@ -56,7 +56,8 @@
 ## @item @qcode{'cityblock'} @tab City block distance.
 ## @item @qcode{'minkowski'} @tab Minkowski distance.  The default exponent
 ## is 2.  A different exponent can be specified with the subsequent
-## @var{DistParameter} input argument.
+## @var{DistParameter} input argument.  An exponent of @code{Inf} gives the
+## Chebychev distance.
 ## @item @qcode{'chebychev'} @tab Chebychev distance (maximum coordinate
 ## difference).
 ## @item @qcode{'cosine'} @tab One minus the cosine of the included angle
@@ -188,6 +189,13 @@ function [D, I] = pdist2 (X, Y, varargin)
   if (isempty (SortOrder) && nargout > 1)
     error (strcat ("pdist2: 'Smallest' or 'Largest' must be", ...
                    " specified to compute second output."));
+  endif
+
+  ## A Minkowski exponent of Inf is the Chebyshev distance, its limit.  The
+  ## Minkowski formula itself would raise every difference to Inf and back.
+  if (strcmp (Distance, 'minkowski') && isscalar (DistParameter)
+                                     && DistParameter == Inf)
+    Distance = 'chebychev';
   endif
 
   ## FAST PATH: Optimization for fast Euclidean algorithm
@@ -631,6 +639,13 @@ endfunction
 %! assert_equal ({D, I}, {d, i});
 %!warning<pdist2: matrix is close to singular> ...
 %! pdist2 (xx, xx, 'mahalanobis');
+%!test
+%! ## A Minkowski exponent of Inf is the Chebyshev distance, as in MATLAB
+%! ## R2026b, on the vectorised path and on the blocked one for large inputs.
+%! X = [1, 2; 4, 6; 0, 0];
+%! assert_equal (pdist2 (X(1,:), X(2:3,:), 'minkowski', Inf), [4, 2]);
+%! Y = repmat (X, 200, 1);
+%! assert_equal (pdist2 (Y, X, 'minkowski', Inf), pdist2 (Y, X, 'chebychev'));
 
 ## Test input validation
 %!test
