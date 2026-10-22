@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 354
+# columns: 356
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -9023,6 +9023,135 @@ MultinomialRegression.predict
 # elements: 1
 # length: 55
 Predict the response of a multinomial regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+MultinomialRegression.plotResiduals
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1480
+MultinomialRegression: plotResiduals (mdl)
+MultinomialRegression: plotResiduals (mdl, plotType)
+MultinomialRegression: plotResiduals (ax, ...)
+MultinomialRegression: plotResiduals (..., name, value)
+MultinomialRegression: h = plotResiduals (...)
+Plot the residuals of a multinomial regression model.
+
+plotResiduals (mdl) draws a histogram of the deviance
+residuals, as a probability density. plotType chooses the plot:
+
+Type Plot
+'histogram' a histogram of the residuals (default)
+'caseorder' the residuals against the row number
+'lagged' each residual against the one before it
+'probability' a normal probability plot
+'symmetry' the residuals above their median against
+those below it
+
+The following name, value pairs are accepted:
+
+Name Value
+'ResidualType' 'deviance' (default),
+'raw' or 'Pearson', a variable of Residuals.
+'ClassToPlot' For raw and Pearson residuals, the
+class whose column of residuals is plotted, a class named in
+ClassNames; the first by default. The residuals of an ordinal or
+hierarchical model have no column for the last class.
+'FaceColor', 'FaceAlpha', 'LineWidth' The fill color, transparency and edge width of the bars of a histogram.
+'Color', 'LineStyle', 'Marker' The
+color, line style and marker of the residuals in the other plots.
+
+ax is the axes to draw in, the current axes by default. h is
+the patch of a histogram, and for the other plots a column of the line
+of residuals and its reference lines.
+
+See also:
+MultinomialRegression.Residuals
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Plot the residuals of a multinomial regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+MultinomialRegression.plotSlice
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2263
+MultinomialRegression: plotSlice (mdl)
+MultinomialRegression: plotSlice (mdl, Xnew)
+MultinomialRegression: plotSlice (mdl, plotType)
+MultinomialRegression: plotSlice (mdl, plotType, Xnew)
+MultinomialRegression: plotSlice (ax, ...)
+MultinomialRegression: plotSlice (..., name, value)
+MultinomialRegression: h = plotSlice (...)
+Plot slices through the fitted probabilities of a multinomial regression
+model.
+
+A slice varies one continuous predictor over its range and holds every
+other predictor fixed, a categorical one at its most common level. The
+ranges and the fixed values are taken from the data the model was
+fitted on, or from Xnew, a table or a matrix as predict
+takes it; a single row of Xnew gives each predictor the range from
+its value to 10% above it. plotType chooses the plot:
+
+Type Plot
+'interactive' (default) a figure with one plot per
+continuous predictor, each the probability of one class along that
+predictor, the others fixed at the middle of their ranges, with its 95%
+confidence band shaded and dashed and dotted lines through the middle.
+'histogram' overlaid bars of the probability of each
+class at 40 values along one predictor, the others fixed at their means.
+'stackedhist' the same probabilities as stacked bars.
+
+MATLAB's interactive plot is an app whose menus and boxes change the
+class, the predictors and the fixed values; here the figure has no such
+controls, and the plot is drawn again to change them.
+
+The following name, value pairs are accepted:
+
+Name Value
+'ClassToPlot' For the interactive plot, the class
+whose probability is drawn, the first of ClassNames by default.
+'PredictorToVary' For the histograms, the name of the
+continuous predictor to vary, the first by default.
+'FaceColor', 'FaceAlpha', 'LineWidth' The fill color ('auto' by default, a color per class), the
+transparency (0.6) and the edge width (0.5) of the bars of a histogram.
+'EdgeColor', 'LineStyle' The edge color and
+line style of the stacked bars, black up to 150 bars and none beyond,
+and a solid line.
+
+ax is the axes to draw a histogram in, the current axes by default.
+h is the figure of the interactive plot, and for the histograms a
+column of one patch or bar object per class.
+
+See also:
+MultinomialRegression.predict,
+plotPartialDependence
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 79
+Plot slices through the fitted probabilities of a multinomial regression model.
 
 
 

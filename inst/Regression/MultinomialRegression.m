@@ -501,16 +501,6 @@ classdef MultinomialRegression < PredictiveModel
       endif
     endfunction
 
-    ## Not implemented yet
-    function h = plotResiduals (this, varargin)
-      error ("MultinomialRegression.plotResiduals: not implemented yet.");
-    endfunction
-
-    ## Not implemented yet
-    function h = plotSlice (this, varargin)
-      error ("MultinomialRegression.plotSlice: not implemented yet.");
-    endfunction
-
   endmethods
 
   methods (Access = public)
@@ -1136,6 +1126,436 @@ classdef MultinomialRegression < PredictiveModel
 
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {MultinomialRegression} {} plotResiduals (@var{mdl})
+    ## @deftypefnx {MultinomialRegression} {} plotResiduals (@var{mdl}, @var{plotType})
+    ## @deftypefnx {MultinomialRegression} {} plotResiduals (@var{ax}, @dots{})
+    ## @deftypefnx {MultinomialRegression} {} plotResiduals (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {MultinomialRegression} {@var{h} =} plotResiduals (@dots{})
+    ##
+    ## Plot the residuals of a multinomial regression model.
+    ##
+    ## @code{plotResiduals (@var{mdl})} draws a histogram of the deviance
+    ## residuals, as a probability density.  @var{plotType} chooses the plot:
+    ##
+    ## @multitable @columnfractions 0.2 0.75
+    ## @headitem Type @tab Plot
+    ## @item @qcode{'histogram'} @tab a histogram of the residuals (default)
+    ## @item @qcode{'caseorder'} @tab the residuals against the row number
+    ## @item @qcode{'lagged'} @tab each residual against the one before it
+    ## @item @qcode{'probability'} @tab a normal probability plot
+    ## @item @qcode{'symmetry'} @tab the residuals above their median against
+    ## those below it
+    ## @end multitable
+    ##
+    ## The following @var{name}, @var{value} pairs are accepted:
+    ##
+    ## @multitable @columnfractions 0.2 0.75
+    ## @headitem Name @tab Value
+    ## @item @qcode{'ResidualType'} @tab @qcode{'deviance'} (default),
+    ## @qcode{'raw'} or @qcode{'Pearson'}, a variable of @code{Residuals}.
+    ## @item @qcode{'ClassToPlot'} @tab For raw and Pearson residuals, the
+    ## class whose column of residuals is plotted, a class named in
+    ## @code{ClassNames}; the first by default.  The residuals of an ordinal or
+    ## hierarchical model have no column for the last class.
+    ## @item @qcode{'FaceColor'}, @qcode{'FaceAlpha'}, @qcode{'LineWidth'} @tab
+    ## The fill color, transparency and edge width of the bars of a histogram.
+    ## @item @qcode{'Color'}, @qcode{'LineStyle'}, @qcode{'Marker'} @tab The
+    ## color, line style and marker of the residuals in the other plots.
+    ## @end multitable
+    ##
+    ## @var{ax} is the axes to draw in, the current axes by default.  @var{h} is
+    ## the patch of a histogram, and for the other plots a column of the line
+    ## of residuals and its reference lines.
+    ##
+    ## @seealso{MultinomialRegression.Residuals}
+    ## @end deftypefn
+    function h = plotResiduals (this, varargin)
+
+      ## Called with an axes first, the model comes second
+      if (isa (this, 'MultinomialRegression'))
+        ax = [];
+        mdl = this;
+        args = varargin;
+      else
+        if (! (isscalar (this) && isgraphics (this, 'axes')))
+          error ("MultinomialRegression.plotResiduals: AX must be an axes.");
+        endif
+        ax = this;
+        mdl = varargin{1};
+        args = varargin(2:end);
+      endif
+      ptypes = {'histogram', 'caseorder', 'lagged', 'probability', ...
+                'symmetry'};
+      ptype = 'histogram';
+      if (! isempty (args) && ischar (args{1}) && mod (numel (args), 2) == 1)
+        ptype = lower (args{1});
+        args(1) = [];
+        if (any (strcmp (ptype, {'fitted', 'observed'})))
+          error (strcat ("MultinomialRegression.plotResiduals: plot type", ...
+                         " '%s' is not implemented."), ptype);
+        endif
+        if (! any (strcmp (ptype, ptypes)))
+          error (strcat ("MultinomialRegression.plotResiduals: unknown", ...
+                         " plot type '%s'."), ptype);
+        endif
+      endif
+      optNames = {'ResidualType', 'ClassToPlot', 'FaceColor', 'FaceAlpha', ...
+                  'LineWidth', 'Color', 'LineStyle', 'Marker'};
+      dfValues = {'deviance', [], [0, 0.447, 0.741], 1, 0.5, ...
+                  [0, 0.447, 0.741], 'none', 'x'};
+      [rtype, cls, fc, fa, lw, col, ls, mk, rem] = ...
+                              parsePairedArguments (optNames, dfValues, args);
+      if (! isempty (rem))
+        error (strcat ("MultinomialRegression.plotResiduals: invalid", ...
+                       " optional paired argument."));
+      endif
+      if (! (ischar (rtype) || (isa (rtype, 'string') && isscalar (rtype))))
+        error (strcat ("MultinomialRegression.plotResiduals:", ...
+                       " 'ResidualType' must be a character vector."));
+      endif
+      rtype = lower (char (rtype));
+      switch (rtype)
+        case 'deviance'
+          if (! isempty (cls))
+            error (strcat ("MultinomialRegression.plotResiduals:", ...
+                           " 'ClassToPlot' applies to raw and Pearson", ...
+                           " residuals only."));
+          endif
+          r = mdl.Residuals.Deviance;
+        case {'raw', 'pearson'}
+          if (strcmp (rtype, 'raw'))
+            R = mdl.Residuals.Raw;
+          else
+            R = mdl.Residuals.Pearson;
+          endif
+          j = 1;
+          if (! isempty (cls))
+            j = MultinomialRegression.classindex (mdl.ClassNames, cls);
+            if (j == 0)
+              error (strcat ("MultinomialRegression.plotResiduals:", ...
+                             " 'ClassToPlot' names no class of the", ...
+                             " model."));
+            endif
+            if (j > columns (R))
+              error (strcat ("MultinomialRegression.plotResiduals: the", ...
+                             " residuals have no column for the last", ...
+                             " class."));
+            endif
+          endif
+          r = R(:,j);
+        otherwise
+          error (strcat ("MultinomialRegression.plotResiduals: unknown", ...
+                         " 'ResidualType' '%s'."), rtype);
+      endswitch
+
+      if (isempty (ax))
+        ax = gca ();
+      endif
+      plotargs = {'LineStyle', ls, 'Color', col, 'Marker', mk};
+      switch (ptype)
+
+        case 'histogram'
+          [left, right, dens] = MultinomialRegression.densitybins (r);
+          nb = numel (left);
+          Xp = [left; left; right; right];
+          Yp = [zeros(1, nb); dens; dens; zeros(1, nb)];
+          h = patch (ax, Xp, Yp, fc, 'FaceColor', fc, 'FaceAlpha', fa, ...
+                     'EdgeColor', [0, 0, 0], 'LineWidth', lw);
+          xlabel (ax, 'Residuals');
+          ylabel (ax, 'Probability density');
+          title (ax, 'Histogram of residuals');
+
+        case 'caseorder'
+          hold (ax, 'on');
+          h = plot (ax, 1:numel (r), r, plotargs{:});
+          h(2,1) = line (ax, xlim (ax), [0, 0], 'LineStyle', ':', ...
+                         'Color', [0, 0, 0]);
+          hold (ax, 'off');
+          xlabel (ax, 'Row number');
+          ylabel (ax, 'Residuals');
+          title (ax, 'Case order plot of residuals');
+
+        case 'lagged'
+          hold (ax, 'on');
+          h = plot (ax, r(1:end-1), r(2:end), plotargs{:});
+          h(2,1) = line (ax, xlim (ax), [0, 0], 'LineStyle', ':', ...
+                         'Color', [0, 0, 0]);
+          h(3,1) = line (ax, [0, 0], ylim (ax), 'LineStyle', ':', ...
+                         'Color', [0, 0, 0]);
+          hold (ax, 'off');
+          xlabel (ax, 'Residual(t-1)');
+          ylabel (ax, 'Residual(t)');
+          title (ax, 'Plot of residuals vs. lagged residuals');
+
+        case 'probability'
+          h = normplot (ax, sort (r(! isnan (r))));
+          set (h(1), plotargs{:});
+          xlabel (ax, 'Residuals');
+          ylabel (ax, 'Probability');
+          title (ax, 'Normal probability plot of residuals');
+
+        case 'symmetry'
+          rs = sort (r(! isnan (r)));
+          med = median (rs);
+          k = floor (numel (rs) / 2);
+          lower = sort (med - rs(1:k));
+          upper = sort (rs(end-k+1:end) - med);
+          hold (ax, 'on');
+          h = plot (ax, lower, upper, plotargs{:});
+          top = max ([xlim(ax), ylim(ax)]);
+          h(2,1) = line (ax, [0, top], [0, top], 'LineStyle', ':', ...
+                         'Color', [0, 0, 0]);
+          hold (ax, 'off');
+          xlabel (ax, 'Lower tail');
+          ylabel (ax, 'Upper tail');
+          title (ax, 'Symmetry plot of residuals around their median');
+
+      endswitch
+
+      if (nargout == 0)
+        clear h;
+      endif
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {MultinomialRegression} {} plotSlice (@var{mdl})
+    ## @deftypefnx {MultinomialRegression} {} plotSlice (@var{mdl}, @var{Xnew})
+    ## @deftypefnx {MultinomialRegression} {} plotSlice (@var{mdl}, @var{plotType})
+    ## @deftypefnx {MultinomialRegression} {} plotSlice (@var{mdl}, @var{plotType}, @var{Xnew})
+    ## @deftypefnx {MultinomialRegression} {} plotSlice (@var{ax}, @dots{})
+    ## @deftypefnx {MultinomialRegression} {} plotSlice (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {MultinomialRegression} {@var{h} =} plotSlice (@dots{})
+    ##
+    ## Plot slices through the fitted probabilities of a multinomial regression
+    ## model.
+    ##
+    ## A slice varies one continuous predictor over its range and holds every
+    ## other predictor fixed, a categorical one at its most common level.  The
+    ## ranges and the fixed values are taken from the data the model was
+    ## fitted on, or from @var{Xnew}, a table or a matrix as @code{predict}
+    ## takes it; a single row of @var{Xnew} gives each predictor the range from
+    ## its value to 10% above it.  @var{plotType} chooses the plot:
+    ##
+    ## @multitable @columnfractions 0.2 0.75
+    ## @headitem Type @tab Plot
+    ## @item @qcode{'interactive'} @tab (default) a figure with one plot per
+    ## continuous predictor, each the probability of one class along that
+    ## predictor, the others fixed at the middle of their ranges, with its 95%
+    ## confidence band shaded and dashed and dotted lines through the middle.
+    ## @item @qcode{'histogram'} @tab overlaid bars of the probability of each
+    ## class at 40 values along one predictor, the others fixed at their means.
+    ## @item @qcode{'stackedhist'} @tab the same probabilities as stacked bars.
+    ## @end multitable
+    ##
+    ## MATLAB's interactive plot is an app whose menus and boxes change the
+    ## class, the predictors and the fixed values; here the figure has no such
+    ## controls, and the plot is drawn again to change them.
+    ##
+    ## The following @var{name}, @var{value} pairs are accepted:
+    ##
+    ## @multitable @columnfractions 0.25 0.7
+    ## @headitem Name @tab Value
+    ## @item @qcode{'ClassToPlot'} @tab For the interactive plot, the class
+    ## whose probability is drawn, the first of @code{ClassNames} by default.
+    ## @item @qcode{'PredictorToVary'} @tab For the histograms, the name of the
+    ## continuous predictor to vary, the first by default.
+    ## @item @qcode{'FaceColor'}, @qcode{'FaceAlpha'}, @qcode{'LineWidth'} @tab
+    ## The fill color (@qcode{'auto'} by default, a color per class), the
+    ## transparency (0.6) and the edge width (0.5) of the bars of a histogram.
+    ## @item @qcode{'EdgeColor'}, @qcode{'LineStyle'} @tab The edge color and
+    ## line style of the stacked bars, black up to 150 bars and none beyond,
+    ## and a solid line.
+    ## @end multitable
+    ##
+    ## @var{ax} is the axes to draw a histogram in, the current axes by default.
+    ## @var{h} is the figure of the interactive plot, and for the histograms a
+    ## column of one patch or bar object per class.
+    ##
+    ## @seealso{MultinomialRegression.predict, plotPartialDependence}
+    ## @end deftypefn
+    function h = plotSlice (this, varargin)
+
+      caller = 'MultinomialRegression.plotSlice';
+      ## Called with an axes first, the model comes second
+      if (isa (this, 'MultinomialRegression'))
+        ax = [];
+        mdl = this;
+        args = varargin;
+      else
+        if (! (isscalar (this) && isgraphics (this, 'axes')))
+          error ("%s: AX must be an axes.", caller);
+        endif
+        ax = this;
+        mdl = varargin{1};
+        args = varargin(2:end);
+      endif
+
+      ## The plot type and the new data come before the paired arguments
+      ptypes = {'interactive', 'histogram', 'stackedhist'};
+      ptype = 'interactive';
+      Xnew = [];
+      while (! isempty (args))
+        a = args{1};
+        if (ischar (a) && any (strcmpi (a, ptypes)))
+          ptype = lower (a);
+        elseif (isnumeric (a) || istable (a))
+          Xnew = a;
+        else
+          break;
+        endif
+        args(1) = [];
+      endwhile
+      if (! isempty (ax) && strcmp (ptype, 'interactive'))
+        error ("%s: AX applies to the histograms only.", caller);
+      endif
+      optNames = {'ClassToPlot', 'PredictorToVary', 'FaceColor', ...
+                  'FaceAlpha', 'LineWidth', 'EdgeColor', 'LineStyle'};
+      dfValues = {[], [], 'auto', 0.6, 0.5, [], '-'};
+      [cls, pvary, fc, fa, lw, ec, ls, rem] = ...
+                              parsePairedArguments (optNames, dfValues, args);
+      if (! isempty (rem))
+        error ("%s: invalid optional paired argument.", caller);
+      endif
+
+      ## The data the ranges and the fixed values are taken from
+      if (isempty (Xnew))
+        D = mdl.rawcodes (mdl.Variables(mdl.ObservationInfo.Subset,:), caller);
+      else
+        D = mdl.rawcodes (Xnew, caller);
+      endif
+      D = D(! any (isnan (D), 2),:);
+      if (isempty (D))
+        error ("%s: XNEW holds no row without a missing value.", caller);
+      endif
+      cont = find (! mdl.iscat_);
+      if (isempty (cont))
+        error ("%s: the model has no continuous predictor to vary.", caller);
+      endif
+      lo = min (D, [], 1);
+      hi = max (D, [], 1);
+      one = lo == hi;
+      hi(one) = lo(one) + 0.1 * abs (lo(one));
+      hi(one & lo == 0) = 0.1;
+      fixed = mean (D, 1);
+      for j = find (mdl.iscat_)
+        fixed(j) = mode (D(:,j));
+      endfor
+      names = cellstr (MultinomialRegression.classlabels (mdl.ClassNames));
+      K = numel (names);
+
+      if (strcmp (ptype, 'interactive'))
+
+        k = 1;
+        if (! isempty (cls))
+          k = MultinomialRegression.classindex (mdl.ClassNames, cls);
+          if (k == 0)
+            error ("%s: 'ClassToPlot' names no class of the model.", caller);
+          endif
+        endif
+        mid = (lo + hi) / 2;
+        mid(mdl.iscat_) = fixed(mdl.iscat_);
+        p0 = mdl.probabilities (mdl.designcodes (mid), 'category');
+        h = figure ();
+        q = numel (cont);
+        axs = zeros (q, 1);
+        top = 0;
+        for i = 1:q
+          j = cont(i);
+          v = linspace (lo(j), hi(j), 41)';
+          G = repmat (mid, 41, 1);
+          G(:,j) = v;
+          [P, dlo, dhi] = mdl.probabilities (mdl.designcodes (G), ...
+                                              'category', 0.95);
+          up = min (P(:,k) + dhi(:,k), 1);
+          dn = max (P(:,k) - dlo(:,k), 0);
+          axs(i) = subplot (1, q, i);
+          hold (axs(i), 'on');
+          patch (axs(i), [v; flipud(v)], [up; flipud(dn)], ...
+                 [0, 0.447, 0.741], 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+          plot (axs(i), v, P(:,k), '-', 'Color', [0, 0.447, 0.741]);
+          hold (axs(i), 'off');
+          xlabel (axs(i), mdl.PredictorNames{j});
+          top = max ([top; up]);
+        endfor
+        ylabel (axs(1), sprintf ('Probability of %s', names{k}));
+        for i = 1:q
+          j = cont(i);
+          ylim (axs(i), [0, top]);
+          line (axs(i), [mid(j), mid(j)], [0, top], 'LineStyle', '--', ...
+                'Color', [0, 0, 0]);
+          line (axs(i), [lo(j), hi(j)], [p0(k), p0(k)], 'LineStyle', ':', ...
+                'Color', [0, 0, 0]);
+        endfor
+
+      else
+
+        if (isempty (pvary))
+          j = cont(1);
+        else
+          j = find (strcmp (mdl.PredictorNames, char (pvary)), 1);
+          if (isempty (j))
+            error ("%s: 'PredictorToVary' names no predictor of the model.", ...
+                   caller);
+          endif
+          if (mdl.iscat_(j))
+            error (strcat ("%s: 'PredictorToVary' must name a continuous", ...
+                           " predictor."), caller);
+          endif
+        endif
+        v = linspace (lo(j), hi(j), 40);
+        step = v(2) - v(1);
+        G = repmat (fixed, 40, 1);
+        G(:,j) = v;
+        P = mdl.probabilities (mdl.designcodes (G), 'category');
+        if (isempty (ax))
+          ax = gca ();
+        endif
+        if (strcmp (ptype, 'histogram'))
+          colors = get (ax, 'ColorOrder');
+          h = zeros (K, 1);
+          hold (ax, 'on');
+          for c = 1:K
+            if (ischar (fc) && strcmp (fc, 'auto'))
+              col = colors(mod (c - 1, rows (colors)) + 1,:);
+            else
+              col = fc;
+            endif
+            Xp = [v; v; v + step; v + step];
+            Yp = [zeros(1, 40); P(:,c)'; P(:,c)'; zeros(1, 40)];
+            h(c) = patch (ax, Xp, Yp, col, 'FaceAlpha', fa, ...
+                          'EdgeColor', [0, 0, 0], 'LineWidth', lw, ...
+                          'DisplayName', names{c});
+          endfor
+          hold (ax, 'off');
+        else
+          if (isempty (ec))
+            if (40 * K <= 150)
+              ec = [0, 0, 0];
+            else
+              ec = 'none';
+            endif
+          endif
+          h = bar (ax, v, P, 'stacked', 'BarWidth', 0.8);
+          h = h(:);
+          set (h, 'EdgeColor', ec, 'LineStyle', ls);
+          for c = 1:K
+            set (h(c), 'DisplayName', names{c});
+          endfor
+          ylim (ax, [0, 1.01]);
+        endif
+        xlabel (ax, mdl.PredictorNames{j});
+        ylabel (ax, 'Probability');
+
+      endif
+
+      if (nargout == 0)
+        clear h;
+      endif
+
+    endfunction
+
   endmethods
 
   methods (Access = private)
@@ -1167,6 +1587,12 @@ classdef MultinomialRegression < PredictiveModel
 
     ## The design matrix, without the intercept, of new predictor data
     function Xd = designof (this, Xnew, caller)
+      Xd = this.designcodes (this.rawcodes (Xnew, caller));
+    endfunction
+
+    ## New predictor data as one column per predictor, a categorical one
+    ## holding the number of its level, NaN for a level the model never saw
+    function X_raw = rawcodes (this, Xnew, caller)
       p = this.NumPredictors;
       if (istable (Xnew))
         X_raw = zeros (height (Xnew), p);
@@ -1210,6 +1636,10 @@ classdef MultinomialRegression < PredictiveModel
           X_raw = double (Xnew);
         endif
       endif
+    endfunction
+
+    ## The design matrix, without the intercept, of predictor codes X_RAW
+    function Xd = designcodes (this, X_raw)
       X_enc = reencode_predictors (X_raw, this.PredictorNames(:)', ...
                                    this.catinfo_, this.encnames_);
       ## A level the model never saw codes as NaN, and so does its row
@@ -1431,6 +1861,57 @@ classdef MultinomialRegression < PredictiveModel
         lab = NaN (n, 1);
       endif
       lab(tf) = classes(idx);
+    endfunction
+
+    ## The number of the class CLS among CLASSES, or 0 where it is none
+    function j = classindex (classes, cls)
+      j = 0;
+      lab = cellstr (MultinomialRegression.classlabels (classes));
+      if (isnumeric (cls) || islogical (cls))
+        if (isscalar (cls) && (isnumeric (classes) || islogical (classes)))
+          j = find (double (classes) == double (cls), 1);
+        endif
+      elseif ((ischar (cls) && isrow (cls)) || isscalar (cls))
+        j = find (strcmp (lab, char (cellstr (cls))), 1);
+      endif
+      if (isempty (j))
+        j = 0;
+      endif
+    endfunction
+
+    ## Bins of a histogram of R as a probability density: their left and right
+    ## edges and their heights.  The width is Scott's rule rounded to 1, 2, 3,
+    ## 5 or 10 times a power of ten, and the edges are its multiples.
+    function [left, right, dens] = densitybins (r)
+      r = r(! isnan (r));
+      n = numel (r);
+      s = std (r);
+      if (n <= 1 || s == 0)
+        bw = 1;
+        lo = floor (min (r)) - 0.5;
+        hi = lo + 1;
+      else
+        raw = 3.5 * s / (n ^ (1/3));
+        mag = 10 ^ floor (log10 (raw));
+        f = raw / mag;
+        nice = [1, 2, 3, 5, 10];
+        nice = nice(find (f < [1.5, 2.5, 4, 7.5, Inf], 1));
+        bw = nice * mag;
+        lo = floor (min (r) / bw) * bw;
+        hi = ceil (max (r) / bw) * bw;
+      endif
+      nb = max (1, round ((hi - lo) / bw));
+      left = lo + (0:nb-1) * bw;
+      right = left + bw;
+      counts = zeros (1, nb);
+      for k = 1:nb
+        if (k < nb)
+          counts(k) = sum (r >= left(k) & r < right(k));
+        else
+          counts(k) = sum (r >= left(k) & r <= right(k));
+        endif
+      endfor
+      dens = counts / (n * bw);
     endfunction
 
     ## The text of each element of a categorical predictor
@@ -1770,6 +2251,146 @@ endclassdef
 %! pd = partialDependence (m, 1, 1);
 %! assert_equal (size (pd), [1, 100]);
 
+## Test the plots against MATLAB R2024a
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotResiduals (m);
+%!   assert_equal (get (h, 'YData')(2,:), [0.4, 1/15, 1/30], 1e-12);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotResiduals (m);
+%!   assert_equal (get (h, 'XData')(1,:), [0, 2, 4]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotResiduals (m, 'caseorder', 'ResidualType', 'raw', ...
+%!                      'ClassToPlot', 2);
+%!   assert_equal (get (h(1), 'YData')(:), m.Residuals.Raw(:,2));
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotResiduals (m, 'caseorder');
+%!   assert_equal (get (get (gca, 'Title'), 'String'), ...
+%!                 'Case order plot of residuals');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotResiduals (m, 'lagged');
+%!   r = m.Residuals.Deviance;
+%!   assert_equal (get (h(1), 'XData')(:), r(1:end-1));
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotResiduals (m, 'symmetry');
+%!   assert_equal (get (h(1), 'XData')(1:3), [0.0739143847548569, ...
+%!                 0.439061974369248, 0.478480791323998], 1e-10);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotResiduals (m, 'histogram', 'ResidualType', 'raw', ...
+%!                      'ClassToPlot', 3);
+%!   assert_equal (get (h, 'YData')(2,:), [1, 9, 4, 1] / 7.5, 1e-12);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   plotResiduals (gca, m, 'probability');
+%!   assert_equal (get (get (gca, 'Title'), 'String'), ...
+%!                 'Normal probability plot of residuals');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotSlice (m, 'histogram');
+%!   assert_equal (get (h(1), 'YData')(2,1:3), [0.689486884620728, ...
+%!                 0.65928022754077, 0.627588553303704], 1e-10);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotSlice (m, 'histogram', 'PredictorToVary', 'x2');
+%!   assert_equal (get (h(1), 'YData')(2,1:3), [0.311392314971616, ...
+%!                 0.299274789671695, 0.287250877321725], 1e-10);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotSlice (m, 'histogram', [4, 2]);
+%!   assert_equal (get (h(1), 'XData')(1,[1, 40]), [4, 4.4], 1e-12);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotSlice (m, 'histogram', [4, 2; 6, 1]);
+%!   assert_equal (get (h(1), 'YData')(2,1:3), [0.201897566085439, ...
+%!                 0.195696318902365, 0.18959981331509], 1e-10);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   h = plotSlice (m, 'stackedhist');
+%!   assert_equal (get (h(2), 'YData')(1:3)(:), [0.305187356429808; ...
+%!                 0.333819986299818; 0.363512252628566], 1e-10);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test
+%! dv = get (0, 'defaultfigurevisible');
+%! set (0, 'defaultfigurevisible', 'off');
+%! unwind_protect
+%!   g = plotSlice (m);
+%!   a = flipud (findobj (g, 'type', 'axes'));
+%!   L = findobj (a(2), 'type', 'line', 'linestyle', '-');
+%!   assert_equal (get (L, 'YData')(1), 0.290726199748165, 1e-10);
+%! unwind_protect_cleanup
+%!   close (g);
+%!   set (0, 'defaultfigurevisible', dv);
+%! end_unwind_protect
+%!test
+%! dv = get (0, 'defaultfigurevisible');
+%! set (0, 'defaultfigurevisible', 'off');
+%! unwind_protect
+%!   g = plotSlice (m, [4, 2]);
+%!   a = flipud (findobj (g, 'type', 'axes'));
+%!   L = findobj (a(1), 'type', 'line', 'linestyle', ':');
+%!   assert_equal (get (L, 'YData')(1), 0.0978608053565371, 1e-10);
+%! unwind_protect_cleanup
+%!   close (g);
+%!   set (0, 'defaultfigurevisible', dv);
+%! end_unwind_protect
+
 ## Test input validation
 %!error<MultinomialRegression: too few input arguments.> MultinomialRegression (1)
 %!error<MultinomialRegression: invalid optional paired argument.> ...
@@ -1838,3 +2459,32 @@ endclassdef
 %! coefTest (m, [1, 0])
 %!error<MultinomialRegression.coefTest: C must have one element per row of H.> ...
 %! coefTest (m, [1, 0, 0, 0, 0, 0], [1; 2])
+%!error<MultinomialRegression.plotResiduals: unknown plot type 'boxes'.> ...
+%! plotResiduals (m, 'boxes')
+%!error<MultinomialRegression.plotResiduals: plot type 'fitted' is not implemented.> ...
+%! plotResiduals (m, 'fitted')
+%!error<MultinomialRegression.plotResiduals: invalid optional paired argument.> ...
+%! plotResiduals (m, 'caseorder', 'Foo', 1)
+%!error<MultinomialRegression.plotResiduals: unknown 'ResidualType' 'scaled'.> ...
+%! plotResiduals (m, 'ResidualType', 'scaled')
+%!error<MultinomialRegression.plotResiduals: 'ClassToPlot' applies to raw and Pearson residuals only.> ...
+%! plotResiduals (m, 'ClassToPlot', 2)
+%!error<MultinomialRegression.plotResiduals: 'ClassToPlot' names no class of the model.> ...
+%! plotResiduals (m, 'ResidualType', 'raw', 'ClassToPlot', 7)
+%!error<MultinomialRegression.plotResiduals: the residuals have no column for the last class.> ...
+%! plotResiduals (fitmnr (Xm, y, 'ModelType', 'ordinal'), ...
+%!                'ResidualType', 'raw', 'ClassToPlot', 3)
+%!error<MultinomialRegression.plotResiduals: AX must be an axes.> ...
+%! plotResiduals (1, m)
+%!error<MultinomialRegression.plotSlice: AX applies to the histograms only.> ...
+%! plotSlice (gca, m)
+%!error<MultinomialRegression.plotSlice: invalid optional paired argument.> ...
+%! plotSlice (m, 'histogram', 'Foo', 1)
+%!error<MultinomialRegression.plotSlice: 'ClassToPlot' names no class of the model.> ...
+%! plotSlice (m, 'ClassToPlot', 7)
+%!error<MultinomialRegression.plotSlice: 'PredictorToVary' names no predictor of the model.> ...
+%! plotSlice (m, 'histogram', 'PredictorToVary', 'w')
+%!error<MultinomialRegression.plotSlice: XNEW holds no row without a missing value.> ...
+%! plotSlice (m, 'histogram', [NaN, 1])
+%!error<MultinomialRegression.plotSlice: AX must be an axes.> ...
+%! plotSlice (1, m)
