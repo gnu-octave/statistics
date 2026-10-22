@@ -351,6 +351,12 @@ function [D, I] = pdist2 (X, Y, varargin)
 
         case 'chebychev'
           D = max (abs (X(ix(:),:) - Y(iy(:),:)), [], 2);
+          ## max passes over NaN, so a row holding one is marked by hand, as
+          ## MATLAB returns NaN for it.  A NaN made by Inf - Inf is still
+          ## passed over, as in MATLAB.
+          nx = any (isnan (X), 2);
+          ny = any (isnan (Y), 2);
+          D(nx(ix(:)) | ny(iy(:))) = NaN;
 
         case 'correlation'
           mX = mean (X(ix(:),:), 2);
@@ -498,6 +504,7 @@ function [D, I] = pdist2 (X, Y, varargin)
         for i = 1:M
           D(i,:) = max (abs (X(i,:) - Y), [], 2)';
         endfor
+        D(any (isnan (X), 2) | any (isnan (Y), 2)') = NaN;
 
       case 'cosine'
         for i = 1:M
@@ -646,6 +653,21 @@ endfunction
 %! assert_equal (pdist2 (X(1,:), X(2:3,:), 'minkowski', Inf), [4, 2]);
 %! Y = repmat (X, 200, 1);
 %! assert_equal (pdist2 (Y, X, 'minkowski', Inf), pdist2 (Y, X, 'chebychev'));
+%!test
+%! X = [1, 2; 4, 6; 0, 0];
+%! D = pdist2 ([1, NaN; 4, 6; 0, 0], X, 'chebychev');
+%! assert_equal (D, [NaN, NaN, NaN; 4, 0, 6; 2, 6, 0]);
+%!test
+%! X = [1, 2; 4, 6; 0, 0];
+%! D = pdist2 ([1, NaN; 4, 6; 0, 0], X, 'minkowski', Inf);
+%! assert_equal (D, [NaN, NaN, NaN; 4, 0, 6; 2, 6, 0]);
+%!test
+%! X = [1, 2; 4, 6; 0, 0];
+%! D = pdist2 ([1, Inf; 4, 6; 0, Inf], X, 'chebychev');
+%! assert_equal (D, [Inf, Inf, Inf; 4, 0, 6; Inf, Inf, Inf]);
+%!test
+%! D = pdist2 ([4, 6; 0, 0], [zeros(499,2); 1, NaN], 'chebychev');
+%! assert_equal (isnan (D), [false(2,499), true(2,1)]);
 
 ## Test input validation
 %!test
