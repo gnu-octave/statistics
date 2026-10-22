@@ -48,15 +48,19 @@
 ## appearance, and those of a categorical @var{Y} in the order of its
 ## categories.  A category without observations is ignored wherever it lies
 ## among the categories of a categorical @var{Y}; MATLAB ignores only a last one
-## and fits coefficients for any other.  The last category is the reference
-## category of a nominal model.  An observation whose label is missing (an empty
-## character vector, @qcode{<missing>}, or @qcode{<undefined>}), or whose
-## predictors hold a @qcode{NaN}, is left out of the fit, and its rows of the
-## residuals in @var{stats} are @qcode{NaN}.
+## and fits coefficients for any other.  Likewise the categories of a numeric
+## @var{Y} are the values it holds, where MATLAB numbers them from 1 to the
+## largest and fits coefficients for any value missing below it.  The last
+## category is the reference category of a nominal model.  An observation whose
+## label is missing (an empty character vector, @qcode{<missing>}, or
+## @qcode{<undefined>}), whose row of a matrix @var{Y} holds a @qcode{NaN}, or
+## whose predictors hold a @qcode{NaN}, is left out of the fit, and its rows of
+## the residuals in @var{stats} are @qcode{NaN}.
 ##
 ## A @var{Y} with a single category leaves nothing to fit: a nominal or
 ## hierarchical model returns a @var{B} with no columns, a deviance of 0 and
-## residuals of 0, and an ordinal model is an error.
+## residuals of 0, the raw and Pearson residuals of a hierarchical model having
+## no columns, and an ordinal model is an error.
 ##
 ## @code{@var{B} = mnrfit (@var{X}, @var{Y}, @var{name}, @var{value})} returns a
 ## matrix, @var{B}, of coefficient estimates for a multinomial model fit with
@@ -91,6 +95,19 @@
 ## dispersion parameters @qcode{'s'}, @qcode{'sfit'}, and @qcode{'estdisp'}, and
 ## the raw, Pearson, and deviance residuals @qcode{'resid'}, @qcode{'residp'},
 ## and @qcode{'residd'}.
+##
+## The raw and Pearson residuals are taken on what the model fits: an
+## @math{N*K} matrix over the categories of a nominal model, and an
+## @math{N*(K-1)} matrix over the cumulative probabilities of an ordinal model
+## or over the stages of a hierarchical one, where an observation is
+## @qcode{NaN} at the stages after its own category.  The deviance residuals
+## are an @math{N*1} vector of @math{-2} times the log of the fitted
+## probability of the observed category.  For a hierarchical model MATLAB sums
+## the signed deviance residuals of the stages instead, which is @qcode{NaN}
+## for every observation in the first category.  @qcode{'sfit'} is the square
+## root of the Pearson statistic over the categories divided by
+## @qcode{'dfe'}, and it differs from MATLAB's, which for ordinal and
+## hierarchical models is taken over the residuals in @qcode{'residp'}.
 ##
 ## @seealso{mnrval, logistic_regression}
 ## @end deftypefn
@@ -203,10 +220,11 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
 
   if (K > 1 && ! istext)
     ## So far, if K > 1, Y must be a matrix of logical, singles or doubles
-    if (! all (all (Y == 0 | Y == 1)))
+    if (! all (all (Y == 0 | Y == 1 | isnan (Y))))
       error ("mnrfit: Y must contain only 1 and 0 when given as a 2D matrix.");
     endif
-    ## Convert Y to a vector of positive integer categories
+    ## Convert Y to a vector of positive integer categories; a row holding a
+    ## NaN becomes NaN and is left out below
     Y = sum (bsxfun (@times, (1:K), Y), 2);
   endif
 
@@ -236,7 +254,7 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
         error ("mnrfit: nominal models support only the logit link.");
       endif
       if (n == 1)
-        [B, DEV, STATS] = mnrfit_empty_ (X, estdisp);
+        [B, DEV, STATS] = mnrfit_empty_ (X, estdisp, 1);
       else
         [B, DEV, STATS] = mnrfit_nominal_ (X, YN, n, dispopt);
       endif
@@ -266,7 +284,7 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
       endif
     case 'hierarchical'
       if (n == 1)
-        [B, DEV, STATS] = mnrfit_empty_ (X, estdisp);
+        [B, DEV, STATS] = mnrfit_empty_ (X, estdisp, 0);
       else
         [B, DEV, STATS] = mnrfit_hierarchical_ (X, YN, n, LINK);
       endif
@@ -279,12 +297,13 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
   if (n > 1)
     pihat = mnrval (B, X, 'model', lower (MODELTYPE), 'link', LINK);
     [STATS.resid, STATS.residp, STATS.residd] = ...
-                                    mnrfit_residuals_ (pihat, YN, n);
+                    mnrfit_residuals_ (pihat, YN, n, lower (MODELTYPE));
     STATS.estdisp = estdisp;
   endif
   if (! isempty (STATS.dfe) && STATS.dfe > 0)
-    ## Standard Pearson dispersion estimate
-    STATS.sfit = sqrt (sum (STATS.resid(:) .^ 2 ./ pihat(:)) / STATS.dfe);
+    ## Standard Pearson dispersion estimate, over the categories
+    rc = double (YN(:) == (1:n)) - pihat;
+    STATS.sfit = sqrt (sum (rc(:) .^ 2 ./ pihat(:)) / STATS.dfe);
     if (estdisp)
       ## Scale the coefficient covariance and standard errors by the estimated
       ## dispersion and test the coefficients against the t distribution.
@@ -456,21 +475,46 @@ endfunction
 
 ## Raw, Pearson, and deviance residuals for individual multinomial responses.
 ## PIHAT is the nobs-by-K matrix of fitted category probabilities and YN holds
-## the observed category indices.  resid and residp are nobs-by-K; residd is
-## nobs-by-1 (the per-observation deviance contribution).
-function [resid, residp, residd] = mnrfit_residuals_ (pihat, YN, k)
+## the observed category indices.  resid and residp are taken on what MODEL
+## fits: nobs-by-K over the categories of a nominal model, nobs-by-(K-1) over
+## the cumulative probabilities of an ordinal one and over the stages of a
+## hierarchical one.  residd is nobs-by-1 (the per-observation deviance
+## contribution).
+function [resid, residp, residd] = mnrfit_residuals_ (pihat, YN, k, model)
   nobs = rows (pihat);
   yind = double (YN(:) == (1:k));          ## observed indicators, nobs-by-K
-  resid = yind - pihat;
-  residp = resid ./ sqrt (pihat .* (1 - pihat));
+  switch (model)
+    case 'nominal'
+      obs = yind;
+      fit = pihat;
+    case 'ordinal'
+      ## The last cumulative probability is always 1, so it has no residual
+      obs = cumsum (yind(:,1:k-1), 2);
+      fit = cumsum (pihat(:,1:k-1), 2);
+    case 'hierarchical'
+      ## Stage j is category j against the later ones, among the observations
+      ## that reach it
+      obs = yind(:,1:k-1);
+      fit = pihat(:,1:k-1) ./ (1 - [zeros(nobs, 1), cumsum(pihat(:,1:k-2), 2)]);
+  endswitch
+  resid = obs - fit;
+  residp = resid ./ sqrt (fit .* (1 - fit));
   residp(isnan (residp)) = 0;              ## 0/0 at a saturated probability -> 0
+  if (strcmp (model, 'hierarchical'))
+    ## An observation takes no part in the stages after its own category
+    after = YN(:) < (1:k-1);
+    resid(after) = NaN;
+    residp(after) = NaN;
+  endif
   pobs = pihat (sub2ind ([nobs, k], (1:nobs)', YN(:)));
   residd = -2 * log (max (pobs, realmin));
 endfunction
 
 ## The fit of a response with a single category, which leaves nothing to fit:
 ## no coefficients, a deviance of 0, and residuals of 0, as MATLAB returns it.
-function [B, dev, stats] = mnrfit_empty_ (X, estdisp)
+## NCOL is the number of columns of the raw and Pearson residuals: one for the
+## single category, or none for the stages of a hierarchical model.
+function [B, dev, stats] = mnrfit_empty_ (X, estdisp, ncol)
   nobs = rows (X);
   B = zeros (columns (X) + 1, 0);
   dev = 0;
@@ -489,8 +533,8 @@ function [B, dev, stats] = mnrfit_empty_ (X, estdisp)
                   'se', B, ...
                   't', B, ...
                   'p', B, ...
-                  'resid', zeros (nobs, 1), ...
-                  'residp', zeros (nobs, 1), ...
+                  'resid', zeros (nobs, ncol), ...
+                  'residp', zeros (nobs, ncol), ...
                   'residd', zeros (nobs, 1));
 endfunction
 
@@ -776,6 +820,68 @@ endfunction
 %!               NaN, NaN, NaN; 0.52496547239191615, ...
 %!               -0.44466304411132351, -0.080302428280592628], -1e-10);
 
+## Test ordinal and hierarchical residuals against MATLAB R2024a
+%!test
+%! [~, ~, s] = mnrfit ((1:9)', [1 1 2 1 2 3 2 3 3]', 'model', 'ordinal');
+%! assert_equal (s.resid(3:6,:), [-0.640017262401357, 0.0119172052798397; ...
+%!               0.662144725149099, 0.0403306249191799; -0.12773091630328, ...
+%!               0.12773091630328; -0.04033062491918, -0.662144725149098], ...
+%!               1e-7);
+%!test
+%! [~, ~, s] = mnrfit ((1:9)', [1 1 2 1 2 3 2 3 3]', 'model', 'ordinal');
+%! assert_equal (s.residp(3:6,:), [-1.33338328387092, 0.109822301711886; ...
+%!               1.39994543884798, 0.205001320144029; -0.382668552795833, ...
+%!               0.382668552795833; -0.205001320144029, -1.39994543884798], ...
+%!               1e-7);
+%!test
+%! [~, ~, s] = mnrfit ((1:9)', [1 1 2 1 2 3 2 3 3]', 'model', 'hierarchical');
+%! assert_equal (s.resid(1:5,:), [0.041296779926102, NaN; ...
+%!               0.132552307459812, NaN; -0.648478668920583, ...
+%!               0.0180292890394411; 0.657879876493689, NaN; ...
+%!               -0.127852690165849, 0.156132139470677], 1e-10);
+%!test
+%! [~, ~, s] = mnrfit ((1:9)', [1 1 2 1 2 3 2 3 3]', 'model', 'hierarchical');
+%! assert_equal (s.residp(1:5,:), [0.207546780834513, NaN; ...
+%!               0.390905695445191, NaN; -1.35822589269996, ...
+%!               0.135500230327833; 1.38670471123006, NaN; ...
+%!               -0.382877647171603, 0.430139109910011], 1e-10);
+%!test
+%! [~, dev, s] = mnrfit ((1:9)', [1 1 2 1 2 3 2 3 3]', 'model', 'hierarchical');
+%! assert_equal (sum (s.residd), dev, 1e-10);
+%!test
+%! [~, ~, s] = mnrfit ((1:9)', [1 1 2 1 2 2 1 2 2]', 'model', 'ordinal');
+%! assert_equal (size (s.residp), [9, 1]);
+%!test
+%! [~, ~, s] = mnrfit ((1:9)', [1 1 2 1 2 2 1 2 2]', 'model', 'hierarchical');
+%! assert_equal (size (s.residp), [9, 1]);
+%!test
+%! [~, ~, s] = mnrfit ([1 NaN 3:9]', [1 1 2 1 2 3 2 3 3]', ...
+%!                     'model', 'hierarchical');
+%! assert_equal (s.resid(1:3,:), [0.0823310009353325, NaN; NaN, NaN; ...
+%!               -0.566038550416822, 0.0180292890394411], 1e-10);
+
+## Test an indicator matrix response with a NaN row against MATLAB R2024a
+%!test
+%! Yi = double ([1 1 2 1 2 3 2 3 3]' == 1:3);
+%! Bk = mnrfit ([1:2, 4:9]', Yi([1:2, 4:9],:));
+%! Yi(3,:) = NaN;
+%! assert_equal (mnrfit ((1:9)', Yi), Bk);
+%!test
+%! Yi = double ([1 1 2 1 2 3 2 3 3]' == 1:3);
+%! Bk = mnrfit ([1:2, 4:9]', Yi([1:2, 4:9],:));
+%! Yi(3,1) = NaN;
+%! assert_equal (mnrfit ((1:9)', Yi), Bk);
+%!test
+%! Yi = double ([1 1 2 1 2 3 2 3 3]' == 1:3);
+%! Yi(3,:) = NaN;
+%! [~, ~, s] = mnrfit ((1:9)', Yi);
+%! assert_equal (s.dfe, 12);
+%!test
+%! Yi = double ([1 1 2 1 2 3 2 3 3]' == 1:3);
+%! Yi(3,:) = NaN;
+%! [~, ~, s] = mnrfit ((1:9)', Yi);
+%! assert_equal (s.resid(3,:), [NaN, NaN, NaN]);
+
 ## Test a response with a single category against MATLAB R2024a
 %!test
 %! [B, dev, s] = mnrfit (X(1:50), sp(1:50));
@@ -788,6 +894,12 @@ endfunction
 %! [B, dev] = mnrfit (X(1:50), sp(1:50), 'model', 'hierarchical');
 %! assert_equal (B, zeros (2, 0));
 %! assert_equal (dev, 0);
+%!test
+%! [~, ~, s] = mnrfit (X(1:50), sp(1:50), 'model', 'hierarchical');
+%! assert_equal (s.resid, zeros (50, 0));
+%!test
+%! [~, ~, s] = mnrfit (X(1:50), sp(1:50), 'model', 'hierarchical');
+%! assert_equal (s.residd, zeros (50, 1));
 %!test
 %! [~, ~, s] = mnrfit (X(1:50), sp(1:50), 'estdisp', 'on');
 %! assert_equal ([s.s, s.sfit], [NaN, NaN]);

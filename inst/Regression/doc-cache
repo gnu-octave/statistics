@@ -11334,7 +11334,7 @@ mnrfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3408
+# length: 4450
 statistics: B = mnrfit (X, Y)
 statistics: B = mnrfit (X, Y, name, value)
 statistics: [B, dev] = mnrfit (...)
@@ -11365,15 +11365,19 @@ those of a cell array, string, or character matrix in order of first
 appearance, and those of a categorical Y in the order of its
 categories. A category without observations is ignored wherever it lies
 among the categories of a categorical Y; MATLAB ignores only a last one
-and fits coefficients for any other. The last category is the reference
-category of a nominal model. An observation whose label is missing (an empty
-character vector, <missing>, or <undefined>), or whose
-predictors hold a NaN, is left out of the fit, and its rows of the
-residuals in stats are NaN.
+and fits coefficients for any other. Likewise the categories of a numeric
+Y are the values it holds, where MATLAB numbers them from 1 to the
+largest and fits coefficients for any value missing below it. The last
+category is the reference category of a nominal model. An observation whose
+label is missing (an empty character vector, <missing>, or
+<undefined>), whose row of a matrix Y holds a NaN, or
+whose predictors hold a NaN, is left out of the fit, and its rows of
+the residuals in stats are NaN.
 
 A Y with a single category leaves nothing to fit: a nominal or
 hierarchical model returns a B with no columns, a deviance of 0 and
-residuals of 0, and an ordinal model is an error.
+residuals of 0, the raw and Pearson residuals of a hierarchical model having
+no columns, and an ordinal model is an error.
 
 B = mnrfit (X, Y, name, value) returns a
 matrix, B, of coefficient estimates for a multinomial model fit with
@@ -11402,6 +11406,19 @@ t statistics 't' and p-values 'p', the
 dispersion parameters 's', 'sfit', and 'estdisp', and
 the raw, Pearson, and deviance residuals 'resid', 'residp',
 and 'residd'.
+
+The raw and Pearson residuals are taken on what the model fits: an
+NxK matrix over the categories of a nominal model, and an
+Nx(K-1) matrix over the cumulative probabilities of an ordinal model
+or over the stages of a hierarchical one, where an observation is
+NaN at the stages after its own category. The deviance residuals
+are an Nx1 vector of -2 times the log of the fitted
+probability of the observed category. For a hierarchical model MATLAB sums
+the signed deviance residuals of the stages instead, which is NaN
+for every observation in the first category. 'sfit' is the square
+root of the Pearson statistic over the categories divided by
+'dfe', and it differs from MATLAB's, which for ordinal and
+hierarchical models is taken over the residuals in 'residp'.
 
 See also:
 mnrval,
