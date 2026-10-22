@@ -329,7 +329,7 @@ endfunction
 %! Y = [1;1;1;1;1;0;0;0;0;0];
 %! B = mnrfit (X, Y + 1, 'model', 'ordinal');
 %! [~, ~, ~, ~, ~, Pref] = logistic_regression (Y, X, false);
-%! assert_equal (mnrval (B, X, 'model', 'ordinal'), Pref, 1e-10);
+%! assert_equal (mnrval (B, X, 'model', 'ordinal'), Pref, 1e-6);
 
 ## For a binary response the default nominal call equals the ordinal call
 %!test

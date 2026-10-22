@@ -36,12 +36,21 @@
 ## numeric matrix the observations on predictor variables, where @math{N}
 ## corresponds to the number of observations and @math{P} corresponds to
 ## predictor variables.  @var{Y} contains the response category labels and it
-## can be an @math{N*K} numeric or logical matrix of 1s and 0s, with a column
-## for each of the @math{K} categories, or an @math{N*1} vector of positive
-## integers, logical values, character vectors in a cell array, strings, or
-## categorical values.  A cell array, string, or categorical @var{Y} can also be
-## a row vector.  @var{Y} can also be a character matrix with each row holding
-## the label of an observation of @var{X}.
+## can be an @math{N*1} vector of positive integers, logical values, character
+## vectors in a cell array, strings, or categorical values, each element the
+## category of one observation.  A cell array, string, or categorical @var{Y}
+## can also be a row vector.  @var{Y} can also be a character matrix with each
+## row holding the label of an observation of @var{X}.
+##
+## @var{Y} can also be an @math{N*K} numeric or logical matrix of counts, with
+## a column for each of the @math{K} categories: @code{@var{Y}(i,j)} is the
+## number of observations in category @math{j} at the predictor values in
+## @code{@var{X}(i,:)}, so that a row of @var{X} stands for the
+## @code{sum (@var{Y}(i,:))} observations it was seen with.  The counts must be
+## nonnegative integers.  A row of zeros stands for no observations and takes
+## no part in the estimates, though it counts in @qcode{'dfe'}, as in MATLAB.
+## A matrix of 1s and 0s with a single 1 in each row is the same as a vector
+## of one category per observation.
 ##
 ## The categories of a numeric or logical @var{Y} are taken in sorted order,
 ## those of a cell array, string, or character matrix in order of first
@@ -50,7 +59,9 @@
 ## among the categories of a categorical @var{Y}; MATLAB ignores only a last one
 ## and fits coefficients for any other.  Likewise the categories of a numeric
 ## @var{Y} are the values it holds, where MATLAB numbers them from 1 to the
-## largest and fits coefficients for any value missing below it.  The last
+## largest and fits coefficients for any value missing below it, and a column
+## of zeros in a matrix @var{Y} is no category, where MATLAB fits coefficients
+## for it.  The last
 ## category is the reference category of a nominal model.  An observation whose
 ## label is missing (an empty character vector, @qcode{<missing>}, or
 ## @qcode{<undefined>}), whose row of a matrix @var{Y} holds a @qcode{NaN}, or
@@ -77,6 +88,28 @@
 ## models: @qcode{'logit'} (default), @qcode{'probit'}, @qcode{'comploglog'}, or
 ## @qcode{'loglog'}.  Nominal models always use the logit link.
 ##
+## @item @qcode{'interactions'} @tab @qcode{'on'} to give each category its
+## own slopes, or @qcode{'off'} for slopes shared by every category, the
+## intercepts always differing.  The default is @qcode{'on'} for nominal and
+## hierarchical models and @qcode{'off'} for ordinal ones.  With
+## @qcode{'on'}, @var{B} is a @math{(P+1)*(K-1)} matrix whose column @math{j}
+## holds the intercept and slopes of category @math{j}; with @qcode{'off'},
+## @var{B} is a @math{(K-1+P)*1} vector of the @math{K-1} intercepts followed by
+## the @math{P} shared slopes.  A nominal model without interactions has no
+## slopes to share, so it fits the @math{K-1} intercepts alone, with a warning.
+##
+## @item @qcode{'weights'} @tab An @math{N*1} vector of nonnegative
+## observation weights, each multiplying the counts of its row of @var{Y}.
+## The default is a vector of ones.  A row whose weight is @qcode{NaN} is left
+## out of the fit.
+##
+## @item @qcode{'iterationlimit'} @tab The largest number of iterations of the
+## fit, a positive integer.  The default is 100.
+##
+## @item @qcode{'tolerance'} @tab The convergence tolerance of the fit, a
+## positive scalar: the fit stops once no coefficient changes by more than this
+## fraction of its value.  The default is @code{1e-6}.
+##
 ## @item @qcode{'estdisp'} @tab @qcode{'on'} to estimate a dispersion
 ## parameter, scaling the coefficient standard errors by it and testing the
 ## coefficients against the @math{t} distribution, or @qcode{'off'} (default)
@@ -99,15 +132,24 @@
 ## The raw and Pearson residuals are taken on what the model fits: an
 ## @math{N*K} matrix over the categories of a nominal model, and an
 ## @math{N*(K-1)} matrix over the cumulative probabilities of an ordinal model
-## or over the stages of a hierarchical one, where an observation is
-## @qcode{NaN} at the stages after its own category.  The deviance residuals
-## are an @math{N*1} vector of @math{-2} times the log of the fitted
-## probability of the observed category.  For a hierarchical model MATLAB sums
-## the signed deviance residuals of the stages instead, which is @qcode{NaN}
-## for every observation in the first category.  @qcode{'sfit'} is the square
-## root of the Pearson statistic over the categories divided by
-## @qcode{'dfe'}, and it differs from MATLAB's, which for ordinal and
-## hierarchical models is taken over the residuals in @qcode{'residp'}.
+## or over the stages of a hierarchical one, where a row is @qcode{NaN} at the
+## stages that none of its observations reach.  A raw residual is the count
+## minus its fitted value, the count times the fitted probability, and a
+## Pearson residual divides it by the binomial standard deviation of the count;
+## a weight multiplies both counts.  A row of zeros has a Pearson residual of
+## @qcode{NaN}.  The deviance residuals are an @math{N*1} vector holding the
+## contribution of each row to the deviance, so they sum to @var{dev}; for an
+## observation of one category it is @math{-2} times the log of the fitted
+## probability of that category.  For a hierarchical model MATLAB sums the
+## signed deviance residuals of the stages instead, which is @qcode{NaN} for
+## every observation in the first category.  @qcode{'sfit'} is the square root
+## of the Pearson statistic over the categories divided by @qcode{'dfe'}, and it
+## differs from MATLAB's, which for ordinal and hierarchical models is taken
+## over the residuals in @qcode{'residp'}.
+##
+## @qcode{'dfe'} is the number of rows of @var{X} times @math{K-1}, less the
+## number of coefficients; for a hierarchical model each stage counts only the
+## rows with observations that reach it.
 ##
 ## @seealso{mnrval, logistic_regression}
 ## @end deftypefn
@@ -157,6 +199,10 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
   DISPLAY = 'off';
   LINK = 'logit';
   ESTDISP = 'off';
+  INTERACTIONS = [];            ## resolved to a default per model below
+  WEIGHTS = [];
+  MAXITER = 100;
+  TOL = 1e-6;
   while (numel (varargin) > 0)
     name = varargin{1};
     value = varargin{2};
@@ -169,11 +215,23 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
         LINK = value;
       case 'estdisp'
         ESTDISP = value;
+      case 'interactions'
+        INTERACTIONS = value;
+      case 'weights'
+        WEIGHTS = value;
+      case 'iterationlimit'
+        MAXITER = value;
+      case 'tolerance'
+        TOL = value;
       otherwise
         warning (sprintf ("mnrfit: parameter %s will be ignored", name));
     endswitch
     varargin(1:2) = [];
   endwhile
+  MODELTYPE = lower (MODELTYPE);
+  if (! any (strcmp (MODELTYPE, {'nominal', 'ordinal', 'hierarchical'})))
+    error ("mnrfit: model type not recognised.");
+  endif
   LINK = lower (LINK);
   if (! any (strcmp (LINK, {'logit', 'probit', 'comploglog', 'loglog'})))
     error ("mnrfit: unrecognised 'link' value.");
@@ -182,6 +240,35 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
     error ("mnrfit: 'estdisp' must be 'on' or 'off'.");
   endif
   estdisp = strcmpi (ESTDISP, 'on');
+  if (isempty (INTERACTIONS))
+    if (strcmp (MODELTYPE, 'ordinal'))
+      INTERACTIONS = 'off';
+    else
+      INTERACTIONS = 'on';
+    endif
+  endif
+  if (! (ischar (INTERACTIONS) && any (strcmpi (INTERACTIONS, {'on', 'off'}))))
+    error ("mnrfit: 'interactions' must be 'on' or 'off'.");
+  endif
+  interact = strcmpi (INTERACTIONS, 'on');
+  if (! (isnumeric (MAXITER) && isscalar (MAXITER) && MAXITER >= 1
+                             && fix (MAXITER) == MAXITER))
+    error ("mnrfit: 'iterationlimit' must be a positive integer.");
+  endif
+  if (! (isnumeric (TOL) && isscalar (TOL) && TOL > 0))
+    error ("mnrfit: 'tolerance' must be a positive scalar.");
+  endif
+  if (isempty (WEIGHTS))
+    W = ones (N, 1);
+  else
+    if (! (isnumeric (WEIGHTS) && isreal (WEIGHTS) && isvector (WEIGHTS)
+                               && numel (WEIGHTS) == N
+                               && all (WEIGHTS(! isnan (WEIGHTS)) >= 0)))
+      error (strcat ("mnrfit: 'weights' must be a vector of nonnegative", ...
+                     " values with one element per observation."));
+    endif
+    W = double (WEIGHTS(:));
+  endif
 
   ## Evaluate display input argument
   switch (lower (DISPLAY))
@@ -195,6 +282,7 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
   ## appearance and a categorical by its categories, as in MATLAB.  Each row of
   ## a character array is one label, so its columns are not categories.
   istext = ischar (Y) || iscellstr (Y) || isstring (Y) || iscategorical (Y);
+  iscount = K > 1 && ! istext;
   if (istext)
     if (ischar (Y))
       Y = cellstr (Y);
@@ -208,102 +296,94 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
     endif
     ## Get groups in Y: "", <missing> and <undefined> are NaN
     YN = grp2idx (Y);
-    ## Remove missing values from X and Y
-    RowsUsed  = ! logical (sum (isnan ([X, YN]), 2));
-    Y         = Y(RowsUsed);
-    X         = X(RowsUsed, :);
-    ## Renew groups in Y, as a category may have lost all its observations,
-    ## and number them without gaps, as a categorical may hold unused ones
-    [UY, ~, YN] = unique (grp2idx (Y));
-    n = numel (UY);
-  endif
-
-  if (K > 1 && ! istext)
-    ## So far, if K > 1, Y must be a matrix of logical, singles or doubles
-    if (! all (all (Y == 0 | Y == 1 | isnan (Y))))
-      error ("mnrfit: Y must contain only 1 and 0 when given as a 2D matrix.");
+    Ymiss = isnan (YN);
+  elseif (iscount)
+    ## A matrix Y holds the number of observations in each category for each
+    ## row of X; a row holding a NaN is missing
+    YN = double (Y);
+    Yok = isnan (YN) | (YN >= 0 & fix (YN) == YN);
+    if (! all (Yok(:)))
+      error (strcat ("mnrfit: Y must contain nonnegative integer counts", ...
+                     " when given as a 2D matrix."));
     endif
-    ## Convert Y to a vector of positive integer categories; a row holding a
-    ## NaN becomes NaN and is left out below
-    Y = sum (bsxfun (@times, (1:K), Y), 2);
+    Ymiss = any (isnan (YN), 2);
+  else
+    YN = double (Y);
+    Ymiss = isnan (YN);
   endif
 
-  ## Categorize Y in all other cases
-  if (! istext)
-    RowsUsed  = ! logical (sum (isnan ([X, Y]), 2));
-    Y         = Y(RowsUsed);
-    X         = X(RowsUsed, :);
-    [UY, ~, YN] = unique (Y);  ## find unique categories in the response
-    n = numel (UY);            ## number of unique response categories
-  endif
-
-  if (isempty (Y))
+  ## Remove missing values from X, Y and the weights
+  RowsUsed = ! (any (isnan (X), 2) | Ymiss | isnan (W));
+  X = X(RowsUsed,:);
+  W = W(RowsUsed);
+  YN = YN(RowsUsed,:);
+  if (isempty (YN))
     error ("mnrfit: X and Y must contain at least one observation.");
   endif
-
-  if (isnumeric (Y))
-    if (! (all (Y > 0) && all (fix (Y) == Y)))
+  if (isnumeric (Y) && ! iscount)
+    if (! (all (YN > 0) && all (fix (YN) == YN)))
       error ("mnrfit: Y must contain positive integer category numbers.")
     endif
   endif
 
+  ## Hold the response as counts, one column per category.  A category without
+  ## observations is ignored, as a categorical may hold unused ones and a
+  ## category may have lost all its observations.
+  if (iscount)
+    C = YN(:, any (YN > 0, 1));
+  else
+    [~, ~, YN] = unique (YN);
+    C = double (YN(:) == (1:max (YN)));
+  endif
+  n = columns (C);
+  if (n == 0)
+    error ("mnrfit: X and Y must contain at least one observation.");
+  endif
+
   ## Fit the requested model type
-  switch (lower (MODELTYPE))
+  switch (MODELTYPE)
     case 'nominal'
       if (! strcmp (LINK, 'logit'))
         error ("mnrfit: nominal models support only the logit link.");
       endif
       if (n == 1)
-        [B, DEV, STATS] = mnrfit_empty_ (X, estdisp, 1);
+        STATS = mnrfit_empty_ (X, estdisp, 1);
       else
-        [B, DEV, STATS] = mnrfit_nominal_ (X, YN, n, dispopt);
+        if (! interact)
+          warning (strcat ("mnrfit: a nominal model without interactions", ...
+                           " fits the intercepts alone."));
+        endif
+        STATS = mnrfit_nominal_ (X, C, W, interact, MAXITER, TOL);
       endif
     case 'ordinal'
       if (n == 1)
         error ("mnrfit: an ordinal model needs at least two categories.");
-      elseif (strcmp (LINK, 'logit'))
-        [INTERCEPT, SLOPE, DEV, ~, ~, ~, S] = logistic_regression (YN - 1, X, ...
-                                                                   dispopt);
-        B = cat (1, INTERCEPT, SLOPE);
-        se = S.se;
-        STATS = struct ('beta', B, ...
-                        'dfe', rows (X) * (n - 1) - numel (B), ...
-                        's', 1, ...
-                        'sfit', 1, ...
-                        'estdisp', false, ...
-                        'coeffcorr', S.coeffcorr, ...
-                        'covb', S.cov, ...
-                        'se', se, ...
-                        't', B ./ se, ...
-                        'p', 2 * normcdf (- abs (B ./ se)), ...
-                        'resid', [], ...
-                        'residp', [], ...
-                        'residd', []);
-      else
-        [B, DEV, STATS] = mnrfit_ordinal_ (X, YN, n, LINK);
       endif
+      STATS = mnrfit_ordinal_ (X, C, W, LINK, interact, MAXITER, TOL);
     case 'hierarchical'
       if (n == 1)
-        [B, DEV, STATS] = mnrfit_empty_ (X, estdisp, 0);
+        STATS = mnrfit_empty_ (X, estdisp, 0);
       else
-        [B, DEV, STATS] = mnrfit_hierarchical_ (X, YN, n, LINK);
+        STATS = mnrfit_hierarchical_ (X, C, W, LINK, interact, MAXITER, TOL);
       endif
-    otherwise
-      error ("mnrfit: model type not recognised.");
   endswitch
+  B = STATS.beta;
 
-  ## Residuals and dispersion, computed from the fitted category probabilities
-  ## (common to every model type; individual responses have sample size 1)
+  ## Residuals, deviance and dispersion, computed from the fitted category
+  ## probabilities (common to every model type)
+  DEV = 0;
   if (n > 1)
-    pihat = mnrval (B, X, 'model', lower (MODELTYPE), 'link', LINK);
+    pihat = mnrfit_pihat_ (B, X, MODELTYPE, interact, LINK);
     [STATS.resid, STATS.residp, STATS.residd] = ...
-                    mnrfit_residuals_ (pihat, YN, n, lower (MODELTYPE));
+                    mnrfit_residuals_ (pihat, C, W, MODELTYPE);
+    DEV = sum (STATS.residd);
     STATS.estdisp = estdisp;
   endif
   if (! isempty (STATS.dfe) && STATS.dfe > 0)
     ## Standard Pearson dispersion estimate, over the categories
-    rc = double (YN(:) == (1:n)) - pihat;
-    STATS.sfit = sqrt (sum (rc(:) .^ 2 ./ pihat(:)) / STATS.dfe);
+    e = sum (C, 2) .* pihat;
+    X2 = W .* (C - e) .^ 2 ./ e;
+    STATS.sfit = sqrt (sum (X2(e > 0)) / STATS.dfe);
     if (estdisp)
       ## Scale the coefficient covariance and standard errors by the estimated
       ## dispersion and test the coefficients against the t distribution.
@@ -328,37 +408,27 @@ endfunction
 
 ## Fit a baseline-category multinomial logit model by Newton-Raphson.  The last
 ## category is the reference; B is a (P+1)-by-(K-1) matrix whose column j holds
-## the intercept and slopes contrasting category j against the reference.
-function [B, dev, stats] = mnrfit_nominal_ (X, YN, k, dispopt)
+## the intercept and slopes contrasting category j against the reference, or
+## without interactions a (K-1)-by-1 vector of intercepts alone.  C holds the
+## counts of each category and W multiplies them.
+function stats = mnrfit_nominal_ (X, C, W, interact, maxiter, tol)
 
-  [nobs, p] = size (X);
-  Z = [ones(nobs, 1), X];               ## design with intercept, nobs-by-q
-  q = p + 1;
-  ncat = k - 1;                         ## non-reference categories (1..k-1)
-
-  ## Response indicator matrix for categories 1..k-1 (reference = category k)
-  Yind = double (YN(:) == (1:ncat));    ## nobs-by-ncat
+  nobs = rows (X);
+  if (interact)
+    Z = [ones(nobs, 1), X];             ## design with intercept, nobs-by-q
+  else
+    Z = ones (nobs, 1);
+  endif
+  q = columns (Z);
+  ncat = columns (C) - 1;               ## non-reference categories (1..k-1)
+  wC = W .* C(:,1:ncat);                ## weighted counts, nobs-by-ncat
+  wn = W .* sum (C, 2);                 ## weighted trials, nobs-by-1
 
   ## Newton-Raphson on the multinomial logit log-likelihood
   beta = zeros (q, ncat);
-  maxiter = 100;
-  tol = 1e-8;
   converged = false;
   for iter = 1:maxiter
-    [P, ~] = mnrfit_softmax_ (Z, beta, nobs);
-    grad = Z' * (Yind - P);             ## q-by-ncat
-    ## Hessian of the log-likelihood (block form, negative definite)
-    H = zeros (q * ncat);
-    for a = 1:ncat
-      for b = 1:ncat
-        if (a == b)
-          w = P(:,a) .* (1 - P(:,a));
-        else
-          w = - P(:,a) .* P(:,b);
-        endif
-        H((a-1)*q+(1:q), (b-1)*q+(1:q)) = - (Z' * (Z .* w));
-      endfor
-    endfor
+    [grad, H] = mnrfit_nominal_derivs_ (Z, beta, wC, wn);
     ## A vanishing Hessian condition signals (quasi-)separable data with no
     ## finite maximum likelihood estimate; stop and keep the current estimate.
     if (rcond (H) < eps)
@@ -368,8 +438,9 @@ function [B, dev, stats] = mnrfit_nominal_ (X, YN, k, dispopt)
     if (! all (isfinite (step)))
       break;
     endif
-    beta(:) = beta(:) + step;
-    if (max (abs (step)) < tol)
+    old = beta(:);
+    beta(:) = old + step;
+    if (all (abs (step) <= tol * max (sqrt (eps), abs (old))))
       converged = true;
       break;
     endif
@@ -377,90 +448,227 @@ function [B, dev, stats] = mnrfit_nominal_ (X, YN, k, dispopt)
   if (! converged)
     warning ("mnrfit: iteration limit reached; results may be unreliable.");
   endif
-  B = beta;
-
-  ## Deviance = -2 * log-likelihood (saturated log-likelihood is 0 for
-  ## individual responses)
-  [~, Pall] = mnrfit_softmax_ (Z, beta, nobs);
-  idx = sub2ind ([nobs, k], (1:nobs)', YN(:));
-  dev = -2 * sum (log (Pall(idx)));
+  [~, H] = mnrfit_nominal_derivs_ (Z, beta, wC, wn);
+  if (interact)
+    B = beta;
+  else
+    B = beta(:);
+  endif
 
   ## Coefficient covariance from the inverse negative Hessian at the MLE
   covb = inv (-H);
   se_v = sqrt (diag (covb));
-  se = reshape (se_v, q, ncat);
-  coeffcorr = covb ./ (se_v * se_v');
+  se = reshape (se_v, size (B));
   tstat = B ./ se;
-  pval = 2 * normcdf (- abs (tstat));
-
-  stats = struct ('beta', B, ...
-                  'dfe', nobs * ncat - numel (B), ...
-                  's', 1, ...
-                  'sfit', 1, ...
-                  'estdisp', false, ...
-                  'coeffcorr', coeffcorr, ...
-                  'covb', covb, ...
-                  'se', se, ...
-                  't', tstat, ...
-                  'p', pval, ...
-                  'resid', [], ...
-                  'residp', [], ...
-                  'residd', []);
+  stats = mnrfit_stats_ (B, nobs * ncat - numel (B), covb, se, tstat);
 
 endfunction
 
-## Fit a hierarchical (sequential / continuation-ratio) model.  Category j is
-## contrasted against the later categories using only the observations with
-## Y >= j, giving K-1 independent binary logit fits.  B is a (P+1)-by-(K-1)
-## matrix whose column j holds the intercept and slopes of the conditional
-## logit for category j.
-function [B, dev, stats] = mnrfit_hierarchical_ (X, YN, k, link)
+## Gradient and Hessian of the multinomial logit log-likelihood at BETA
+function [grad, H] = mnrfit_nominal_derivs_ (Z, beta, wC, wn)
+  [nobs, q] = size (Z);
+  ncat = columns (beta);
+  P = mnrfit_softmax_ (Z, beta, nobs);
+  grad = Z' * (wC - wn .* P);           ## q-by-ncat
+  ## Hessian of the log-likelihood (block form, negative definite)
+  H = zeros (q * ncat);
+  for a = 1:ncat
+    for b = 1:ncat
+      if (a == b)
+        w = P(:,a) .* (1 - P(:,a));
+      else
+        w = - P(:,a) .* P(:,b);
+      endif
+      H((a-1)*q+(1:q), (b-1)*q+(1:q)) = - (Z' * (Z .* (wn .* w)));
+    endfor
+  endfor
+endfunction
 
-  YN = YN(:);
-  p = columns (X);
-  q = p + 1;
-  ncat = k - 1;
-  B = zeros (q, ncat);
-  se = zeros (q, ncat);
-  covb = zeros (q * ncat);
-  dev = 0;
-  usedobs = 0;
+## Fit a sequential (continuation-ratio) model.  Stage j is a binary model of
+## category j against the later categories, over the trials that reach it.
+## With interactions each stage has its own coefficients, and B is a
+## (P+1)-by-(K-1) matrix; without, the stages share the slopes and B is a
+## (K-1+P)-by-1 vector of K-1 intercepts followed by the P slopes.
+function stats = mnrfit_hierarchical_ (X, C, W, link, interact, maxiter, tol)
+
+  [nobs, p] = size (X);
+  ncat = columns (C) - 1;
+  ## The trials reaching each stage, those not in an earlier category
+  m = sum (C, 2) - [zeros(nobs, 1), cumsum(C(:,1:ncat-1), 2)];
+  opts = struct ('MaxIter', maxiter, 'TolX', tol);
+  if (interact)
+    q = p + 1;
+    B = zeros (q, ncat);
+    se = zeros (q, ncat);
+    covb = zeros (q * ncat);
+    for j = 1:ncat
+      r = m(:,j) > 0;
+      [Bj, ~, sj] = glmfit (X(r,:), [C(r,j), m(r,j)], 'binomial', ...
+                            'link', link, 'weights', W(r), 'options', opts);
+      B(:,j) = Bj;
+      se(:,j) = sj.se;
+      covb((j-1)*q+(1:q), (j-1)*q+(1:q)) = sj.covb;
+    endfor
+  else
+    ## One binary model over every stage, with an intercept for each stage
+    [ii, jj] = find (m > 0);
+    idx = sub2ind (size (m), ii, jj);
+    Z = [double(jj == (1:ncat)), X(ii,:)];
+    [B, ~, sj] = glmfit (Z, [C(idx), m(idx)], 'binomial', 'link', link, ...
+                         'constant', 'off', 'weights', W(ii), 'options', opts);
+    se = sj.se;
+    covb = sj.covb;
+  endif
+  tstat = B ./ se;
+  stats = mnrfit_stats_ (B, sum (m(:) > 0) - numel (B), covb, se, tstat);
+
+endfunction
+
+## Fit a cumulative link model by Fisher scoring.  Without interactions the
+## categories share the slopes and B is a (K-1+P)-by-1 vector of K-1
+## thresholds followed by the P slopes; with interactions each cumulative
+## probability has its own slopes and B is a (P+1)-by-(K-1) matrix.
+function stats = mnrfit_ordinal_ (X, C, W, link, interact, maxiter, tol)
+
+  [nobs, p] = size (X);
+  ncat = columns (C) - 1;
+  [F, f] = mnrfit_links_ (link);
+
+  ## The derivative of each cumulative linear predictor by the parameters
+  if (interact)
+    npar = ncat * (p + 1);
+  else
+    npar = ncat + p;
+  endif
+  D = cell (1, ncat);
   for j = 1:ncat
-    mask = (YN >= j);
-    ## Each stage is a binary GLM of category j against the later categories
-    ysucc = double (YN(mask) == j);
-    [Bj, devj, sj] = glmfit (X(mask, :), ysucc, 'binomial', 'link', link);
-    B(:, j) = Bj;
-    se(:, j) = sj.se;
-    covb((j-1)*q+(1:q), (j-1)*q+(1:q)) = sj.covb;
-    dev += devj;
-    usedobs += sum (mask);
+    D{j} = zeros (nobs, npar);
+    if (interact)
+      D{j}(:,(j-1)*(p+1)+(1:p+1)) = [ones(nobs, 1), X];
+    else
+      D{j}(:,j) = 1;
+      D{j}(:,ncat+1:end) = X;
+    endif
   endfor
 
-  se_v = se(:);
-  coeffcorr = covb ./ (se_v * se_v');
-  tstat = B ./ se;
-  pval = 2 * normcdf (- abs (tstat));
+  ## Initial thresholds from the cumulative category frequencies, slopes at 0
+  tot = sum (W .* C, 1);
+  cumfreq = cumsum (tot(1:ncat)) / sum (tot);
+  cumfreq = min (max (cumfreq, 1e-3), 1 - 1e-3);
+  theta = mnrfit_flink_ (link, cumfreq)(:);
+  if (interact)
+    psi = reshape ([theta'; zeros(p, ncat)], [], 1);
+  else
+    psi = [theta; zeros(p, 1)];
+  endif
 
-  stats = struct ('beta', B, ...
-                  'dfe', usedobs - numel (B), ...
-                  's', 1, ...
-                  'sfit', 1, ...
-                  'estdisp', false, ...
-                  'coeffcorr', coeffcorr, ...
-                  'covb', covb, ...
-                  'se', se, ...
-                  't', tstat, ...
-                  'p', pval, ...
-                  'resid', [], ...
-                  'residp', [], ...
-                  'residd', []);
+  [ll, g, I] = mnrfit_ordinal_score_ (psi, D, C, W, F, f);
+  converged = false;
+  for iter = 1:maxiter
+    if (rcond (I) < eps || ! all (isfinite (g)))
+      break;
+    endif
+    step = I \ g;
+    if (! all (isfinite (step)))
+      break;
+    endif
+    ## Halve a step that leaves a probability outside (0, 1) or lowers the
+    ## likelihood
+    for halving = 1:30
+      [ll_new, g_new, I_new] = mnrfit_ordinal_score_ (psi + step, D, C, ...
+                                                      W, F, f);
+      if (ll_new >= ll - 1e-10 * abs (ll))
+        break;
+      endif
+      step /= 2;
+    endfor
+    if (ll_new < ll - 1e-10 * abs (ll))
+      break;
+    endif
+    old = psi;
+    psi = old + step;
+    ll = ll_new;
+    g = g_new;
+    I = I_new;
+    if (all (abs (step) <= tol * max (sqrt (eps), abs (old))))
+      converged = true;
+      break;
+    endif
+  endfor
+  if (! converged)
+    warning ("mnrfit: iteration limit reached; results may be unreliable.");
+  endif
+
+  if (interact)
+    B = reshape (psi, p + 1, ncat);
+  else
+    B = psi;
+  endif
+  covb = inv (I);
+  se = reshape (sqrt (diag (covb)), size (B));
+  tstat = B ./ se;
+  stats = mnrfit_stats_ (B, nobs * ncat - npar, covb, se, tstat);
 
 endfunction
 
-## Numerically stable baseline-category softmax.  Returns the nobs-by-(K-1)
-## matrix P of non-reference category probabilities and, optionally, the full
-## nobs-by-K matrix Pall including the reference category in the last column.
+## Log-likelihood, score and expected information of a cumulative link model
+## at the parameters PSI.  D{j} is the derivative of the j-th cumulative linear
+## predictor by the parameters.  A probability outside (0, 1) gives a
+## log-likelihood of -Inf.
+function [ll, g, I] = mnrfit_ordinal_score_ (psi, D, C, W, F, f)
+  [nobs, k] = size (C);
+  ncat = k - 1;
+  npar = numel (psi);
+  eta = zeros (nobs, ncat);
+  for j = 1:ncat
+    eta(:,j) = D{j} * psi;
+  endfor
+  gamma = F (eta);                       ## cumulative probabilities
+  P = diff ([zeros(nobs, 1), gamma, ones(nobs, 1)], 1, 2);
+  g = zeros (npar, 1);
+  I = zeros (npar);
+  if (! all (P(:) > 0))
+    ll = -Inf;
+    return;
+  endif
+  wC = W .* C;
+  ll = sum (wC(wC > 0) .* log (P(wC > 0)));
+  wn = W .* sum (C, 2);
+  dens = f (eta);
+  Aprev = zeros (nobs, npar);
+  for c = 1:k
+    if (c < k)
+      A = dens(:,c) .* D{c};
+    else
+      A = zeros (nobs, npar);
+    endif
+    dP = A - Aprev;                      ## derivative of category c
+    g += dP' * (wC(:,c) ./ P(:,c));
+    I += dP' * (dP .* (wn ./ P(:,c)));
+    Aprev = A;
+  endfor
+endfunction
+
+## The STATS structure of a fit, before its residuals and dispersion
+function stats = mnrfit_stats_ (B, dfe, covb, se, tstat)
+  se_v = se(:);
+  stats = struct ('beta', B, ...
+                  'dfe', dfe, ...
+                  's', 1, ...
+                  'sfit', 1, ...
+                  'estdisp', false, ...
+                  'coeffcorr', covb ./ (se_v * se_v'), ...
+                  'covb', covb, ...
+                  'se', se, ...
+                  't', tstat, ...
+                  'p', 2 * normcdf (- abs (tstat)), ...
+                  'resid', [], ...
+                  'residp', [], ...
+                  'residd', []);
+endfunction
+
+## Softmax over the K-1 linear predictors and the reference category (fixed at
+## 0).  P is nobs-by-(K-1) for categories 1..K-1; Pall appends the reference.
 function [P, Pall] = mnrfit_softmax_ (Z, beta, nobs)
   eta = Z * beta;                       ## nobs-by-(k-1)
   m = max ([eta, zeros(nobs, 1)], [], 2);   ## row max including baseline 0
@@ -473,51 +681,70 @@ function [P, Pall] = mnrfit_softmax_ (Z, beta, nobs)
   endif
 endfunction
 
-## Raw, Pearson, and deviance residuals for individual multinomial responses.
-## PIHAT is the nobs-by-K matrix of fitted category probabilities and YN holds
-## the observed category indices.  resid and residp are taken on what MODEL
-## fits: nobs-by-K over the categories of a nominal model, nobs-by-(K-1) over
-## the cumulative probabilities of an ordinal one and over the stages of a
-## hierarchical one.  residd is nobs-by-1 (the per-observation deviance
-## contribution).
-function [resid, residp, residd] = mnrfit_residuals_ (pihat, YN, k, model)
-  nobs = rows (pihat);
-  yind = double (YN(:) == (1:k));          ## observed indicators, nobs-by-K
+## Fitted category probabilities of the model B on the predictors X
+function pihat = mnrfit_pihat_ (B, X, model, interact, link)
+  if (strcmp (model, 'nominal') && ! interact)
+    ## The intercepts alone: every observation has the same probabilities
+    e = exp ([B(:)', 0] - max ([B(:)', 0]));
+    pihat = repmat (e / sum (e), rows (X), 1);
+  else
+    if (interact)
+      onoff = 'on';
+    else
+      onoff = 'off';
+    endif
+    pihat = mnrval (B, X, 'model', model, 'link', link, 'interactions', onoff);
+  endif
+endfunction
+
+## Raw, Pearson, and deviance residuals.  PIHAT is the nobs-by-K matrix of
+## fitted category probabilities, C the counts of each category, and W
+## multiplies them.  resid and residp are taken on what MODEL fits:
+## nobs-by-K over the categories of a nominal model, nobs-by-(K-1) over the
+## cumulative probabilities of an ordinal one and over the stages of a
+## hierarchical one, NaN at a stage no trials reach.  residd is nobs-by-1, the
+## contribution of each observation to the deviance.
+function [resid, residp, residd] = mnrfit_residuals_ (pihat, C, W, model)
+  [nobs, k] = size (C);
+  wC = W .* C;
+  wn = W .* sum (C, 2);
   switch (model)
     case 'nominal'
-      obs = yind;
+      obs = wC;
       fit = pihat;
+      m = repmat (wn, 1, k);
     case 'ordinal'
       ## The last cumulative probability is always 1, so it has no residual
-      obs = cumsum (yind(:,1:k-1), 2);
+      obs = cumsum (wC(:,1:k-1), 2);
       fit = cumsum (pihat(:,1:k-1), 2);
+      m = repmat (wn, 1, k - 1);
     case 'hierarchical'
-      ## Stage j is category j against the later ones, among the observations
-      ## that reach it
-      obs = yind(:,1:k-1);
-      fit = pihat(:,1:k-1) ./ (1 - [zeros(nobs, 1), cumsum(pihat(:,1:k-2), 2)]);
+      ## Stage j is category j against the later ones, over the trials that
+      ## reach it
+      obs = wC(:,1:k-1);
+      fit = pihat(:,1:k-1) ./ ...
+            (1 - [zeros(nobs, 1), cumsum(pihat(:,1:k-2), 2)]);
+      m = wn - [zeros(nobs, 1), cumsum(wC(:,1:k-2), 2)];
   endswitch
-  resid = obs - fit;
-  residp = resid ./ sqrt (fit .* (1 - fit));
+  resid = obs - m .* fit;
+  residp = resid ./ sqrt (m .* fit .* (1 - fit));
   residp(isnan (residp)) = 0;              ## 0/0 at a saturated probability -> 0
+  residp(m == 0) = NaN;                    ## no trials, no residual
   if (strcmp (model, 'hierarchical'))
-    ## An observation takes no part in the stages after its own category
-    after = YN(:) < (1:k-1);
-    resid(after) = NaN;
-    residp(after) = NaN;
+    resid(m == 0) = NaN;
   endif
-  pobs = pihat (sub2ind ([nobs, k], (1:nobs)', YN(:)));
-  residd = -2 * log (max (pobs, realmin));
+  d = wC .* log (wC ./ max (wn .* pihat, realmin));
+  d(wC == 0) = 0;
+  residd = 2 * sum (d, 2);
 endfunction
 
 ## The fit of a response with a single category, which leaves nothing to fit:
 ## no coefficients, a deviance of 0, and residuals of 0, as MATLAB returns it.
 ## NCOL is the number of columns of the raw and Pearson residuals: one for the
 ## single category, or none for the stages of a hierarchical model.
-function [B, dev, stats] = mnrfit_empty_ (X, estdisp, ncol)
+function stats = mnrfit_empty_ (X, estdisp, ncol)
   nobs = rows (X);
   B = zeros (columns (X) + 1, 0);
-  dev = 0;
   if (estdisp)
     s = NaN;
   else
@@ -538,117 +765,22 @@ function [B, dev, stats] = mnrfit_empty_ (X, estdisp, ncol)
                   'residd', zeros (nobs, 1));
 endfunction
 
-## Fit a cumulative-link (proportional-odds) ordinal model for a non-logit link
-## by Newton-Raphson with numerical derivatives.  B is a (K-1+P)-by-1 vector of
-## K-1 thresholds followed by the P shared slopes, matching the logit path.
-function [B, dev, stats] = mnrfit_ordinal_ (X, YN, k, link)
-
-  nobs = rows (X);
-  p = columns (X);
-  ncat = k - 1;
-  npar = ncat + p;
-  ilink = mnrfit_ilink_ (link);
-
-  ## Initial thresholds from cumulative category frequencies, slopes at zero
-  counts = accumarray (YN(:), 1, [k, 1]);
-  cumfreq = cumsum (counts(1:ncat)) / nobs;
-  cumfreq = min (max (cumfreq, 1e-3), 1 - 1e-3);
-  params = [mnrfit_flink_(link, cumfreq)(:); zeros(p, 1)];
-
-  ll_fn = @(pp) mnrfit_ord_ll_ (pp, X, YN, k, ilink);
-  maxiter = 200;
-  tol = 1e-9;
-  converged = false;
-  for iter = 1:maxiter
-    [g, H] = mnrfit_numderiv_ (ll_fn, params);
-    if (rcond (H) < eps || ! all (isfinite (g(:))))
-      break;
-    endif
-    step = - (H \ g);
-    if (! all (isfinite (step)))
-      break;
-    endif
-    ## Damp large steps for the nonlinear links
-    if (max (abs (step)) > 5)
-      step *= 5 / max (abs (step));
-    endif
-    params += step;
-    if (max (abs (step)) < tol)
-      converged = true;
-      break;
-    endif
-  endfor
-  if (! converged)
-    warning ("mnrfit: iteration limit reached; results may be unreliable.");
-  endif
-
-  B = params;
-  dev = -2 * ll_fn (params);
-  covb = inv (-H);
-  se = sqrt (diag (covb));
-  stats = struct ('beta', B, ...
-                  'dfe', nobs * ncat - npar, ...
-                  's', 1, ...
-                  'sfit', 1, ...
-                  'estdisp', false, ...
-                  'coeffcorr', covb ./ (se * se'), ...
-                  'covb', covb, ...
-                  'se', se, ...
-                  't', B ./ se, ...
-                  'p', 2 * normcdf (- abs (B ./ se)), ...
-                  'resid', [], ...
-                  'residp', [], ...
-                  'residd', []);
-
-endfunction
-
-## Log-likelihood of the cumulative-link ordinal model at parameter vector PP
-## ([thresholds; slopes]); ILINK is the inverse link.
-function ll = mnrfit_ord_ll_ (pp, X, YN, k, ilink)
-  ncat = k - 1;
-  theta = pp(1:ncat)(:).';
-  beta = pp(ncat+1:end);
-  gamma = ilink (X * beta + theta);          ## cumulative probabilities
-  Pall = [gamma(:,1), diff(gamma, 1, 2), 1 - gamma(:,end)];
-  nobs = rows (X);
-  pobs = max (Pall(sub2ind ([nobs, k], (1:nobs)', YN(:))), realmin);
-  ll = sum (log (pobs));
-endfunction
-
-## Central-difference gradient and Hessian of a scalar function FN at X.
-function [g, H] = mnrfit_numderiv_ (fn, x)
-  n = numel (x);
-  h = 1e-5 * max (abs (x), 1);
-  g = zeros (n, 1);
-  for i = 1:n
-    xp = x; xp(i) += h(i);
-    xm = x; xm(i) -= h(i);
-    g(i) = (fn (xp) - fn (xm)) / (2 * h(i));
-  endfor
-  H = zeros (n);
-  for i = 1:n
-    for j = i:n
-      xpp = x; xpp(i) += h(i); xpp(j) += h(j);
-      xpm = x; xpm(i) += h(i); xpm(j) -= h(j);
-      xmp = x; xmp(i) -= h(i); xmp(j) += h(j);
-      xmm = x; xmm(i) -= h(i); xmm(j) -= h(j);
-      H(i,j) = (fn (xpp) - fn (xpm) - fn (xmp) + fn (xmm)) / (4 * h(i) * h(j));
-      H(j,i) = H(i,j);
-    endfor
-  endfor
-endfunction
-
-## Inverse link (mean function) handle; matches the links used by mnrval.
-function f = mnrfit_ilink_ (link)
+## Inverse link (cumulative probability) of the linear predictor and its
+## derivative, matching the links used by mnrval.
+function [F, f] = mnrfit_links_ (link)
   switch (link)
     case 'logit'
-      f = @(e) 1 ./ (1 + exp (-e));
+      F = @(e) 1 ./ (1 + exp (-e));
+      f = @(e) 1 ./ (1 + exp (-e)) .* (1 - 1 ./ (1 + exp (-e)));
     case 'probit'
-      f = @(e) normcdf (e);
+      F = @(e) normcdf (e);
+      f = @(e) normpdf (e);
     case 'comploglog'
-      f = @(e) 1 - exp (-exp (e));
+      F = @(e) 1 - exp (-exp (e));
+      f = @(e) exp (e - exp (e));
     case 'loglog'
-      f = @(e) exp (-exp (e));
+      F = @(e) exp (-exp (e));
+      f = @(e) - exp (e - exp (e));
   endswitch
 endfunction
 
@@ -929,8 +1061,10 @@ endfunction
 %! mnrfit (ones (5, 4), categorical ([1, 2; 1, 2; 1, 2; 1, 2; 1, 2]))
 %!error<mnrfit: Y must be a column vector when given as string.> ...
 %! mnrfit (ones (5, 4), string ({'q','q';'w','w';'q','q';'w','w';'q','q'}))
-%!error<mnrfit: Y must contain only 1 and 0 when given as a 2D matrix.> ...
-%! mnrfit (ones (5, 4), [1, 2; 1, 2; 1, 2; 1, 2; 1, 2])
+%!error<mnrfit: Y must contain nonnegative integer counts when given as a 2D matrix.> ...
+%! mnrfit ((1:3)', [1, 2.5; 1, 2; 2, 1])
+%!error<mnrfit: Y must contain nonnegative integer counts when given as a 2D matrix.> ...
+%! mnrfit ((1:3)', [1, -2; 1, 2; 2, 1])
 %!error<mnrfit: Y must contain positive integer category numbers.> ...
 %! mnrfit (ones (5, 4), [1; -1; 1; 2; 1])
 %!error<mnrfit: model type not recognised.> ...
@@ -951,3 +1085,157 @@ endfunction
 %! mnrfit ([], [])
 %!error <mnrfit: X and Y must contain at least one observation.> ...
 %! mnrfit (zeros (0, 3), zeros (0, 1))
+
+## Test count matrices, weights and interactions against MATLAB R2024a
+%!shared X6, Yc, x, y, wy
+%! X6 = (1:6)';
+%! Yc = [3, 1, 0; 2, 2, 1; 1, 2, 2; 0, 2, 3; 1, 0, 4; 0, 1, 1];
+%! x = [0.2, 1.1, 1.9, 3.2, 3.8, 5.1, 5.9, 7.2, 8.1, 8.8, 1.5, 4.4, 6.6, ...
+%!      2.7, 9.3]';
+%! y = [1, 1, 2, 1, 2, 2, 3, 2, 3, 3, 2, 3, 2, 1, 3]';
+%! wy = [1, 2, 1, 1, 3, 1, 2, 1, 1, 2, 1, 1, 3, 1, 2]';
+%!test
+%! B = mnrfit (X6, Yc);
+%! assert_equal (B, [3.11521381121846, 1.72595553252332; ...
+%!                   -1.14291919345809, -0.557616323768001], -1e-10);
+%!test
+%! [~, dev, s] = mnrfit (X6, Yc);
+%! assert_equal ([dev, s.dfe], [7.29816119718767, 8], 1e-10);
+%!test
+%! [~, ~, s] = mnrfit (X6, Yc);
+%! assert_equal (s.resid(1:2,:), [0.479032510699473, -0.12827209523121, ...
+%!               -0.350760415468263; -0.232219981795573, ...
+%!               0.206186037368912, 0.0260339444266604], 1e-10);
+%!test
+%! [~, ~, s] = mnrfit (X6, Yc);
+%! assert_equal (s.residp(1:2,:), [0.496160860213629, ...
+%!               -0.142522560672393, -0.620060541159726; ...
+%!               -0.208905708865958, 0.192247718709891, ...
+%!               0.0293977673685418], 1e-10);
+%!test
+%! [~, ~, s] = mnrfit (X6, Yc);
+%! assert_equal (s.residd, [0.802442532667939; 0.0485724721972971; ...
+%!               0.109354412004761; 1.36850192992456; 3.70158681524588; ...
+%!               1.26770303514723], 1e-10);
+%!test
+%! B = mnrfit (X6, Yc, 'model', 'ordinal');
+%! assert_equal (B, [1.29939112375683; 3.04351150827255; ...
+%!                   -0.797767453558435], -1e-6);
+%!test
+%! [~, dev, s] = mnrfit (X6, Yc, 'model', 'ordinal');
+%! assert_equal ([dev, s.dfe], [7.34011610110504, 9], 1e-10);
+%!test
+%! [~, ~, s] = mnrfit (X6, Yc, 'model', 'ordinal');
+%! assert_equal (s.resid(1:2,:), [0.508636704845893, 0.382868827000934; ...
+%!               -0.132502184597763, -0.0484341779702326], 1e-6);
+%!test
+%! B = mnrfit (X6, Yc, 'model', 'hierarchical');
+%! assert_equal (B, [1.4485769644502, 1.98445711156869; ...
+%!                   -0.847495943829511, -0.629407372230075], -1e-10);
+%!test
+%! [~, dev, s] = mnrfit (X6, Yc, 'model', 'hierarchical');
+%! assert_equal ([dev, s.dfe], [7.01155523089269, 8], 1e-10);
+%!test
+%! [~, ~, s] = mnrfit (X6, Yc, 'model', 'hierarchical');
+%! assert_equal (s.resid(1:2,:), [0.416385649011944, 0.205046027351086; ...
+%!               -0.193530522479006, -0.0215448777590356], 1e-10);
+%!test
+%! Xe = repelem (X6, sum (Yc, 2));
+%! ye = repelem (repmat ((1:3)', 6, 1), reshape (Yc', [], 1));
+%! assert_equal (mnrfit (X6, Yc), mnrfit (Xe, ye), 1e-10);
+%!test
+%! Yz = Yc;
+%! Yz(2,:) = 0;
+%! [~, dev, s] = mnrfit (X6, Yz);
+%! assert_equal ([dev, s.dfe], [7.22221543051311, 8], 1e-10);
+%!test
+%! Yz = Yc;
+%! Yz(2,:) = 0;
+%! [~, ~, s] = mnrfit (X6, Yz);
+%! assert_equal (s.residp(2,:), [NaN, NaN, NaN]);
+%!test
+%! Y2 = [1, 0, 0; 0, 1, 0; 1, 1, 0; 0, 0, 1; 0, 1, 0; 0, 0, 1];
+%! assert_equal (mnrfit (X6, Y2), [7.55936380401886, 5.12548052211949; ...
+%!               -2.20811162886661, -1.12377716339686], -1e-10);
+%!test
+%! Yu = [Yc(:,1), zeros(6,1), Yc(:,2:3)];
+%! assert_equal (mnrfit (X6, Yu), mnrfit (X6, Yc));
+%!test
+%! Yr = Yc;
+%! Yr(1,:) = [2, 0, 0];
+%! [~, ~, s] = mnrfit (X6, Yr, 'model', 'hierarchical');
+%! assert_equal (s.dfe, 7);
+%!test
+%! Yr = Yc;
+%! Yr(1,:) = [2, 0, 0];
+%! [~, ~, s] = mnrfit (X6, Yr, 'model', 'hierarchical');
+%! assert_equal (s.residp(1,:), [0.914729298681304, NaN], 1e-10);
+%!test
+%! B = mnrfit (X6, Yc, 'weights', [1, 2, 1, 3, 1, 2]');
+%! assert_equal (B, [3.26764731943353, 1.37782734242591; ...
+%!                   -1.31700484949595, -0.429541892229879], -1e-10);
+%!test
+%! [~, ~, s] = mnrfit (X6, Yc, 'weights', [1, 2, 1, 3, 1, 2]');
+%! assert_equal (s.residp(1,:), [0.369677091482785, 0.0317726223417427, ...
+%!               -0.645010798142362], 1e-10);
+%!test
+%! [~, dev] = mnrfit (X6, Yc, 'weights', [1, 2, 1, 3, 1, 2]');
+%! assert_equal (dev, 10.2534960048411, 1e-10);
+%!test
+%! B = mnrfit (X6, Yc, 'model', 'ordinal', 'interactions', 'on');
+%! assert_equal (B, [1.29967633179764, 3.0431268128545; ...
+%!                   -0.797892338817538, -0.797669756913824], -1e-6);
+%!test
+%! B = mnrfit (X6, Yc, 'model', 'hierarchical', 'interactions', 'off');
+%! assert_equal (B, [1.18480730583952; 2.39950317498638; ...
+%!                   -0.745002595688337], -1e-10);
+%!test
+%! [~, ~, s] = mnrfit (X6, Yc, 'model', 'hierarchical', 'interactions', 'off');
+%! assert_equal (s.dfe, 9);
+%!test
+%! S = warning ('off', 'all');
+%! B = mnrfit (x, y, 'interactions', 'off');
+%! warning (S);
+%! assert_equal (B, [log(4/5); log(6/5)], 1e-10);
+%!warning<mnrfit: a nominal model without interactions fits the intercepts alone.> ...
+%! mnrfit (x, y, 'interactions', 'off');
+%!test
+%! B = mnrfit (x, y, 'model', 'ordinal', 'link', 'probit');
+%! assert_equal (B, [1.07863009080549; 3.04642129916916; ...
+%!                   -0.485126029810669], -1e-6);
+%!test
+%! B = mnrfit (x, y, 'model', 'hierarchical', 'link', 'comploglog');
+%! assert_equal (B, [1.11606258630227, 2.15097058822628; ...
+%!                   -0.720736258358282, -0.42477426118437], -1e-10);
+%!test
+%! B = mnrfit (x, y, 'model', 'ordinal', 'interactions', 'on', ...
+%!             'link', 'loglog');
+%! assert_equal (B, [-1.64348124603758, -4.37698558082175; ...
+%!                   0.536188854191686, 0.608581711015173], -1e-6);
+%!test
+%! B = mnrfit (x, y, 'weights', wy);
+%! assert_equal (B, [7.59751957764148, 5.03769507149626; ...
+%!                   -1.88801982284467, -0.77411323264876], -1e-10);
+%!test
+%! B = mnrfit (x, y, 'model', 'ordinal', 'weights', wy);
+%! assert_equal (B, [2.05249214200963; 6.21644116058936; ...
+%!                   -0.945758358953641], -1e-6);
+%!test
+%! B = mnrfit (x, y, 'model', 'hierarchical', 'weights', wy);
+%! assert_equal (B, [2.64758153523882, 5.0288032858106; ...
+%!                   -1.17838215436985, -0.771428066114368], -1e-10);
+%!test
+%! B = mnrfit (X6, Yc, 'tolerance', 1e-2);
+%! assert_equal (B, mnrfit (X6, Yc), 1e-4);
+%!warning<mnrfit: iteration limit reached; results may be unreliable.> ...
+%! mnrfit (X6, Yc, 'iterationlimit', 2);
+%!error<mnrfit: 'interactions' must be 'on' or 'off'.> ...
+%! mnrfit (X6, Yc, 'interactions', true)
+%!error<mnrfit: 'weights' must be a vector of nonnegative values with one element per observation.> ...
+%! mnrfit (X6, Yc, 'weights', ones (5, 1))
+%!error<mnrfit: 'weights' must be a vector of nonnegative values with one element per observation.> ...
+%! mnrfit (X6, Yc, 'weights', [1; 1; -1; 1; 1; 1])
+%!error<mnrfit: 'iterationlimit' must be a positive integer.> ...
+%! mnrfit (X6, Yc, 'iterationlimit', 2.5)
+%!error<mnrfit: 'tolerance' must be a positive scalar.> ...
+%! mnrfit (X6, Yc, 'tolerance', 0)

@@ -11334,7 +11334,7 @@ mnrfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4450
+# length: 6544
 statistics: B = mnrfit (X, Y)
 statistics: B = mnrfit (X, Y, name, value)
 statistics: [B, dev] = mnrfit (...)
@@ -11353,12 +11353,21 @@ responses in Y on the predictors in X. X is an NxP
 numeric matrix the observations on predictor variables, where N
 corresponds to the number of observations and P corresponds to
 predictor variables. Y contains the response category labels and it
-can be an NxK numeric or logical matrix of 1s and 0s, with a column
-for each of the K categories, or an Nx1 vector of positive
-integers, logical values, character vectors in a cell array, strings, or
-categorical values. A cell array, string, or categorical Y can also be
-a row vector. Y can also be a character matrix with each row holding
-the label of an observation of X.
+can be an Nx1 vector of positive integers, logical values, character
+vectors in a cell array, strings, or categorical values, each element the
+category of one observation. A cell array, string, or categorical Y
+can also be a row vector. Y can also be a character matrix with each
+row holding the label of an observation of X.
+
+Y can also be an NxK numeric or logical matrix of counts, with
+a column for each of the K categories: Y(i,j) is the
+number of observations in category j at the predictor values in
+X(i,:), so that a row of X stands for the
+sum (Y(i,:)) observations it was seen with. The counts must be
+nonnegative integers. A row of zeros stands for no observations and takes
+no part in the estimates, though it counts in 'dfe', as in MATLAB.
+A matrix of 1s and 0s with a single 1 in each row is the same as a vector
+of one category per observation.
 
 The categories of a numeric or logical Y are taken in sorted order,
 those of a cell array, string, or character matrix in order of first
@@ -11367,7 +11376,9 @@ categories. A category without observations is ignored wherever it lies
 among the categories of a categorical Y; MATLAB ignores only a last one
 and fits coefficients for any other. Likewise the categories of a numeric
 Y are the values it holds, where MATLAB numbers them from 1 to the
-largest and fits coefficients for any value missing below it. The last
+largest and fits coefficients for any value missing below it, and a column
+of zeros in a matrix Y is no category, where MATLAB fits coefficients
+for it. The last
 category is the reference category of a nominal model. An observation whose
 label is missing (an empty character vector, <missing>, or
 <undefined>), whose row of a matrix Y holds a NaN, or
@@ -11390,6 +11401,24 @@ model, or 'hierarchical' for a sequential (continuation-ratio) model.
 'link' The link function for ordinal and hierarchical
 models: 'logit' (default), 'probit', 'comploglog', or
 'loglog'. Nominal models always use the logit link.
+'interactions' 'on' to give each category its
+own slopes, or 'off' for slopes shared by every category, the
+intercepts always differing. The default is 'on' for nominal and
+hierarchical models and 'off' for ordinal ones. With
+'on', B is a (P+1)x(K-1) matrix whose column j
+holds the intercept and slopes of category j; with 'off',
+B is a (K-1+P)x1 vector of the K-1 intercepts followed by
+the P shared slopes. A nominal model without interactions has no
+slopes to share, so it fits the K-1 intercepts alone, with a warning.
+'weights' An Nx1 vector of nonnegative
+observation weights, each multiplying the counts of its row of Y.
+The default is a vector of ones. A row whose weight is NaN is left
+out of the fit.
+'iterationlimit' The largest number of iterations of the
+fit, a positive integer. The default is 100.
+'tolerance' The convergence tolerance of the fit, a
+positive scalar: the fit stops once no coefficient changes by more than this
+fraction of its value. The default is 1e-6.
 'estdisp' 'on' to estimate a dispersion
 parameter, scaling the coefficient standard errors by it and testing the
 coefficients against the t distribution, or 'off' (default)
@@ -11410,15 +11439,24 @@ and 'residd'.
 The raw and Pearson residuals are taken on what the model fits: an
 NxK matrix over the categories of a nominal model, and an
 Nx(K-1) matrix over the cumulative probabilities of an ordinal model
-or over the stages of a hierarchical one, where an observation is
-NaN at the stages after its own category. The deviance residuals
-are an Nx1 vector of -2 times the log of the fitted
-probability of the observed category. For a hierarchical model MATLAB sums
-the signed deviance residuals of the stages instead, which is NaN
-for every observation in the first category. 'sfit' is the square
-root of the Pearson statistic over the categories divided by
-'dfe', and it differs from MATLAB's, which for ordinal and
-hierarchical models is taken over the residuals in 'residp'.
+or over the stages of a hierarchical one, where a row is NaN at the
+stages that none of its observations reach. A raw residual is the count
+minus its fitted value, the count times the fitted probability, and a
+Pearson residual divides it by the binomial standard deviation of the count;
+a weight multiplies both counts. A row of zeros has a Pearson residual of
+NaN. The deviance residuals are an Nx1 vector holding the
+contribution of each row to the deviance, so they sum to dev; for an
+observation of one category it is -2 times the log of the fitted
+probability of that category. For a hierarchical model MATLAB sums the
+signed deviance residuals of the stages instead, which is NaN for
+every observation in the first category. 'sfit' is the square root
+of the Pearson statistic over the categories divided by 'dfe', and it
+differs from MATLAB's, which for ordinal and hierarchical models is taken
+over the residuals in 'residp'.
+
+'dfe' is the number of rows of X times K-1, less the
+number of coefficients; for a hierarchical model each stage counts only the
+rows with observations that reach it.
 
 See also:
 mnrval,
