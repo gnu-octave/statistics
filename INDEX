@@ -99,6 +99,7 @@ Regression
  fitlm
  fitlme
  fitlmematrix
+ fitmnr
  fitnlm
  fitrm
  GeneralizedLinearMixedModel
@@ -115,6 +116,7 @@ Regression
  mnrfit
  mnrval
  monotone_smooth
+ MultinomialRegression
  mvregress
  mvregresslike
  nlinfit

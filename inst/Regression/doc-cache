@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 317
+# columns: 354
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -8010,6 +8010,1155 @@ Improve a fitted linear regression model by one or more steps of stepwise term s
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 21
+MultinomialRegression
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1439
+statistics: MultinomialRegression
+Multinomial regression model class.
+
+A MultinomialRegression object holds a multinomial regression of a
+categorical response on one or more predictors, fitted by mnrfit.
+It is normally created with the fitmnr function. The response has
+K categories, listed in ClassNames, and the model is one of
+three kinds, named by ModelType: a nominal model contrasts each
+category with the last, an ordinal model fits the cumulative probabilities
+of ordered categories, and a hierarchical model fits each category against
+the ones after it.
+
+The most useful properties are Coefficients (a table of estimates,
+standard errors, t-statistics and p-values), Deviance,
+Fitted, Residuals, LogLikelihood,
+ModelCriterion and Rsquared. ObservationInfo records
+which rows were weighted or missing, and Variables holds the data
+the model was built from. A fitted model supports predict,
+feval and random, inference on its coefficients through
+coefCI, coefTest and testDeviance, and partial
+dependence through partialDependence and
+plotPartialDependence.
+
+Fitted, Residuals and ObservationInfo have one row per
+input row. A row left out of the fit because a value it needs is
+missing has NaN residuals and a missing label in Fitted, the
+empty character vector, <undefined>, <missing> or
+NaN as the type of ClassNames has it; MATLAB labels such a
+row with the first class.
+
+See also:
+fitmnr,
+mnrfit,
+mnrval,
+GeneralizedLinearModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+Multinomial regression model class.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+MultinomialRegression.ClassNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 820
+MultinomialRegression: property ClassNames
+Names of the response categories
+
+A K-by-1 array in the type of the response: numeric, logical, a
+cell array of character vectors, a string or a categorical array. A
+character matrix response gives a cell array, and a matrix of counts the
+numbers of its columns. The categories of a numeric, logical or text
+response are sorted, and those of a categorical array are in the order of
+its categories. A category without observations is no class. The last
+class is the reference category of a nominal model. The model is fitted
+in this order, so Fitted and predict name the class they
+estimate; R2024a sorts the classes of text but fits them in the order the
+data first shows them, so its labels name the wrong classes unless the
+data show them sorted.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+Names of the response categories
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+MultinomialRegression.CoefficientCovariance
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 332
+MultinomialRegression: property CoefficientCovariance
+Covariance matrix of the coefficient estimates
+
+A square matrix with one row and column per coefficient, in the order of
+CoefficientNames. It is scaled by Dispersion, so it is the
+covariance under the estimated dispersion wherever one was estimated.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 46
+Covariance matrix of the coefficient estimates
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+MultinomialRegression.CoefficientNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 445
+MultinomialRegression: property CoefficientNames
+Names of the coefficients
+
+A string column, one name per coefficient. A coefficient of one category
+joins the term to the category, (Intercept_class) and
+term_class; a slope shared by every category is
+named by its term alone. A categorical predictor contributes one term
+per level bar the first, spelled name_level, and an
+interaction joins its factors with a colon.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+Names of the coefficients
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+MultinomialRegression.Coefficients
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 487
+MultinomialRegression: property Coefficients
+Coefficient values
+
+A table with one row per coefficient and four columns:
+
+Value - estimated coefficient value
+SE - standard error of the estimate
+tStat - the estimate divided by its standard error
+pValue - p-value of that statistic
+
+The statistic is referred to the normal distribution, or to a
+t-distribution on DFE degrees of freedom where the
+dispersion is estimated. The row names are the coefficient names.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+Coefficient values
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+MultinomialRegression.DFE
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 259
+MultinomialRegression: property DFE
+Error degrees of freedom
+
+The number of rows used in the fit times K-1, less the number of
+coefficients; for a hierarchical model each stage counts only the rows
+with observations that reach it.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Error degrees of freedom
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+MultinomialRegression.Deviance
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 304
+MultinomialRegression: property Deviance
+Deviance of the fit
+
+A nonnegative scalar, twice the difference between the log-likelihood of
+the saturated model and that of the fitted one. The difference between
+the deviances of two nested models follows a chi-square distribution.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Deviance of the fit
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 32
+MultinomialRegression.Dispersion
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 370
+MultinomialRegression: property Dispersion
+Dispersion parameter
+
+A positive scalar, 1 unless EstimateDispersion is true. The
+estimate is the square of the 'sfit' that mnrfit
+returns, the Pearson statistic over the categories divided by
+DFE, so it differs from MATLAB's, as mnrfit documents.
+The standard errors are scaled by its square root.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Dispersion parameter
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+MultinomialRegression.EstimateDispersion
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 135
+MultinomialRegression: property EstimateDispersion
+Whether the dispersion was estimated
+
+A logical scalar.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+Whether the dispersion was estimated
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+MultinomialRegression.Fitted
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 226
+MultinomialRegression: property Fitted
+Fitted response values
+
+An N-by-1 array of the most probable class of each input row, in
+the type of ClassNames; a row left out of the fit is a missing
+label.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Fitted response values
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+MultinomialRegression.Formula
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 202
+MultinomialRegression: property Formula
+Model formula
+
+A LinearFormula object over the variables of the model, with the
+link on the response, such as logit(y) ~ 1 + x1 + x2.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 13
+Model formula
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 46
+MultinomialRegression.IncludeClassInteractions
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 270
+MultinomialRegression: property IncludeClassInteractions
+Whether each category has its own slopes
+
+A logical scalar: true when each category has its own slopes,
+false when every category shares them. The intercepts always
+differ by category.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+Whether each category has its own slopes
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+MultinomialRegression.Link
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 189
+MultinomialRegression: property Link
+Link function
+
+A character vector, 'logit', 'probit',
+'comploglog' or 'loglog'. A nominal model always uses
+the logit link.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 13
+Link function
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+MultinomialRegression.LogLikelihood
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 210
+MultinomialRegression: property LogLikelihood
+Log-likelihood of the fit
+
+A scalar, -Deviance / 2: the log-likelihood measured from
+that of the saturated model, as MATLAB reports it.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+Log-likelihood of the fit
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+MultinomialRegression.ModelCriterion
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 412
+MultinomialRegression: property ModelCriterion
+Information criteria
+
+A structure with fields AIC, AICc, BIC and
+CAIC, computed from LogLikelihood, the number of
+coefficients m and the number of rows n used in the fit:
+-2 * LogLikelihood + 2 * m, its small-sample correction
++ 2 * m * (m + 1) / (n - m - 1), -2 * LogLikelihood + m *
+log (n) and -2 * LogLikelihood + m * (log (n) + 1).
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Information criteria
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+MultinomialRegression.ModelType
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 149
+MultinomialRegression: property ModelType
+Type of the model
+
+A character vector, 'nominal', 'ordinal' or
+'hierarchical'.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Type of the model
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+MultinomialRegression.MultinomialRegression
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 521
+MultinomialRegression: mdl = MultinomialRegression (X, Y)
+MultinomialRegression: mdl = MultinomialRegression (Tbl, Y)
+MultinomialRegression: mdl = MultinomialRegression (Tbl, ResponseVarName)
+MultinomialRegression: mdl = MultinomialRegression (Tbl, Formula)
+MultinomialRegression: mdl = MultinomialRegression (..., name, value)
+Fit a multinomial regression model.
+
+This is the constructor that fitmnr calls, and it takes exactly
+what fitmnr takes. See fitmnr for the arguments and the
+name, value pairs.
+
+See also:
+fitmnr
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+Fit a multinomial regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+MultinomialRegression.NumCoefficients
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 120
+MultinomialRegression: property NumCoefficients
+Number of coefficients
+
+A positive integer.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Number of coefficients
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+MultinomialRegression.NumObservations
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 281
+MultinomialRegression: property NumObservations
+Number of observations
+
+The number of input rows used in the fit, those left out because a value
+was missing not counted. A row of a matrix of counts counts once,
+whatever number of observations it holds.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Number of observations
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+MultinomialRegression.NumPredictors
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 138
+MultinomialRegression: property NumPredictors
+Number of predictors
+
+The number of predictors used in the fit.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Number of predictors
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+MultinomialRegression.NumVariables
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 200
+MultinomialRegression: property NumVariables
+Number of variables
+
+The number of variables in the input data, the response and any variable
+the model does not use included.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Number of variables
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+MultinomialRegression.ObservationInfo
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 307
+MultinomialRegression: property ObservationInfo
+Information about the observations
+
+A table with one row per input row and three variables: Weights,
+the observation weight, Missing, true where a value the fit needs
+is missing, and Subset, true where the row was used in the fit.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Information about the observations
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+MultinomialRegression.ObservationNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 221
+MultinomialRegression: property ObservationNames
+Names of the observations
+
+The row names of an input table, as a cell array of character vectors,
+or an empty cell array where there were none.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+Names of the observations
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+MultinomialRegression.PredictorNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 170
+MultinomialRegression: property PredictorNames
+Names of the predictors
+
+A cell array of character vectors, one per predictor used in the fit.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Names of the predictors
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+MultinomialRegression.Residuals
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 412
+MultinomialRegression: property Residuals
+Residuals of the fit
+
+A table with one row per input row and three variables, Raw,
+Pearson and Deviance, the 'resid',
+'residp' and 'residd' that mnrfit returns and
+documents. Raw and Pearson have a column per category of a
+nominal model, and one fewer for an ordinal or hierarchical model;
+Deviance has one. A row left out of the fit is NaN.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Residuals of the fit
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+MultinomialRegression.ResponseName
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 131
+MultinomialRegression: property ResponseName
+Name of the response
+
+A character vector, 'y' by default.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Name of the response
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+MultinomialRegression.Rsquared
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 275
+MultinomialRegression: property Rsquared
+Pseudo R-squared values
+
+A structure with fields Ordinary, 1 - L / L0, and
+Adjusted, 1 - (L - m) / L0, where L is
+LogLikelihood, L0 that of the model with intercepts alone
+and m the number of coefficients.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Pseudo R-squared values
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+MultinomialRegression.VariableInfo
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 392
+MultinomialRegression: property VariableInfo
+Information about the variables
+
+A table with one row per variable and four variables: Class, the
+class of the variable, Range, [min, max] of a continuous
+variable or the levels of a categorical one, InModel, true for a
+predictor used in the fit, and IsCategorical. The response is not
+in the model and is categorical.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+Information about the variables
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+MultinomialRegression.VariableNames
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 196
+MultinomialRegression: property VariableNames
+Names of the variables
+
+A cell array of character vectors naming every variable of the input
+data, the response included.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Names of the variables
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+MultinomialRegression.Variables
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 169
+MultinomialRegression: property Variables
+Input data
+
+A table of the predictors and the response, with any other variable of an
+input table.
+
+This property is read-only.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+Input data
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+MultinomialRegression.coefCI
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 433
+MultinomialRegression: ci = coefCI (mdl)
+MultinomialRegression: ci = coefCI (mdl, alpha)
+Confidence intervals for the coefficients.
+
+ci = coefCI (mdl) returns a p-by-2 matrix, one
+row per coefficient in the order of CoefficientNames, of the lower
+and upper limits of its 95% confidence interval,
+Value +/- tinv (1 - alpha / 2, DFE) * SE. alpha, in
+(0, 1), sets the level to 100 (1 - alpha)%.
+
+See also:
+MultinomialRegression.coefTest
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Confidence intervals for the coefficients.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+MultinomialRegression.coefTest
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 690
+MultinomialRegression: p = coefTest (mdl)
+MultinomialRegression: p = coefTest (mdl, H)
+MultinomialRegression: p = coefTest (mdl, H, C)
+MultinomialRegression: [p, F, r] = coefTest (...)
+Linear hypothesis test on the coefficients.
+
+p = coefTest (mdl, H, C) tests the
+hypothesis that H * b = C, where b is the
+column of coefficients in the order of CoefficientNames. H
+is a full-rank r-by-p matrix and C a vector of
+r elements, zero by default; without H the hypothesis is
+that every coefficient is zero. F is the Wald statistic divided by
+r, and p its p-value from the F distribution on
+r and DFE degrees of freedom.
+
+See also:
+MultinomialRegression.coefCI,
+MultinomialRegression.testDeviance
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+Linear hypothesis test on the coefficients.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+MultinomialRegression.feval
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 476
+MultinomialRegression: label = feval (mdl, X1, ..., Xp)
+MultinomialRegression: label = feval (mdl, Xnew)
+Predict the response of a multinomial regression model.
+
+label = feval (mdl, X1, ..., Xp)
+takes one argument per predictor, each a column vector or a scalar, and a
+scalar stands for every row. label = feval (mdl,
+Xnew) takes a table or a matrix, as predict does. Either
+returns what predict returns first, the most probable class.
+
+See also:
+MultinomialRegression.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 55
+Predict the response of a multinomial regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+MultinomialRegression.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1427
+MultinomialRegression: label = predict (mdl, Xnew)
+MultinomialRegression: [label, probs] = predict (mdl, Xnew)
+MultinomialRegression: [label, probs, lower, upper] = predict (mdl, Xnew)
+MultinomialRegression: [...] = predict (..., name, value)
+Predict the response of a multinomial regression model.
+
+label = predict (mdl, Xnew) returns the most
+probable class at each row of the new predictor data Xnew, in the
+type of ClassNames. Xnew is a table holding every predictor
+named in PredictorNames, or a numeric matrix with one column per
+predictor where they are all numeric. A row holding a missing value is a
+missing label.
+
+probs holds the probabilities, one row per row of Xnew, and
+lower and upper their confidence bounds, from the delta
+method. The following name, value pairs are accepted:
+
+Name Value
+'Alpha' The significance level of the bounds, a
+scalar in (0, 1); the default 0.05 gives 95% bounds.
+'ProbabilityType' 'category' (default), the
+probability of each of the K categories; 'cumulative',
+the probability of each of the first K-1 categories or any before
+it; or 'conditional', the probability of each of the first
+K-1 categories given that the response is not in an earlier one.
+
+The bounds are at the confidence level 1 - Alpha. R2024a
+takes Alpha as the confidence level itself, so its default bounds
+are at 5% and far too narrow.
+
+See also:
+MultinomialRegression.feval,
+MultinomialRegression.random,
+mnrval
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 55
+Predict the response of a multinomial regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+MultinomialRegression.random
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 677
+MultinomialRegression: ysim = random (mdl, Xnew)
+MultinomialRegression: ysim = random (mdl, Xnew, NumTrials)
+MultinomialRegression: ysim = random (..., type)
+Simulate responses of a multinomial regression model.
+
+ysim = random (mdl, Xnew) draws one response at
+each row of Xnew from the probabilities the model gives there.
+Xnew is a table or a matrix, as predict takes it.
+NumTrials, a positive integer, draws that many at each row.
+
+type is 'samples' (default), for an
+r-by-NumTrials array of class labels, in the type of
+ClassNames, or 'counts', for an r-by-K
+table counting how many draws fell in each class, one variable per
+class.
+
+See also:
+MultinomialRegression.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Simulate responses of a multinomial regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+MultinomialRegression.testDeviance
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 662
+MultinomialRegression: p = testDeviance (mdl)
+MultinomialRegression: [p, stat] = testDeviance (mdl)
+Deviance test against the model with intercepts alone.
+
+p = testDeviance (mdl) tests whether the model fits
+better than one with an intercept for each category and no predictors,
+comparing their deviances. Where the dispersion is fixed, stat is
+the drop in deviance and p its chi-square p-value on as many
+degrees of freedom as the model has coefficients beyond the intercepts;
+where it is estimated, stat is that drop per degree of freedom
+divided by Dispersion, and p its F p-value on those
+and DFE degrees of freedom.
+
+See also:
+MultinomialRegression.coefTest
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+Deviance test against the model with intercepts alone.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 14
 NonLinearModel
 
@@ -10698,6 +11847,98 @@ parseWilkinsonFormula
 # elements: 1
 # length: 54
 Fit a linear mixed-effects model from design matrices.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+fitmnr
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3104
+statistics: mdl = fitmnr (X, Y)
+statistics: mdl = fitmnr (Tbl, Y)
+statistics: mdl = fitmnr (Tbl, ResponseVarName)
+statistics: mdl = fitmnr (Tbl, Formula)
+statistics: mdl = fitmnr (..., name, value)
+Fit a multinomial regression model.
+
+mdl = fitmnr (X, Y) fits a multinomial regression
+of the response Y on the columns of the N-by-P numeric
+predictor matrix X, and returns a MultinomialRegression object.
+An intercept is always fitted, so X holds no column of ones.
+
+Y is an N-by-1 numeric, logical, string or categorical vector,
+a cell array of character vectors, or a character matrix, each element or
+row the category of one observation; or an N-by-K matrix of
+counts, Y(i,j) observations of category j at the
+predictor values X(i,:), as mnrfit documents.
+
+mdl = fitmnr (Tbl, Y) takes the predictors from
+the variables of the table Tbl, and the response from Y.
+mdl = fitmnr (Tbl, ResponseVarName) takes the
+response from the variable of Tbl that ResponseVarName names, a
+character vector or a string scalar, and the predictors from the others.
+mdl = fitmnr (Tbl, Formula) takes both from the
+Wilkinson formula Formula, such as 'y ~ x1 + x2*x3'. A
+numeric variable of a table is a continuous predictor and any other is
+categorical, coded as one indicator per level bar the first.
+
+The following name, value pairs are accepted:
+
+Name Value
+'ModelType' 'nominal' (default), a model
+contrasting each category with the last; 'ordinal', a model of the
+cumulative probabilities of ordered categories; or 'hierarchical',
+a model of each category against the ones after it.
+'Link' The link function of an ordinal or hierarchical
+model: 'logit' (default), 'probit', 'comploglog'
+or 'loglog'. A nominal model always uses the logit link.
+'IncludeClassInteractions' true to give each
+category its own slopes, false for slopes shared by every
+category. The default is true for nominal and hierarchical models
+and false for ordinal ones. A nominal model without interactions
+fits its intercepts alone.
+'EstimateDispersion' true to estimate the
+dispersion and scale the standard errors by it, false (default) for
+the theoretical dispersion of 1.
+'Weights' An N-by-1 vector of nonnegative
+observation weights, each multiplying the counts of its observation; ones
+by default.
+'CategoricalPredictors' The predictors to treat as
+categorical: a vector of indices, a logical vector with one element per
+predictor, a cell array or string array of names, or 'all'.
+'PredictorNames' The names of the predictors: for a
+matrix X, one per column, x1, x2, ... by default;
+for a table, the variables to use as predictors. A formula names its own.
+'ResponseName' The name of the response, 'y' by
+default. A response variable name or a formula names its own.
+'IterationLimit' The largest number of iterations of the
+fit, 100 by default.
+'Tolerance' The convergence tolerance of the fit, the
+largest change of a coefficient relative to its value, 1e-6 by
+default.
+
+A row holding a missing value of a predictor it uses, of the response, or
+of the weights is left out of the fit.
+
+See also:
+MultinomialRegression,
+mnrfit,
+mnrval,
+fitglm
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+Fit a multinomial regression model.
 
 
 
