@@ -12208,7 +12208,7 @@ ridge
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1421
+# length: 1724
 statistics: b = ridge (y, X, k)
 statistics: b = ridge (y, X, k, scaled)
 Ridge regression.
@@ -12239,6 +12239,12 @@ k must be a numeric vector with the ridge parameters.
 scaled must be a numeric scalar indicating whether the coefficient
 estimates in b are restored to the scale of the original data. By
 default, scaled = 1.
+
+Rows of y and X holding a NaN are removed before the fit,
+and at least two rows must remain. MATLAB answers with fewer: with none it
+returns zeros, or NaN when scaled = 0, and with one it
+returns slopes that do not depend on X, and too many coefficients when
+X has more than one column and scaled = 0.
 
 Further information about Ridge regression can be found at
 https://en.wikipedia.org/wiki/Ridge_regression

@@ -51,6 +51,12 @@
 ## default, @qcode{@var{scaled} = 1}.
 ## @end itemize
 ##
+## Rows of @var{y} and @var{X} holding a @code{NaN} are removed before the fit,
+## and at least two rows must remain.  MATLAB answers with fewer: with none it
+## returns zeros, or @code{NaN} when @qcode{@var{scaled} = 0}, and with one it
+## returns slopes that do not depend on @var{X}, and too many coefficients when
+## @var{X} has more than one column and @qcode{@var{scaled} = 0}.
+##
 ## Further information about Ridge regression can be found at
 ## @url{https://en.wikipedia.org/wiki/Ridge_regression}
 ##
@@ -91,6 +97,9 @@ function b = ridge (y, X, k, scaled)
   notnans = ! logical (sum (isnan ([y, X]), 2));
   y = y(notnans);
   X = X(notnans,:);
+  if (rows (X) < 2)
+    error ("ridge: Y and X must contain at least two rows without NaN.");
+  endif
 
   ## Scale and center X to zero mean and StD = 1
   m = mean (X);
@@ -285,6 +294,12 @@ endfunction
 %!error<ridge: X must be a numeric matrix.> ridge (ones (5,1), [], 2)
 %!error<ridge: Y and X must contain the same number of rows.> ...
 %! ridge ([1; 2; 3; 4; 5], ones (3), 3)
+%!error<ridge: Y and X must contain at least two rows without NaN.> ...
+%! ridge (5, [1, 2], 0.1)
+%!error<ridge: Y and X must contain at least two rows without NaN.> ...
+%! ridge ([NaN; 5], [1, 2; 3, 4], 0.1)
+%!error<ridge: Y and X must contain at least two rows without NaN.> ...
+%! ridge ([NaN; 5], [1, 2; 3, NaN], 0.1)
 %!error<ridge: wrong value for SCALED argument.> ...
 %! ridge ([1; 2; 3], ones (3), 3, 2)
 %!error<ridge: wrong value for SCALED argument.> ...
