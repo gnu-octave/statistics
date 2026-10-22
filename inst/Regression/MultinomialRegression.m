@@ -104,7 +104,7 @@ classdef MultinomialRegression < PredictiveModel
     ## This property is read-only.
     ##
     ## @end deftp
-    CoefficientNames = string ([]);
+    CoefficientNames = [];
 
     ## -*- texinfo -*-
     ## @deftp {MultinomialRegression} {property} NumCoefficients
