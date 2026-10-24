@@ -1050,7 +1050,7 @@ knnsearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5025
+# length: 5074
 statistics: idx = knnsearch (X, Y)
 statistics: [idx, D] = knnsearch (X, Y)
 statistics: [...] = knnsearch (..., name, value)
@@ -1076,7 +1076,8 @@ in the kNN search. It must be a positive integer value and by default it is
 1.
 'P' is the Minkowski distance exponent and it must be
 a positive scalar. This argument is only valid when the selected distance
-metric is 'minkowski'. By default it is 2.
+metric is 'minkowski'. By default it is 2. An exponent of
+Inf gives the Chebychev distance.
 'Scale' is the scale parameter for the standardized
 Euclidean distance and it must be a nonnegative numeric vector of equal
 length to the number of columns in X. This argument is only valid when
@@ -1642,7 +1643,7 @@ rangesearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4718
+# length: 4767
 statistics: idx = rangesearch (X, Y, r)
 statistics: [idx, D] = rangesearch (X, Y, r)
 statistics: [...] = rangesearch (..., name, value)
@@ -1673,7 +1674,8 @@ Additional parameters can be specified by Name-Value pair arguments.
 Name Value
 'P' is the Minkowski distance exponent and it must be
 a positive scalar. This argument is only valid when the selected distance
-metric is 'minkowski'. By default it is 2.
+metric is 'minkowski'. By default it is 2. An exponent of
+Inf gives the Chebychev distance.
 'Scale' is the scale parameter for the standardized
 Euclidean distance and it must be a nonnegative numeric vector of equal
 length to the number of columns in X. This argument is only valid when

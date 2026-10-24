@@ -47,7 +47,8 @@
 ##
 ## @item @qcode{'P'} @tab is the Minkowski distance exponent and it must be
 ## a positive scalar.  This argument is only valid when the selected distance
-## metric is @qcode{'minkowski'}.  By default it is 2.
+## metric is @qcode{'minkowski'}.  By default it is 2.  An exponent of
+## @code{Inf} gives the Chebychev distance.
 ##
 ## @item @qcode{'Scale'} @tab is the scale parameter for the standardized
 ## Euclidean distance and it must be a nonnegative numeric vector of equal
@@ -234,6 +235,12 @@ function [idx, dist] = knnsearch (X, Y, varargin)
   ## Select the appropriate distance parameter
   if (strcmpi (Distance, 'minkowski'))
     DistParameter = P;
+    ## A Minkowski exponent of Inf is the Chebychev distance, its limit, which
+    ## every search below computes directly
+    if (P == Inf)
+      Distance = 'chebychev';
+      DistParameter = [];
+    endif
   elseif (strcmpi (Distance, 'seuclidean'))
     DistParameter = S;
   elseif (strcmpi (Distance, 'mahalanobis'))
@@ -660,6 +667,30 @@ endfunction
 %! [idx, D] = knnsearch (single (zeros (0, 2)), [1, 2]);
 %! assert_equal (class (idx), 'double');
 %! assert_equal (class (D), 'single');
+
+## A Minkowski exponent of Inf is the Chebychev distance, as in MATLAB R2026b,
+## with every search method and with ties, which both queries have.
+%!shared X, Y
+%! X = [1, 2; 4, 6; 0, 0; 3, 1; 5, 5; 2, 3];
+%! Y = [1, 1; 4, 4];
+%!test
+%! for m = {'kdtree', 'exhaustive'}
+%!   [idx, D] = knnsearch (X, Y, 'K', 2, 'Distance', 'minkowski', 'P', Inf, ...
+%!                         'NSMethod', m{1});
+%!   assert_equal (idx, [1, 3; 5, 2]);
+%!   assert_equal (D, [1, 1; 1, 2]);
+%! endfor
+%!test
+%! for m = {'kdtree', 'exhaustive'}
+%!   [idx, D] = knnsearch (X, Y, 'K', 1, 'Distance', 'minkowski', 'P', Inf, ...
+%!                         'IncludeTies', true, 'NSMethod', m{1});
+%!   assert_equal (idx, {[1, 3]; 5});
+%!   assert_equal (D, {[1, 1]; 1});
+%! endfor
+%!test
+%! [idx, D] = knnsearch (X, Y, 'K', 2, 'Distance', 'minkowski', 'P', Inf);
+%! [idxc, Dc] = knnsearch (X, Y, 'K', 2, 'Distance', 'chebychev');
+%! assert_equal ({idx, D}, {idxc, Dc});
 
 ## Test input validation
 ## Neighbours at equal distance come in row order, as R2024a returns them,
