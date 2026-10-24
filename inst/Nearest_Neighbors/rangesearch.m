@@ -50,7 +50,8 @@
 ##
 ## @item @qcode{'P'} @tab is the Minkowski distance exponent and it must be
 ## a positive scalar.  This argument is only valid when the selected distance
-## metric is @qcode{'minkowski'}.  By default it is 2.
+## metric is @qcode{'minkowski'}.  By default it is 2.  An exponent of
+## @code{Inf} gives the Chebychev distance.
 ##
 ## @item @qcode{'Scale'} @tab is the scale parameter for the standardized
 ## Euclidean distance and it must be a nonnegative numeric vector of equal
@@ -218,6 +219,12 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
   ## Select the appropriate distance parameter
   if (strcmpi (Distance, 'minkowski'))
     DistParameter = P;
+    ## A Minkowski exponent of Inf is the Chebychev distance, its limit, which
+    ## every search below computes directly
+    if (P == Inf)
+      Distance = 'chebychev';
+      DistParameter = [];
+    endif
   elseif (strcmpi (Distance, 'seuclidean'))
     DistParameter = S;
   elseif (strcmpi (Distance, 'mahalanobis'))
@@ -441,6 +448,17 @@ endfunction
 %!                         'P', Inf, 'NSMethod', 'exhaustive');
 %! assert_equal (idx, {[2, 1]});
 %! assert_equal (D, {[2, 4]});
+%!test
+%! ## and with the default kd-tree search, sorted or not, with ties
+%! X = [1, 2; 4, 6; 0, 0; 3, 1; 5, 5; 2, 3];
+%! Y = [1, 1; 4, 4];
+%! [idx, D] = rangesearch (X, Y, 2, 'Distance', 'minkowski', 'P', Inf);
+%! assert_equal (idx, {[1, 3, 4, 6]; [5, 2, 6]});
+%! assert_equal (D, {[1, 1, 2, 2]; [1, 2, 2]});
+%! [idx, D] = rangesearch (X, Y, 2, 'Distance', 'minkowski', 'P', Inf, ...
+%!                         'SortIndices', false);
+%! assert_equal (idx, {[1, 3, 4, 6]; [2, 5, 6]});
+%! assert_equal (D, {[1, 1, 2, 2]; [2, 1, 2]});
 
 ## Test input validation
 %!error<rangesearch: too few input arguments.> rangesearch (1)
