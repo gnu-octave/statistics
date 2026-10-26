@@ -216,7 +216,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
     error ("knnsearch: invalid value of K.");
   endif
   K = min (K, rows (X));
-  if (! isscalar (P) || ! isnumeric (P) || P <= 0)
+  if (! (isscalar (P) && isnumeric (P) && P > 0))
     error ("knnsearch: invalid value of Minkowski Exponent.");
   endif
   if (PG && ! (ischar (Distance) && strcmpi (Distance, 'minkowski')))
@@ -828,6 +828,8 @@ endfunction
 %! knnsearch (ones (4, 5), ones (1, 5), 'K', 0)
 %!error<knnsearch: invalid value of Minkowski Exponent.> ...
 %! knnsearch (ones (4, 5), ones (1, 5), 'P', -2)
+%!error<knnsearch: invalid value of Minkowski Exponent.> ...
+%! knnsearch (ones (4, 2), ones (1, 2), 'Distance', 'minkowski', 'P', NaN)
 %!error<knnsearch: 'P' applies only to the minkowski metric.> ...
 %! knnsearch (ones (4, 2), ones (1, 2), 'P', 3)
 %!error<knnsearch: 'P' applies only to the minkowski metric.> ...

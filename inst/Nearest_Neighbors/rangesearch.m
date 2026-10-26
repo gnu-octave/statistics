@@ -200,7 +200,7 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
   if (PSC > 1)
     error ("rangesearch: only a single distance parameter can be defined.");
   endif
-  if (! isscalar (P) || ! isnumeric (P) || P <= 0)
+  if (! (isscalar (P) && isnumeric (P) && P > 0))
     error ("rangesearch: invalid value of Minkowski Exponent.");
   endif
   if (PG && ! (ischar (Distance) && strcmpi (Distance, 'minkowski')))
@@ -498,6 +498,8 @@ endfunction
 %! rangesearch (ones (4, 5), ones (1, 5), 1, 'scale', ones (1, 5), 'P', 3)
 %!error<rangesearch: invalid value of Minkowski Exponent.> ...
 %! rangesearch (ones (4, 5), ones (1, 5), 1, 'P', -2)
+%!error<rangesearch: invalid value of Minkowski Exponent.> ...
+%! rangesearch (ones (4, 2), ones (1, 2), 1, 'Distance', 'minkowski', 'P', NaN)
 %!error<rangesearch: 'P' applies only to the minkowski metric.> ...
 %! rangesearch (ones (4, 2), ones (1, 2), 1, 'P', 3)
 %!error<rangesearch: 'P' applies only to the minkowski metric.> ...
