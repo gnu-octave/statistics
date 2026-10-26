@@ -22,8 +22,8 @@
 ## Create a nearest neighbor searcher object.
 ##
 ## @code{@var{obj} = createns (@var{X})} creates a nearest neighbor searcher
-## object using the training data @var{X}. By default, it constructs an
-## @code{ExhaustiveSearcher} object with the Euclidean distance metric.
+## object using the training data @var{X}.  By default, it constructs a
+## @code{KDTreeSearcher} object with the Euclidean distance metric.
 ##
 ## @code{@var{obj} = createns (@var{X}, @var{name}, @var{value}, @dots{})}
 ## allows customization of the searcher type and its properties through
@@ -40,7 +40,11 @@
 ##   @item @qcode{'kdtree'}: Creates a @code{KDTreeSearcher} object.
 ##   @item @qcode{'hnsw'}: Creates an @code{hnswSearcher} object.
 ##   @end itemize
-##   Default is @qcode{'exhaustive'}.
+##   By default it is @qcode{'kdtree'} when @var{X} has at most 10 columns,
+##   is not sparse, and the @qcode{'Distance'} is @qcode{'euclidean'},
+##   @qcode{'cityblock'}, @qcode{'chebychev'} or @qcode{'minkowski'}, and
+##   @qcode{'exhaustive'} otherwise.  @qcode{'BucketSize'} is then ignored,
+##   with a warning, where the columns or sparsity rule out the kd-tree.
 ##
 ## @end multitable
 ##
@@ -76,7 +80,7 @@
 ## @strong{Examples:}
 ##
 ## @example
-## ## Create an ExhaustiveSearcher with default parameters
+## ## Create a KDTreeSearcher with default parameters
 ## X = [1, 2; 3, 4; 5, 6];
 ## obj = createns (X);
 ##
@@ -106,8 +110,8 @@ function obj = createns (X, varargin)
     error ("createns: X must be a finite numeric matrix.");
   endif
 
-  ## Set default NSMethod
-  NSMethod = 'exhaustive';
+  ## Resolved below when not given
+  NSMethod = [];
 
   ## Extract 'NSMethod' from varargin and remove it
   names = varargin(1:2:end);
@@ -123,6 +127,33 @@ function obj = createns (X, varargin)
     NSMethod = lower (NSMethod);
     remove_idx = [2*idx-1, 2*idx];
     varargin(remove_idx) = [];
+  endif
+
+  ## With no 'NSMethod', a kd-tree is built where one can serve the data and
+  ## the metric, as MATLAB does: at most 10 columns, not sparse, and a metric
+  ## the kd-tree searches.
+  if (isempty (NSMethod))
+    Distance = 'euclidean';
+    idx = find (strcmpi (varargin(1:2:end), 'distance'));
+    if (! isempty (idx))
+      Distance = varargin{2*idx(end)};
+    endif
+    if (columns (X) <= 10 && ! issparse (X) && ischar (Distance)
+        && any (strcmpi (Distance, {'euclidean', 'cityblock', ...
+                                    'chebychev', 'minkowski'})))
+      NSMethod = 'kdtree';
+    else
+      NSMethod = 'exhaustive';
+      ## 'BucketSize' belongs to the kd-tree, so where the data rules one out
+      ## it is dropped with a warning, as MATLAB drops it
+      idx = find (strcmpi (varargin(1:2:end), 'bucketsize'));
+      if (! isempty (idx) && (columns (X) > 10 || issparse (X)))
+        warning (strcat ("createns: 'BucketSize' is ignored, since an", ...
+                         " ExhaustiveSearcher is created for data with", ...
+                         " more than 10 columns or sparse data."));
+        varargin([2*idx-1, 2*idx]) = [];
+      endif
+    endif
   endif
 
   ## Validate NSMethod value
@@ -146,12 +177,49 @@ endfunction
 ## Test Cases
 
 %!test
-%! ## Default ExhaustiveSearcher
+%! ## Default KDTreeSearcher, as in MATLAB R2024a
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = createns (X);
-%! assert_equal (isa (obj, 'ExhaustiveSearcher'), true);
+%! assert_equal (isa (obj, 'KDTreeSearcher'), true);
 %! assert_equal (obj.X, X);
 %! assert_equal (obj.Distance, "euclidean");
+
+## The default method is the kd-tree where it can serve the data and the
+## metric, and exhaustive otherwise, each as measured on MATLAB R2024a.
+%!assert_equal (class (createns (magic (12)(:,1:10))), 'KDTreeSearcher')
+%!assert_equal (class (createns (magic (12)(:,1:11))), 'ExhaustiveSearcher')
+%!assert_equal (class (createns (sparse (magic (4)))), 'ExhaustiveSearcher')
+%!assert_equal (class (createns (single (magic (4)))), 'KDTreeSearcher')
+%!assert_equal (class (createns (zeros (0, 2))), 'KDTreeSearcher')
+%!assert_equal (class (createns (magic (4), 'Distance', 'cityblock')), ...
+%!              'KDTreeSearcher')
+%!assert_equal (class (createns (magic (4), 'Distance', 'chebychev')), ...
+%!              'KDTreeSearcher')
+%!assert_equal (class (createns (magic (4), 'Distance', 'minkowski', ...
+%!                               'P', 3)), 'KDTreeSearcher')
+%!assert_equal (class (createns (magic (4), 'Distance', 'EUCLIDEAN')), ...
+%!              'KDTreeSearcher')
+%!assert_equal (class (createns (magic (4), 'Distance', 'seuclidean')), ...
+%!              'ExhaustiveSearcher')
+%!assert_equal (class (createns (magic (4), 'Distance', 'mahalanobis')), ...
+%!              'ExhaustiveSearcher')
+%!assert_equal (class (createns (magic (4), 'Distance', 'cosine')), ...
+%!              'ExhaustiveSearcher')
+%!assert_equal (class (createns (magic (4), 'Distance', 'hamming')), ...
+%!              'ExhaustiveSearcher')
+%!assert_equal (class (createns (magic (4), 'Distance', ...
+%!                               @(x, Z) sum (abs (x - Z), 2))), ...
+%!              'ExhaustiveSearcher')
+%!assert_equal (class (createns (magic (12)(:,1:11), 'Distance', ...
+%!                               'minkowski')), 'ExhaustiveSearcher')
+%!assert_equal (createns (magic (4), 'BucketSize', 10).BucketSize, 10)
+%!test
+%! S = warning ('off', 'all');
+%! obj = createns (magic (12)(:,1:11), 'BucketSize', 10);
+%! warning (S);
+%! assert_equal (class (obj), 'ExhaustiveSearcher');
+%!warning<createns: 'BucketSize' is ignored, since an ExhaustiveSearcher is created for data with more than 10 columns or sparse data.> ...
+%! createns (magic (12)(:,1:11), 'BucketSize', 10);
 
 %!test
 %! ## KDTreeSearcher with default parameters

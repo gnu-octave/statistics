@@ -656,14 +656,14 @@ createns
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2048
+# length: 2287
 statistics: obj = createns (X)
 statistics: obj = createns (X, name, value, ...)
 Create a nearest neighbor searcher object.
 
 obj = createns (X) creates a nearest neighbor searcher
-object using the training data X. By default, it constructs an
-ExhaustiveSearcher object with the Euclidean distance metric.
+object using the training data X. By default, it constructs a
+KDTreeSearcher object with the Euclidean distance metric.
 
 obj = createns (X, name, value, ...)
 allows customization of the searcher type and its properties through
@@ -678,7 +678,11 @@ method. Possible values are:
 'kdtree': Creates a KDTreeSearcher object.
 'hnsw': Creates an hnswSearcher object.
 
-Default is 'exhaustive'.
+By default it is 'kdtree' when X has at most 10 columns,
+is not sparse, and the 'Distance' is 'euclidean',
+'cityblock', 'chebychev' or 'minkowski', and
+'exhaustive' otherwise. 'BucketSize' is then ignored,
+with a warning, where the columns or sparsity rule out the kd-tree.
 
 Additional name-value pairs depend on the selected 'NSMethod' and
 are passed directly to the constructor of the corresponding class:
@@ -707,7 +711,7 @@ depending on the specified 'NSMethod'.
 
 Examples:
 
-## Create an ExhaustiveSearcher with default parameters
+## Create a KDTreeSearcher with default parameters
 X = [1, 2; 3, 4; 5, 6];
 obj = createns (X);
 
