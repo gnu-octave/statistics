@@ -461,7 +461,7 @@ classdef ClassificationKNN < PredictiveModel
     ## @item @qcode{'mahalanobis'} accepts a positive definite covariance
     ## matrix.
     ## @item @qcode{'minkowski'} accepts a positive scalar as the Minkowski
-    ## distance exponent.
+    ## distance exponent; @code{Inf} gives the Chebychev distance.
     ## @item @qcode{'seuclidean'} accepts a vector of positive scale values of
     ## equal length as the number of predictors in @var{X}.
     ## @end itemize
@@ -976,7 +976,7 @@ classdef ClassificationKNN < PredictiveModel
     ## @item @qcode{'Exponent'} @tab A positive scalar (usually an integer)
     ## specifying the Minkowski distance exponent.  This argument is only valid
     ## when the selected distance metric is @qcode{'minkowski'}.  By default,
-    ## it is 2.
+    ## it is 2.  An exponent of @code{Inf} gives the Chebychev distance.
     ##
     ## @item @qcode{'Scale'} @tab A nonnegative numeric vector specifying
     ## the scale parameters for the standardized Euclidean distance.  The vector
@@ -3356,6 +3356,33 @@ endfunction
 %! assert_equal (l, {'versicolor'})
 %! assert_equal (s, [0, 0.5, 0.5], 1e-4)
 %! assert_equal (c, [1, 0.5, 0.5], 1e-4)
+%!test
+%! ## An exponent of Inf is the Chebychev distance, as in MATLAB R2024a
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'minkowski', ...
+%!                'Exponent', Inf);
+%! [l, s, c] = predict (obj, xc);
+%! assert_equal (obj.DistParameter, Inf)
+%! assert_equal (obj.NSMethod, 'kdtree')
+%! assert_equal (l, {'versicolor'})
+%! assert_equal (s, [0, 0.7, 0.3], 1e-15)
+%! assert_equal (c, [1, 0.3, 0.7], 1e-15)
+%!test
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'minkowski', ...
+%!                'Exponent', Inf, 'NSMethod', 'exhaustive');
+%! [l, s, c] = predict (obj, xc);
+%! assert_equal (l, {'versicolor'})
+%! assert_equal (s, [0, 0.7, 0.3], 1e-15)
+%! assert_equal (c, [1, 0.3, 0.7], 1e-15)
+%!test
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'minkowski');
+%! obj.DistParameter = Inf;
+%! [l, s, c] = predict (obj, xc);
+%! assert_equal (l, {'versicolor'})
+%! assert_equal (s, [0, 0.7, 0.3], 1e-15)
+%! assert_equal (c, [1, 0.3, 0.7], 1e-15)
 %!test
 %! xc = [5, 3, 5, 1.45];
 %! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'jaccard');

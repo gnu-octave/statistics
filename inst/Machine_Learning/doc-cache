@@ -7313,7 +7313,7 @@ ClassificationKNN.ClassificationKNN
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5755
+# length: 5804
 ClassificationKNN: obj = ClassificationKNN (X, Y)
 ClassificationKNN: obj = ClassificationKNN (Tbl, ResponseVarName)
 ClassificationKNN: obj = ClassificationKNN (Tbl, formula)
@@ -7405,7 +7405,7 @@ This argument is only valid when the selected distance metric is
 'Exponent' A positive scalar (usually an integer)
 specifying the Minkowski distance exponent. This argument is only valid
 when the selected distance metric is 'minkowski'. By default,
-it is 2.
+it is 2. An exponent of Inf gives the Chebychev distance.
 'Scale' A nonnegative numeric vector specifying
 the scale parameters for the standardized Euclidean distance. The vector
 length must be equal to the number of columns in X. This argument
@@ -7499,7 +7499,7 @@ ClassificationKNN.DistParameter
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1259
+# length: 1293
 ClassificationKNN: property DistParameter
 Parameter for distance metric
 
@@ -7510,7 +7510,7 @@ distance metric as shown below:
 'mahalanobis' accepts a positive definite covariance
 matrix.
 'minkowski' accepts a positive scalar as the Minkowski
-distance exponent.
+distance exponent; Inf gives the Chebychev distance.
 'seuclidean' accepts a vector of positive scale values of
 equal length as the number of predictors in X.
 
@@ -47434,7 +47434,7 @@ fitcknn
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 11312
+# length: 11361
 statistics: Mdl = fitcknn (X, Y)
 statistics: Mdl = fitcknn (Tbl, ResponseVarName)
 statistics: Mdl = fitcknn (Tbl, formula)
@@ -47540,6 +47540,7 @@ it is 1.
 'Exponent' A positive scalar (usually an integer)
 specifying the Minkowski distance exponent. This argument is only valid when
 the selected distance metric is 'minkowski'. By default it is 2.
+An exponent of Inf gives the Chebychev distance.
 'Scale' A nonnegative numeric vector specifying the
 scale parameters for the standardized Euclidean distance. The vector length
 must be equal to the number of columns in X. This argument is only

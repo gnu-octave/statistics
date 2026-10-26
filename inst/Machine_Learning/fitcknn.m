@@ -149,6 +149,7 @@
 ## @item @qcode{'Exponent'} @tab A positive scalar (usually an integer)
 ## specifying the Minkowski distance exponent.  This argument is only valid when
 ## the selected distance metric is @qcode{'minkowski'}.  By default it is 2.
+## An exponent of @code{Inf} gives the Chebychev distance.
 ##
 ## @item @qcode{'Scale'} @tab A nonnegative numeric vector specifying the
 ## scale parameters for the standardized Euclidean distance.  The vector length
