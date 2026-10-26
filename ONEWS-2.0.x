@@ -1,0 +1,361 @@
+ Summary of important user-visible changes for statistics 2.0.0:
+-------------------------------------------------------------------
+
+ Important Notice: 1) Update dependency to datatypes 1.5.0.
+                   2) Incompatibility with the `nan` and `tablicious` packages.
+
+ Backwards incompatible improvements:
+ ====================================
+
+ ** bartlett_test, levene_test:
+    removed; `vartestn` runs both tests, with 'TestType' 'Bartlett',
+    'LeveneAbsolute', 'LeveneQuadratic' or 'BrownForsythe'.  `levene_test`'s
+    'quadratic' option computed the absolute test.
+
+ ** chi2test:
+    returns `[h, p, stats]` where it returned `[p, chisq, df, E]`, so
+    `p = chi2test (x)` still runs but returns `h`: every call must be updated.
+    The statistic, its degrees of freedom and the expected table are in
+    `stats` (`chi2stat`, `df`, `E`); 'Alpha' sets the level of `h`.
+
+ ** correlation_test:
+    the statistic in `stats` is `tstat` (Pearson, Spearman, with `df`) or
+    `zval` (Kendall) instead of `stat`, and the coefficient is `CorrCoef`
+    instead of `corrcoef`.
+
+ ** fitcsvm, fitrsvm, ClassificationSVM, RegressionSVM:
+    'KernelScale' divides every predictor before the kernel is applied, and
+    the polynomial kernel is (1 + u'v)^q, as in MATLAB; 'KernelOffset' now
+    changes the sigmoid kernel alone.  Every Gaussian, polynomial and sigmoid
+    fit changes; models saved before predict as they did.  `SupportVectors`
+    is a full matrix.
+
+ ** hotelling_t2test, hotelling_t2test2:
+    the statistic in `stats` is `t2stat`, no longer `Tsq`.
+
+ ** jackknife:
+    the result has one row per jackknife sample, as in MATLAB, so a scalar
+    estimator returns a column where it returned a row (#511).
+
+ ** lime:
+    with predictors holding levels, coefficients are read against the query
+    point's level, the kernel scale is the square root of the number of
+    predictors, and 'goodall3' counts the query point into the level
+    frequencies, reproducing MATLAB's coefficients to 3e-5.  'ofd' is one less
+    the mean OF similarity.  On data mixing numbers and levels, a numeric
+    predictor scores its difference over its range, where MATLAB's
+    undocumented rule differs.
+
+ ** mcnemar_test:
+    returns `[h, p, stats]`, with the chi-squared statistic in
+    `stats.chi2stat`; the significance level is the 'Alpha' option, no longer
+    a second argument.
+
+ ** regression_ftest:
+    fits both models itself, `regression_ftest (y, X, keep)` taking the
+    columns the reduced model keeps, instead of two coefficient vectors; with
+    no `keep` it tests every column together.  Its former F statistic and
+    degrees of freedom were wrong (21636 on (2, 10) where R gives 4554 on
+    (2, 9)); it now agrees with R and with `coefTest` of `fitlm`.
+
+ ** ztest2:
+    returns `[h, p, ci, stats]`: the third output is now the confidence
+    interval, and the statistic is `stats.zval`.
+
+ New functions and methods:
+ ==========================
+
+ ** detectdrift, stats.drift.DriftDiagnostics:
+    drift between a baseline and a target data set, variable by variable,
+    with nine metrics, permutation p-values with Clopper-Pearson intervals,
+    Bonferroni or false discovery rate correction, `summary`, `ecdf`,
+    `histcounts` and four plots.  'MaxNumPermutations' is never exceeded,
+    where MATLAB can pass it.
+
+ ** fitrm, RepeatedMeasuresModel:
+    repeated measures models, with `ranova`, `epsilon`, `mauchly`, `anova`,
+    `manova`, `coeftest`, `margmean`, `grpstats`, `multcompare`, `predict`,
+    `random`, `plot` and `plotprofile`, and the Greenhouse-Geisser,
+    Huynh-Feldt and lower bound corrections.  Hotelling-Lawley uses McKeon's
+    F with McKeon's degrees of freedom, as SAS does, and Tukey-Kramer
+    p-values are computed where MATLAB floors them.
+
+ ** gardnerAltmanPlot:
+    two samples, or paired samples, beside their effect size from
+    `meanEffectSize` and its interval on a second vertical axis.
+
+ ** heatmap, stats.chart.HeatmapChart:
+    heatmap of a matrix, or of a table counted or aggregated over two of its
+    variables, with cell labels, a colour bar, colour scaling, missing-data
+    colour, and `sortx`, `sorty`, `xlim` and `ylim`.
+
+ ** knntest:
+    two-sample test on nearest neighbours, for numeric matrices and tables
+    of numeric, categorical, logical and text variables.
+
+ ** meanEffectSize:
+    mean difference, Cohen's d, Glass's delta, Cliff's delta, median
+    difference, robust Cohen's d and the Kolmogorov-Smirnov statistic, for
+    one, two or paired samples, with exact or BCa bootstrap intervals that
+    reproduce MATLAB's.  Octave extensions: the 'akpcohen' effect, as the R
+    package WRS2 computes it, and 'Resampling', 'stratified'.
+
+ ** mmdtest:
+    two-sample test on the maximum mean discrepancy with a Gaussian kernel
+    and a permutation p-value, following MATLAB's kernel, scale and p-value
+    rules.
+
+ ** nomdist, nomdist2:
+    dissimilarity between rows of nominal data, within one sample and
+    between two, by the 16 measures of the R package `nomclust`, Goodall 3
+    by default.  MATLAB has no counterpart.
+
+ ** parallelplot, stats.chart.ParallelCoordinatesPlot:
+    parallel coordinates plot of a matrix or a table, optionally grouped,
+    with the six normalizations MATLAB offers.  'LineAlpha' blends each
+    line's colour toward the background, since Octave's lines carry no
+    transparency.
+
+ ** scatterhistogram, stats.chart.ScatterHistogramChart:
+    scatter plot of two samples, from vectors or a table and optionally
+    grouped, with a histogram or kernel density of each along its sides.
+
+ ** stdrcdf, stdrinv, stdrpdf, stdrrnd, stdrstat:
+    the studentized range distribution, with each tail computed directly.
+    MATLAB has no public counterpart.
+
+ Bug fixes:
+ ==========
+
+ ** betainv:
+    quantiles are resolved to the last digits in both tails; the lower tail was
+    off by up to nine orders of magnitude.  `tinv`, `finv`, `icdf` and
+    `prob.BetaDistribution` inherit the fix: `tinv (1e-6, 1)` was -44721
+    where the quantile is -318310.
+
+ ** binotest:
+    the two-sided p-value counts every outcome as likely as the one observed;
+    `binotest (1, 10, 0.5)` gave 0.0117 for 0.0215.  The one-sided p-values
+    were swapped.  'alpha' is validated.
+
+ ** chi2test:
+    'homogeneous' fits to convergence, 'marginal' tests the collapsed table
+    as documented, `E` keeps the layout of `X` for 'joint' and
+    'conditional', and 'mutual' and 'homogeneous' no longer need an empty
+    value.  Every model agrees with R.
+
+ ** correlation_test:
+    'kendall' and 'spearman' no longer fail.  Spearman's test uses the t
+    approximation, as R's `cor.test` does, where reversing a sample changed
+    the p-value; Kendall's variance allows for ties.
+
+ ** finv:
+    small `P` keeps its digits, where `finv (1e-10, 1, 1)` was 0, and degrees
+    of freedom above 1.5e6 are no longer capped.
+
+ ** fitcsvm, fitrsvm, ClassificationSVM, RegressionSVM:
+    'BoxConstraint', 'Nu', 'CacheSize' and 'Tolerance' reach the solver at
+    full precision, where a 'BoxConstraint' or 'Nu' below 5e-7 failed.  A fit
+    stopped at the solver's iteration limit raises an Octave warning.  A
+    one-class model labels its support vectors +1, so its `Beta` no longer
+    has the wrong sign.
+
+ ** fitglme, GeneralizedLinearMixedModel:
+    a normal response is fitted against its estimated dispersion, so
+    standard errors, p-values and random effects match `fitlme`; they were
+    off by up to a factor of 53.
+
+ ** fitrsvm, RegressionSVM:
+    the default 'BoxConstraint' of a Gaussian kernel is `iqr (Y) / 1.349`, as
+    in MATLAB; it was 1, so such fits change.
+
+ ** GeneralizedLinearModel:
+    `devianceTest` reports an F test where the dispersion is estimated, as
+    MATLAB does; it gave a chi-square with a wrong p-value.
+
+ ** geomean, harmmean:
+    an `Inf` in `DIM` or `VECDIM` is refused, where it was ignored (#510).
+
+ ** glmfit, fitglm:
+    the canonical 'inverse gaussian' fit converges, where its deviance could
+    become `Inf`.
+
+ ** jackknife:
+    each row of a matrix sample is an observation, as in MATLAB; it left out
+    single elements and returned wrong values silently.  'Options' is
+    accepted.
+
+ ** jsucdf, jsupdf:
+    no longer fail on every call.
+
+ ** ksdensity, paretotails:
+    the lower tail of the CDF keeps its digits.
+
+ ** lime:
+    a predictor holding one level no longer makes `fit` fail.
+
+ ** linkage:
+    an `Inf` or `NaN` distance no longer corrupts the tree; they merge at
+    height `Inf` and `NaN`, in MATLAB's order.
+
+ ** mcnemar_test:
+    the exact and mid-p tests returned p-values above 1 when the larger
+    discordant count came first.
+
+ ** nancov:
+    two empty inputs return a 2-by-2 matrix of NaN, as in MATLAB, where they
+    returned a scalar NaN.
+
+ ** ranksum:
+    an unknown option name is refused, so a misspelt 'tail' no longer runs a
+    two-sided test without notice.
+
+ ** robustcov:
+    'qn' no longer fails, and 'ogk' matches MATLAB on moderately contaminated
+    data.
+
+ ** tcdf, tinv:
+    the lower tail of `tcdf` keeps its digits (`tcdf (-17.138, 147)` was
+    -1.1e-16 where it is 3.6e-37), and `tinv` is resolved near `p = 0.5`.
+
+ ** vartestn:
+    group labels given as text no longer fail.
+
+ ** P-values below 1e-16:
+    resolved, where they were 0, in `anova1`, `anova2`, `anovan`, `barttest`,
+    `binotest`, `canoncorr`, `chi2gof`, `chi2test`, `correlation_test`,
+    `coxphfit`, `factoran`, `friedman`, `hotelling_t2test`,
+    `hotelling_t2test2`, `jbtest`, `kruskalwallis`, `manova1`, `mcnemar_test`,
+    `multcompare`, `regress`, `regression_ftest`, `regression_ttest`,
+    `stepwisefit`, `ttest`, `ttest2`, `vartest2`, `vartestn`, `ztest2`,
+    `ClassificationGAM`, `CoxModel`, `GeneralizedLinearMixedModel`,
+    `GeneralizedLinearModel`, `LinearMixedModel`, `NonLinearModel` and
+    `RegressionGAM`.
+
+ Improvements:
+ =============
+
+ ** binotest:
+    a fourth output `stats` carries the estimate and Cohen's h.
+
+ ** chi2test:
+    `stats` carries Cohen's w, and Cramer's V for a two-way table, each
+    corrected for bias and with a confidence interval.
+
+ ** correlation_test:
+    `stats` carries a confidence interval for the coefficient.
+
+ ** hotelling_t2test, hotelling_t2test2:
+    `stats` carries the F statistic `fstat` and the Mahalanobis distance
+    with its confidence interval.
+
+ ** jackknife:
+    several samples reach an estimator taking more than one input as
+    separate arguments, as in MATLAB.
+
+ ** kruskalwallis, friedman, ranksum, signrank:
+    `stats` carries an effect size with its confidence interval: the rank
+    eta squared, Kendall's W and the rank-biserial correlation;
+    'ConfidenceIntervalType', 'bootstrap' gives a BCa bootstrap interval.
+    `kruskalwallis` and `friedman` take 'Alpha', 'ConfidenceIntervalType'
+    and 'NumBootstraps' after `displayopt`.
+
+ ** mcnemar_test:
+    `stats` carries the odds ratio of the discordant pairs and Cohen's g,
+    each with an exact confidence interval.
+
+ ** regression_ftest:
+    `stats` carries both models' coefficients and residual sums of squares,
+    and Cohen's f² with its confidence interval.
+
+ ** statset:
+    an empty value such as `[]` stands for no options structure, and any
+    number of structures may lead the arguments, as in MATLAB (#509).
+
+ ** ztest2:
+    a confidence interval for the difference in proportions, and `stats`
+    with Cohen's h and its interval.
+
+ Summary of important user-visible changes for statistics 2.0.1:
+-------------------------------------------------------------------
+
+ Backwards incompatible improvements:
+ ====================================
+
+ ** nanmax, nanmean, nanmedian, nanmin, nanstd, nansum, nanvar:
+    DIM is validated alike in all seven: a logical, non-integer, infinite,
+    empty or matrix DIM and a VECDIM with repeated or infinite dimensions
+    raise an error, where some were accepted or failed with an unrelated
+    message.
+
+ ** robustcov:
+    MAH and OUTLIERS have one row per row of X, rows with missing data
+    padded with NaN and false, where those rows were dropped silently (#520).
+
+ Bug fixes:
+ ==========
+
+ ** confusionmat:
+    logical input always gives a 2-by-2 matrix with order [false; true], as
+    MATLAB since R2024b (#523); a numeric Order for logical input is taken
+    as logical, where it raised an error; a duplicated Order raises an
+    error, where it gave extra rows and columns.
+
+ ** crosstab:
+    numeric labels are written without padding, '1' beside '10' where it gave
+    ' 1'; an empty numeric input gives no labels, where it gave one empty
+    name; an integer-typed input beside other numbers raised an error.
+
+ ** fitctree, ClassificationTree:
+    on i386, merging leaves left some leaf pairs unmerged, so a tree kept
+    extra nodes (#514).
+
+ ** fitrgam, fitcgam, RegressionGAM, ClassificationGAM:
+    on i386, boosting interactions could accept a round in which no pair grew
+    a tree, so a pair whose trees all split one predictor was kept (#514).
+
+ ** makima:
+    complex y with more than one series raised an error, or returned wrong
+    values when the number of series equalled the number of sample points
+    (#524); the pp form of an N-dimensional y returned its series in the wrong
+    order.
+
+ ** nanmax, nanmean, nanmin, nansum:
+    logical input is accepted, as in the rest of the family; `nanmax` and
+    `nanmin` return a logical result, as in MATLAB (#516).
+
+ ** plsregress:
+    a component that cannot be formed, as with a constant X, is NaN, as in
+    MATLAB, where X with several responses raised an error.
+
+ ** robustcov:
+    X with fewer rows than twice its columns raises an error, where 'fmcd'
+    and 'ogk' failed inside chol (#520); small samples in 'fmcd' no longer
+    give a covariance that is not positive definite, its small-sample
+    factors now following the R package robustbase; 'BiasCorrection' false
+    drops both factors, as in MATLAB.
+
+ ** shapley:
+    the 'conditional' method counts distances equal to within rounding as
+    tied, so the neighbours kept no longer depend on the platform (#514).
+
+ ** squareform:
+    'tomatrix' with a matrix input raises an error, where it returned a
+    distance matrix built from the matrix's elements (#521).
+
+ Improvements:
+ =============
+
+ ** crosstab, tabulate:
+    datetime and duration inputs are accepted, NaT and NaN durations counted
+    as missing (#525).
+
+ ** grp2idx:
+    datetime grouping variables are accepted, numbered in sorted order, with
+    NaT as missing (#522).
+
+ ** plsregress:
+    new 'Intercept' option fits without centering the data (#526).
+
+ ** robustcov:
+    new 'olivehawkins' method (#520).
