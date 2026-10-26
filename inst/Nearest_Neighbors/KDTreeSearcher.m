@@ -299,6 +299,7 @@ classdef KDTreeSearcher
       ## Default values
       Distance = 'euclidean';
       P = 2;
+      PG = false;
       BucketSize = 50;
 
       ## Parse optional parameters
@@ -308,6 +309,7 @@ classdef KDTreeSearcher
             Distance = varargin{2};
           case 'p'
             P = varargin{2};
+            PG = true;
           case 'bucketsize'
             BucketSize = varargin{2};
           otherwise
@@ -335,6 +337,9 @@ classdef KDTreeSearcher
         endif
         obj.DistParameter = P;
       else
+        if (PG)
+          error ("KDTreeSearcher: 'P' applies only to the minkowski metric.");
+        endif
         obj.DistParameter = [];
       endif
 
@@ -1335,6 +1340,10 @@ endclassdef
 %! KDTreeSearcher (ones (3,2), 'Distance', 1)
 %!error<KDTreeSearcher: P must be a positive scalar.> ...
 %! KDTreeSearcher (ones (3,2), 'Distance', 'minkowski', 'P', -1)
+%!error<KDTreeSearcher: 'P' applies only to the minkowski metric.> ...
+%! KDTreeSearcher (ones (3,2), 'P', 3)
+%!error<KDTreeSearcher: 'P' applies only to the minkowski metric.> ...
+%! KDTreeSearcher (ones (3,2), 'Distance', 'chebychev', 'P', 3)
 %!error<KDTreeSearcher: BucketSize must be a positive integer.> ...
 %! KDTreeSearcher (ones (3,2), 'BucketSize', 0)
 %!error<KDTreeSearcher: BucketSize must be a positive integer.> ...

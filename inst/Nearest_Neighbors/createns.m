@@ -253,6 +253,10 @@ endfunction
 %! assert_equal (obj.DistParameter, Inf);
 %! assert_equal (knnsearch (obj, [1, 1; 4, 4], 'K', 2), [1, 3; 5, 2]);
 
+%!error<ExhaustiveSearcher: 'P' applies only to the minkowski metric.> ...
+%! createns (magic (4), 'NSMethod', 'exhaustive', 'P', 3)
+%!error<KDTreeSearcher: 'P' applies only to the minkowski metric.> ...
+%! createns (magic (4), 'P', 3)
 %!error<createns: too few input arguments.>
 %! createns ()
 %!error<createns: Name-Value arguments must be in pairs.>

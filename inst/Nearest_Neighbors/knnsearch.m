@@ -171,6 +171,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
 
   ## Parse additional parameters in Name/Value pairs
   PSC = 0;
+  PG = false;
   while (numel (varargin) > 0)
     switch (tolower (varargin{1}))
       case 'k'
@@ -178,6 +179,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
       case 'p'
         P = varargin{2};
         PSC += 1;
+        PG = true;
       case 'scale'
         S = varargin{2};
         PSC += 1;
@@ -216,6 +218,9 @@ function [idx, dist] = knnsearch (X, Y, varargin)
   K = min (K, rows (X));
   if (! isscalar (P) || ! isnumeric (P) || P <= 0)
     error ("knnsearch: invalid value of Minkowski Exponent.");
+  endif
+  if (PG && ! (ischar (Distance) && strcmpi (Distance, 'minkowski')))
+    error ("knnsearch: 'P' applies only to the minkowski metric.");
   endif
   if (! isempty (S))
     if (any (S) < 0 || numel (S) != columns (X)
@@ -823,6 +828,10 @@ endfunction
 %! knnsearch (ones (4, 5), ones (1, 5), 'K', 0)
 %!error<knnsearch: invalid value of Minkowski Exponent.> ...
 %! knnsearch (ones (4, 5), ones (1, 5), 'P', -2)
+%!error<knnsearch: 'P' applies only to the minkowski metric.> ...
+%! knnsearch (ones (4, 2), ones (1, 2), 'P', 3)
+%!error<knnsearch: 'P' applies only to the minkowski metric.> ...
+%! knnsearch (ones (4, 2), ones (1, 2), 'P', 3, 'NSMethod', 'exhaustive')
 %!error<knnsearch: invalid value in Scale or the size of Scale.> ...
 %! knnsearch (ones (4, 5), ones (1, 5), 'scale', ones (4,5), 'distance', 'euclidean')
 %!error<knnsearch: invalid value in Cov, Cov can only be given for mahalanobis distance.> ...

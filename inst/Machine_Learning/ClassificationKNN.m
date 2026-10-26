@@ -1227,10 +1227,10 @@ classdef ClassificationKNN < PredictiveModel
 
           case 'exponent'
             Exponent = varargin{2};
-            if (! (isnumeric (Exponent) && isscalar (Exponent) &&
-                           Exponent > 0 && fix (Exponent) == Exponent))
+            if (! (isnumeric (Exponent) && isscalar (Exponent)
+                   && Exponent > 0))
               error (strcat ("ClassificationKNN: 'Exponent'", ...
-                             " must be a positive integer."));
+                             " must be a positive scalar."));
             endif
 
           case 'nsmethod'
@@ -3248,13 +3248,15 @@ endfunction
 %! ClassificationKNN (ones (5,2), ones (5,1), 'Cov', ones (2), 'Distance', 'mahalanobis')
 %!error<ClassificationKNN: 'Cov' cannot simultaneously be specified with> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'scale', [1 1], 'Cov', ones (2))
-%!error<ClassificationKNN: 'Exponent' must be a positive integer.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), 'Exponent', 12.5)
-%!error<ClassificationKNN: 'Exponent' must be a positive integer.> ...
+%!error<ClassificationKNN: 'Exponent' must be a positive scalar.> ...
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Exponent', 0)
+%!error<ClassificationKNN: 'Exponent' must be a positive scalar.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'Exponent', -3)
-%!error<ClassificationKNN: 'Exponent' must be a positive integer.> ...
+%!error<ClassificationKNN: 'Exponent' must be a positive scalar.> ...
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Exponent', [2, 3])
+%!error<ClassificationKNN: 'Exponent' must be a positive scalar.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'Exponent', 'three')
-%!error<ClassificationKNN: 'Exponent' must be a positive integer.> ...
+%!error<ClassificationKNN: 'Exponent' must be a positive scalar.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'Exponent', {3})
 %!error<ClassificationKNN: 'NSMethod' must be a character vector.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'NSMethod', {'kdtree'})
@@ -3356,6 +3358,24 @@ endfunction
 %! assert_equal (l, {'versicolor'})
 %! assert_equal (s, [0, 0.5, 0.5], 1e-4)
 %! assert_equal (c, [1, 0.5, 0.5], 1e-4)
+%!test
+%! ## An exponent need not be an integer, as in MATLAB R2024a
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'minkowski', ...
+%!                'Exponent', 2.5);
+%! [l, s, c] = predict (obj, xc);
+%! assert_equal (obj.DistParameter, 2.5)
+%! assert_equal (l, {'virginica'})
+%! assert_equal (s, [0, 0.4, 0.6], 1e-15)
+%! assert_equal (c, [1, 0.6, 0.4], 1e-15)
+%!test
+%! xc = [5, 3, 5, 1.45];
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'minkowski', ...
+%!                'Exponent', 0.5);
+%! [l, s, c] = predict (obj, xc);
+%! assert_equal (l, {'versicolor'})
+%! assert_equal (s, [0, 0.6, 0.4], 1e-15)
+%! assert_equal (c, [1, 0.4, 0.6], 1e-15)
 %!test
 %! ## An exponent of Inf is the Chebychev distance, as in MATLAB R2024a
 %! xc = [5, 3, 5, 1.45];

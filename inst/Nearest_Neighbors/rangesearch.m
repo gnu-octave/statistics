@@ -163,11 +163,13 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
 
   ## Parse additional parameters in Name/Value pairs
   PSC = 0;
+  PG = false;
   while (numel (varargin) > 0)
     switch (tolower (varargin{1}))
       case 'p'
         P = varargin{2};
         PSC += 1;
+        PG = true;
       case 'scale'
         S = varargin{2};
         PSC += 1;
@@ -200,6 +202,9 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
   endif
   if (! isscalar (P) || ! isnumeric (P) || P <= 0)
     error ("rangesearch: invalid value of Minkowski Exponent.");
+  endif
+  if (PG && ! (ischar (Distance) && strcmpi (Distance, 'minkowski')))
+    error ("rangesearch: 'P' applies only to the minkowski metric.");
   endif
   if (! isempty (S))
     if (any (S) < 0 || numel (S) != columns (X)
@@ -493,6 +498,10 @@ endfunction
 %! rangesearch (ones (4, 5), ones (1, 5), 1, 'scale', ones (1, 5), 'P', 3)
 %!error<rangesearch: invalid value of Minkowski Exponent.> ...
 %! rangesearch (ones (4, 5), ones (1, 5), 1, 'P', -2)
+%!error<rangesearch: 'P' applies only to the minkowski metric.> ...
+%! rangesearch (ones (4, 2), ones (1, 2), 1, 'P', 3)
+%!error<rangesearch: 'P' applies only to the minkowski metric.> ...
+%! rangesearch (ones (4, 2), ones (1, 2), 1, 'P', 3, 'NSMethod', 'exhaustive')
 %!error<rangesearch: invalid value in Scale or the size of Scale.> ...
 %! rangesearch (ones (4, 5), ones (1, 5), 1, 'scale', ones (4,5), 'distance', 'euclidean')
 %!error<rangesearch: invalid value in Cov, Cov can only be given for mahalanobis distance.> ...
