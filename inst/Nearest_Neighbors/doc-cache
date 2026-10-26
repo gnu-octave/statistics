@@ -54,14 +54,15 @@ ExhaustiveSearcher.DistParameter
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 523
+# length: 557
 ExhaustiveSearcher: property DistParameter
 Distance parameter
 
 The type and value of the distance parameter depends on the selected
 Distance metric and can be any of the following:
 
-For 'minkowski', a positive scalar exponent (default 2).
+For 'minkowski', a positive scalar exponent (default 2);
+Inf gives the Chebychev distance.
 For 'seuclidean', a nonnegative vector of scaling factors
 matching the number of columns in X (default is standard
 deviation of X).
@@ -116,7 +117,7 @@ ExhaustiveSearcher.ExhaustiveSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1471
+# length: 1520
 ExhaustiveSearcher: obj = ExhaustiveSearcher (X)
 ExhaustiveSearcher: obj = ExhaustiveSearcher (X, name, value)
 Create an ExhaustiveSearcher object for nearest neighbor
@@ -138,7 +139,8 @@ function handle. Default is 'euclidean'. See pdist2 for
 supported metrics.
 'P' a positive scalar specifying the exponent for
 the Minkowski distance. Valid only when 'Distance' is
-'minkowski'. Default is 2.
+'minkowski'. Default is 2. An exponent of Inf gives
+the Chebychev distance.
 'Scale' a nonnegative vector with the same number
 of elements as the columns in X specifying the scale parameter for
 the standardized Euclidean distance. Valid only when
@@ -390,14 +392,15 @@ KDTreeSearcher.DistParameter
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 378
+# length: 412
 KDTreeSearcher: property DistParameter
 Distance parameter
 
 The type and value of the distance parameter depends on the selected
 Distance metric and can be any of the following:
 
-For 'minkowski', a positive scalar exponent (default 2).
+For 'minkowski', a positive scalar exponent (default 2);
+Inf gives the Chebychev distance.
 Empty for other metrics ('euclidean', 'cityblock',
 'chebychev'). Attempting to set a non-empty value for these
 metrics will result in an error.
@@ -449,7 +452,7 @@ KDTreeSearcher.KDTreeSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1283
+# length: 1332
 KDTreeSearcher: obj = KDTreeSearcher (X)
 KDTreeSearcher: obj = KDTreeSearcher (X, name, value)
 Create a KDTreeSearcher object for nearest neighbor searches.
@@ -470,7 +473,7 @@ character vector ('euclidean', 'cityblock',
 'euclidean'.
 'P' Minkowski distance exponent, a positive
 scalar. Valid only when 'Distance' is 'minkowski'.
-Default is 2.
+Default is 2. An exponent of Inf gives the Chebychev distance.
 'BucketSize' Maximum number of data points in the
 leaf node of the KD-tree, a positive integer. Default is 50.
 

@@ -44,8 +44,8 @@ function [dist, param] = __resolve_metric__ (fname, X, dist, P, C, S, metrics)
     if (isempty (P))
       param = 2;
     else
-      if (! (isscalar (P) && isnumeric (P) && isfinite (P) && P > 0))
-        error ("%s: 'P' must be a positive finite scalar.", fname);
+      if (! (isscalar (P) && isnumeric (P) && P > 0))
+        error ("%s: 'P' must be a positive scalar.", fname);
       endif
       param = P;
     endif

@@ -76,7 +76,8 @@ classdef ExhaustiveSearcher
     ## @qcode{Distance} metric and can be any of the following:
     ##
     ## @itemize
-    ## @item For @qcode{'minkowski'}, a positive scalar exponent (default 2).
+    ## @item For @qcode{'minkowski'}, a positive scalar exponent (default 2);
+    ## @code{Inf} gives the Chebychev distance.
     ## @item For @qcode{'seuclidean'}, a nonnegative vector of scaling factors
     ## matching the number of columns in @qcode{X} (default is standard
     ## deviation of @qcode{X}).
@@ -197,11 +198,10 @@ classdef ExhaustiveSearcher
               endif
             case 'DistParameter'
               if (strcmpi (this.Distance, 'minkowski'))
-                if (! (isscalar (val) && isnumeric (val)
-                                      && val > 0 && isfinite (val)))
+                if (! (isscalar (val) && isnumeric (val) && val > 0))
                   error (strcat ("ExhaustiveSearcher.subsasgn:", ...
                                  " DistParameter must be a positive", ...
-                                 " finite scalar for minkowski."));
+                                 " scalar for minkowski."));
                 endif
               elseif (strcmpi (this.Distance, 'seuclidean'))
                 if (! (isvector (val) && isnumeric (val) && all (val >= 0)
@@ -271,7 +271,8 @@ classdef ExhaustiveSearcher
     ##
     ## @item @qcode{'P'} @tab a positive scalar specifying the exponent for
     ## the Minkowski distance.  Valid only when @qcode{'Distance'} is
-    ## @qcode{'minkowski'}.  Default is 2.
+    ## @qcode{'minkowski'}.  Default is 2.  An exponent of @code{Inf} gives
+    ## the Chebychev distance.
     ##
     ## @item @qcode{'Scale'} @tab a nonnegative vector with the same number
     ## of elements as the columns in @var{X} specifying the scale parameter for
@@ -369,8 +370,8 @@ classdef ExhaustiveSearcher
         if (isempty (P))
           obj.DistParameter = 2;
         else
-          if (! (isscalar (P) && isnumeric (P) && P > 0 && isfinite (P)))
-            error ("ExhaustiveSearcher: P must be a positive finite scalar.");
+          if (! (isscalar (P) && isnumeric (P) && P > 0))
+            error ("ExhaustiveSearcher: P must be a positive scalar.");
           endif
           obj.DistParameter = P;
         endif
@@ -519,6 +520,13 @@ classdef ExhaustiveSearcher
                   Pval, Cval, Sval, {"euclidean", "seuclidean", "mahalanobis", "minkowski", ...
                  "cityblock", "manhattan", "chebychev", "cosine", ...
                  "correlation", "spearman", "hamming", "jaccard"});
+      endif
+
+      ## A Minkowski exponent of Inf is the Chebychev distance, its limit, which
+      ## the search computes directly
+      if (strcmpi (Distance, 'minkowski') && DistParameter == Inf)
+        Distance = 'chebychev';
+        DistParameter = [];
       endif
 
       ## Determine block size based on memory target (128 MB)
@@ -708,6 +716,13 @@ classdef ExhaustiveSearcher
                   Pval, Cval, Sval, {"euclidean", "seuclidean", "mahalanobis", "minkowski", ...
                  "cityblock", "manhattan", "chebychev", "cosine", ...
                  "correlation", "spearman", "hamming", "jaccard"});
+      endif
+
+      ## A Minkowski exponent of Inf is the Chebychev distance, its limit, which
+      ## the search computes directly
+      if (strcmpi (Distance, 'minkowski') && DistParameter == Inf)
+        Distance = 'chebychev';
+        DistParameter = [];
       endif
 
       ## Determine block size based on memory target (128 MB)
@@ -1150,6 +1165,31 @@ endclassdef
 %! assert_equal (o.Distance, 'euclidean');
 %! assert_equal (isempty (o.DistParameter), true);
 
+## A Minkowski exponent of Inf is the Chebychev distance, as in MATLAB R2024a,
+## and the searcher keeps reporting the metric and exponent it was given.
+%!test
+%! X = [1, 2; 4, 6; 0, 0; 3, 1; 5, 5; 2, 3];
+%! obj = ExhaustiveSearcher (X, 'Distance', 'minkowski', 'P', Inf);
+%! [idx, D] = knnsearch (obj, [1, 1; 4, 4], 'K', 2);
+%! assert_equal (obj.Distance, 'minkowski');
+%! assert_equal (obj.DistParameter, Inf);
+%! assert_equal (idx, [1, 3; 5, 2]);
+%! assert_equal (D, [1, 1; 1, 2]);
+%!test
+%! X = [1, 2; 4, 6; 0, 0; 3, 1; 5, 5; 2, 3];
+%! obj = ExhaustiveSearcher (X);
+%! [idx, D] = knnsearch (obj, [1, 1; 4, 4], 'K', 2, 'Distance', ...
+%!                       'minkowski', 'P', Inf);
+%! assert_equal (idx, [1, 3; 5, 2]);
+%! assert_equal (D, [1, 1; 1, 2]);
+%!test
+%! X = [1, 2; 4, 6; 0, 0; 3, 1; 5, 5; 2, 3];
+%! obj = ExhaustiveSearcher (X, 'Distance', 'minkowski');
+%! obj.DistParameter = Inf;
+%! [idx, D] = rangesearch (obj, [1, 1; 4, 4], 2);
+%! assert_equal (idx, {[1, 3, 4, 6]; [5, 2, 6]});
+%! assert_equal (D, {[1, 1, 2, 2]; [1, 2, 2]});
+
 %!error <ExhaustiveSearcher.knnsearch: 'P' applies only to the minkowski metric.> ...
 %! knnsearch (ExhaustiveSearcher ([1, 1; 2, 2]), [1, 1], 'K', 1, ...
 %!            'Distance', 'cityblock', 'P', 3)
@@ -1173,7 +1213,7 @@ endclassdef
 %! ExhaustiveSearcher (ones (3,2), 'Distance', @(x) x)
 %!error<ExhaustiveSearcher: Distance must be a string or function handle.> ...
 %! ExhaustiveSearcher (ones (3,2), 'Distance', 1)
-%!error<ExhaustiveSearcher: P must be a positive finite scalar.> ...
+%!error<ExhaustiveSearcher: P must be a positive scalar.> ...
 %! ExhaustiveSearcher (ones (3,2), 'Distance', 'minkowski', 'P', -1)
 %!error<ExhaustiveSearcher: Scale must be a nonnegative vector matching X columns.> ...
 %! ExhaustiveSearcher (ones (3,2), 'Distance', 'seuclidean', 'Scale', [-1, 1])
@@ -1238,7 +1278,7 @@ endclassdef
 %! obj = ExhaustiveSearcher (ones (3,2)); obj.Distance = @(x, y) [1; 1]
 %!error<ExhaustiveSearcher.subsasgn: Distance must be a string or function handle.> ...
 %! obj = ExhaustiveSearcher (ones (3,2)); obj.Distance = 1
-%!error<ExhaustiveSearcher.subsasgn: DistParameter must be a positive finite scalar for minkowski.> ...
+%!error<ExhaustiveSearcher.subsasgn: DistParameter must be a positive scalar for minkowski.> ...
 %! obj = ExhaustiveSearcher (ones (3,2), 'Distance', 'minkowski'); obj.DistParameter = -1
 %!error<ExhaustiveSearcher.subsasgn: DistParameter must be a nonnegative vector matching X columns.> ...
 %! obj = ExhaustiveSearcher (ones (3,2), 'Distance', 'seuclidean'); obj.DistParameter = [-1, 1]

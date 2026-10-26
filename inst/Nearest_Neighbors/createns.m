@@ -177,6 +177,14 @@ endfunction
 %! assert_equal (isa (obj, 'ExhaustiveSearcher'), true);
 %! assert_equal (obj.Distance, "cityblock");
 
+%!test
+%! ## A Minkowski exponent of Inf is taken, as in MATLAB R2024a
+%! X = [1, 2; 4, 6; 0, 0; 3, 1; 5, 5; 2, 3];
+%! obj = createns (X, 'NSMethod', 'kdtree', 'Distance', 'minkowski', 'P', Inf);
+%! assert_equal (isa (obj, 'KDTreeSearcher'), true);
+%! assert_equal (obj.DistParameter, Inf);
+%! assert_equal (knnsearch (obj, [1, 1; 4, 4], 'K', 2), [1, 3; 5, 2]);
+
 %!error<createns: too few input arguments.>
 %! createns ()
 %!error<createns: Name-Value arguments must be in pairs.>

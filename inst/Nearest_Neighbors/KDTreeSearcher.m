@@ -94,7 +94,8 @@ classdef KDTreeSearcher
     ## @qcode{Distance} metric and can be any of the following:
     ##
     ## @itemize
-    ## @item For @qcode{'minkowski'}, a positive scalar exponent (default 2).
+    ## @item For @qcode{'minkowski'}, a positive scalar exponent (default 2);
+    ## @code{Inf} gives the Chebychev distance.
     ## @item Empty for other metrics (@qcode{'euclidean'}, @qcode{'cityblock'},
     ## @qcode{'chebychev'}). Attempting to set a non-empty value for these
     ## metrics will result in an error.
@@ -206,10 +207,9 @@ classdef KDTreeSearcher
               endif
             case 'DistParameter'
               if (strcmpi (this.Distance, 'minkowski'))
-                if (! (isscalar (val) && isnumeric (val)
-                                      && val > 0 && isfinite (val)))
+                if (! (isscalar (val) && isnumeric (val) && val > 0))
                   error (strcat ("KDTreeSearcher.subsasgn: 'DistParameter'", ...
-                                 " must be a positive finite scalar for", ...
+                                 " must be a positive scalar for", ...
                                  " Minkowski distance."));
                 endif
                 this.DistParameter = val;
@@ -256,7 +256,7 @@ classdef KDTreeSearcher
     ##
     ## @item @qcode{'P'} @tab Minkowski distance exponent, a positive
     ## scalar.  Valid only when @qcode{'Distance'} is @qcode{'minkowski'}.
-    ## Default is 2.
+    ## Default is 2.  An exponent of @code{Inf} gives the Chebychev distance.
     ##
     ## @item @qcode{'BucketSize'} @tab Maximum number of data points in the
     ## leaf node of the KD-tree, a positive integer.  Default is 50.
@@ -330,8 +330,8 @@ classdef KDTreeSearcher
 
       ## Set DistParameter
       if (strcmpi (obj.Distance, 'minkowski'))
-        if (! (isscalar (P) && isnumeric (P) && P > 0 && isfinite (P)))
-          error ("KDTreeSearcher: P must be a positive finite scalar.");
+        if (! (isscalar (P) && isnumeric (P) && P > 0))
+          error ("KDTreeSearcher: P must be a positive scalar.");
         endif
         obj.DistParameter = P;
       else
@@ -474,6 +474,13 @@ classdef KDTreeSearcher
         [Distance, DistParameter] = __resolve_metric__ ( ...
                   "KDTreeSearcher.knnsearch", obj.X, Dist, ...
                   Pval, [], [], {"euclidean", "cityblock", "chebychev", "minkowski"});
+      endif
+
+      ## A Minkowski exponent of Inf is the Chebychev distance, its limit, which
+      ## the search computes directly
+      if (strcmpi (Distance, 'minkowski') && DistParameter == Inf)
+        Distance = 'chebychev';
+        DistParameter = [];
       endif
 
       ## There are only as many points to return as the training data holds,
@@ -631,6 +638,13 @@ classdef KDTreeSearcher
         [Distance, DistParameter] = __resolve_metric__ ( ...
                   "KDTreeSearcher.rangesearch", obj.X, Dist, ...
                   Pval, [], [], {"euclidean", "cityblock", "chebychev", "minkowski"});
+      endif
+
+      ## A Minkowski exponent of Inf is the Chebychev distance, its limit, which
+      ## the search computes directly
+      if (strcmpi (Distance, 'minkowski') && DistParameter == Inf)
+        Distance = 'chebychev';
+        DistParameter = [];
       endif
 
       ## Distances are computed in single precision when either the training
@@ -1220,6 +1234,31 @@ endclassdef
 %! assert_equal (sort (idx{1}(:))', [1, 2, 3]);
 %! assert_equal (sort (D{1}(:))', [0, 1, 1], 1e-10);
 
+## A Minkowski exponent of Inf is the Chebychev distance, as in MATLAB R2024a,
+## and the searcher keeps reporting the metric and exponent it was given.
+%!test
+%! X = [1, 2; 4, 6; 0, 0; 3, 1; 5, 5; 2, 3];
+%! obj = KDTreeSearcher (X, 'Distance', 'minkowski', 'P', Inf);
+%! [idx, D] = knnsearch (obj, [1, 1; 4, 4], 'K', 2);
+%! assert_equal (obj.Distance, 'minkowski');
+%! assert_equal (obj.DistParameter, Inf);
+%! assert_equal (idx, [1, 3; 5, 2]);
+%! assert_equal (D, [1, 1; 1, 2]);
+%!test
+%! X = [1, 2; 4, 6; 0, 0; 3, 1; 5, 5; 2, 3];
+%! obj = KDTreeSearcher (X);
+%! [idx, D] = knnsearch (obj, [1, 1; 4, 4], 'K', 2, 'Distance', 'minkowski', ...
+%!                       'P', Inf);
+%! assert_equal (idx, [1, 3; 5, 2]);
+%! assert_equal (D, [1, 1; 1, 2]);
+%!test
+%! X = [1, 2; 4, 6; 0, 0; 3, 1; 5, 5; 2, 3];
+%! obj = KDTreeSearcher (X, 'Distance', 'minkowski');
+%! obj.DistParameter = Inf;
+%! [idx, D] = rangesearch (obj, [1, 1; 4, 4], 2);
+%! assert_equal (idx, {[1, 3, 4, 6]; [5, 2, 6]});
+%! assert_equal (D, {[1, 1, 2, 2]; [1, 2, 2]});
+
 %!test
 %! ## Diverse dataset with Euclidean
 %! X = [0, 10; 5, 5; 10, 0];
@@ -1294,7 +1333,7 @@ endclassdef
 %! KDTreeSearcher (ones (3,2), 'Distance', 'invalid')
 %!error<KDTreeSearcher: Distance must be a string.> ...
 %! KDTreeSearcher (ones (3,2), 'Distance', 1)
-%!error<KDTreeSearcher: P must be a positive finite scalar.> ...
+%!error<KDTreeSearcher: P must be a positive scalar.> ...
 %! KDTreeSearcher (ones (3,2), 'Distance', 'minkowski', 'P', -1)
 %!error<KDTreeSearcher: BucketSize must be a positive integer.> ...
 %! KDTreeSearcher (ones (3,2), 'BucketSize', 0)
@@ -1358,7 +1397,7 @@ endclassdef
 %! obj = KDTreeSearcher (ones (3,2)); obj.Distance = 'invalid'
 %!error<KDTreeSearcher.subsasgn: 'Distance' must be a string.> ...
 %! obj = KDTreeSearcher (ones (3,2)); obj.Distance = 1
-%!error<KDTreeSearcher.subsasgn: 'DistParameter' must be a positive finite scalar for Minkowski distance.> ...
+%!error<KDTreeSearcher.subsasgn: 'DistParameter' must be a positive scalar for Minkowski distance.> ...
 %! obj = KDTreeSearcher (ones (3,2), 'Distance', 'minkowski'); obj.DistParameter = -1
 %!error<KDTreeSearcher.subsasgn: 'DistParameter' must be empty for this distance metric.> ...
 %! obj = KDTreeSearcher (ones (3,2)); obj.DistParameter = 1
