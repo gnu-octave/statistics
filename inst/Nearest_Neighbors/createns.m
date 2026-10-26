@@ -257,6 +257,10 @@ endfunction
 %! createns (magic (4), 'NSMethod', 'exhaustive', 'P', 3)
 %!error<KDTreeSearcher: 'P' applies only to the minkowski metric.> ...
 %! createns (magic (4), 'P', 3)
+%!error<ExhaustiveSearcher: 'Scale' applies only to the seuclidean metric.> ...
+%! createns (magic (4), 'NSMethod', 'exhaustive', 'Scale', [1, 1, 1, 1])
+%!error<ExhaustiveSearcher: 'Cov' applies only to the mahalanobis metric.> ...
+%! createns (magic (4), 'NSMethod', 'exhaustive', 'Cov', eye (4))
 %!error<createns: too few input arguments.>
 %! createns ()
 %!error<createns: Name-Value arguments must be in pairs.>

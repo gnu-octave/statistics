@@ -367,6 +367,14 @@ classdef ExhaustiveSearcher
       if (! isempty (P) && ! strcmpi (obj.Distance, 'minkowski'))
         error ("ExhaustiveSearcher: 'P' applies only to the minkowski metric.");
       endif
+      if (! isempty (S) && ! strcmpi (obj.Distance, 'seuclidean'))
+        error (strcat ("ExhaustiveSearcher: 'Scale' applies only to the", ...
+                       " seuclidean metric."));
+      endif
+      if (! isempty (C) && ! strcmpi (obj.Distance, 'mahalanobis'))
+        error (strcat ("ExhaustiveSearcher: 'Cov' applies only to the", ...
+                       " mahalanobis metric."));
+      endif
 
       ## Set DistParameter based on Distance
       if (strcmpi (obj.Distance, 'minkowski'))
@@ -1220,6 +1228,14 @@ endclassdef
 %! ExhaustiveSearcher (ones (3,2), 'Distance', 'minkowski', 'P', -1)
 %!error<ExhaustiveSearcher: 'P' applies only to the minkowski metric.> ...
 %! ExhaustiveSearcher (ones (3,2), 'P', 3)
+%!error<ExhaustiveSearcher: 'Scale' applies only to the seuclidean metric.> ...
+%! ExhaustiveSearcher (ones (3,2), 'Scale', [1, 1])
+%!error<ExhaustiveSearcher: 'Scale' applies only to the seuclidean metric.> ...
+%! ExhaustiveSearcher (ones (3,2), 'Distance', 'mahalanobis', 'Scale', [1, 1])
+%!error<ExhaustiveSearcher: 'Cov' applies only to the mahalanobis metric.> ...
+%! ExhaustiveSearcher (ones (3,2), 'Cov', eye (2))
+%!error<ExhaustiveSearcher: 'Cov' applies only to the mahalanobis metric.> ...
+%! ExhaustiveSearcher (ones (3,2), 'Distance', 'seuclidean', 'Cov', eye (2))
 %!error<ExhaustiveSearcher: 'P' applies only to the minkowski metric.> ...
 %! ExhaustiveSearcher (ones (3,2), 'Distance', 'seuclidean', 'P', 3)
 %!error<ExhaustiveSearcher: 'P' applies only to the minkowski metric.> ...
