@@ -86,7 +86,8 @@
 ## @qcode{'Scale'} name-value argument.
 ## @item @qcode{'cityblock'} @tab City block distance.
 ## @item @qcode{'chebychev'} @tab Chebychev distance (maximum coordinate
-## difference).
+## difference).  A difference of @code{Inf - Inf} is @code{NaN}, and so is the
+## distance, as for every other metric; MATLAB passes over it.
 ## @item @qcode{'minkowski'} @tab Minkowski distance.  The default exponent
 ## is 2.  To specify a different exponent, use the @qcode{'P'} name-value
 ## argument.
@@ -746,6 +747,30 @@ endfunction
 %! [idx, D] = knnsearch (Xg, [NaN, 10], 'K', 3);
 %! assert_equal (idx, [1, 2, 3]);
 %! assert_equal (D, [NaN, NaN, NaN]);
+%!test
+%! ## Inf - Inf is NaN, and so is the Chebychev distance, as for every other
+%! ## metric and on both methods; MATLAB R2024a's exhaustive search passes
+%! ## over it and gives [1, 2, 3] at distances [1, Inf, Inf].
+%! [idx, D] = knnsearch ([1, Inf; 1, -Inf; 1, 5], [0, Inf], 'K', 3, ...
+%!                       'Distance', 'chebychev');
+%! assert_equal (idx, [2, 3, 1]);
+%! assert_equal (D, [Inf, Inf, NaN]);
+%!test
+%! [idx, D] = knnsearch ([1, Inf; 1, -Inf; 1, 5], [0, Inf], 'K', 3, ...
+%!                       'Distance', 'chebychev', 'NSMethod', 'exhaustive');
+%! assert_equal (idx, [2, 3, 1]);
+%! assert_equal (D, [Inf, Inf, NaN]);
+%!test
+%! [idx, D] = knnsearch ([1, Inf; 1, -Inf; 1, 5], [0, Inf], 'K', 3);
+%! assert_equal (idx, [2, 3, 1]);
+%! assert_equal (D, [Inf, Inf, NaN]);
+%!test
+%! ## A query and a split at the same infinity put the splitting plane at NaN,
+%! ## which bounds nothing: rows 1 and 4 are both at Inf and the earlier row
+%! ## comes first, as in the exhaustive search.  The far side went unsearched.
+%! X = [-Inf, 4; -Inf, -Inf; 1, -Inf; 2, 1];
+%! assert_equal (knnsearch (X, [3, -Inf], 'BucketSize', 1), 1);
+%! assert_equal (knnsearch (X, [3, -Inf], 'NSMethod', 'exhaustive'), 1);
 %!test
 %! ## A NaN distance ties nothing, so 'IncludeTies' stops at K there
 %! Xn = [1, Inf; 4, 6; 0, Inf; NaN, 1; 2, 2];

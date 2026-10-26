@@ -89,7 +89,8 @@
 ## @qcode{'Scale'} name-value argument.
 ## @item @qcode{'cityblock'} @tab City block distance.
 ## @item @qcode{'chebychev'} @tab Chebychev distance (maximum coordinate
-## difference).
+## difference).  A difference of @code{Inf - Inf} is @code{NaN}, and so is the
+## distance, as for every other metric; MATLAB passes over it.
 ## @item @qcode{'minkowski'} @tab Minkowski distance.  The default exponent
 ## is 2.  To specify a different exponent, use the @qcode{'P'} name-value
 ## argument.
@@ -465,6 +466,19 @@ endfunction
 %! [idx, D] = rangesearch (Xn, [1, 1], 5, 'Distance', 'chebychev');
 %! assert_equal (idx, {[5, 2]});
 %! assert_equal (D, {[1, 5]});
+%!test
+%! ## Inf - Inf is NaN, so neither row sharing the query's Inf is in range,
+%! ## on both methods; MATLAB R2024a's exhaustive search returns rows 3 and 1
+%! Xn = [1, Inf; 4, 6; 0, Inf; NaN, 1; 2, 2];
+%! [idx, D] = rangesearch (Xn, [0, Inf], 5, 'Distance', 'chebychev');
+%! assert_equal (idx, {zeros(1, 0)});
+%! assert_equal (D, {zeros(1, 0)});
+%!test
+%! Xn = [1, Inf; 4, 6; 0, Inf; NaN, 1; 2, 2];
+%! [idx, D] = rangesearch (Xn, [0, Inf], 5, 'Distance', 'chebychev', ...
+%!                         'NSMethod', 'exhaustive');
+%! assert_equal (idx, {zeros(1, 0)});
+%! assert_equal (D, {zeros(1, 0)});
 
 ## Test input validation
 %!error<rangesearch: too few input arguments.> rangesearch (1)

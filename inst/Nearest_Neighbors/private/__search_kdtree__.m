@@ -60,8 +60,9 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
     case {'cityblock', 'manhattan'}
       compute_dists = @(leaf_X) sum (abs (leaf_X - query), 2);
     case 'chebychev'
-      ## max passes over NaN, so a row holding one is set to NaN explicitly,
-      ## as every other metric here leaves it
+      ## max passes over NaN, so a NaN coordinate difference, from a NaN in
+      ## either row or from Inf - Inf, is set to NaN explicitly, as every other
+      ## metric here leaves it
       compute_dists = @(leaf_X) chebychev_dists (leaf_X, query);
     case 'minkowski'
       p = distparam;
@@ -140,14 +141,16 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
       search (nearer, depth + 1);
 
       ## The far side can only hold something better if the splitting plane is
-      ## itself closer than the worst neighbour held so far.
+      ## itself closer than the worst neighbour held so far.  A query and a
+      ## split at the same infinity put the plane at NaN, which bounds nothing,
+      ## so that side is searched.
       plane_dist = abs (query(axis) - split_value);
       if (is_range)
-        if (plane_dist <= r)
+        if (plane_dist <= r || isnan (plane_dist))
           search (further, depth + 1);
         endif
       elseif (length (distances) < k || plane_dist <= distances(end)
-              || isnan (distances(end)))
+              || isnan (plane_dist) || isnan (distances(end)))
         ## A plane at exactly the worst distance may still hide a tie from an
         ## earlier row, so that side is searched too, and a NaN worst distance
         ## is beaten by anything the far side holds.
@@ -160,6 +163,7 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
 endfunction
 
 function d = chebychev_dists (leaf_X, query)
-  d = max (abs (leaf_X - query), [], 2);
-  d(any (isnan (leaf_X), 2) | any (isnan (query))) = NaN;
+  a = abs (leaf_X - query);
+  d = max (a, [], 2);
+  d(any (isnan (a), 2)) = NaN;
 endfunction

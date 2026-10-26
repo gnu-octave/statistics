@@ -59,7 +59,8 @@
 ## @var{DistParameter} input argument.  An exponent of @code{Inf} gives the
 ## Chebychev distance.
 ## @item @qcode{'chebychev'} @tab Chebychev distance (maximum coordinate
-## difference).
+## difference).  A difference of @code{Inf - Inf} is @code{NaN}, and so is the
+## distance, as for every other metric; MATLAB passes over it.
 ## @item @qcode{'cosine'} @tab One minus the cosine of the included angle
 ## between points (treated as vectors).
 ## @item @qcode{'correlation'} @tab One minus the sample linear correlation
@@ -350,13 +351,13 @@ function [D, I] = pdist2 (X, Y, varargin)
                   (1 / DistParameter);
 
         case 'chebychev'
-          D = max (abs (X(ix(:),:) - Y(iy(:),:)), [], 2);
-          ## max passes over NaN, so a row holding one is marked by hand, as
-          ## MATLAB returns NaN for it.  A NaN made by Inf - Inf is still
-          ## passed over, as in MATLAB.
-          nx = any (isnan (X), 2);
-          ny = any (isnan (Y), 2);
-          D(nx(ix(:)) | ny(iy(:))) = NaN;
+          A = abs (X(ix(:),:) - Y(iy(:),:));
+          D = max (A, [], 2);
+          ## max passes over NaN, so a pair is marked by hand wherever a
+          ## coordinate difference is NaN, from a NaN in either row or from
+          ## Inf - Inf, as every other metric leaves it.  MATLAB passes over
+          ## the second.
+          D(any (isnan (A), 2)) = NaN;
 
         case 'correlation'
           mX = mean (X(ix(:),:), 2);
@@ -501,10 +502,13 @@ function [D, I] = pdist2 (X, Y, varargin)
         endfor
 
       case 'chebychev'
+        ## A NaN coordinate difference makes the distance NaN, as above
         for i = 1:M
-          D(i,:) = max (abs (X(i,:) - Y), [], 2)';
+          A = abs (X(i,:) - Y);
+          d = max (A, [], 2);
+          d(any (isnan (A), 2)) = NaN;
+          D(i,:) = d';
         endfor
-        D(any (isnan (X), 2) | any (isnan (Y), 2)') = NaN;
 
       case 'cosine'
         for i = 1:M
@@ -668,6 +672,20 @@ endfunction
 %!test
 %! D = pdist2 ([4, 6; 0, 0], [zeros(499,2); 1, NaN], 'chebychev');
 %! assert_equal (isnan (D), [false(2,499), true(2,1)]);
+%!test
+%! ## Inf - Inf is NaN, and so is the distance, as for every other metric;
+%! ## MATLAB R2024a passes over it and gives 1 for the first row.
+%! D = pdist2 ([1, Inf; 1, -Inf; 1, 5], [0, Inf], 'chebychev');
+%! assert_equal (D, [NaN; Inf; Inf]);
+%!test
+%! D = pdist2 ([1, Inf; 1, -Inf; 1, 5], [0, Inf], 'minkowski', Inf);
+%! assert_equal (D, [NaN; Inf; Inf]);
+%!test
+%! D = pdist2 ([1, Inf; 1, -Inf; 1, 5], [0, Inf], 'euclidean');
+%! assert_equal (D, [NaN; Inf; Inf]);
+%!test
+%! D = pdist2 ([0, Inf; 1, 1], [zeros(499,2); 1, Inf], 'chebychev');
+%! assert_equal (isnan (D), [false(1,499), true; false(1,500)]);
 
 ## Test input validation
 %!test

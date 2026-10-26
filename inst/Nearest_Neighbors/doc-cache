@@ -1053,7 +1053,7 @@ knnsearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5074
+# length: 5182
 statistics: idx = knnsearch (X, Y)
 statistics: [idx, D] = knnsearch (X, Y)
 statistics: [...] = knnsearch (..., name, value)
@@ -1111,7 +1111,8 @@ deviation computed from X. To specify a different scaling, use the
 'Scale' name-value argument.
 'cityblock' City block distance.
 'chebychev' Chebychev distance (maximum coordinate
-difference).
+difference). A difference of Inf - Inf is NaN, and so is the
+distance, as for every other metric; MATLAB passes over it.
 'minkowski' Minkowski distance. The default exponent
 is 2. To specify a different exponent, use the 'P' name-value
 argument.
@@ -1446,7 +1447,7 @@ pdist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3012
+# length: 3120
 statistics: D = pdist (X)
 statistics: D = pdist (X, Distance)
 statistics: D = pdist (X, Distance, DistParameter)
@@ -1485,7 +1486,8 @@ is 2. A different exponent can be specified with the subsequent
 DistParameter input argument. An exponent of Inf gives the
 Chebychev distance.
 'chebychev' Chebychev distance (maximum coordinate
-difference).
+difference). A difference of Inf - Inf is NaN, and so is the
+distance, as for every other metric; MATLAB passes over it.
 'cosine' One minus the cosine of the included angle
 between points (treated as vectors).
 'correlation' One minus the sample linear correlation
@@ -1535,7 +1537,7 @@ pdist2
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3889
+# length: 3997
 statistics: D = pdist2 (X, Y)
 statistics: D = pdist2 (X, Y, Distance)
 statistics: D = pdist2 (X, Y, Distance, DistParameter)
@@ -1576,7 +1578,8 @@ is 2. A different exponent can be specified with the subsequent
 DistParameter input argument. An exponent of Inf gives the
 Chebychev distance.
 'chebychev' Chebychev distance (maximum coordinate
-difference).
+difference). A difference of Inf - Inf is NaN, and so is the
+distance, as for every other metric; MATLAB passes over it.
 'cosine' One minus the cosine of the included angle
 between points (treated as vectors).
 'correlation' One minus the sample linear correlation
@@ -1646,7 +1649,7 @@ rangesearch
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4767
+# length: 4875
 statistics: idx = rangesearch (X, Y, r)
 statistics: [idx, D] = rangesearch (X, Y, r)
 statistics: [...] = rangesearch (..., name, value)
@@ -1709,7 +1712,8 @@ deviation computed from X. To specify a different scaling, use the
 'Scale' name-value argument.
 'cityblock' City block distance.
 'chebychev' Chebychev distance (maximum coordinate
-difference).
+difference). A difference of Inf - Inf is NaN, and so is the
+distance, as for every other metric; MATLAB passes over it.
 'minkowski' Minkowski distance. The default exponent
 is 2. To specify a different exponent, use the 'P' name-value
 argument.
