@@ -674,19 +674,25 @@ endfunction
 %! X = [1, 2; 4, 6; 0, 0; 3, 1; 5, 5; 2, 3];
 %! Y = [1, 1; 4, 4];
 %!test
-%! for m = {'kdtree', 'exhaustive'}
-%!   [idx, D] = knnsearch (X, Y, 'K', 2, 'Distance', 'minkowski', 'P', Inf, ...
-%!                         'NSMethod', m{1});
-%!   assert_equal (idx, [1, 3; 5, 2]);
-%!   assert_equal (D, [1, 1; 1, 2]);
-%! endfor
+%! [idx, D] = knnsearch (X, Y, 'K', 2, 'Distance', 'minkowski', 'P', Inf, ...
+%!                       'NSMethod', 'kdtree');
+%! assert_equal (idx, [1, 3; 5, 2]);
+%! assert_equal (D, [1, 1; 1, 2]);
 %!test
-%! for m = {'kdtree', 'exhaustive'}
-%!   [idx, D] = knnsearch (X, Y, 'K', 1, 'Distance', 'minkowski', 'P', Inf, ...
-%!                         'IncludeTies', true, 'NSMethod', m{1});
-%!   assert_equal (idx, {[1, 3]; 5});
-%!   assert_equal (D, {[1, 1]; 1});
-%! endfor
+%! [idx, D] = knnsearch (X, Y, 'K', 2, 'Distance', 'minkowski', 'P', Inf, ...
+%!                       'NSMethod', 'exhaustive');
+%! assert_equal (idx, [1, 3; 5, 2]);
+%! assert_equal (D, [1, 1; 1, 2]);
+%!test
+%! [idx, D] = knnsearch (X, Y, 'K', 1, 'Distance', 'minkowski', 'P', Inf, ...
+%!                       'IncludeTies', true, 'NSMethod', 'kdtree');
+%! assert_equal (idx, {[1, 3]; 5});
+%! assert_equal (D, {[1, 1]; 1});
+%!test
+%! [idx, D] = knnsearch (X, Y, 'K', 1, 'Distance', 'minkowski', 'P', Inf, ...
+%!                       'IncludeTies', true, 'NSMethod', 'exhaustive');
+%! assert_equal (idx, {[1, 3]; 5});
+%! assert_equal (D, {[1, 1]; 1});
 %!test
 %! [idx, D] = knnsearch (X, Y, 'K', 2, 'Distance', 'minkowski', 'P', Inf);
 %! [idxc, Dc] = knnsearch (X, Y, 'K', 2, 'Distance', 'chebychev');
