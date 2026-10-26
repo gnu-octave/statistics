@@ -350,6 +350,7 @@
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
 					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
+					<li><a href="fitmnr.html" class="text-decoration-none font-monospace"><small>fitmnr</small></a></li>
 					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
 					<li><a href="fitrm.html" class="text-decoration-none font-monospace"><small>fitrm</small></a></li>
 					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
@@ -366,6 +367,7 @@
 					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
 					<li><a href="mnrval.html" class="text-decoration-none font-monospace"><small>mnrval</small></a></li>
 					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
+					<li><a href="MultinomialRegression.html" class="text-decoration-none font-monospace"><small>MultinomialRegression</small></a></li>
 					<li><a href="mvregress.html" class="text-decoration-none font-monospace"><small>mvregress</small></a></li>
 					<li><a href="mvregresslike.html" class="text-decoration-none font-monospace"><small>mvregresslike</small></a></li>
 					<li><a href="nlinfit.html" class="text-decoration-none font-monospace"><small>nlinfit</small></a></li>
@@ -1098,7 +1100,10 @@
  <var>X</var> to the response vector <var>y</var>.  Each value of <var>b</var> is the
  coefficient for the respective ridge parameter given <var>k</var>.  By default,
  <var>b</var> is calculated after centering and scaling the predictors to have a
- zero mean and standard deviation 1.
+ zero mean and standard deviation 1.  A predictor whose standard deviation is
+ below <code>sqrt (eps)</code>, taken in the class of <var>X</var>, is treated as a
+ constant term: it is replaced by a column of ones and its coefficient is
+ never rescaled.
 </p>
 <p> <code><var>b</var> = ridge (<var>y</var>, <var>X</var>, <var>k</var>, <var>scaled</var>)</code> performs the
  regression with the specified scaling of the coefficient estimates <var>b</var>.
@@ -1120,6 +1125,12 @@
  default, <code><var>scaled</var> = 1</code>.
 </li></ul>
 
+<p> Rows of <var>y</var> and <var>X</var> holding a <code>NaN</code> are removed before the fit,
+ and at least two rows must remain.  MATLAB answers with fewer: with none it
+ returns zeros, or <code>NaN</code> when <code><var>scaled</var> = 0</code>, and with one it
+ returns slopes that do not depend on <var>X</var>, and too many coefficients when
+ <var>X</var> has more than one column and <code><var>scaled</var> = 0</code>.
+</p>
 <p> Further information about Ridge regression can be found at
  <a href="https://en.wikipedia.org/wiki/Ridge_regression">https://en.wikipedia.org/wiki/Ridge_regression</a>
 </p>
@@ -1129,7 +1140,7 @@
   <a href="regress.html">regress</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Regression/ridge.m">ridge</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/848e0a5/inst/Regression/ridge.m">ridge</a>
 </p>
 </div>
         <div class="card rounded my-4">

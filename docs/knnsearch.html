@@ -350,6 +350,7 @@
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
 					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
+					<li><a href="fitmnr.html" class="text-decoration-none font-monospace"><small>fitmnr</small></a></li>
 					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
 					<li><a href="fitrm.html" class="text-decoration-none font-monospace"><small>fitrm</small></a></li>
 					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
@@ -366,6 +367,7 @@
 					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
 					<li><a href="mnrval.html" class="text-decoration-none font-monospace"><small>mnrval</small></a></li>
 					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
+					<li><a href="MultinomialRegression.html" class="text-decoration-none font-monospace"><small>MultinomialRegression</small></a></li>
 					<li><a href="mvregress.html" class="text-decoration-none font-monospace"><small>mvregress</small></a></li>
 					<li><a href="mvregresslike.html" class="text-decoration-none font-monospace"><small>mvregresslike</small></a></li>
 					<li><a href="nlinfit.html" class="text-decoration-none font-monospace"><small>nlinfit</small></a></li>
@@ -1116,7 +1118,8 @@
  1.</td></tr>
 <tr><td width="18%"><code>'P'</code></td><td width="80%">is the Minkowski distance exponent and it must be
  a positive scalar.  This argument is only valid when the selected distance
- metric is <code>'minkowski'</code>.  By default it is 2.</td></tr>
+ metric is <code>'minkowski'</code>.  By default it is 2.  An exponent of
+ <code>Inf</code> gives the Chebychev distance.</td></tr>
 <tr><td width="18%"><code>'Scale'</code></td><td width="80%">is the scale parameter for the standardized
  Euclidean distance and it must be a nonnegative numeric vector of equal
  length to the number of columns in <var>X</var>.  This argument is only valid when
@@ -1151,7 +1154,8 @@
  <code>'Scale'</code> name-value argument.</td></tr>
 <tr><td width="20%"><code>'cityblock'</code></td><td width="75%">City block distance.</td></tr>
 <tr><td width="20%"><code>'chebychev'</code></td><td width="75%">Chebychev distance (maximum coordinate
- difference).</td></tr>
+ difference).  A difference of <code>Inf - Inf</code> is <code>NaN</code>, and so is the
+ distance, as for every other metric; MATLAB passes over it.</td></tr>
 <tr><td width="20%"><code>'minkowski'</code></td><td width="75%">Minkowski distance.  The default exponent
  is 2.  To specify a different exponent, use the <code>'P'</code> name-value
  argument.</td></tr>
@@ -1220,7 +1224,7 @@
   <a href="fitcknn.html">fitcknn</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Nearest_Neighbors/knnsearch.m">knnsearch</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/848e0a5/inst/Nearest_Neighbors/knnsearch.m">knnsearch</a>
 </p>
 </div>
         <div class="card rounded my-4">

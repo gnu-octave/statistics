@@ -350,6 +350,7 @@
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
 					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
+					<li><a href="fitmnr.html" class="text-decoration-none font-monospace"><small>fitmnr</small></a></li>
 					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
 					<li><a href="fitrm.html" class="text-decoration-none font-monospace"><small>fitrm</small></a></li>
 					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
@@ -366,6 +367,7 @@
 					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
 					<li><a href="mnrval.html" class="text-decoration-none font-monospace"><small>mnrval</small></a></li>
 					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
+					<li><a href="MultinomialRegression.html" class="text-decoration-none font-monospace"><small>MultinomialRegression</small></a></li>
 					<li><a href="mvregress.html" class="text-decoration-none font-monospace"><small>mvregress</small></a></li>
 					<li><a href="mvregresslike.html" class="text-decoration-none font-monospace"><small>mvregresslike</small></a></li>
 					<li><a href="nlinfit.html" class="text-decoration-none font-monospace"><small>nlinfit</small></a></li>
@@ -1109,7 +1111,7 @@
   <a href="knnsearch.html">knnsearch</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Nearest_Neighbors/hnswSearcher.m">hnswSearcher</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/848e0a5/inst/Nearest_Neighbors/hnswSearcher.m">hnswSearcher</a>
 </p>
 </div>
         <p class="lead my-3">The <code>hnswSearcher</code> class contains the following properties:</p>
@@ -1236,7 +1238,8 @@ Distance parameter
  <code>Distance</code> metric and can be any of the following:
 </p>
 <ul>
-<li> For <code>'minkowski'</code>, a positive scalar exponent (default 2).
+<li> For <code>'minkowski'</code>, a positive scalar exponent (default 2);
+ <code>Inf</code> gives the Chebychev distance.
 </li><li> For <code>'seuclidean'</code>, a nonnegative vector of scaling factors
  matching the number of columns in <code>X</code> (default is standard
  deviation of <code>X</code>).
@@ -1658,7 +1661,8 @@ Create an <code>hnswSearcher</code> object for approximate nearest neighbor
  for supported metrics.</td></tr>
 <tr><td width="18%"><code>'P'</code></td><td width="80%">Minkowski distance exponent, a positive
  scalar. Valid only when <code>'Distance'</code> is <code>'minkowski'</code>.
- Default is 2.</td></tr>
+ Default is 2.  An exponent of <code>Inf</code> gives the Chebychev distance,
+ where MATLAB returns wrong neighbours.</td></tr>
 <tr><td width="18%"><code>'Scale'</code></td><td width="80%">Nonnegative vector of scaling factors
  matching the number of columns in <var>X</var>. Valid only when
  <code>'Distance'</code> is <code>'seuclidean'</code>. Default is <code>std (X)</code>.</td></tr>

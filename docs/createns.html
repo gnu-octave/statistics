@@ -350,6 +350,7 @@
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
 					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
+					<li><a href="fitmnr.html" class="text-decoration-none font-monospace"><small>fitmnr</small></a></li>
 					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
 					<li><a href="fitrm.html" class="text-decoration-none font-monospace"><small>fitrm</small></a></li>
 					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
@@ -366,6 +367,7 @@
 					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
 					<li><a href="mnrval.html" class="text-decoration-none font-monospace"><small>mnrval</small></a></li>
 					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
+					<li><a href="MultinomialRegression.html" class="text-decoration-none font-monospace"><small>MultinomialRegression</small></a></li>
 					<li><a href="mvregress.html" class="text-decoration-none font-monospace"><small>mvregress</small></a></li>
 					<li><a href="mvregresslike.html" class="text-decoration-none font-monospace"><small>mvregresslike</small></a></li>
 					<li><a href="nlinfit.html" class="text-decoration-none font-monospace"><small>nlinfit</small></a></li>
@@ -1094,8 +1096,8 @@
 </p>
 <div class="ms-5">
 <p> <code><var>obj</var> = createns (<var>X</var>)</code> creates a nearest neighbor searcher
- object using the training data <var>X</var>. By default, it constructs an
- <code>ExhaustiveSearcher</code> object with the Euclidean distance metric.
+ object using the training data <var>X</var>.  By default, it constructs a
+ <code>KDTreeSearcher</code> object with the Euclidean distance metric.
 </p>
 <p> <code><var>obj</var> = createns (<var>X</var>, <var>name</var>, <var>value</var>, &hellip;)</code>
  allows customization of the searcher type and its properties through
@@ -1114,7 +1116,11 @@
 </li></ul>
 
 
-<p>   Default is <code>'exhaustive'</code>.
+<p>   By default it is <code>'kdtree'</code> when <var>X</var> has at most 10 columns,
+   is not sparse, and the <code>'Distance'</code> is <code>'euclidean'</code>,
+   <code>'cityblock'</code>, <code>'chebychev'</code> or <code>'minkowski'</code>, and
+   <code>'exhaustive'</code> otherwise.  <code>'BucketSize'</code> is then ignored,
+   with a warning, where the columns or sparsity rule out the kd-tree.
 </p>
 </td></tr>
 </table>
@@ -1153,7 +1159,7 @@
 
 <p> <strong>Examples:</strong>
 </p>
-<table><tr><td>&nbsp;</td><td><pre class="example"> ## Create an ExhaustiveSearcher with default parameters
+<table><tr><td>&nbsp;</td><td><pre class="example"> ## Create a KDTreeSearcher with default parameters
  X = [1, 2; 3, 4; 5, 6];
  obj = createns (X);
 
@@ -1173,7 +1179,7 @@
   <a href="rangesearch.html">rangesearch</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Nearest_Neighbors/createns.m">createns</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/848e0a5/inst/Nearest_Neighbors/createns.m">createns</a>
 </p>
 </div>
 

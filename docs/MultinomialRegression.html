@@ -1,0 +1,2479 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Statistics: MultinomialRegression</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script type="text/javascript" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
+    </script>
+    <script type="text/javascript">
+      window.addEventListener("load", () => {
+        for (let i of document.querySelectorAll(".collapse ul")) {
+          let tog = document.createElement("div");
+          tog.innerHTML = i.previousSibling.textContent;
+          tog.className = "toggle";
+          tog.onclick = () => tog.classList.toggle("show");
+          i.parentElement.removeChild(i.previousSibling);
+          i.parentElement.insertBefore(tog, i);
+        }
+      });
+      // Open the collapsible demo an "#example" link points to, then scroll to
+      // it.  getElementById (not querySelector) matches ids that contain a dot,
+      // e.g. "Class.method-example1".
+      function openHashTarget () {
+        if (! window.location.hash) { return; }
+        let el = document.getElementById (
+          decodeURIComponent (window.location.hash.slice (1)));
+        if (! el) { return; }
+        if (el.classList.contains ("collapse") &&
+            ! el.classList.contains ("show")) {
+          bootstrap.Collapse.getOrCreateInstance (el).show ();
+        }
+        el.scrollIntoView ();
+      }
+      window.addEventListener ("DOMContentLoaded", openHashTarget);
+      window.addEventListener ("hashchange", openHashTarget);
+      // When the collapsible named by the current URL fragment is collapsed,
+      // drop the fragment (replaceState: no scroll, no history entry).  Otherwise
+      // the fragment would still equal this id, so clicking the same #example
+      // link again fires no "hashchange" and the example would not re-expand.
+      document.addEventListener ("hide.bs.collapse", (e) => {
+        if (e.target.id && window.location.hash === "#" + e.target.id) {
+          history.replaceState (null, "",
+            window.location.pathname + window.location.search);
+        }
+      });
+      // Let the browser's find-in-page reach the text inside a collapsed
+      // panel.  The attribute "hidden=until-found" is what makes content
+      // searchable and revealable; the style block below clears the
+      // "display: none" that would otherwise stop the attribute meaning
+      // anything, a box that is not generated having nothing to reveal.  Set
+      // it only where it is understood, which "content-visibility" is no test
+      // for, Firefox having shipped the two apart.  Where it is not, the panel
+      // keeps the user agent's plain [hidden] and the page behaves as before.
+      window.addEventListener ("DOMContentLoaded", () => {
+        if (! ("onbeforematch" in document.body)) { return; }
+        document.documentElement.classList.add ("until-found");
+        let panels = document.querySelectorAll (
+          ".collapse:not(.show):not(.navbar-collapse)");
+        for (let el of panels) {
+          el.setAttribute ("hidden", "until-found");
+          // Fired on a find-in-page hit, before the browser drops the
+          // attribute and scrolls to it.  Bootstrap keeps a panel's state in
+          // its class list, so adding the class here opens the panel in the
+          // same frame and leaves the button shutting it correctly afterwards.
+          // Bootstrap's own show () would animate against that scroll, and the
+          // attribute once dropped, "display: none" would take the panel back
+          // part way through.
+          el.addEventListener ("beforematch", () => {
+            el.classList.add ("show");
+            for (let b of document.querySelectorAll ("[data-bs-target]")) {
+              if (b.getAttribute ("data-bs-target") === "#" + el.id) {
+                b.setAttribute ("aria-expanded", "true");
+              }
+            }
+          });
+        }
+        // Drop the attribute before Bootstrap measures the panel it is opening,
+        // which it does after firing this; a revealable one measures nothing.
+        document.addEventListener ("show.bs.collapse", (e) => {
+          e.target.removeAttribute ("hidden");
+        });
+        // Restore it once the panel is shut, rather than while it is shutting.
+        document.addEventListener ("hidden.bs.collapse", (e) => {
+          if (! e.target.classList.contains ("navbar-collapse")) {
+            e.target.setAttribute ("hidden", "until-found");
+          }
+        });
+      });
+    </script>
+    <style>
+    .fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
+    .fs-last {
+    margin-bottom: calc(1rem - 0.15em);
+    }
+    p.description {
+    font-family: Consolas, "Courier New", monospace;
+    }
+    p.description code {
+    font-size: inherit;
+    }
+    h6:hover {
+      color: gray;
+    }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
+    code.description {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: normal;
+    font-size:1.2em;
+    color: gray;
+    }
+    var {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
+    }
+    td {
+      vertical-align: top;
+    }
+    [id^="togList"],                        /* HIDE CHECKBOX */
+    [id^="togList"] ~ .list,                /* HIDE LIST */
+    [id^="togList"] + label  span + span,   /* HIDE "Collapse" */
+    [id^="togList"]:checked + label span{   /* HIDE "Expand" (IF CHECKED) */
+      display:none;
+    }
+    [id^="togList"]:checked + label span + span{
+      display:inline-block;                 /* SHOW "Collapse" (IF CHECKED) */
+    }
+    [id^="togList"]:checked ~ .list{
+      display:block;                        /* SHOW LIST (IF CHECKED) */
+    }
+    /* Bootstrap hides a collapsed panel with "display: none", which generates
+       no box, so the "content-visibility: hidden" the user agent gives
+       "hidden=until-found" could never apply and the text would stay beyond
+       find-in-page.  Clear that one declaration, and only where the script
+       above has found the attribute to be understood: an attribute selector
+       matches a value the browser does not understand, so an ungated rule
+       would leave every panel of an older browser standing open.  The
+       "!important" is required rather than decoration: the reboot carries
+       "[hidden] {display: none !important}", which the attribute itself brings
+       into play, and only another "!important" can outrank it. */
+    html.until-found .collapse[hidden="until-found"]:not(.show) {
+      display: block !important;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dark">
+      <div class="container-xl">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href=index.html>
+              <img src="assets/statistics.png" alt="statistics" class="d-inline-block align-top" width="25" height="25">
+              Statistics
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html#Regression">
+                    <i class="fas fa-list-alt"></i>
+                    Regression
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://gnu-octave.github.io/packages/">
+                  <img src="assets/octave-logo.svg" alt="GNU Octave logo" class="d-inline-block align-top" width="25" height="25">
+                    Octave Packages
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="https://www.octave.org">
+                    <i class="fas fa-home"></i>
+                    GNU Octave website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="container-xl my-4">
+      <div class="row flex-nowrap" style="min-height:0">
+        <div class="col-md-2 bg-light" style="overflow-y: scroll; width: 250px;">
+          <div class="p-2" style="text-align: center;">
+            <h3>Categories &</h3>
+            <h4 style="color: blue">Functions List</h4>
+          </div>
+			<div class="row">
+				<input id="togList1" type="checkbox">
+				<label for="togList1">
+					<span><h6>Descriptive Statistics</h6></span>
+					<span><h6>Descriptive Statistics</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
+					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
+					<li><a href="corr.html" class="text-decoration-none font-monospace"><small>corr</small></a></li>
+					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
+					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
+					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
+					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
+					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
+					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
+					<li><a href="ksdensity.html" class="text-decoration-none font-monospace"><small>ksdensity</small></a></li>
+					<li><a href="mvksdensity.html" class="text-decoration-none font-monospace"><small>mvksdensity</small></a></li>
+					<li><a href="nancov.html" class="text-decoration-none font-monospace"><small>nancov</small></a></li>
+					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
+					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
+					<li><a href="nanmedian.html" class="text-decoration-none font-monospace"><small>nanmedian</small></a></li>
+					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
+					<li><a href="nanstd.html" class="text-decoration-none font-monospace"><small>nanstd</small></a></li>
+					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
+					<li><a href="nanvar.html" class="text-decoration-none font-monospace"><small>nanvar</small></a></li>
+					<li><a href="partialcorr.html" class="text-decoration-none font-monospace"><small>partialcorr</small></a></li>
+					<li><a href="partialcorri.html" class="text-decoration-none font-monospace"><small>partialcorri</small></a></li>
+					<li><a href="tabulate.html" class="text-decoration-none font-monospace"><small>tabulate</small></a></li>
+					<li><a href="trimmean.html" class="text-decoration-none font-monospace"><small>trimmean</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList2" type="checkbox">
+				<label for="togList2">
+					<span><h6>Data Manipulation</h6></span>
+					<span><h6>Data Manipulation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="combnk.html" class="text-decoration-none font-monospace"><small>combnk</small></a></li>
+					<li><a href="crosstab.html" class="text-decoration-none font-monospace"><small>crosstab</small></a></li>
+					<li><a href="datasample.html" class="text-decoration-none font-monospace"><small>datasample</small></a></li>
+					<li><a href="dummyvar.html" class="text-decoration-none font-monospace"><small>dummyvar</small></a></li>
+					<li><a href="fillmissing.html" class="text-decoration-none font-monospace"><small>fillmissing</small></a></li>
+					<li><a href="grp2idx.html" class="text-decoration-none font-monospace"><small>grp2idx</small></a></li>
+					<li><a href="ismissing.html" class="text-decoration-none font-monospace"><small>ismissing</small></a></li>
+					<li><a href="isoutlier.html" class="text-decoration-none font-monospace"><small>isoutlier</small></a></li>
+					<li><a href="multiway.html" class="text-decoration-none font-monospace"><small>multiway</small></a></li>
+					<li><a href="normalise_distribution.html" class="text-decoration-none font-monospace"><small>normalise_distribution</small></a></li>
+					<li><a href="randsample.html" class="text-decoration-none font-monospace"><small>randsample</small></a></li>
+					<li><a href="rmmissing.html" class="text-decoration-none font-monospace"><small>rmmissing</small></a></li>
+					<li><a href="standardizeMissing.html" class="text-decoration-none font-monospace"><small>standardizeMissing</small></a></li>
+					<li><a href="tiedrank.html" class="text-decoration-none font-monospace"><small>tiedrank</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList3" type="checkbox">
+				<label for="togList3">
+					<span><h6>Hypothesis Testing</h6></span>
+					<span><h6>Hypothesis Testing</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
+					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
+					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
+					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
+					<li><a href="ansaribradley.html" class="text-decoration-none font-monospace"><small>ansaribradley</small></a></li>
+					<li><a href="barttest.html" class="text-decoration-none font-monospace"><small>barttest</small></a></li>
+					<li><a href="binotest.html" class="text-decoration-none font-monospace"><small>binotest</small></a></li>
+					<li><a href="chi2gof.html" class="text-decoration-none font-monospace"><small>chi2gof</small></a></li>
+					<li><a href="chi2test.html" class="text-decoration-none font-monospace"><small>chi2test</small></a></li>
+					<li><a href="correlation_test.html" class="text-decoration-none font-monospace"><small>correlation_test</small></a></li>
+					<li><a href="detectdrift.html" class="text-decoration-none font-monospace"><small>detectdrift</small></a></li>
+					<li><a href="dwtest.html" class="text-decoration-none font-monospace"><small>dwtest</small></a></li>
+					<li><a href="fishertest.html" class="text-decoration-none font-monospace"><small>fishertest</small></a></li>
+					<li><a href="friedman.html" class="text-decoration-none font-monospace"><small>friedman</small></a></li>
+					<li><a href="hotelling_t2test.html" class="text-decoration-none font-monospace"><small>hotelling_t2test</small></a></li>
+					<li><a href="hotelling_t2test2.html" class="text-decoration-none font-monospace"><small>hotelling_t2test2</small></a></li>
+					<li><a href="jbtest.html" class="text-decoration-none font-monospace"><small>jbtest</small></a></li>
+					<li><a href="knntest.html" class="text-decoration-none font-monospace"><small>knntest</small></a></li>
+					<li><a href="kruskalwallis.html" class="text-decoration-none font-monospace"><small>kruskalwallis</small></a></li>
+					<li><a href="kstest.html" class="text-decoration-none font-monospace"><small>kstest</small></a></li>
+					<li><a href="kstest2.html" class="text-decoration-none font-monospace"><small>kstest2</small></a></li>
+					<li><a href="lillietest.html" class="text-decoration-none font-monospace"><small>lillietest</small></a></li>
+					<li><a href="manova1.html" class="text-decoration-none font-monospace"><small>manova1</small></a></li>
+					<li><a href="mcnemar_test.html" class="text-decoration-none font-monospace"><small>mcnemar_test</small></a></li>
+					<li><a href="meanEffectSize.html" class="text-decoration-none font-monospace"><small>meanEffectSize</small></a></li>
+					<li><a href="mmdtest.html" class="text-decoration-none font-monospace"><small>mmdtest</small></a></li>
+					<li><a href="multcompare.html" class="text-decoration-none font-monospace"><small>multcompare</small></a></li>
+					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
+					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
+					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
+					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
+					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
+					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
+					<li><a href="stats.drift.DriftDiagnostics.html" class="text-decoration-none font-monospace"><small>stats.drift.DriftDiagnostics</small></a></li>
+					<li><a href="swtest.html" class="text-decoration-none font-monospace"><small>swtest</small></a></li>
+					<li><a href="ttest.html" class="text-decoration-none font-monospace"><small>ttest</small></a></li>
+					<li><a href="ttest2.html" class="text-decoration-none font-monospace"><small>ttest2</small></a></li>
+					<li><a href="vartest.html" class="text-decoration-none font-monospace"><small>vartest</small></a></li>
+					<li><a href="vartest2.html" class="text-decoration-none font-monospace"><small>vartest2</small></a></li>
+					<li><a href="vartestn.html" class="text-decoration-none font-monospace"><small>vartestn</small></a></li>
+					<li><a href="ztest.html" class="text-decoration-none font-monospace"><small>ztest</small></a></li>
+					<li><a href="ztest2.html" class="text-decoration-none font-monospace"><small>ztest2</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList4" type="checkbox">
+				<label for="togList4">
+					<span><h6>Experimental Design</h6></span>
+					<span><h6>Experimental Design</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
+					<li><a href="sampsizepwr.html" class="text-decoration-none font-monospace"><small>sampsizepwr</small></a></li>
+					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
+					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList5" type="checkbox" checked>
+				<label for="togList5">
+					<span><h6>Regression</h6></span>
+					<span><h6>Regression</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="CompactLinearModel.html" class="text-decoration-none font-monospace"><small>CompactLinearModel</small></a></li>
+					<li><a href="CoxModel.html" class="text-decoration-none font-monospace"><small>CoxModel</small></a></li>
+					<li><a href="coxphfit.html" class="text-decoration-none font-monospace"><small>coxphfit</small></a></li>
+					<li><a href="fitcox.html" class="text-decoration-none font-monospace"><small>fitcox</small></a></li>
+					<li><a href="fitglm.html" class="text-decoration-none font-monospace"><small>fitglm</small></a></li>
+					<li><a href="fitglme.html" class="text-decoration-none font-monospace"><small>fitglme</small></a></li>
+					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
+					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
+					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
+					<li><a href="fitmnr.html" class="text-decoration-none font-monospace"><small>fitmnr</small></a></li>
+					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
+					<li><a href="fitrm.html" class="text-decoration-none font-monospace"><small>fitrm</small></a></li>
+					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
+					<li><a href="GeneralizedLinearModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearModel</small></a></li>
+					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
+					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
+					<li><a href="invpred.html" class="text-decoration-none font-monospace"><small>invpred</small></a></li>
+					<li><a href="lasso.html" class="text-decoration-none font-monospace"><small>lasso</small></a></li>
+					<li><a href="lassoglm.html" class="text-decoration-none font-monospace"><small>lassoglm</small></a></li>
+					<li><a href="LinearFormula.html" class="text-decoration-none font-monospace"><small>LinearFormula</small></a></li>
+					<li><a href="LinearMixedModel.html" class="text-decoration-none font-monospace"><small>LinearMixedModel</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
+					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
+					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
+					<li><a href="mnrval.html" class="text-decoration-none font-monospace"><small>mnrval</small></a></li>
+					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
+					<li><a href="MultinomialRegression.html" class="text-decoration-none font-monospace fw-bolder"><small>MultinomialRegression</small></a></li>
+					<li><a href="mvregress.html" class="text-decoration-none font-monospace"><small>mvregress</small></a></li>
+					<li><a href="mvregresslike.html" class="text-decoration-none font-monospace"><small>mvregresslike</small></a></li>
+					<li><a href="nlinfit.html" class="text-decoration-none font-monospace"><small>nlinfit</small></a></li>
+					<li><a href="nlparci.html" class="text-decoration-none font-monospace"><small>nlparci</small></a></li>
+					<li><a href="nlpredci.html" class="text-decoration-none font-monospace"><small>nlpredci</small></a></li>
+					<li><a href="NonLinearModel.html" class="text-decoration-none font-monospace"><small>NonLinearModel</small></a></li>
+					<li><a href="plsregress.html" class="text-decoration-none font-monospace"><small>plsregress</small></a></li>
+					<li><a href="regress.html" class="text-decoration-none font-monospace"><small>regress</small></a></li>
+					<li><a href="regress_gp.html" class="text-decoration-none font-monospace"><small>regress_gp</small></a></li>
+					<li><a href="RepeatedMeasuresModel.html" class="text-decoration-none font-monospace"><small>RepeatedMeasuresModel</small></a></li>
+					<li><a href="ridge.html" class="text-decoration-none font-monospace"><small>ridge</small></a></li>
+					<li><a href="robustfit.html" class="text-decoration-none font-monospace"><small>robustfit</small></a></li>
+					<li><a href="stepwisefit.html" class="text-decoration-none font-monospace"><small>stepwisefit</small></a></li>
+					<li><a href="stepwiseglm.html" class="text-decoration-none font-monospace"><small>stepwiseglm</small></a></li>
+					<li><a href="stepwiselm.html" class="text-decoration-none font-monospace"><small>stepwiselm</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList6" type="checkbox">
+				<label for="togList6">
+					<span><h6>Machine Learning</h6></span>
+					<span><h6>Machine Learning</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="ClassificationBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationBaggedEnsemble</small></a></li>
+					<li><a href="ClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>ClassificationDiscriminant</small></a></li>
+					<li><a href="ClassificationECOC.html" class="text-decoration-none font-monospace"><small>ClassificationECOC</small></a></li>
+					<li><a href="ClassificationEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationEnsemble</small></a></li>
+					<li><a href="ClassificationGAM.html" class="text-decoration-none font-monospace"><small>ClassificationGAM</small></a></li>
+					<li><a href="ClassificationKernel.html" class="text-decoration-none font-monospace"><small>ClassificationKernel</small></a></li>
+					<li><a href="ClassificationKNN.html" class="text-decoration-none font-monospace"><small>ClassificationKNN</small></a></li>
+					<li><a href="ClassificationLinear.html" class="text-decoration-none font-monospace"><small>ClassificationLinear</small></a></li>
+					<li><a href="ClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>ClassificationNaiveBayes</small></a></li>
+					<li><a href="ClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>ClassificationNeuralNetwork</small></a></li>
+					<li><a href="ClassificationPartitionedECOC.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedECOC</small></a></li>
+					<li><a href="ClassificationPartitionedEnsemble.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedEnsemble</small></a></li>
+					<li><a href="ClassificationPartitionedKernel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedKernel</small></a></li>
+					<li><a href="ClassificationPartitionedLinear.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedLinear</small></a></li>
+					<li><a href="ClassificationPartitionedModel.html" class="text-decoration-none font-monospace"><small>ClassificationPartitionedModel</small></a></li>
+					<li><a href="ClassificationSVM.html" class="text-decoration-none font-monospace"><small>ClassificationSVM</small></a></li>
+					<li><a href="ClassificationTree.html" class="text-decoration-none font-monospace"><small>ClassificationTree</small></a></li>
+					<li><a href="CompactClassificationDiscriminant.html" class="text-decoration-none font-monospace"><small>CompactClassificationDiscriminant</small></a></li>
+					<li><a href="CompactClassificationECOC.html" class="text-decoration-none font-monospace"><small>CompactClassificationECOC</small></a></li>
+					<li><a href="CompactClassificationEnsemble.html" class="text-decoration-none font-monospace"><small>CompactClassificationEnsemble</small></a></li>
+					<li><a href="CompactClassificationGAM.html" class="text-decoration-none font-monospace"><small>CompactClassificationGAM</small></a></li>
+					<li><a href="CompactClassificationNaiveBayes.html" class="text-decoration-none font-monospace"><small>CompactClassificationNaiveBayes</small></a></li>
+					<li><a href="CompactClassificationNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactClassificationNeuralNetwork</small></a></li>
+					<li><a href="CompactClassificationSVM.html" class="text-decoration-none font-monospace"><small>CompactClassificationSVM</small></a></li>
+					<li><a href="CompactClassificationTree.html" class="text-decoration-none font-monospace"><small>CompactClassificationTree</small></a></li>
+					<li><a href="CompactRegressionGAM.html" class="text-decoration-none font-monospace"><small>CompactRegressionGAM</small></a></li>
+					<li><a href="CompactRegressionEnsemble.html" class="text-decoration-none font-monospace"><small>CompactRegressionEnsemble</small></a></li>
+					<li><a href="CompactRegressionGP.html" class="text-decoration-none font-monospace"><small>CompactRegressionGP</small></a></li>
+					<li><a href="CompactRegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>CompactRegressionNeuralNetwork</small></a></li>
+					<li><a href="CompactRegressionSVM.html" class="text-decoration-none font-monospace"><small>CompactRegressionSVM</small></a></li>
+					<li><a href="CompactRegressionTree.html" class="text-decoration-none font-monospace"><small>CompactRegressionTree</small></a></li>
+					<li><a href="CompactTreeBagger.html" class="text-decoration-none font-monospace"><small>CompactTreeBagger</small></a></li>
+					<li><a href="designecoc.html" class="text-decoration-none font-monospace"><small>designecoc</small></a></li>
+					<li><a href="fcnnpredict.html" class="text-decoration-none font-monospace"><small>fcnnpredict</small></a></li>
+					<li><a href="fcnntrain.html" class="text-decoration-none font-monospace"><small>fcnntrain</small></a></li>
+					<li><a href="fitcdiscr.html" class="text-decoration-none font-monospace"><small>fitcdiscr</small></a></li>
+					<li><a href="fitcecoc.html" class="text-decoration-none font-monospace"><small>fitcecoc</small></a></li>
+					<li><a href="fitcensemble.html" class="text-decoration-none font-monospace"><small>fitcensemble</small></a></li>
+					<li><a href="fitcgam.html" class="text-decoration-none font-monospace"><small>fitcgam</small></a></li>
+					<li><a href="fitckernel.html" class="text-decoration-none font-monospace"><small>fitckernel</small></a></li>
+					<li><a href="fitcknn.html" class="text-decoration-none font-monospace"><small>fitcknn</small></a></li>
+					<li><a href="fitclinear.html" class="text-decoration-none font-monospace"><small>fitclinear</small></a></li>
+					<li><a href="fitcnb.html" class="text-decoration-none font-monospace"><small>fitcnb</small></a></li>
+					<li><a href="fitcnet.html" class="text-decoration-none font-monospace"><small>fitcnet</small></a></li>
+					<li><a href="fitcsvm.html" class="text-decoration-none font-monospace"><small>fitcsvm</small></a></li>
+					<li><a href="fitctree.html" class="text-decoration-none font-monospace"><small>fitctree</small></a></li>
+					<li><a href="fitrensemble.html" class="text-decoration-none font-monospace"><small>fitrensemble</small></a></li>
+					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="fitrgp.html" class="text-decoration-none font-monospace"><small>fitrgp</small></a></li>
+					<li><a href="fitrkernel.html" class="text-decoration-none font-monospace"><small>fitrkernel</small></a></li>
+					<li><a href="fitrlinear.html" class="text-decoration-none font-monospace"><small>fitrlinear</small></a></li>
+					<li><a href="fitrnet.html" class="text-decoration-none font-monospace"><small>fitrnet</small></a></li>
+					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
+					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
+					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
+					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
+					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
+					<li><a href="gamboosttrain.html" class="text-decoration-none font-monospace"><small>gamboosttrain</small></a></li>
+					<li><a href="gampredict.html" class="text-decoration-none font-monospace"><small>gampredict</small></a></li>
+					<li><a href="gamtrain.html" class="text-decoration-none font-monospace"><small>gamtrain</small></a></li>
+					<li><a href="partialDependence.html" class="text-decoration-none font-monospace"><small>partialDependence</small></a></li>
+					<li><a href="plotPartialDependence.html" class="text-decoration-none font-monospace"><small>plotPartialDependence</small></a></li>
+					<li><a href="PredictiveModel.html" class="text-decoration-none font-monospace"><small>PredictiveModel</small></a></li>
+					<li><a href="RegressionBaggedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionBaggedEnsemble</small></a></li>
+					<li><a href="RegressionEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionEnsemble</small></a></li>
+					<li><a href="RegressionGAM.html" class="text-decoration-none font-monospace"><small>RegressionGAM</small></a></li>
+					<li><a href="RegressionGP.html" class="text-decoration-none font-monospace"><small>RegressionGP</small></a></li>
+					<li><a href="RegressionKernel.html" class="text-decoration-none font-monospace"><small>RegressionKernel</small></a></li>
+					<li><a href="RegressionLinear.html" class="text-decoration-none font-monospace"><small>RegressionLinear</small></a></li>
+					<li><a href="RegressionNeuralNetwork.html" class="text-decoration-none font-monospace"><small>RegressionNeuralNetwork</small></a></li>
+					<li><a href="RegressionPartitionedEnsemble.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedEnsemble</small></a></li>
+					<li><a href="RegressionPartitionedKernel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedKernel</small></a></li>
+					<li><a href="RegressionPartitionedLinear.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedLinear</small></a></li>
+					<li><a href="RegressionPartitionedModel.html" class="text-decoration-none font-monospace"><small>RegressionPartitionedModel</small></a></li>
+					<li><a href="RegressionSVM.html" class="text-decoration-none font-monospace"><small>RegressionSVM</small></a></li>
+					<li><a href="RegressionTree.html" class="text-decoration-none font-monospace"><small>RegressionTree</small></a></li>
+					<li><a href="lime.html" class="text-decoration-none font-monospace"><small>lime</small></a></li>
+					<li><a href="shapley.html" class="text-decoration-none font-monospace"><small>shapley</small></a></li>
+					<li><a href="svmpredict.html" class="text-decoration-none font-monospace"><small>svmpredict</small></a></li>
+					<li><a href="svmtrain.html" class="text-decoration-none font-monospace"><small>svmtrain</small></a></li>
+					<li><a href="templateDiscriminant.html" class="text-decoration-none font-monospace"><small>templateDiscriminant</small></a></li>
+					<li><a href="templateEnsemble.html" class="text-decoration-none font-monospace"><small>templateEnsemble</small></a></li>
+					<li><a href="templateKernel.html" class="text-decoration-none font-monospace"><small>templateKernel</small></a></li>
+					<li><a href="templateKNN.html" class="text-decoration-none font-monospace"><small>templateKNN</small></a></li>
+					<li><a href="templateLinear.html" class="text-decoration-none font-monospace"><small>templateLinear</small></a></li>
+					<li><a href="templateNaiveBayes.html" class="text-decoration-none font-monospace"><small>templateNaiveBayes</small></a></li>
+					<li><a href="templateSVM.html" class="text-decoration-none font-monospace"><small>templateSVM</small></a></li>
+					<li><a href="templateTree.html" class="text-decoration-none font-monospace"><small>templateTree</small></a></li>
+					<li><a href="TreeBagger.html" class="text-decoration-none font-monospace"><small>TreeBagger</small></a></li>
+					<li><a href="treepredict.html" class="text-decoration-none font-monospace"><small>treepredict</small></a></li>
+					<li><a href="treetrain.html" class="text-decoration-none font-monospace"><small>treetrain</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList7" type="checkbox">
+				<label for="togList7">
+					<span><h6>Clustering</h6></span>
+					<span><h6>Clustering</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="CalinskiHarabaszEvaluation.html" class="text-decoration-none font-monospace"><small>CalinskiHarabaszEvaluation</small></a></li>
+					<li><a href="cluster.html" class="text-decoration-none font-monospace"><small>cluster</small></a></li>
+					<li><a href="ClusterCriterion.html" class="text-decoration-none font-monospace"><small>ClusterCriterion</small></a></li>
+					<li><a href="clusterdata.html" class="text-decoration-none font-monospace"><small>clusterdata</small></a></li>
+					<li><a href="cophenet.html" class="text-decoration-none font-monospace"><small>cophenet</small></a></li>
+					<li><a href="DaviesBouldinEvaluation.html" class="text-decoration-none font-monospace"><small>DaviesBouldinEvaluation</small></a></li>
+					<li><a href="dbscan.html" class="text-decoration-none font-monospace"><small>dbscan</small></a></li>
+					<li><a href="evalclusters.html" class="text-decoration-none font-monospace"><small>evalclusters</small></a></li>
+					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
+					<li><a href="GapEvaluation.html" class="text-decoration-none font-monospace"><small>GapEvaluation</small></a></li>
+					<li><a href="gmdistribution.html" class="text-decoration-none font-monospace"><small>gmdistribution</small></a></li>
+					<li><a href="inconsistent.html" class="text-decoration-none font-monospace"><small>inconsistent</small></a></li>
+					<li><a href="kmeans.html" class="text-decoration-none font-monospace"><small>kmeans</small></a></li>
+					<li><a href="kmedoids.html" class="text-decoration-none font-monospace"><small>kmedoids</small></a></li>
+					<li><a href="linkage.html" class="text-decoration-none font-monospace"><small>linkage</small></a></li>
+					<li><a href="optimalleaforder.html" class="text-decoration-none font-monospace"><small>optimalleaforder</small></a></li>
+					<li><a href="SilhouetteEvaluation.html" class="text-decoration-none font-monospace"><small>SilhouetteEvaluation</small></a></li>
+					<li><a href="spectralcluster.html" class="text-decoration-none font-monospace"><small>spectralcluster</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList8" type="checkbox">
+				<label for="togList8">
+					<span><h6>Nearest Neighbors</h6></span>
+					<span><h6>Nearest Neighbors</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="createns.html" class="text-decoration-none font-monospace"><small>createns</small></a></li>
+					<li><a href="editDistance.html" class="text-decoration-none font-monospace"><small>editDistance</small></a></li>
+					<li><a href="ExhaustiveSearcher.html" class="text-decoration-none font-monospace"><small>ExhaustiveSearcher</small></a></li>
+					<li><a href="hnswSearcher.html" class="text-decoration-none font-monospace"><small>hnswSearcher</small></a></li>
+					<li><a href="KDTreeSearcher.html" class="text-decoration-none font-monospace"><small>KDTreeSearcher</small></a></li>
+					<li><a href="knnsearch.html" class="text-decoration-none font-monospace"><small>knnsearch</small></a></li>
+					<li><a href="mahal.html" class="text-decoration-none font-monospace"><small>mahal</small></a></li>
+					<li><a href="nomdist.html" class="text-decoration-none font-monospace"><small>nomdist</small></a></li>
+					<li><a href="nomdist2.html" class="text-decoration-none font-monospace"><small>nomdist2</small></a></li>
+					<li><a href="pdist.html" class="text-decoration-none font-monospace"><small>pdist</small></a></li>
+					<li><a href="pdist2.html" class="text-decoration-none font-monospace"><small>pdist2</small></a></li>
+					<li><a href="rangesearch.html" class="text-decoration-none font-monospace"><small>rangesearch</small></a></li>
+					<li><a href="squareform.html" class="text-decoration-none font-monospace"><small>squareform</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList9" type="checkbox">
+				<label for="togList9">
+					<span><h6>Anomaly Detection</h6></span>
+					<span><h6>Anomaly Detection</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="iforest.html" class="text-decoration-none font-monospace"><small>iforest</small></a></li>
+					<li><a href="IsolationForest.html" class="text-decoration-none font-monospace"><small>IsolationForest</small></a></li>
+					<li><a href="LocalOutlierFactor.html" class="text-decoration-none font-monospace"><small>LocalOutlierFactor</small></a></li>
+					<li><a href="lof.html" class="text-decoration-none font-monospace"><small>lof</small></a></li>
+					<li><a href="ocsvm.html" class="text-decoration-none font-monospace"><small>ocsvm</small></a></li>
+					<li><a href="OneClassSVM.html" class="text-decoration-none font-monospace"><small>OneClassSVM</small></a></li>
+					<li><a href="robustcov.html" class="text-decoration-none font-monospace"><small>robustcov</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList10" type="checkbox">
+				<label for="togList10">
+					<span><h6>Dimensionality Reduction</h6></span>
+					<span><h6>Dimensionality Reduction</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
+					<li><a href="cmdscale.html" class="text-decoration-none font-monospace"><small>cmdscale</small></a></li>
+					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
+					<li><a href="mdscale.html" class="text-decoration-none font-monospace"><small>mdscale</small></a></li>
+					<li><a href="nnmf.html" class="text-decoration-none font-monospace"><small>nnmf</small></a></li>
+					<li><a href="pca.html" class="text-decoration-none font-monospace"><small>pca</small></a></li>
+					<li><a href="pcacov.html" class="text-decoration-none font-monospace"><small>pcacov</small></a></li>
+					<li><a href="pcares.html" class="text-decoration-none font-monospace"><small>pcares</small></a></li>
+					<li><a href="ppca.html" class="text-decoration-none font-monospace"><small>ppca</small></a></li>
+					<li><a href="princomp.html" class="text-decoration-none font-monospace"><small>princomp</small></a></li>
+					<li><a href="procrustes.html" class="text-decoration-none font-monospace"><small>procrustes</small></a></li>
+					<li><a href="ReconstructionICA.html" class="text-decoration-none font-monospace"><small>ReconstructionICA</small></a></li>
+					<li><a href="rica.html" class="text-decoration-none font-monospace"><small>rica</small></a></li>
+					<li><a href="rotatefactors.html" class="text-decoration-none font-monospace"><small>rotatefactors</small></a></li>
+					<li><a href="sparsefilt.html" class="text-decoration-none font-monospace"><small>sparsefilt</small></a></li>
+					<li><a href="SparseFiltering.html" class="text-decoration-none font-monospace"><small>SparseFiltering</small></a></li>
+					<li><a href="tsne.html" class="text-decoration-none font-monospace"><small>tsne</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList11" type="checkbox">
+				<label for="togList11">
+					<span><h6>Model Evaluation</h6></span>
+					<span><h6>Model Evaluation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="confusionchart.html" class="text-decoration-none font-monospace"><small>confusionchart</small></a></li>
+					<li><a href="confusionmat.html" class="text-decoration-none font-monospace"><small>confusionmat</small></a></li>
+					<li><a href="ConfusionMatrixChart.html" class="text-decoration-none font-monospace"><small>ConfusionMatrixChart</small></a></li>
+					<li><a href="crossval.html" class="text-decoration-none font-monospace"><small>crossval</small></a></li>
+					<li><a href="cvpartition.html" class="text-decoration-none font-monospace"><small>cvpartition</small></a></li>
+					<li><a href="perfcurve.html" class="text-decoration-none font-monospace"><small>perfcurve</small></a></li>
+					<li><a href="rocmetrics.html" class="text-decoration-none font-monospace"><small>rocmetrics</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList12" type="checkbox">
+				<label for="togList12">
+					<span><h6>Markov Models</h6></span>
+					<span><h6>Markov Models</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="hmmdecode.html" class="text-decoration-none font-monospace"><small>hmmdecode</small></a></li>
+					<li><a href="hmmestimate.html" class="text-decoration-none font-monospace"><small>hmmestimate</small></a></li>
+					<li><a href="hmmgenerate.html" class="text-decoration-none font-monospace"><small>hmmgenerate</small></a></li>
+					<li><a href="hmmtrain.html" class="text-decoration-none font-monospace"><small>hmmtrain</small></a></li>
+					<li><a href="hmmviterbi.html" class="text-decoration-none font-monospace"><small>hmmviterbi</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList13" type="checkbox">
+				<label for="togList13">
+					<span><h6>Random Sampling</h6></span>
+					<span><h6>Random Sampling</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="johnsrnd.html" class="text-decoration-none font-monospace"><small>johnsrnd</small></a></li>
+					<li><a href="mhsample.html" class="text-decoration-none font-monospace"><small>mhsample</small></a></li>
+					<li><a href="pearsrnd.html" class="text-decoration-none font-monospace"><small>pearsrnd</small></a></li>
+					<li><a href="qrandn.html" class="text-decoration-none font-monospace"><small>qrandn</small></a></li>
+					<li><a href="slicesample.html" class="text-decoration-none font-monospace"><small>slicesample</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList14" type="checkbox">
+				<label for="togList14">
+					<span><h6>Distribution Classes</h6></span>
+					<span><h6>Distribution Classes</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="paretotails.html" class="text-decoration-none font-monospace"><small>paretotails</small></a></li>
+					<li><a href="prob.ProbabilityDistribution.html" class="text-decoration-none font-monospace"><small>prob.ProbabilityDistribution</small></a></li>
+					<li><a href="prob.BetaDistribution.html" class="text-decoration-none font-monospace"><small>prob.BetaDistribution</small></a></li>
+					<li><a href="prob.BinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.BinomialDistribution</small></a></li>
+					<li><a href="prob.BirnbaumSaundersDistribution.html" class="text-decoration-none font-monospace"><small>prob.BirnbaumSaundersDistribution</small></a></li>
+					<li><a href="prob.BurrDistribution.html" class="text-decoration-none font-monospace"><small>prob.BurrDistribution</small></a></li>
+					<li><a href="prob.ExponentialDistribution.html" class="text-decoration-none font-monospace"><small>prob.ExponentialDistribution</small></a></li>
+					<li><a href="prob.ExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>prob.ExtremeValueDistribution</small></a></li>
+					<li><a href="prob.GammaDistribution.html" class="text-decoration-none font-monospace"><small>prob.GammaDistribution</small></a></li>
+					<li><a href="prob.GeneralizedExtremeValueDistribution.html" class="text-decoration-none font-monospace"><small>prob.GeneralizedExtremeValueDistribution</small></a></li>
+					<li><a href="prob.GeneralizedParetoDistribution.html" class="text-decoration-none font-monospace"><small>prob.GeneralizedParetoDistribution</small></a></li>
+					<li><a href="prob.HalfNormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.HalfNormalDistribution</small></a></li>
+					<li><a href="prob.InverseGaussianDistribution.html" class="text-decoration-none font-monospace"><small>prob.InverseGaussianDistribution</small></a></li>
+					<li><a href="prob.KernelDistribution.html" class="text-decoration-none font-monospace"><small>prob.KernelDistribution</small></a></li>
+					<li><a href="prob.LogisticDistribution.html" class="text-decoration-none font-monospace"><small>prob.LogisticDistribution</small></a></li>
+					<li><a href="prob.LoglogisticDistribution.html" class="text-decoration-none font-monospace"><small>prob.LoglogisticDistribution</small></a></li>
+					<li><a href="prob.LognormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.LognormalDistribution</small></a></li>
+					<li><a href="prob.LoguniformDistribution.html" class="text-decoration-none font-monospace"><small>prob.LoguniformDistribution</small></a></li>
+					<li><a href="prob.MultinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.MultinomialDistribution</small></a></li>
+					<li><a href="prob.NakagamiDistribution.html" class="text-decoration-none font-monospace"><small>prob.NakagamiDistribution</small></a></li>
+					<li><a href="prob.NegativeBinomialDistribution.html" class="text-decoration-none font-monospace"><small>prob.NegativeBinomialDistribution</small></a></li>
+					<li><a href="prob.NormalDistribution.html" class="text-decoration-none font-monospace"><small>prob.NormalDistribution</small></a></li>
+					<li><a href="prob.PiecewiseLinearDistribution.html" class="text-decoration-none font-monospace"><small>prob.PiecewiseLinearDistribution</small></a></li>
+					<li><a href="prob.PoissonDistribution.html" class="text-decoration-none font-monospace"><small>prob.PoissonDistribution</small></a></li>
+					<li><a href="prob.RayleighDistribution.html" class="text-decoration-none font-monospace"><small>prob.RayleighDistribution</small></a></li>
+					<li><a href="prob.RicianDistribution.html" class="text-decoration-none font-monospace"><small>prob.RicianDistribution</small></a></li>
+					<li><a href="prob.StableDistribution.html" class="text-decoration-none font-monospace"><small>prob.StableDistribution</small></a></li>
+					<li><a href="prob.tLocationScaleDistribution.html" class="text-decoration-none font-monospace"><small>prob.tLocationScaleDistribution</small></a></li>
+					<li><a href="prob.TriangularDistribution.html" class="text-decoration-none font-monospace"><small>prob.TriangularDistribution</small></a></li>
+					<li><a href="prob.UniformDistribution.html" class="text-decoration-none font-monospace"><small>prob.UniformDistribution</small></a></li>
+					<li><a href="prob.WeibullDistribution.html" class="text-decoration-none font-monospace"><small>prob.WeibullDistribution</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList15" type="checkbox">
+				<label for="togList15">
+					<span><h6>Distribution Fitting</h6></span>
+					<span><h6>Distribution Fitting</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="betafit.html" class="text-decoration-none font-monospace"><small>betafit</small></a></li>
+					<li><a href="betalike.html" class="text-decoration-none font-monospace"><small>betalike</small></a></li>
+					<li><a href="binofit.html" class="text-decoration-none font-monospace"><small>binofit</small></a></li>
+					<li><a href="binolike.html" class="text-decoration-none font-monospace"><small>binolike</small></a></li>
+					<li><a href="bisafit.html" class="text-decoration-none font-monospace"><small>bisafit</small></a></li>
+					<li><a href="bisalike.html" class="text-decoration-none font-monospace"><small>bisalike</small></a></li>
+					<li><a href="burrfit.html" class="text-decoration-none font-monospace"><small>burrfit</small></a></li>
+					<li><a href="burrlike.html" class="text-decoration-none font-monospace"><small>burrlike</small></a></li>
+					<li><a href="copulafit.html" class="text-decoration-none font-monospace"><small>copulafit</small></a></li>
+					<li><a href="evfit.html" class="text-decoration-none font-monospace"><small>evfit</small></a></li>
+					<li><a href="evlike.html" class="text-decoration-none font-monospace"><small>evlike</small></a></li>
+					<li><a href="expfit.html" class="text-decoration-none font-monospace"><small>expfit</small></a></li>
+					<li><a href="explike.html" class="text-decoration-none font-monospace"><small>explike</small></a></li>
+					<li><a href="gamfit.html" class="text-decoration-none font-monospace"><small>gamfit</small></a></li>
+					<li><a href="gamlike.html" class="text-decoration-none font-monospace"><small>gamlike</small></a></li>
+					<li><a href="geofit.html" class="text-decoration-none font-monospace"><small>geofit</small></a></li>
+					<li><a href="gevfit.html" class="text-decoration-none font-monospace"><small>gevfit</small></a></li>
+					<li><a href="gevlike.html" class="text-decoration-none font-monospace"><small>gevlike</small></a></li>
+					<li><a href="gevfit_lmom.html" class="text-decoration-none font-monospace"><small>gevfit_lmom</small></a></li>
+					<li><a href="gpfit.html" class="text-decoration-none font-monospace"><small>gpfit</small></a></li>
+					<li><a href="gplike.html" class="text-decoration-none font-monospace"><small>gplike</small></a></li>
+					<li><a href="gumbelfit.html" class="text-decoration-none font-monospace"><small>gumbelfit</small></a></li>
+					<li><a href="gumbellike.html" class="text-decoration-none font-monospace"><small>gumbellike</small></a></li>
+					<li><a href="hnfit.html" class="text-decoration-none font-monospace"><small>hnfit</small></a></li>
+					<li><a href="hnlike.html" class="text-decoration-none font-monospace"><small>hnlike</small></a></li>
+					<li><a href="invgfit.html" class="text-decoration-none font-monospace"><small>invgfit</small></a></li>
+					<li><a href="invglike.html" class="text-decoration-none font-monospace"><small>invglike</small></a></li>
+					<li><a href="logifit.html" class="text-decoration-none font-monospace"><small>logifit</small></a></li>
+					<li><a href="logilike.html" class="text-decoration-none font-monospace"><small>logilike</small></a></li>
+					<li><a href="loglfit.html" class="text-decoration-none font-monospace"><small>loglfit</small></a></li>
+					<li><a href="logllike.html" class="text-decoration-none font-monospace"><small>logllike</small></a></li>
+					<li><a href="lognfit.html" class="text-decoration-none font-monospace"><small>lognfit</small></a></li>
+					<li><a href="lognlike.html" class="text-decoration-none font-monospace"><small>lognlike</small></a></li>
+					<li><a href="nakafit.html" class="text-decoration-none font-monospace"><small>nakafit</small></a></li>
+					<li><a href="nakalike.html" class="text-decoration-none font-monospace"><small>nakalike</small></a></li>
+					<li><a href="nbinfit.html" class="text-decoration-none font-monospace"><small>nbinfit</small></a></li>
+					<li><a href="nbinlike.html" class="text-decoration-none font-monospace"><small>nbinlike</small></a></li>
+					<li><a href="normfit.html" class="text-decoration-none font-monospace"><small>normfit</small></a></li>
+					<li><a href="normlike.html" class="text-decoration-none font-monospace"><small>normlike</small></a></li>
+					<li><a href="poissfit.html" class="text-decoration-none font-monospace"><small>poissfit</small></a></li>
+					<li><a href="poisslike.html" class="text-decoration-none font-monospace"><small>poisslike</small></a></li>
+					<li><a href="raylfit.html" class="text-decoration-none font-monospace"><small>raylfit</small></a></li>
+					<li><a href="rayllike.html" class="text-decoration-none font-monospace"><small>rayllike</small></a></li>
+					<li><a href="ricefit.html" class="text-decoration-none font-monospace"><small>ricefit</small></a></li>
+					<li><a href="ricelike.html" class="text-decoration-none font-monospace"><small>ricelike</small></a></li>
+					<li><a href="stblfit.html" class="text-decoration-none font-monospace"><small>stblfit</small></a></li>
+					<li><a href="stbllike.html" class="text-decoration-none font-monospace"><small>stbllike</small></a></li>
+					<li><a href="tlsfit.html" class="text-decoration-none font-monospace"><small>tlsfit</small></a></li>
+					<li><a href="tlslike.html" class="text-decoration-none font-monospace"><small>tlslike</small></a></li>
+					<li><a href="unidfit.html" class="text-decoration-none font-monospace"><small>unidfit</small></a></li>
+					<li><a href="unifit.html" class="text-decoration-none font-monospace"><small>unifit</small></a></li>
+					<li><a href="wblfit.html" class="text-decoration-none font-monospace"><small>wblfit</small></a></li>
+					<li><a href="wbllike.html" class="text-decoration-none font-monospace"><small>wbllike</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList16" type="checkbox">
+				<label for="togList16">
+					<span><h6>Distribution Functions</h6></span>
+					<span><h6>Distribution Functions</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="betacdf.html" class="text-decoration-none font-monospace"><small>betacdf</small></a></li>
+					<li><a href="betainv.html" class="text-decoration-none font-monospace"><small>betainv</small></a></li>
+					<li><a href="betapdf.html" class="text-decoration-none font-monospace"><small>betapdf</small></a></li>
+					<li><a href="betarnd.html" class="text-decoration-none font-monospace"><small>betarnd</small></a></li>
+					<li><a href="binocdf.html" class="text-decoration-none font-monospace"><small>binocdf</small></a></li>
+					<li><a href="binoinv.html" class="text-decoration-none font-monospace"><small>binoinv</small></a></li>
+					<li><a href="binopdf.html" class="text-decoration-none font-monospace"><small>binopdf</small></a></li>
+					<li><a href="binornd.html" class="text-decoration-none font-monospace"><small>binornd</small></a></li>
+					<li><a href="bisacdf.html" class="text-decoration-none font-monospace"><small>bisacdf</small></a></li>
+					<li><a href="bisainv.html" class="text-decoration-none font-monospace"><small>bisainv</small></a></li>
+					<li><a href="bisapdf.html" class="text-decoration-none font-monospace"><small>bisapdf</small></a></li>
+					<li><a href="bisarnd.html" class="text-decoration-none font-monospace"><small>bisarnd</small></a></li>
+					<li><a href="burrcdf.html" class="text-decoration-none font-monospace"><small>burrcdf</small></a></li>
+					<li><a href="burrinv.html" class="text-decoration-none font-monospace"><small>burrinv</small></a></li>
+					<li><a href="burrpdf.html" class="text-decoration-none font-monospace"><small>burrpdf</small></a></li>
+					<li><a href="burrrnd.html" class="text-decoration-none font-monospace"><small>burrrnd</small></a></li>
+					<li><a href="bvncdf.html" class="text-decoration-none font-monospace"><small>bvncdf</small></a></li>
+					<li><a href="bvtcdf.html" class="text-decoration-none font-monospace"><small>bvtcdf</small></a></li>
+					<li><a href="cauchycdf.html" class="text-decoration-none font-monospace"><small>cauchycdf</small></a></li>
+					<li><a href="cauchyinv.html" class="text-decoration-none font-monospace"><small>cauchyinv</small></a></li>
+					<li><a href="cauchypdf.html" class="text-decoration-none font-monospace"><small>cauchypdf</small></a></li>
+					<li><a href="cauchyrnd.html" class="text-decoration-none font-monospace"><small>cauchyrnd</small></a></li>
+					<li><a href="chi2cdf.html" class="text-decoration-none font-monospace"><small>chi2cdf</small></a></li>
+					<li><a href="chi2inv.html" class="text-decoration-none font-monospace"><small>chi2inv</small></a></li>
+					<li><a href="chi2pdf.html" class="text-decoration-none font-monospace"><small>chi2pdf</small></a></li>
+					<li><a href="chi2rnd.html" class="text-decoration-none font-monospace"><small>chi2rnd</small></a></li>
+					<li><a href="copulacdf.html" class="text-decoration-none font-monospace"><small>copulacdf</small></a></li>
+					<li><a href="copulapdf.html" class="text-decoration-none font-monospace"><small>copulapdf</small></a></li>
+					<li><a href="copularnd.html" class="text-decoration-none font-monospace"><small>copularnd</small></a></li>
+					<li><a href="evcdf.html" class="text-decoration-none font-monospace"><small>evcdf</small></a></li>
+					<li><a href="evinv.html" class="text-decoration-none font-monospace"><small>evinv</small></a></li>
+					<li><a href="evpdf.html" class="text-decoration-none font-monospace"><small>evpdf</small></a></li>
+					<li><a href="evrnd.html" class="text-decoration-none font-monospace"><small>evrnd</small></a></li>
+					<li><a href="expcdf.html" class="text-decoration-none font-monospace"><small>expcdf</small></a></li>
+					<li><a href="expinv.html" class="text-decoration-none font-monospace"><small>expinv</small></a></li>
+					<li><a href="exppdf.html" class="text-decoration-none font-monospace"><small>exppdf</small></a></li>
+					<li><a href="exprnd.html" class="text-decoration-none font-monospace"><small>exprnd</small></a></li>
+					<li><a href="fcdf.html" class="text-decoration-none font-monospace"><small>fcdf</small></a></li>
+					<li><a href="finv.html" class="text-decoration-none font-monospace"><small>finv</small></a></li>
+					<li><a href="fpdf.html" class="text-decoration-none font-monospace"><small>fpdf</small></a></li>
+					<li><a href="frnd.html" class="text-decoration-none font-monospace"><small>frnd</small></a></li>
+					<li><a href="gamcdf.html" class="text-decoration-none font-monospace"><small>gamcdf</small></a></li>
+					<li><a href="gaminv.html" class="text-decoration-none font-monospace"><small>gaminv</small></a></li>
+					<li><a href="gampdf.html" class="text-decoration-none font-monospace"><small>gampdf</small></a></li>
+					<li><a href="gamrnd.html" class="text-decoration-none font-monospace"><small>gamrnd</small></a></li>
+					<li><a href="geocdf.html" class="text-decoration-none font-monospace"><small>geocdf</small></a></li>
+					<li><a href="geoinv.html" class="text-decoration-none font-monospace"><small>geoinv</small></a></li>
+					<li><a href="geopdf.html" class="text-decoration-none font-monospace"><small>geopdf</small></a></li>
+					<li><a href="geornd.html" class="text-decoration-none font-monospace"><small>geornd</small></a></li>
+					<li><a href="gevcdf.html" class="text-decoration-none font-monospace"><small>gevcdf</small></a></li>
+					<li><a href="gevinv.html" class="text-decoration-none font-monospace"><small>gevinv</small></a></li>
+					<li><a href="gevpdf.html" class="text-decoration-none font-monospace"><small>gevpdf</small></a></li>
+					<li><a href="gevrnd.html" class="text-decoration-none font-monospace"><small>gevrnd</small></a></li>
+					<li><a href="gpcdf.html" class="text-decoration-none font-monospace"><small>gpcdf</small></a></li>
+					<li><a href="gpinv.html" class="text-decoration-none font-monospace"><small>gpinv</small></a></li>
+					<li><a href="gppdf.html" class="text-decoration-none font-monospace"><small>gppdf</small></a></li>
+					<li><a href="gprnd.html" class="text-decoration-none font-monospace"><small>gprnd</small></a></li>
+					<li><a href="gumbelcdf.html" class="text-decoration-none font-monospace"><small>gumbelcdf</small></a></li>
+					<li><a href="gumbelinv.html" class="text-decoration-none font-monospace"><small>gumbelinv</small></a></li>
+					<li><a href="gumbelpdf.html" class="text-decoration-none font-monospace"><small>gumbelpdf</small></a></li>
+					<li><a href="gumbelrnd.html" class="text-decoration-none font-monospace"><small>gumbelrnd</small></a></li>
+					<li><a href="hncdf.html" class="text-decoration-none font-monospace"><small>hncdf</small></a></li>
+					<li><a href="hninv.html" class="text-decoration-none font-monospace"><small>hninv</small></a></li>
+					<li><a href="hnpdf.html" class="text-decoration-none font-monospace"><small>hnpdf</small></a></li>
+					<li><a href="hnrnd.html" class="text-decoration-none font-monospace"><small>hnrnd</small></a></li>
+					<li><a href="hygecdf.html" class="text-decoration-none font-monospace"><small>hygecdf</small></a></li>
+					<li><a href="hygeinv.html" class="text-decoration-none font-monospace"><small>hygeinv</small></a></li>
+					<li><a href="hygepdf.html" class="text-decoration-none font-monospace"><small>hygepdf</small></a></li>
+					<li><a href="hygernd.html" class="text-decoration-none font-monospace"><small>hygernd</small></a></li>
+					<li><a href="invgcdf.html" class="text-decoration-none font-monospace"><small>invgcdf</small></a></li>
+					<li><a href="invginv.html" class="text-decoration-none font-monospace"><small>invginv</small></a></li>
+					<li><a href="invgpdf.html" class="text-decoration-none font-monospace"><small>invgpdf</small></a></li>
+					<li><a href="invgrnd.html" class="text-decoration-none font-monospace"><small>invgrnd</small></a></li>
+					<li><a href="iwishpdf.html" class="text-decoration-none font-monospace"><small>iwishpdf</small></a></li>
+					<li><a href="iwishrnd.html" class="text-decoration-none font-monospace"><small>iwishrnd</small></a></li>
+					<li><a href="jsucdf.html" class="text-decoration-none font-monospace"><small>jsucdf</small></a></li>
+					<li><a href="jsupdf.html" class="text-decoration-none font-monospace"><small>jsupdf</small></a></li>
+					<li><a href="laplacecdf.html" class="text-decoration-none font-monospace"><small>laplacecdf</small></a></li>
+					<li><a href="laplaceinv.html" class="text-decoration-none font-monospace"><small>laplaceinv</small></a></li>
+					<li><a href="laplacepdf.html" class="text-decoration-none font-monospace"><small>laplacepdf</small></a></li>
+					<li><a href="laplacernd.html" class="text-decoration-none font-monospace"><small>laplacernd</small></a></li>
+					<li><a href="logicdf.html" class="text-decoration-none font-monospace"><small>logicdf</small></a></li>
+					<li><a href="logiinv.html" class="text-decoration-none font-monospace"><small>logiinv</small></a></li>
+					<li><a href="logipdf.html" class="text-decoration-none font-monospace"><small>logipdf</small></a></li>
+					<li><a href="logirnd.html" class="text-decoration-none font-monospace"><small>logirnd</small></a></li>
+					<li><a href="loglcdf.html" class="text-decoration-none font-monospace"><small>loglcdf</small></a></li>
+					<li><a href="loglinv.html" class="text-decoration-none font-monospace"><small>loglinv</small></a></li>
+					<li><a href="loglpdf.html" class="text-decoration-none font-monospace"><small>loglpdf</small></a></li>
+					<li><a href="loglrnd.html" class="text-decoration-none font-monospace"><small>loglrnd</small></a></li>
+					<li><a href="logncdf.html" class="text-decoration-none font-monospace"><small>logncdf</small></a></li>
+					<li><a href="logninv.html" class="text-decoration-none font-monospace"><small>logninv</small></a></li>
+					<li><a href="lognpdf.html" class="text-decoration-none font-monospace"><small>lognpdf</small></a></li>
+					<li><a href="lognrnd.html" class="text-decoration-none font-monospace"><small>lognrnd</small></a></li>
+					<li><a href="mnpdf.html" class="text-decoration-none font-monospace"><small>mnpdf</small></a></li>
+					<li><a href="mnrnd.html" class="text-decoration-none font-monospace"><small>mnrnd</small></a></li>
+					<li><a href="mvncdf.html" class="text-decoration-none font-monospace"><small>mvncdf</small></a></li>
+					<li><a href="mvnpdf.html" class="text-decoration-none font-monospace"><small>mvnpdf</small></a></li>
+					<li><a href="mvnrnd.html" class="text-decoration-none font-monospace"><small>mvnrnd</small></a></li>
+					<li><a href="mvtcdf.html" class="text-decoration-none font-monospace"><small>mvtcdf</small></a></li>
+					<li><a href="mvtpdf.html" class="text-decoration-none font-monospace"><small>mvtpdf</small></a></li>
+					<li><a href="mvtrnd.html" class="text-decoration-none font-monospace"><small>mvtrnd</small></a></li>
+					<li><a href="nakacdf.html" class="text-decoration-none font-monospace"><small>nakacdf</small></a></li>
+					<li><a href="nakainv.html" class="text-decoration-none font-monospace"><small>nakainv</small></a></li>
+					<li><a href="nakapdf.html" class="text-decoration-none font-monospace"><small>nakapdf</small></a></li>
+					<li><a href="nakarnd.html" class="text-decoration-none font-monospace"><small>nakarnd</small></a></li>
+					<li><a href="nbincdf.html" class="text-decoration-none font-monospace"><small>nbincdf</small></a></li>
+					<li><a href="nbininv.html" class="text-decoration-none font-monospace"><small>nbininv</small></a></li>
+					<li><a href="nbinpdf.html" class="text-decoration-none font-monospace"><small>nbinpdf</small></a></li>
+					<li><a href="nbinrnd.html" class="text-decoration-none font-monospace"><small>nbinrnd</small></a></li>
+					<li><a href="ncfcdf.html" class="text-decoration-none font-monospace"><small>ncfcdf</small></a></li>
+					<li><a href="ncfinv.html" class="text-decoration-none font-monospace"><small>ncfinv</small></a></li>
+					<li><a href="ncfpdf.html" class="text-decoration-none font-monospace"><small>ncfpdf</small></a></li>
+					<li><a href="ncfrnd.html" class="text-decoration-none font-monospace"><small>ncfrnd</small></a></li>
+					<li><a href="nctcdf.html" class="text-decoration-none font-monospace"><small>nctcdf</small></a></li>
+					<li><a href="nctinv.html" class="text-decoration-none font-monospace"><small>nctinv</small></a></li>
+					<li><a href="nctpdf.html" class="text-decoration-none font-monospace"><small>nctpdf</small></a></li>
+					<li><a href="nctrnd.html" class="text-decoration-none font-monospace"><small>nctrnd</small></a></li>
+					<li><a href="ncx2cdf.html" class="text-decoration-none font-monospace"><small>ncx2cdf</small></a></li>
+					<li><a href="ncx2inv.html" class="text-decoration-none font-monospace"><small>ncx2inv</small></a></li>
+					<li><a href="ncx2pdf.html" class="text-decoration-none font-monospace"><small>ncx2pdf</small></a></li>
+					<li><a href="ncx2rnd.html" class="text-decoration-none font-monospace"><small>ncx2rnd</small></a></li>
+					<li><a href="normcdf.html" class="text-decoration-none font-monospace"><small>normcdf</small></a></li>
+					<li><a href="norminv.html" class="text-decoration-none font-monospace"><small>norminv</small></a></li>
+					<li><a href="normpdf.html" class="text-decoration-none font-monospace"><small>normpdf</small></a></li>
+					<li><a href="normrnd.html" class="text-decoration-none font-monospace"><small>normrnd</small></a></li>
+					<li><a href="plcdf.html" class="text-decoration-none font-monospace"><small>plcdf</small></a></li>
+					<li><a href="plinv.html" class="text-decoration-none font-monospace"><small>plinv</small></a></li>
+					<li><a href="plpdf.html" class="text-decoration-none font-monospace"><small>plpdf</small></a></li>
+					<li><a href="plrnd.html" class="text-decoration-none font-monospace"><small>plrnd</small></a></li>
+					<li><a href="poisscdf.html" class="text-decoration-none font-monospace"><small>poisscdf</small></a></li>
+					<li><a href="poissinv.html" class="text-decoration-none font-monospace"><small>poissinv</small></a></li>
+					<li><a href="poisspdf.html" class="text-decoration-none font-monospace"><small>poisspdf</small></a></li>
+					<li><a href="poissrnd.html" class="text-decoration-none font-monospace"><small>poissrnd</small></a></li>
+					<li><a href="raylcdf.html" class="text-decoration-none font-monospace"><small>raylcdf</small></a></li>
+					<li><a href="raylinv.html" class="text-decoration-none font-monospace"><small>raylinv</small></a></li>
+					<li><a href="raylpdf.html" class="text-decoration-none font-monospace"><small>raylpdf</small></a></li>
+					<li><a href="raylrnd.html" class="text-decoration-none font-monospace"><small>raylrnd</small></a></li>
+					<li><a href="ricecdf.html" class="text-decoration-none font-monospace"><small>ricecdf</small></a></li>
+					<li><a href="riceinv.html" class="text-decoration-none font-monospace"><small>riceinv</small></a></li>
+					<li><a href="ricepdf.html" class="text-decoration-none font-monospace"><small>ricepdf</small></a></li>
+					<li><a href="ricernd.html" class="text-decoration-none font-monospace"><small>ricernd</small></a></li>
+					<li><a href="stblcdf.html" class="text-decoration-none font-monospace"><small>stblcdf</small></a></li>
+					<li><a href="stblinv.html" class="text-decoration-none font-monospace"><small>stblinv</small></a></li>
+					<li><a href="stblpdf.html" class="text-decoration-none font-monospace"><small>stblpdf</small></a></li>
+					<li><a href="stblrnd.html" class="text-decoration-none font-monospace"><small>stblrnd</small></a></li>
+					<li><a href="stdrcdf.html" class="text-decoration-none font-monospace"><small>stdrcdf</small></a></li>
+					<li><a href="stdrinv.html" class="text-decoration-none font-monospace"><small>stdrinv</small></a></li>
+					<li><a href="stdrpdf.html" class="text-decoration-none font-monospace"><small>stdrpdf</small></a></li>
+					<li><a href="stdrrnd.html" class="text-decoration-none font-monospace"><small>stdrrnd</small></a></li>
+					<li><a href="tcdf.html" class="text-decoration-none font-monospace"><small>tcdf</small></a></li>
+					<li><a href="tinv.html" class="text-decoration-none font-monospace"><small>tinv</small></a></li>
+					<li><a href="tpdf.html" class="text-decoration-none font-monospace"><small>tpdf</small></a></li>
+					<li><a href="trnd.html" class="text-decoration-none font-monospace"><small>trnd</small></a></li>
+					<li><a href="tlscdf.html" class="text-decoration-none font-monospace"><small>tlscdf</small></a></li>
+					<li><a href="tlsinv.html" class="text-decoration-none font-monospace"><small>tlsinv</small></a></li>
+					<li><a href="tlspdf.html" class="text-decoration-none font-monospace"><small>tlspdf</small></a></li>
+					<li><a href="tlsrnd.html" class="text-decoration-none font-monospace"><small>tlsrnd</small></a></li>
+					<li><a href="tricdf.html" class="text-decoration-none font-monospace"><small>tricdf</small></a></li>
+					<li><a href="triinv.html" class="text-decoration-none font-monospace"><small>triinv</small></a></li>
+					<li><a href="tripdf.html" class="text-decoration-none font-monospace"><small>tripdf</small></a></li>
+					<li><a href="trirnd.html" class="text-decoration-none font-monospace"><small>trirnd</small></a></li>
+					<li><a href="unidcdf.html" class="text-decoration-none font-monospace"><small>unidcdf</small></a></li>
+					<li><a href="unidinv.html" class="text-decoration-none font-monospace"><small>unidinv</small></a></li>
+					<li><a href="unidpdf.html" class="text-decoration-none font-monospace"><small>unidpdf</small></a></li>
+					<li><a href="unidrnd.html" class="text-decoration-none font-monospace"><small>unidrnd</small></a></li>
+					<li><a href="unifcdf.html" class="text-decoration-none font-monospace"><small>unifcdf</small></a></li>
+					<li><a href="unifinv.html" class="text-decoration-none font-monospace"><small>unifinv</small></a></li>
+					<li><a href="unifpdf.html" class="text-decoration-none font-monospace"><small>unifpdf</small></a></li>
+					<li><a href="unifrnd.html" class="text-decoration-none font-monospace"><small>unifrnd</small></a></li>
+					<li><a href="vmcdf.html" class="text-decoration-none font-monospace"><small>vmcdf</small></a></li>
+					<li><a href="vminv.html" class="text-decoration-none font-monospace"><small>vminv</small></a></li>
+					<li><a href="vmpdf.html" class="text-decoration-none font-monospace"><small>vmpdf</small></a></li>
+					<li><a href="vmrnd.html" class="text-decoration-none font-monospace"><small>vmrnd</small></a></li>
+					<li><a href="wblcdf.html" class="text-decoration-none font-monospace"><small>wblcdf</small></a></li>
+					<li><a href="wblinv.html" class="text-decoration-none font-monospace"><small>wblinv</small></a></li>
+					<li><a href="wblpdf.html" class="text-decoration-none font-monospace"><small>wblpdf</small></a></li>
+					<li><a href="wblrnd.html" class="text-decoration-none font-monospace"><small>wblrnd</small></a></li>
+					<li><a href="wienrnd.html" class="text-decoration-none font-monospace"><small>wienrnd</small></a></li>
+					<li><a href="wishpdf.html" class="text-decoration-none font-monospace"><small>wishpdf</small></a></li>
+					<li><a href="wishrnd.html" class="text-decoration-none font-monospace"><small>wishrnd</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList17" type="checkbox">
+				<label for="togList17">
+					<span><h6>Distribution Statistics</h6></span>
+					<span><h6>Distribution Statistics</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="betastat.html" class="text-decoration-none font-monospace"><small>betastat</small></a></li>
+					<li><a href="binostat.html" class="text-decoration-none font-monospace"><small>binostat</small></a></li>
+					<li><a href="bisastat.html" class="text-decoration-none font-monospace"><small>bisastat</small></a></li>
+					<li><a href="burrstat.html" class="text-decoration-none font-monospace"><small>burrstat</small></a></li>
+					<li><a href="chi2stat.html" class="text-decoration-none font-monospace"><small>chi2stat</small></a></li>
+					<li><a href="copulaparam.html" class="text-decoration-none font-monospace"><small>copulaparam</small></a></li>
+					<li><a href="copulastat.html" class="text-decoration-none font-monospace"><small>copulastat</small></a></li>
+					<li><a href="evstat.html" class="text-decoration-none font-monospace"><small>evstat</small></a></li>
+					<li><a href="expstat.html" class="text-decoration-none font-monospace"><small>expstat</small></a></li>
+					<li><a href="fstat.html" class="text-decoration-none font-monospace"><small>fstat</small></a></li>
+					<li><a href="gamstat.html" class="text-decoration-none font-monospace"><small>gamstat</small></a></li>
+					<li><a href="geostat.html" class="text-decoration-none font-monospace"><small>geostat</small></a></li>
+					<li><a href="gevstat.html" class="text-decoration-none font-monospace"><small>gevstat</small></a></li>
+					<li><a href="gpstat.html" class="text-decoration-none font-monospace"><small>gpstat</small></a></li>
+					<li><a href="gumbelstat.html" class="text-decoration-none font-monospace"><small>gumbelstat</small></a></li>
+					<li><a href="hnstat.html" class="text-decoration-none font-monospace"><small>hnstat</small></a></li>
+					<li><a href="hygestat.html" class="text-decoration-none font-monospace"><small>hygestat</small></a></li>
+					<li><a href="invgstat.html" class="text-decoration-none font-monospace"><small>invgstat</small></a></li>
+					<li><a href="logistat.html" class="text-decoration-none font-monospace"><small>logistat</small></a></li>
+					<li><a href="loglstat.html" class="text-decoration-none font-monospace"><small>loglstat</small></a></li>
+					<li><a href="lognstat.html" class="text-decoration-none font-monospace"><small>lognstat</small></a></li>
+					<li><a href="nakastat.html" class="text-decoration-none font-monospace"><small>nakastat</small></a></li>
+					<li><a href="nbinstat.html" class="text-decoration-none font-monospace"><small>nbinstat</small></a></li>
+					<li><a href="ncfstat.html" class="text-decoration-none font-monospace"><small>ncfstat</small></a></li>
+					<li><a href="nctstat.html" class="text-decoration-none font-monospace"><small>nctstat</small></a></li>
+					<li><a href="ncx2stat.html" class="text-decoration-none font-monospace"><small>ncx2stat</small></a></li>
+					<li><a href="normstat.html" class="text-decoration-none font-monospace"><small>normstat</small></a></li>
+					<li><a href="plstat.html" class="text-decoration-none font-monospace"><small>plstat</small></a></li>
+					<li><a href="poisstat.html" class="text-decoration-none font-monospace"><small>poisstat</small></a></li>
+					<li><a href="raylstat.html" class="text-decoration-none font-monospace"><small>raylstat</small></a></li>
+					<li><a href="ricestat.html" class="text-decoration-none font-monospace"><small>ricestat</small></a></li>
+					<li><a href="stdrstat.html" class="text-decoration-none font-monospace"><small>stdrstat</small></a></li>
+					<li><a href="tlsstat.html" class="text-decoration-none font-monospace"><small>tlsstat</small></a></li>
+					<li><a href="tristat.html" class="text-decoration-none font-monospace"><small>tristat</small></a></li>
+					<li><a href="tstat.html" class="text-decoration-none font-monospace"><small>tstat</small></a></li>
+					<li><a href="unidstat.html" class="text-decoration-none font-monospace"><small>unidstat</small></a></li>
+					<li><a href="unifstat.html" class="text-decoration-none font-monospace"><small>unifstat</small></a></li>
+					<li><a href="wblstat.html" class="text-decoration-none font-monospace"><small>wblstat</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList18" type="checkbox">
+				<label for="togList18">
+					<span><h6>Distribution Wrappers</h6></span>
+					<span><h6>Distribution Wrappers</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="cdf.html" class="text-decoration-none font-monospace"><small>cdf</small></a></li>
+					<li><a href="fitdist.html" class="text-decoration-none font-monospace"><small>fitdist</small></a></li>
+					<li><a href="icdf.html" class="text-decoration-none font-monospace"><small>icdf</small></a></li>
+					<li><a href="makedist.html" class="text-decoration-none font-monospace"><small>makedist</small></a></li>
+					<li><a href="mle.html" class="text-decoration-none font-monospace"><small>mle</small></a></li>
+					<li><a href="mlecov.html" class="text-decoration-none font-monospace"><small>mlecov</small></a></li>
+					<li><a href="pdf.html" class="text-decoration-none font-monospace"><small>pdf</small></a></li>
+					<li><a href="random.html" class="text-decoration-none font-monospace"><small>random</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList19" type="checkbox">
+				<label for="togList19">
+					<span><h6>Plotting</h6></span>
+					<span><h6>Plotting</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="andrewsplot.html" class="text-decoration-none font-monospace"><small>andrewsplot</small></a></li>
+					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
+					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
+					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
+					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
+					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
+					<li><a href="dendrogram.html" class="text-decoration-none font-monospace"><small>dendrogram</small></a></li>
+					<li><a href="ecdfhist.html" class="text-decoration-none font-monospace"><small>ecdfhist</small></a></li>
+					<li><a href="einstein.html" class="text-decoration-none font-monospace"><small>einstein</small></a></li>
+					<li><a href="gardnerAltmanPlot.html" class="text-decoration-none font-monospace"><small>gardnerAltmanPlot</small></a></li>
+					<li><a href="glyphplot.html" class="text-decoration-none font-monospace"><small>glyphplot</small></a></li>
+					<li><a href="gplotmatrix.html" class="text-decoration-none font-monospace"><small>gplotmatrix</small></a></li>
+					<li><a href="gscatter.html" class="text-decoration-none font-monospace"><small>gscatter</small></a></li>
+					<li><a href="heatmap.html" class="text-decoration-none font-monospace"><small>heatmap</small></a></li>
+					<li><a href="hist3.html" class="text-decoration-none font-monospace"><small>hist3</small></a></li>
+					<li><a href="histfit.html" class="text-decoration-none font-monospace"><small>histfit</small></a></li>
+					<li><a href="manovacluster.html" class="text-decoration-none font-monospace"><small>manovacluster</small></a></li>
+					<li><a href="normplot.html" class="text-decoration-none font-monospace"><small>normplot</small></a></li>
+					<li><a href="parallelcoords.html" class="text-decoration-none font-monospace"><small>parallelcoords</small></a></li>
+					<li><a href="parallelplot.html" class="text-decoration-none font-monospace"><small>parallelplot</small></a></li>
+					<li><a href="ppplot.html" class="text-decoration-none font-monospace"><small>ppplot</small></a></li>
+					<li><a href="probplot.html" class="text-decoration-none font-monospace"><small>probplot</small></a></li>
+					<li><a href="qqplot.html" class="text-decoration-none font-monospace"><small>qqplot</small></a></li>
+					<li><a href="scatterhist.html" class="text-decoration-none font-monospace"><small>scatterhist</small></a></li>
+					<li><a href="scatterhistogram.html" class="text-decoration-none font-monospace"><small>scatterhistogram</small></a></li>
+					<li><a href="silhouette.html" class="text-decoration-none font-monospace"><small>silhouette</small></a></li>
+					<li><a href="stats.chart.BoxChart.html" class="text-decoration-none font-monospace"><small>stats.chart.BoxChart</small></a></li>
+					<li><a href="stats.chart.HeatmapChart.html" class="text-decoration-none font-monospace"><small>stats.chart.HeatmapChart</small></a></li>
+					<li><a href="stats.chart.ParallelCoordinatesPlot.html" class="text-decoration-none font-monospace"><small>stats.chart.ParallelCoordinatesPlot</small></a></li>
+					<li><a href="stats.chart.ScatterHistogramChart.html" class="text-decoration-none font-monospace"><small>stats.chart.ScatterHistogramChart</small></a></li>
+					<li><a href="swarmchart.html" class="text-decoration-none font-monospace"><small>swarmchart</small></a></li>
+					<li><a href="violin.html" class="text-decoration-none font-monospace"><small>violin</small></a></li>
+					<li><a href="wblplot.html" class="text-decoration-none font-monospace"><small>wblplot</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList20" type="checkbox">
+				<label for="togList20">
+					<span><h6>I/O</h6></span>
+					<span><h6>I/O</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="libsvmread.html" class="text-decoration-none font-monospace"><small>libsvmread</small></a></li>
+					<li><a href="libsvmwrite.html" class="text-decoration-none font-monospace"><small>libsvmwrite</small></a></li>
+					<li><a href="loadmodel.html" class="text-decoration-none font-monospace"><small>loadmodel</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList21" type="checkbox">
+				<label for="togList21">
+					<span><h6>Utilities</h6></span>
+					<span><h6>Utilities</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="cholcov.html" class="text-decoration-none font-monospace"><small>cholcov</small></a></li>
+					<li><a href="logit.html" class="text-decoration-none font-monospace"><small>logit</small></a></li>
+					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
+					<li><a href="probit.html" class="text-decoration-none font-monospace"><small>probit</small></a></li>
+					<li><a href="statget.html" class="text-decoration-none font-monospace"><small>statget</small></a></li>
+					<li><a href="statset.html" class="text-decoration-none font-monospace"><small>statset</small></a></li>
+				</ul>
+				</div>
+			</div>
+
+			  </div>
+			  <div class="col-md-10">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <h3 class="d-inline-block mr-2">
+                Class&nbsp;Definition: <b><code>MultinomialRegression</code></b>
+                </h3>
+              </div>
+            </div>
+            <div class="card-body">
+<p class="h5 description mb-3"><code>statistics: MultinomialRegression</code></p>
+<p> Multinomial regression model class.
+</p>
+<div class="ms-5">
+<p> A <code>MultinomialRegression</code> object holds a multinomial regression of a
+ categorical response on one or more predictors, fitted by <code>mnrfit</code>.
+ It is normally created with the <code>fitmnr</code> function.  The response has
+ <em class="math">K</em> categories, listed in <code>ClassNames</code>, and the model is one of
+ three kinds, named by <code>ModelType</code>: a nominal model contrasts each
+ category with the last, an ordinal model fits the cumulative probabilities
+ of ordered categories, and a hierarchical model fits each category against
+ the ones after it.
+</p>
+<p> The most useful properties are <code>Coefficients</code> (a table of estimates,
+ standard errors, <em class="math">t</em>-statistics and p-values), <code>Deviance</code>,
+ <code>Fitted</code>, <code>Residuals</code>, <code>LogLikelihood</code>,
+ <code>ModelCriterion</code> and <code>Rsquared</code>.  <code>ObservationInfo</code> records
+ which rows were weighted or missing, and <code>Variables</code> holds the data
+ the model was built from.  A fitted model supports <code>predict</code>,
+ <code>feval</code> and <code>random</code>, inference on its coefficients through
+ <code>coefCI</code>, <code>coefTest</code> and <code>testDeviance</code>, and partial
+ dependence through <code>partialDependence</code> and
+ <code>plotPartialDependence</code>.
+</p>
+<p> <code>Fitted</code>, <code>Residuals</code> and <code>ObservationInfo</code> have one row per
+ <em>input</em> row.  A row left out of the fit because a value it needs is
+ missing has <code>NaN</code> residuals and a missing label in <code>Fitted</code>, the
+ empty character vector, <code>&lt;undefined&gt;</code>, <code>&lt;missing&gt;</code> or
+ <code>NaN</code> as the type of <code>ClassNames</code> has it; MATLAB labels such a
+ row with the first class.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitmnr.html">fitmnr</a>, 
+  <a href="mnrfit.html">mnrfit</a>, 
+  <a href="mnrval.html">mnrval</a>, 
+  <a href="GeneralizedLinearModel.html">GeneralizedLinearModel</a>
+</p>
+<p><strong>Source Code: </strong>
+  <a href="https://github.com/gnu-octave/statistics/blob/848e0a5/inst/Regression/MultinomialRegression.m">MultinomialRegression</a>
+</p>
+</div>
+        <p class="lead my-3">The <code>MultinomialRegression</code> class contains the following properties:</p>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_Coefficients"
+              aria-expanded="false" aria-controls="MultinomialRegression_Coefficients">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Coefficients</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Coefficient values
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_Coefficients">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A table with one row per coefficient and four columns:
+</p>
+<ul>
+<li> <code>Value</code> - estimated coefficient value
+</li><li> <code>SE</code> - standard error of the estimate
+</li><li> <code>tStat</code> - the estimate divided by its standard error
+</li><li> <code>pValue</code> - p-value of that statistic
+</li></ul>
+
+<p> The statistic is referred to the normal distribution, or to a
+ <em class="math">t</em>-distribution on <code>DFE</code> degrees of freedom where the
+ dispersion is estimated.  The row names are the coefficient names.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_CoefficientCovariance"
+              aria-expanded="false" aria-controls="MultinomialRegression_CoefficientCovariance">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>CoefficientCovariance</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Covariance matrix of the coefficient estimates
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_CoefficientCovariance">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A square matrix with one row and column per coefficient, in the order of
+ <code>CoefficientNames</code>.  It is scaled by <code>Dispersion</code>, so it is the
+ covariance under the estimated dispersion wherever one was estimated.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_CoefficientNames"
+              aria-expanded="false" aria-controls="MultinomialRegression_CoefficientNames">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>CoefficientNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Names of the coefficients
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_CoefficientNames">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A string column, one name per coefficient.  A coefficient of one category
+ joins the term to the category, <code>(Intercept_<var>class</var>)</code> and
+ <code><var>term</var>_<var>class</var></code>; a slope shared by every category is
+ named by its term alone.  A categorical predictor contributes one term
+ per level bar the first, spelled <code><var>name</var>_<var>level</var></code>, and an
+ interaction joins its factors with a colon.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_NumCoefficients"
+              aria-expanded="false" aria-controls="MultinomialRegression_NumCoefficients">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>NumCoefficients</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Number of coefficients
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_NumCoefficients">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A positive integer.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_ClassNames"
+              aria-expanded="false" aria-controls="MultinomialRegression_ClassNames">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ClassNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Names of the response categories
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_ClassNames">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A <em class="math">K</em>-by-1 array in the type of the response: numeric, logical, a
+ cell array of character vectors, a string or a categorical array.  A
+ character matrix response gives a cell array, and a matrix of counts the
+ numbers of its columns.  The categories of a numeric, logical or text
+ response are sorted, and those of a categorical array are in the order of
+ its categories.  A category without observations is no class.  The last
+ class is the reference category of a nominal model.  The model is fitted
+ in this order, so <code>Fitted</code> and <code>predict</code> name the class they
+ estimate; R2024a sorts the classes of text but fits them in the order the
+ data first shows them, so its labels name the wrong classes unless the
+ data show them sorted.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_IncludeClassInteractions"
+              aria-expanded="false" aria-controls="MultinomialRegression_IncludeClassInteractions">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>IncludeClassInteractions</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Whether each category has its own slopes
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_IncludeClassInteractions">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A logical scalar: <code>true</code> when each category has its own slopes,
+ <code>false</code> when every category shares them.  The intercepts always
+ differ by category.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_Link"
+              aria-expanded="false" aria-controls="MultinomialRegression_Link">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Link</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Link function
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_Link">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A character vector, <code>'logit'</code>, <code>'probit'</code>,
+ <code>'comploglog'</code> or <code>'loglog'</code>.  A nominal model always uses
+ the logit link.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_ModelType"
+              aria-expanded="false" aria-controls="MultinomialRegression_ModelType">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ModelType</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Type of the model
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_ModelType">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A character vector, <code>'nominal'</code>, <code>'ordinal'</code> or
+ <code>'hierarchical'</code>.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_Deviance"
+              aria-expanded="false" aria-controls="MultinomialRegression_Deviance">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Deviance</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Deviance of the fit
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_Deviance">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A nonnegative scalar, twice the difference between the log-likelihood of
+ the saturated model and that of the fitted one.  The difference between
+ the deviances of two nested models follows a chi-square distribution.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_DFE"
+              aria-expanded="false" aria-controls="MultinomialRegression_DFE">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>DFE</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Error degrees of freedom
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_DFE">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> The number of rows used in the fit times <em class="math">K-1</em>, less the number of
+ coefficients; for a hierarchical model each stage counts only the rows
+ with observations that reach it.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_Dispersion"
+              aria-expanded="false" aria-controls="MultinomialRegression_Dispersion">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Dispersion</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Dispersion parameter
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_Dispersion">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A positive scalar, 1 unless <code>EstimateDispersion</code> is true.  The
+ estimate is the square of the <code>'sfit'</code> that <code>mnrfit</code>
+ returns, the Pearson statistic over the categories divided by
+ <code>DFE</code>, so it differs from MATLAB&rsquo;s, as <code>mnrfit</code> documents.
+ The standard errors are scaled by its square root.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_EstimateDispersion"
+              aria-expanded="false" aria-controls="MultinomialRegression_EstimateDispersion">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>EstimateDispersion</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Whether the dispersion was estimated
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_EstimateDispersion">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A logical scalar.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_Fitted"
+              aria-expanded="false" aria-controls="MultinomialRegression_Fitted">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Fitted</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Fitted response values
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_Fitted">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> An <em class="math">N</em>-by-1 array of the most probable class of each input row, in
+ the type of <code>ClassNames</code>; a row left out of the fit is a missing
+ label.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_LogLikelihood"
+              aria-expanded="false" aria-controls="MultinomialRegression_LogLikelihood">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>LogLikelihood</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Log-likelihood of the fit
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_LogLikelihood">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A scalar, <code>-<var>Deviance</var> / 2</code>: the log-likelihood measured from
+ that of the saturated model, as MATLAB reports it.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_ModelCriterion"
+              aria-expanded="false" aria-controls="MultinomialRegression_ModelCriterion">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ModelCriterion</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Information criteria
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_ModelCriterion">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A structure with fields <code>AIC</code>, <code>AICc</code>, <code>BIC</code> and
+ <code>CAIC</code>, computed from <code>LogLikelihood</code>, the number of
+ coefficients <em class="math">m</em> and the number of rows <em class="math">n</em> used in the fit:
+ <code>-2 * LogLikelihood + 2 * m</code>, its small-sample correction
+ <code>+ 2 * m * (m + 1) / (n - m - 1)</code>, <code>-2 * LogLikelihood + m *
+ log (n)</code> and <code>-2 * LogLikelihood + m * (log (n) + 1)</code>.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_Residuals"
+              aria-expanded="false" aria-controls="MultinomialRegression_Residuals">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Residuals</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Residuals of the fit
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_Residuals">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A table with one row per input row and three variables, <code>Raw</code>,
+ <code>Pearson</code> and <code>Deviance</code>, the <code>'resid'</code>,
+ <code>'residp'</code> and <code>'residd'</code> that <code>mnrfit</code> returns and
+ documents.  <code>Raw</code> and <code>Pearson</code> have a column per category of a
+ nominal model, and one fewer for an ordinal or hierarchical model;
+ <code>Deviance</code> has one.  A row left out of the fit is <code>NaN</code>.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_Rsquared"
+              aria-expanded="false" aria-controls="MultinomialRegression_Rsquared">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Rsquared</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Pseudo R-squared values
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_Rsquared">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A structure with fields <code>Ordinary</code>, <code>1 - L / L0</code>, and
+ <code>Adjusted</code>, <code>1 - (L - m) / L0</code>, where <em class="math">L</em> is
+ <code>LogLikelihood</code>, <em class="math">L0</em> that of the model with intercepts alone
+ and <em class="math">m</em> the number of coefficients.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_Formula"
+              aria-expanded="false" aria-controls="MultinomialRegression_Formula">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Formula</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Model formula
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_Formula">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A <code>LinearFormula</code> object over the variables of the model, with the
+ link on the response, such as <code>logit(y) ~ 1 + x1 + x2</code>.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_NumObservations"
+              aria-expanded="false" aria-controls="MultinomialRegression_NumObservations">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>NumObservations</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Number of observations
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_NumObservations">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> The number of input rows used in the fit, those left out because a value
+ was missing not counted.  A row of a matrix of counts counts once,
+ whatever number of observations it holds.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_NumPredictors"
+              aria-expanded="false" aria-controls="MultinomialRegression_NumPredictors">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>NumPredictors</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Number of predictors
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_NumPredictors">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> The number of predictors used in the fit.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_NumVariables"
+              aria-expanded="false" aria-controls="MultinomialRegression_NumVariables">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>NumVariables</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Number of variables
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_NumVariables">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> The number of variables in the input data, the response and any variable
+ the model does not use included.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_ObservationInfo"
+              aria-expanded="false" aria-controls="MultinomialRegression_ObservationInfo">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ObservationInfo</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Information about the observations
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_ObservationInfo">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A table with one row per input row and three variables: <code>Weights</code>,
+ the observation weight, <code>Missing</code>, true where a value the fit needs
+ is missing, and <code>Subset</code>, true where the row was used in the fit.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_ObservationNames"
+              aria-expanded="false" aria-controls="MultinomialRegression_ObservationNames">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ObservationNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Names of the observations
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_ObservationNames">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> The row names of an input table, as a cell array of character vectors,
+ or an empty cell array where there were none.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_PredictorNames"
+              aria-expanded="false" aria-controls="MultinomialRegression_PredictorNames">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>PredictorNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Names of the predictors
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_PredictorNames">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A cell array of character vectors, one per predictor used in the fit.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_ResponseName"
+              aria-expanded="false" aria-controls="MultinomialRegression_ResponseName">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ResponseName</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Name of the response
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_ResponseName">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A character vector, <code>'y'</code> by default.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_VariableInfo"
+              aria-expanded="false" aria-controls="MultinomialRegression_VariableInfo">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>VariableInfo</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Information about the variables
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_VariableInfo">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A table with one row per variable and four variables: <code>Class</code>, the
+ class of the variable, <code>Range</code>, <code>[min, max]</code> of a continuous
+ variable or the levels of a categorical one, <code>InModel</code>, true for a
+ predictor used in the fit, and <code>IsCategorical</code>.  The response is not
+ in the model and is categorical.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_VariableNames"
+              aria-expanded="false" aria-controls="MultinomialRegression_VariableNames">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>VariableNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Names of the variables
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_VariableNames">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A cell array of character vectors naming every variable of the input
+ data, the response included.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_Variables"
+              aria-expanded="false" aria-controls="MultinomialRegression_Variables">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Variables</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Input data
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_Variables">
+            <div class="border-bottom py-2">
+<p> </p>
+<p> A table of the predictors and the response, with any other variable of an
+ input table.
+</p>
+<p> This property is read-only.
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <p class="lead my-3">The <code>MultinomialRegression</code> class offers the following public methods:</p>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_MultinomialRegression"
+              aria-expanded="false" aria-controls="MultinomialRegression_MultinomialRegression">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>MultinomialRegression</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Fit a multinomial regression model.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_MultinomialRegression">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>MultinomialRegression: <var>mdl</var> = <b>MultinomialRegression</b> (<var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>MultinomialRegression: <var>mdl</var> = <b>MultinomialRegression</b> (<var>Tbl</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>MultinomialRegression: <var>mdl</var> = <b>MultinomialRegression</b> (<var>Tbl</var>, <var>ResponseVarName</var>)</code></p>
+<p class="h5 fs"><code>MultinomialRegression: <var>mdl</var> = <b>MultinomialRegression</b> (<var>Tbl</var>, <var>Formula</var>)</code></p>
+<p class="h5 fs fs-last"><code>MultinomialRegression: <var>mdl</var> = <b>MultinomialRegression</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
+<p> </p>
+<p> This is the constructor that <code>fitmnr</code> calls, and it takes exactly
+ what <code>fitmnr</code> takes.  See <code>fitmnr</code> for the arguments and the
+ <var>name</var>, <var>value</var> pairs.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitmnr.html">fitmnr</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_predict"
+              aria-expanded="false" aria-controls="MultinomialRegression_predict">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>predict</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Predict the response of a multinomial regression model.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_predict">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>MultinomialRegression: <var>label</var> = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs"><code>MultinomialRegression: [<var>label</var>, <var>probs</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs"><code>MultinomialRegression: [<var>label</var>, <var>probs</var>, <var>lower</var>, <var>upper</var>] = <b>predict</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs fs-last"><code>MultinomialRegression: [&hellip;] = <b>predict</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
+<p> </p>
+<p> <code><var>label</var> = predict (<var>mdl</var>, <var>Xnew</var>)</code> returns the most
+ probable class at each row of the new predictor data <var>Xnew</var>, in the
+ type of <code>ClassNames</code>.  <var>Xnew</var> is a table holding every predictor
+ named in <code>PredictorNames</code>, or a numeric matrix with one column per
+ predictor where they are all numeric.  A row holding a missing value is a
+ missing label.
+</p>
+<p> <var>probs</var> holds the probabilities, one row per row of <var>Xnew</var>, and
+ <var>lower</var> and <var>upper</var> their confidence bounds, from the delta
+ method.  The following <var>name</var>, <var>value</var> pairs are accepted:
+</p>
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="25%">Name</th><th width="70%">Value</th></tr></thead>
+<tr><td width="25%"><code>'Alpha'</code></td><td width="70%">The significance level of the bounds, a
+ scalar in <em class="math">(0, 1)</em>; the default 0.05 gives 95% bounds.</td></tr>
+<tr><td width="25%"><code>'ProbabilityType'</code></td><td width="70%"><code>'category'</code> (default), the
+ probability of each of the <em class="math">K</em> categories; <code>'cumulative'</code>,
+ the probability of each of the first <em class="math">K-1</em> categories or any before
+ it; or <code>'conditional'</code>, the probability of each of the first
+ <em class="math">K-1</em> categories given that the response is not in an earlier one.</td></tr>
+</table>
+</div>
+
+<p> The bounds are at the confidence level <em class="math">1 - <var>Alpha</var></em>.  R2024a
+ takes <var>Alpha</var> as the confidence level itself, so its default bounds
+ are at 5% and far too narrow.
+</p>
+<p> <strong>See also: </strong>
+  <a href="MultinomialRegression.html#MultinomialRegression_feval">MultinomialRegression.feval</a>, 
+  <a href="MultinomialRegression.html#MultinomialRegression_random">MultinomialRegression.random</a>, 
+  <a href="mnrval.html">mnrval</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_feval"
+              aria-expanded="false" aria-controls="MultinomialRegression_feval">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>feval</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Predict the response of a multinomial regression model.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_feval">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>MultinomialRegression: <var>label</var> = <b>feval</b> (<var>mdl</var>, <var>X1</var>, &hellip;, <var>Xp</var>)</code></p>
+<p class="h5 fs fs-last"><code>MultinomialRegression: <var>label</var> = <b>feval</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
+<p> </p>
+<p> <code><var>label</var> = feval (<var>mdl</var>, <var>X1</var>, &hellip;, <var>Xp</var>)</code>
+ takes one argument per predictor, each a column vector or a scalar, and a
+ scalar stands for every row.  <code><var>label</var> = feval (<var>mdl</var>,
+ <var>Xnew</var>)</code> takes a table or a matrix, as <code>predict</code> does.  Either
+ returns what <code>predict</code> returns first, the most probable class.
+</p>
+<p> <strong>See also: </strong>
+  <a href="MultinomialRegression.html#MultinomialRegression_predict">MultinomialRegression.predict</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_random"
+              aria-expanded="false" aria-controls="MultinomialRegression_random">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>random</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Simulate responses of a multinomial regression model.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_random">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>MultinomialRegression: <var>ysim</var> = <b>random</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs"><code>MultinomialRegression: <var>ysim</var> = <b>random</b> (<var>mdl</var>, <var>Xnew</var>, <var>NumTrials</var>)</code></p>
+<p class="h5 fs fs-last"><code>MultinomialRegression: <var>ysim</var> = <b>random</b> (&hellip;, <var>type</var>)</code></p>
+<p> </p>
+<p> <code><var>ysim</var> = random (<var>mdl</var>, <var>Xnew</var>)</code> draws one response at
+ each row of <var>Xnew</var> from the probabilities the model gives there.
+ <var>Xnew</var> is a table or a matrix, as <code>predict</code> takes it.
+ <var>NumTrials</var>, a positive integer, draws that many at each row.
+</p>
+<p> <var>type</var> is <code>'samples'</code> (default), for an
+ <em class="math">r</em>-by-<var>NumTrials</var> array of class labels, in the type of
+ <code>ClassNames</code>, or <code>'counts'</code>, for an <em class="math">r</em>-by-<em class="math">K</em>
+ table counting how many draws fell in each class, one variable per
+ class.
+</p>
+<p> <strong>See also: </strong>
+  <a href="MultinomialRegression.html#MultinomialRegression_predict">MultinomialRegression.predict</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_coefCI"
+              aria-expanded="false" aria-controls="MultinomialRegression_coefCI">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>coefCI</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Confidence intervals for the coefficients.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_coefCI">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>MultinomialRegression: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>MultinomialRegression: <var>ci</var> = <b>coefCI</b> (<var>mdl</var>, <var>alpha</var>)</code></p>
+<p> </p>
+<p> <code><var>ci</var> = coefCI (<var>mdl</var>)</code> returns a <em class="math">p</em>-by-2 matrix, one
+ row per coefficient in the order of <code>CoefficientNames</code>, of the lower
+ and upper limits of its 95% confidence interval,
+ <code>Value +/- tinv (1 - <var>alpha</var> / 2, DFE) * SE</code>.  <var>alpha</var>, in
+ <em class="math">(0, 1)</em>, sets the level to <em class="math">100 (1 - <var>alpha</var>)%</em>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="MultinomialRegression.html#MultinomialRegression_coefTest">MultinomialRegression.coefTest</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_coefTest"
+              aria-expanded="false" aria-controls="MultinomialRegression_coefTest">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>coefTest</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Linear hypothesis test on the coefficients.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_coefTest">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>MultinomialRegression: <var>p</var> = <b>coefTest</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>MultinomialRegression: <var>p</var> = <b>coefTest</b> (<var>mdl</var>, <var>H</var>)</code></p>
+<p class="h5 fs"><code>MultinomialRegression: <var>p</var> = <b>coefTest</b> (<var>mdl</var>, <var>H</var>, <var>C</var>)</code></p>
+<p class="h5 fs fs-last"><code>MultinomialRegression: [<var>p</var>, <var>F</var>, <var>r</var>] = <b>coefTest</b> (&hellip;)</code></p>
+<p> </p>
+<p> <code><var>p</var> = coefTest (<var>mdl</var>, <var>H</var>, <var>C</var>)</code> tests the
+ hypothesis that <code><var>H</var> * <var>b</var> = <var>C</var></code>, where <var>b</var> is the
+ column of coefficients in the order of <code>CoefficientNames</code>.  <var>H</var>
+ is a full-rank <em class="math">r</em>-by-<em class="math">p</em> matrix and <var>C</var> a vector of
+ <em class="math">r</em> elements, zero by default; without <var>H</var> the hypothesis is
+ that every coefficient is zero.  <var>F</var> is the Wald statistic divided by
+ <var>r</var>, and <var>p</var> its p-value from the <em class="math">F</em> distribution on
+ <var>r</var> and <code>DFE</code> degrees of freedom.
+</p>
+<p> <strong>See also: </strong>
+  <a href="MultinomialRegression.html#MultinomialRegression_coefCI">MultinomialRegression.coefCI</a>, 
+  <a href="MultinomialRegression.html#MultinomialRegression_testDeviance">MultinomialRegression.testDeviance</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_testDeviance"
+              aria-expanded="false" aria-controls="MultinomialRegression_testDeviance">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>testDeviance</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Deviance test against the model with intercepts alone.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_testDeviance">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>MultinomialRegression: <var>p</var> = <b>testDeviance</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs fs-last"><code>MultinomialRegression: [<var>p</var>, <var>stat</var>] = <b>testDeviance</b> (<var>mdl</var>)</code></p>
+<p> </p>
+<p> <code><var>p</var> = testDeviance (<var>mdl</var>)</code> tests whether the model fits
+ better than one with an intercept for each category and no predictors,
+ comparing their deviances.  Where the dispersion is fixed, <var>stat</var> is
+ the drop in deviance and <var>p</var> its chi-square p-value on as many
+ degrees of freedom as the model has coefficients beyond the intercepts;
+ where it is estimated, <var>stat</var> is that drop per degree of freedom
+ divided by <code>Dispersion</code>, and <var>p</var> its <em class="math">F</em> p-value on those
+ and <code>DFE</code> degrees of freedom.
+</p>
+<p> <strong>See also: </strong>
+  <a href="MultinomialRegression.html#MultinomialRegression_coefTest">MultinomialRegression.coefTest</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_plotResiduals"
+              aria-expanded="false" aria-controls="MultinomialRegression_plotResiduals">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>plotResiduals</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Plot the residuals of a multinomial regression model.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_plotResiduals">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>MultinomialRegression: <b>plotResiduals</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>MultinomialRegression: <b>plotResiduals</b> (<var>mdl</var>, <var>plotType</var>)</code></p>
+<p class="h5 fs"><code>MultinomialRegression: <b>plotResiduals</b> (<var>ax</var>, &hellip;)</code></p>
+<p class="h5 fs"><code>MultinomialRegression: <b>plotResiduals</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
+<p class="h5 fs fs-last"><code>MultinomialRegression: <var>h</var> = <b>plotResiduals</b> (&hellip;)</code></p>
+<p> </p>
+<p> <code>plotResiduals (<var>mdl</var>)</code> draws a histogram of the deviance
+ residuals, as a probability density.  <var>plotType</var> chooses the plot:
+</p>
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="20%">Type</th><th width="75%">Plot</th></tr></thead>
+<tr><td width="20%"><code>'histogram'</code></td><td width="75%">a histogram of the residuals (default)</td></tr>
+<tr><td width="20%"><code>'caseorder'</code></td><td width="75%">the residuals against the row number</td></tr>
+<tr><td width="20%"><code>'fitted'</code></td><td width="75%">the residuals against the fitted
+ probability of the class</td></tr>
+<tr><td width="20%"><code>'lagged'</code></td><td width="75%">each residual against the one before it</td></tr>
+<tr><td width="20%"><code>'probability'</code></td><td width="75%">a normal probability plot</td></tr>
+<tr><td width="20%"><code>'observed'</code></td><td width="75%">the observed share of each row in the
+ class against its fitted probability, with the line <em class="math">y = x</em> and a
+ segment from it to each row</td></tr>
+<tr><td width="20%"><code>'symmetry'</code></td><td width="75%">the residuals above their median against
+ those below it</td></tr>
+</table>
+</div>
+
+<p> The following <var>name</var>, <var>value</var> pairs are accepted:
+</p>
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="20%">Name</th><th width="75%">Value</th></tr></thead>
+<tr><td width="20%"><code>'ResidualType'</code></td><td width="75%"><code>'deviance'</code> (default),
+ <code>'raw'</code> or <code>'Pearson'</code>, a variable of <code>Residuals</code>.</td></tr>
+<tr><td width="20%"><code>'ClassToPlot'</code></td><td width="75%">For raw and Pearson residuals, the
+ class whose column of residuals is plotted, and whose probability the
+ <code>'fitted'</code> and <code>'observed'</code> plots show, a class named in
+ <code>ClassNames</code>; the first by default.  The residuals of an ordinal or
+ hierarchical model have no column for the last class.  With deviance
+ residuals it is ignored, with a warning, and the first class shown.</td></tr>
+<tr><td width="20%"><code>'FaceColor'</code>, <code>'FaceAlpha'</code>, <code>'LineWidth'</code></td><td width="75%"> The fill color, transparency and edge width of the bars of a histogram.</td></tr>
+<tr><td width="20%"><code>'Color'</code>, <code>'LineStyle'</code>, <code>'Marker'</code></td><td width="75%">The
+ color, line style and marker of the residuals in the other plots.</td></tr>
+</table>
+</div>
+
+<p> <var>ax</var> is the axes to draw in, the current axes by default.  <var>h</var> is
+ the patch of a histogram, and for the other plots a column of the line
+ of residuals and its reference lines.
+</p>
+<p> <strong>See also: </strong>
+  <a href="MultinomialRegression.html#MultinomialRegression_Residuals">MultinomialRegression.Residuals</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#MultinomialRegression_plotSlice"
+              aria-expanded="false" aria-controls="MultinomialRegression_plotSlice">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>plotSlice</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Plot slices through the fitted probabilities of a multinomial regression
+ model.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="MultinomialRegression_plotSlice">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>MultinomialRegression: <b>plotSlice</b> (<var>mdl</var>)</code></p>
+<p class="h5 fs"><code>MultinomialRegression: <b>plotSlice</b> (<var>mdl</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs"><code>MultinomialRegression: <b>plotSlice</b> (<var>mdl</var>, <var>plotType</var>)</code></p>
+<p class="h5 fs"><code>MultinomialRegression: <b>plotSlice</b> (<var>mdl</var>, <var>plotType</var>, <var>Xnew</var>)</code></p>
+<p class="h5 fs"><code>MultinomialRegression: <b>plotSlice</b> (<var>ax</var>, &hellip;)</code></p>
+<p class="h5 fs"><code>MultinomialRegression: <b>plotSlice</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
+<p class="h5 fs fs-last"><code>MultinomialRegression: <var>h</var> = <b>plotSlice</b> (&hellip;)</code></p>
+<p> </p>
+<p> A slice varies one continuous predictor over its range and holds every
+ other predictor fixed, a categorical one at its most common level.  The
+ ranges and the fixed values are taken from the data the model was
+ fitted on, or from <var>Xnew</var>, a table or a matrix as <code>predict</code>
+ takes it; a single row of <var>Xnew</var> gives each predictor the range from
+ its value to 10% above it.  <var>plotType</var> chooses the plot:
+</p>
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="20%">Type</th><th width="75%">Plot</th></tr></thead>
+<tr><td width="20%"><code>'interactive'</code></td><td width="75%">(default) a figure with one plot per
+ continuous predictor, each the probability of one class along that
+ predictor, the others fixed at the middle of their ranges, with its 95%
+ confidence band shaded and dashed and dotted lines through the middle.</td></tr>
+<tr><td width="20%"><code>'histogram'</code></td><td width="75%">overlaid bars of the probability of each
+ class at 40 values along one predictor, the others fixed at their means.</td></tr>
+<tr><td width="20%"><code>'stackedhist'</code></td><td width="75%">the same probabilities as stacked bars.</td></tr>
+</table>
+</div>
+
+<p> MATLAB&rsquo;s interactive plot is an app whose menus and boxes change the
+ class, the predictors and the fixed values; here the figure has no such
+ controls, and the plot is drawn again to change them.
+</p>
+<p> The following <var>name</var>, <var>value</var> pairs are accepted:
+</p>
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="25%">Name</th><th width="70%">Value</th></tr></thead>
+<tr><td width="25%"><code>'ClassToPlot'</code></td><td width="70%">For the interactive plot, the class
+ whose probability is drawn, the first of <code>ClassNames</code> by default.</td></tr>
+<tr><td width="25%"><code>'PredictorToVary'</code></td><td width="70%">For the histograms, the name of the
+ continuous predictor to vary, the first by default.</td></tr>
+<tr><td width="25%"><code>'FaceColor'</code>, <code>'FaceAlpha'</code>, <code>'LineWidth'</code></td><td width="70%"> The fill color (<code>'auto'</code> by default, a color per class), the
+ transparency (0.6) and the edge width (0.5) of the bars of a histogram.</td></tr>
+<tr><td width="25%"><code>'EdgeColor'</code>, <code>'LineStyle'</code></td><td width="70%">The edge color and
+ line style of the stacked bars, black up to 150 bars and none beyond,
+ and a solid line.</td></tr>
+</table>
+</div>
+
+<p> <var>ax</var> is the axes to draw a histogram in, the current axes by default.
+ <var>h</var> is the figure of the interactive plot, and for the histograms a
+ column of one patch or bar object per class.
+</p>
+<p> <strong>See also: </strong>
+  <a href="MultinomialRegression.html#MultinomialRegression_predict">MultinomialRegression.predict</a>, 
+  <a href="plotPartialDependence.html">plotPartialDependence</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

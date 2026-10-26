@@ -350,6 +350,7 @@
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
 					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
+					<li><a href="fitmnr.html" class="text-decoration-none font-monospace"><small>fitmnr</small></a></li>
 					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
 					<li><a href="fitrm.html" class="text-decoration-none font-monospace"><small>fitrm</small></a></li>
 					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
@@ -366,6 +367,7 @@
 					<li><a href="mnrfit.html" class="text-decoration-none font-monospace fw-bolder"><small>mnrfit</small></a></li>
 					<li><a href="mnrval.html" class="text-decoration-none font-monospace"><small>mnrval</small></a></li>
 					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
+					<li><a href="MultinomialRegression.html" class="text-decoration-none font-monospace"><small>MultinomialRegression</small></a></li>
 					<li><a href="mvregress.html" class="text-decoration-none font-monospace"><small>mvregress</small></a></li>
 					<li><a href="mvregresslike.html" class="text-decoration-none font-monospace"><small>mvregresslike</small></a></li>
 					<li><a href="nlinfit.html" class="text-decoration-none font-monospace"><small>nlinfit</small></a></li>
@@ -1107,11 +1109,42 @@
  numeric matrix the observations on predictor variables, where <em class="math">N</em>
  corresponds to the number of observations and <em class="math">P</em> corresponds to
  predictor variables.  <var>Y</var> contains the response category labels and it
- either be an <em class="math">N&times;P</em> categorical or numerical matrix (containing only 1s
- and 0s) or an <em class="math">N&times;1</em> numeric vector with positive integer values, a cell
- array of character vectors and a logical vector.  <var>Y</var> can also be defined
- as a character matrix with each row corresponding to an observation of
- <var>X</var>.
+ can be an <em class="math">N&times;1</em> vector of positive integers, logical values, character
+ vectors in a cell array, strings, or categorical values, each element the
+ category of one observation.  A cell array, string, or categorical <var>Y</var>
+ can also be a row vector.  <var>Y</var> can also be a character matrix with each
+ row holding the label of an observation of <var>X</var>.
+</p>
+<p> <var>Y</var> can also be an <em class="math">N&times;K</em> numeric or logical matrix of counts, with
+ a column for each of the <em class="math">K</em> categories: <code><var>Y</var>(i,j)</code> is the
+ number of observations in category <em class="math">j</em> at the predictor values in
+ <code><var>X</var>(i,:)</code>, so that a row of <var>X</var> stands for the
+ <code>sum (<var>Y</var>(i,:))</code> observations it was seen with.  The counts must be
+ nonnegative integers.  A row of zeros stands for no observations and takes
+ no part in the estimates, though it counts in <code>'dfe'</code>, as in MATLAB.
+ A matrix of 1s and 0s with a single 1 in each row is the same as a vector
+ of one category per observation.
+</p>
+<p> The categories of a numeric or logical <var>Y</var> are taken in sorted order,
+ those of a cell array, string, or character matrix in order of first
+ appearance, and those of a categorical <var>Y</var> in the order of its
+ categories.  A category without observations is ignored wherever it lies
+ among the categories of a categorical <var>Y</var>; MATLAB ignores only a last one
+ and fits coefficients for any other.  Likewise the categories of a numeric
+ <var>Y</var> are the values it holds, where MATLAB numbers them from 1 to the
+ largest and fits coefficients for any value missing below it, and a column
+ of zeros in a matrix <var>Y</var> is no category, where MATLAB fits coefficients
+ for it.  The last
+ category is the reference category of a nominal model.  An observation whose
+ label is missing (an empty character vector, <code>&lt;missing&gt;</code>, or
+ <code>&lt;undefined&gt;</code>), whose row of a matrix <var>Y</var> holds a <code>NaN</code>, or
+ whose predictors hold a <code>NaN</code>, is left out of the fit, and its rows of
+ the residuals in <var>stats</var> are <code>NaN</code>.
+</p>
+<p> A <var>Y</var> with a single category leaves nothing to fit: a nominal or
+ hierarchical model returns a <var>B</var> with no columns, a deviance of 0 and
+ residuals of 0, the raw and Pearson residuals of a hierarchical model having
+ no columns, and an ordinal model is an error.
 </p>
 <p> <code><var>B</var> = mnrfit (<var>X</var>, <var>Y</var>, <var>name</var>, <var>value</var>)</code> returns a
  matrix, <var>B</var>, of coefficient estimates for a multinomial model fit with
@@ -1126,12 +1159,28 @@
 <tr><td width="18%"><code>'link'</code></td><td width="80%">The link function for ordinal and hierarchical
  models: <code>'logit'</code> (default), <code>'probit'</code>, <code>'comploglog'</code>, or
  <code>'loglog'</code>.  Nominal models always use the logit link.</td></tr>
+<tr><td width="18%"><code>'interactions'</code></td><td width="80%"><code>'on'</code> to give each category its
+ own slopes, or <code>'off'</code> for slopes shared by every category, the
+ intercepts always differing.  The default is <code>'on'</code> for nominal and
+ hierarchical models and <code>'off'</code> for ordinal ones.  With
+ <code>'on'</code>, <var>B</var> is a <em class="math">(P+1)&times;(K-1)</em> matrix whose column <em class="math">j</em>
+ holds the intercept and slopes of category <em class="math">j</em>; with <code>'off'</code>,
+ <var>B</var> is a <em class="math">(K-1+P)&times;1</em> vector of the <em class="math">K-1</em> intercepts followed by
+ the <em class="math">P</em> shared slopes.  A nominal model without interactions has no
+ slopes to share, so it fits the <em class="math">K-1</em> intercepts alone, with a warning.</td></tr>
+<tr><td width="18%"><code>'weights'</code></td><td width="80%">An <em class="math">N&times;1</em> vector of nonnegative
+ observation weights, each multiplying the counts of its row of <var>Y</var>.
+ The default is a vector of ones.  A row whose weight is <code>NaN</code> is left
+ out of the fit.</td></tr>
+<tr><td width="18%"><code>'iterationlimit'</code></td><td width="80%">The largest number of iterations of the
+ fit, a positive integer.  The default is 100.</td></tr>
+<tr><td width="18%"><code>'tolerance'</code></td><td width="80%">The convergence tolerance of the fit, a
+ positive scalar: the fit stops once no coefficient changes by more than this
+ fraction of its value.  The default is <code>1e-6</code>.</td></tr>
 <tr><td width="18%"><code>'estdisp'</code></td><td width="80%"><code>'on'</code> to estimate a dispersion
  parameter, scaling the coefficient standard errors by it and testing the
  coefficients against the <em class="math">t</em> distribution, or <code>'off'</code> (default)
  for the theoretical dispersion of <em class="math">1</em>.</td></tr>
-<tr><td width="18%"><code>'display'</code></td><td width="80%">A flag to enable/disable displaying
- information about the fitted model.  Default is <code>'off'</code>.</td></tr>
 </table>
 </div>
 
@@ -1145,12 +1194,34 @@
  the raw, Pearson, and deviance residuals <code>'resid'</code>, <code>'residp'</code>,
  and <code>'residd'</code>.
 </p>
+<p> The raw and Pearson residuals are taken on what the model fits: an
+ <em class="math">N&times;K</em> matrix over the categories of a nominal model, and an
+ <em class="math">N&times;(K-1)</em> matrix over the cumulative probabilities of an ordinal model
+ or over the stages of a hierarchical one, where a row is <code>NaN</code> at the
+ stages that none of its observations reach.  A raw residual is the count
+ minus its fitted value, the count times the fitted probability, and a
+ Pearson residual divides it by the binomial standard deviation of the count;
+ a weight multiplies both counts.  A row of zeros has a Pearson residual of
+ <code>NaN</code>.  The deviance residuals are an <em class="math">N&times;1</em> vector holding the
+ contribution of each row to the deviance, so they sum to <var>dev</var>; for an
+ observation of one category it is <em class="math">-2</em> times the log of the fitted
+ probability of that category.  For a hierarchical model MATLAB sums the
+ signed deviance residuals of the stages instead, which is <code>NaN</code> for
+ every observation in the first category.  <code>'sfit'</code> is the square root
+ of the Pearson statistic over the categories divided by <code>'dfe'</code>, and it
+ differs from MATLAB&rsquo;s, which for ordinal and hierarchical models is taken
+ over the residuals in <code>'residp'</code>.
+</p>
+<p> <code>'dfe'</code> is the number of rows of <var>X</var> times <em class="math">K-1</em>, less the
+ number of coefficients; for a hierarchical model each stage counts only the
+ rows with observations that reach it.
+</p>
 <p> <strong>See also: </strong>
   <a href="mnrval.html">mnrval</a>, 
   <a href="logistic_regression.html">logistic_regression</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Regression/mnrfit.m">mnrfit</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/848e0a5/inst/Regression/mnrfit.m">mnrfit</a>
 </p>
 </div>
 

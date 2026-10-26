@@ -350,6 +350,7 @@
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
 					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
+					<li><a href="fitmnr.html" class="text-decoration-none font-monospace"><small>fitmnr</small></a></li>
 					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
 					<li><a href="fitrm.html" class="text-decoration-none font-monospace"><small>fitrm</small></a></li>
 					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
@@ -366,6 +367,7 @@
 					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
 					<li><a href="mnrval.html" class="text-decoration-none font-monospace"><small>mnrval</small></a></li>
 					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
+					<li><a href="MultinomialRegression.html" class="text-decoration-none font-monospace"><small>MultinomialRegression</small></a></li>
 					<li><a href="mvregress.html" class="text-decoration-none font-monospace"><small>mvregress</small></a></li>
 					<li><a href="mvregresslike.html" class="text-decoration-none font-monospace"><small>mvregresslike</small></a></li>
 					<li><a href="nlinfit.html" class="text-decoration-none font-monospace"><small>nlinfit</small></a></li>
@@ -1112,7 +1114,7 @@
   <a href="rangesearch.html">rangesearch</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Nearest_Neighbors/KDTreeSearcher.m">KDTreeSearcher</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/848e0a5/inst/Nearest_Neighbors/KDTreeSearcher.m">KDTreeSearcher</a>
 </p>
 </div>
         <p class="lead my-3">The <code>KDTreeSearcher</code> class contains the following properties:</p>
@@ -1990,7 +1992,8 @@ Distance parameter
  <code>Distance</code> metric and can be any of the following:
 </p>
 <ul>
-<li> For <code>'minkowski'</code>, a positive scalar exponent (default 2).
+<li> For <code>'minkowski'</code>, a positive scalar exponent (default 2);
+ <code>Inf</code> gives the Chebychev distance.
 </li><li> Empty for other metrics (<code>'euclidean'</code>, <code>'cityblock'</code>,
  <code>'chebychev'</code>). Attempting to set a non-empty value for these
  metrics will result in an error.
@@ -2296,7 +2299,7 @@ Create a <code>KDTreeSearcher</code> object for nearest neighbor searches.
  <code>'euclidean'</code>.</td></tr>
 <tr><td width="18%"><code>'P'</code></td><td width="80%">Minkowski distance exponent, a positive
  scalar.  Valid only when <code>'Distance'</code> is <code>'minkowski'</code>.
- Default is 2.</td></tr>
+ Default is 2.  An exponent of <code>Inf</code> gives the Chebychev distance.</td></tr>
 <tr><td width="18%"><code>'BucketSize'</code></td><td width="80%">Maximum number of data points in the
  leaf node of the KD-tree, a positive integer.  Default is 50.</td></tr>
 </table>

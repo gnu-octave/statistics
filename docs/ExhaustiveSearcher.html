@@ -350,6 +350,7 @@
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
 					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
+					<li><a href="fitmnr.html" class="text-decoration-none font-monospace"><small>fitmnr</small></a></li>
 					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
 					<li><a href="fitrm.html" class="text-decoration-none font-monospace"><small>fitrm</small></a></li>
 					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
@@ -366,6 +367,7 @@
 					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
 					<li><a href="mnrval.html" class="text-decoration-none font-monospace"><small>mnrval</small></a></li>
 					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
+					<li><a href="MultinomialRegression.html" class="text-decoration-none font-monospace"><small>MultinomialRegression</small></a></li>
 					<li><a href="mvregress.html" class="text-decoration-none font-monospace"><small>mvregress</small></a></li>
 					<li><a href="mvregresslike.html" class="text-decoration-none font-monospace"><small>mvregresslike</small></a></li>
 					<li><a href="nlinfit.html" class="text-decoration-none font-monospace"><small>nlinfit</small></a></li>
@@ -1111,7 +1113,7 @@
   <a href="rangesearch.html">rangesearch</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Nearest_Neighbors/ExhaustiveSearcher.m">ExhaustiveSearcher</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/848e0a5/inst/Nearest_Neighbors/ExhaustiveSearcher.m">ExhaustiveSearcher</a>
 </p>
 </div>
         <p class="lead my-3">The <code>ExhaustiveSearcher</code> class contains the following properties:</p>
@@ -1709,7 +1711,8 @@ Distance parameter
  <code>Distance</code> metric and can be any of the following:
 </p>
 <ul>
-<li> For <code>'minkowski'</code>, a positive scalar exponent (default 2).
+<li> For <code>'minkowski'</code>, a positive scalar exponent (default 2);
+ <code>Inf</code> gives the Chebychev distance.
 </li><li> For <code>'seuclidean'</code>, a nonnegative vector of scaling factors
  matching the number of columns in <code>X</code> (default is standard
  deviation of <code>X</code>).
@@ -2020,7 +2023,8 @@ Create an <code>ExhaustiveSearcher</code> object for nearest neighbor
  supported metrics.</td></tr>
 <tr><td width="18%"><code>'P'</code></td><td width="80%">a positive scalar specifying the exponent for
  the Minkowski distance.  Valid only when <code>'Distance'</code> is
- <code>'minkowski'</code>.  Default is 2.</td></tr>
+ <code>'minkowski'</code>.  Default is 2.  An exponent of <code>Inf</code> gives
+ the Chebychev distance.</td></tr>
 <tr><td width="18%"><code>'Scale'</code></td><td width="80%">a nonnegative vector with the same number
  of elements as the columns in <var>X</var> specifying the scale parameter for
  the standardized Euclidean distance.  Valid only when

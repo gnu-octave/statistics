@@ -350,6 +350,7 @@
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
 					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
+					<li><a href="fitmnr.html" class="text-decoration-none font-monospace"><small>fitmnr</small></a></li>
 					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
 					<li><a href="fitrm.html" class="text-decoration-none font-monospace"><small>fitrm</small></a></li>
 					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
@@ -366,6 +367,7 @@
 					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
 					<li><a href="mnrval.html" class="text-decoration-none font-monospace"><small>mnrval</small></a></li>
 					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
+					<li><a href="MultinomialRegression.html" class="text-decoration-none font-monospace"><small>MultinomialRegression</small></a></li>
 					<li><a href="mvregress.html" class="text-decoration-none font-monospace"><small>mvregress</small></a></li>
 					<li><a href="mvregresslike.html" class="text-decoration-none font-monospace"><small>mvregresslike</small></a></li>
 					<li><a href="nlinfit.html" class="text-decoration-none font-monospace"><small>nlinfit</small></a></li>
@@ -1103,8 +1105,12 @@
  <code><var>B</var> = -1/2 * <var>J</var> * (<var>D</var>.^2) * <var>J</var></code>, where
  <code>J = eye(<var>n</var>) - ones(<var>n</var>,<var>n</var>)/<var>n</var></code>. <var>p</var>, the number
  of columns of <var>Y</var>, is equal to the number of positive real eigenvalues of
- <var>B</var>. If <var>B</var> has no positive eigenvalues, which is the case when
- every point in <var>D</var> is coincident, <var>Y</var> is a single column of zeros.
+ <var>B</var>, where an eigenvalue counts as positive only if it exceeds
+ <code>eps (class (<var>D</var>)) ^ (3/4)</code> times the largest eigenvalue magnitude,
+ so that eigenvalues which are numerically zero in the precision of <var>D</var>
+ are discarded. If <var>B</var> has no positive
+ eigenvalues, which is the case when every point in <var>D</var> is coincident,
+ <var>Y</var> is a single column of zeros.
 </p>
 <p> The optional argument <var>p</var> is a positive integer between 1 and <var>n</var>
  that specifies the maximum dimensionality of the desired embedding <var>Y</var>.
@@ -1160,7 +1166,7 @@
   <a href="pdist.html">pdist</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Dimensionality_Reduction/cmdscale.m">cmdscale</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/848e0a5/inst/Dimensionality_Reduction/cmdscale.m">cmdscale</a>
 </p>
 </div>
 

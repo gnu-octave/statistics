@@ -350,6 +350,7 @@
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitlme.html" class="text-decoration-none font-monospace"><small>fitlme</small></a></li>
 					<li><a href="fitlmematrix.html" class="text-decoration-none font-monospace"><small>fitlmematrix</small></a></li>
+					<li><a href="fitmnr.html" class="text-decoration-none font-monospace"><small>fitmnr</small></a></li>
 					<li><a href="fitnlm.html" class="text-decoration-none font-monospace"><small>fitnlm</small></a></li>
 					<li><a href="fitrm.html" class="text-decoration-none font-monospace"><small>fitrm</small></a></li>
 					<li><a href="GeneralizedLinearMixedModel.html" class="text-decoration-none font-monospace"><small>GeneralizedLinearMixedModel</small></a></li>
@@ -366,6 +367,7 @@
 					<li><a href="mnrfit.html" class="text-decoration-none font-monospace"><small>mnrfit</small></a></li>
 					<li><a href="mnrval.html" class="text-decoration-none font-monospace fw-bolder"><small>mnrval</small></a></li>
 					<li><a href="monotone_smooth.html" class="text-decoration-none font-monospace"><small>monotone_smooth</small></a></li>
+					<li><a href="MultinomialRegression.html" class="text-decoration-none font-monospace"><small>MultinomialRegression</small></a></li>
 					<li><a href="mvregress.html" class="text-decoration-none font-monospace"><small>mvregress</small></a></li>
 					<li><a href="mvregresslike.html" class="text-decoration-none font-monospace"><small>mvregresslike</small></a></li>
 					<li><a href="nlinfit.html" class="text-decoration-none font-monospace"><small>nlinfit</small></a></li>
@@ -1155,7 +1157,7 @@
   <a href="logistic_regression.html">logistic_regression</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/89c2489/inst/Regression/mnrval.m">mnrval</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/848e0a5/inst/Regression/mnrval.m">mnrval</a>
 </p>
 </div>
         <div class="card rounded my-4">
@@ -1180,14 +1182,14 @@
  pihat = mnrval (B, X, 'model', 'ordinal')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pihat =
 
-   1.0000        0        0
-   1.0000        0        0
-   1.0000   0.0000        0
-   0.0000   1.0000        0
-   0.0000   1.0000        0
-   0.0000   1.0000   0.0000
-   0.0000   0.0000   1.0000
-   0.0000   0.0000   1.0000</pre>
+   1.0000e+00   4.6410e-08   2.2204e-16
+   9.9996e-01   3.8019e-05   9.1038e-14
+   9.6979e-01   3.0207e-02   7.4512e-11
+   3.7712e-02   9.6229e-01   6.1043e-08
+   4.7835e-05   9.9990e-01   5.0006e-05
+   5.8393e-08   9.6064e-01   3.9356e-02
+   7.1278e-11   2.8933e-02   9.7107e-01
+   8.7006e-14   3.6369e-05   9.9996e-01</pre>
 
             </div>
           </div>
