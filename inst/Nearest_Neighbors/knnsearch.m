@@ -331,10 +331,17 @@ function [idx, dist] = knnsearch (X, Y, varargin)
         [temp_idx, temp_D] = __search_kdtree__ (kdtree, Y(i,:), K, ...
                                                 X, Distance, DistParameter, ...
                                                 false);
-        r = temp_D(end) + 1e-10; # Add small epsilon to capture ties
-        [tied_idx, tied_D] = __search_kdtree__ (kdtree, Y(i,:), Inf, X, ...
-                                                Distance, DistParameter, ...
-                                                true, r);
+        if (isnan (temp_D(end)))
+          ## A NaN distance ties nothing, so the K found are the answer, laid
+          ## in row order as the range search below returns them
+          [tied_idx, o] = sort (temp_idx);
+          tied_D = temp_D(o);
+        else
+          r = temp_D(end) + 1e-10; # Add small epsilon to capture ties
+          [tied_idx, tied_D] = __search_kdtree__ (kdtree, Y(i,:), Inf, X, ...
+                                                  Distance, DistParameter, ...
+                                                  true, r);
+        endif
         ## Each cell holds a row vector, as MATLAB returns and as both the
         ## exhaustive path below and RANGESEARCH already did.  The kd-tree
         ## search returns columns, so they are laid down explicitly here.
@@ -380,6 +387,10 @@ function [idx, dist] = knnsearch (X, Y, varargin)
           [dt, id] = sort (D);
           kth_dist = dt(K);
           tied_idx = (dt <= kth_dist);
+          ## A NaN distance ties nothing, so the K nearest are the answer
+          if (isnan (kth_dist))
+            tied_idx = ((1:numel (dt))' <= K);
+          endif
           dist {i} = dt(tied_idx, :)';
           idx {i} = id(tied_idx, :)';
         endfor
@@ -697,6 +708,72 @@ endfunction
 %! [idx, D] = knnsearch (X, Y, 'K', 2, 'Distance', 'minkowski', 'P', Inf);
 %! [idxc, Dc] = knnsearch (X, Y, 'K', 2, 'Distance', 'chebychev');
 %! assert_equal ({idx, D}, {idxc, Dc});
+
+## A row holding a NaN is at distance NaN and comes last, in row order, as in
+## MATLAB R2024a.  The kd-tree measured the Chebychev distance over the other
+## coordinates, and lost such a row from the tree where it split on the NaN.
+%!test
+%! Xn = [1, Inf; 4, 6; 0, Inf; NaN, 1; 2, 2];
+%! [idx, D] = knnsearch (Xn, [1, 1], 'K', 5, 'Distance', 'chebychev');
+%! assert_equal (idx, [5, 2, 1, 3, 4]);
+%! assert_equal (D, [1, 5, Inf, Inf, NaN]);
+%!test
+%! Xn = [1, Inf; 4, 6; 0, Inf; NaN, 1; 2, 2];
+%! [idx, D] = knnsearch (Xn, [1, 1], 'K', 5, 'Distance', 'chebychev', ...
+%!                       'NSMethod', 'exhaustive');
+%! assert_equal (idx, [5, 2, 1, 3, 4]);
+%! assert_equal (D, [1, 5, Inf, Inf, NaN]);
+%!test
+%! Xg = [(1:60)', (1:60)'];
+%! Xg(7, 1) = NaN;  Xg(30, 2) = NaN;  Xg(45, :) = NaN;
+%! [idx, D] = knnsearch (Xg, [10, 10], 'K', 60);
+%! assert_equal (idx(55:60), [58, 59, 60, 7, 30, 45]);
+%! assert_equal (D(55:60), [sqrt([4608, 4802, 5000]), NaN, NaN, NaN], 1e-14);
+%!test
+%! Xg = [(1:60)', (1:60)'];
+%! Xg(7, 1) = NaN;  Xg(30, 2) = NaN;  Xg(45, :) = NaN;
+%! idx = knnsearch (Xg, [10, 10], 'K', 58);
+%! assert_equal (idx(55:58), [58, 59, 60, 7]);
+%!test
+%! Xg = [(1:60)', (1:60)'];
+%! Xg(7, 1) = NaN;  Xg(30, 2) = NaN;  Xg(45, :) = NaN;
+%! [idx, D] = knnsearch (Xg, [10, 10], 'K', 60, 'Distance', 'chebychev');
+%! assert_equal (idx(55:60), [58, 59, 60, 7, 30, 45]);
+%! assert_equal (D(55:60), [48, 49, 50, NaN, NaN, NaN]);
+%!test
+%! Xg = [(1:60)', (1:60)'];
+%! Xg(7, 1) = NaN;  Xg(30, 2) = NaN;  Xg(45, :) = NaN;
+%! [idx, D] = knnsearch (Xg, [NaN, 10], 'K', 3);
+%! assert_equal (idx, [1, 2, 3]);
+%! assert_equal (D, [NaN, NaN, NaN]);
+%!test
+%! ## A NaN distance ties nothing, so 'IncludeTies' stops at K there
+%! Xn = [1, Inf; 4, 6; 0, Inf; NaN, 1; 2, 2];
+%! [idx, D] = knnsearch (Xn, [3, 3], 'K', 5, 'IncludeTies', true);
+%! assert_equal (idx, {[5, 2, 1, 3, 4]});
+%! assert_equal (D, {[sqrt(2), sqrt(10), Inf, Inf, NaN]});
+%!test
+%! Xn = [1, Inf; 4, 6; 0, Inf; NaN, 1; 2, 2];
+%! [idx, D] = knnsearch (Xn, [3, 3], 'K', 5, 'IncludeTies', true, ...
+%!                       'NSMethod', 'exhaustive');
+%! assert_equal (idx, {[5, 2, 1, 3, 4]});
+%! assert_equal (D, {[sqrt(2), sqrt(10), Inf, Inf, NaN]});
+%!test
+%! Xg = [(1:60)', (1:60)'];
+%! Xg(7, 1) = NaN;  Xg(30, 2) = NaN;  Xg(45, :) = NaN;
+%! idx = knnsearch (Xg, [10, 10], 'K', 58, 'IncludeTies', true);
+%! assert_equal (idx{1}(55:end), [58, 59, 60, 7]);
+%!test
+%! Xg = [(1:60)', (1:60)'];
+%! Xg(7, 1) = NaN;  Xg(30, 2) = NaN;  Xg(45, :) = NaN;
+%! idx = knnsearch (Xg, [10, 10], 'K', 58, 'IncludeTies', true, ...
+%!                  'NSMethod', 'exhaustive');
+%! assert_equal (idx{1}(55:end), [58, 59, 60, 7]);
+%!test
+%! Xg = [(1:60)', (1:60)'];
+%! Xg(7, 1) = NaN;  Xg(30, 2) = NaN;  Xg(45, :) = NaN;
+%! idx = knnsearch (Xg, [NaN, 10], 'K', 2, 'IncludeTies', true);
+%! assert_equal (idx, {[1, 2]});
 
 ## Test input validation
 ## Neighbours at equal distance come in row order, as R2024a returns them,

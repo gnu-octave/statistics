@@ -60,7 +60,9 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
     case {'cityblock', 'manhattan'}
       compute_dists = @(leaf_X) sum (abs (leaf_X - query), 2);
     case 'chebychev'
-      compute_dists = @(leaf_X) max (abs (leaf_X - query), [], 2);
+      ## max passes over NaN, so a row holding one is set to NaN explicitly,
+      ## as every other metric here leaves it
+      compute_dists = @(leaf_X) chebychev_dists (leaf_X, query);
     case 'minkowski'
       p = distparam;
       compute_dists = @(leaf_X) sum (abs (leaf_X - query) .^ p, 2) .^ (1 / p);
@@ -104,7 +106,8 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
         ## The list is already full, so only a candidate beating its worst
         ## member, or tying it from an earlier row, is worth merging, and most
         ## leaves supply none.
-        mask = dists <= distances(end);
+        ## A NaN at the bottom of the list ranks below every candidate.
+        mask = dists <= distances(end) | isnan (distances(end));
         if (any (mask))
           indices = [indices; leaf_indices(mask)'];
           distances = [distances; dists(mask)];
@@ -143,13 +146,20 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
         if (plane_dist <= r)
           search (further, depth + 1);
         endif
-      elseif (length (distances) < k || plane_dist <= distances(end))
+      elseif (length (distances) < k || plane_dist <= distances(end)
+              || isnan (distances(end)))
         ## A plane at exactly the worst distance may still hide a tie from an
-        ## earlier row, so that side is searched too.
+        ## earlier row, so that side is searched too, and a NaN worst distance
+        ## is beaten by anything the far side holds.
         search (further, depth + 1);
       endif
     endif
 
   endfunction
 
+endfunction
+
+function d = chebychev_dists (leaf_X, query)
+  d = max (abs (leaf_X - query), [], 2);
+  d(any (isnan (leaf_X), 2) | any (isnan (query))) = NaN;
 endfunction

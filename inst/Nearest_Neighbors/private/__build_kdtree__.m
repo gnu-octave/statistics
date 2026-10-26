@@ -39,7 +39,9 @@ function node = __build_kdtree__ (indices, depth, X, bucket_size)
     median_idx = floor ((length (indices) + 1) / 2);
     split_value = sorted_values(median_idx);
     left_indices = indices(values <= split_value);
-    right_indices = indices(values > split_value);
+    ## A NaN on this axis compares false both ways, so it is sent right
+    ## rather than lost from both sides
+    right_indices = indices(! (values <= split_value));
 
     ## Points sharing the split value all go left, so a set that is constant
     ## on this axis cannot be divided here.  Without this the recursion hands

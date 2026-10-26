@@ -459,6 +459,12 @@ endfunction
 %!                         'SortIndices', false);
 %! assert_equal (idx, {[1, 3, 4, 6]; [2, 5, 6]});
 %! assert_equal (D, {[1, 1, 2, 2]; [2, 1, 2]});
+%!test
+%! ## A row holding a NaN is never within range, as in MATLAB R2024a
+%! Xn = [1, Inf; 4, 6; 0, Inf; NaN, 1; 2, 2];
+%! [idx, D] = rangesearch (Xn, [1, 1], 5, 'Distance', 'chebychev');
+%! assert_equal (idx, {[5, 2]});
+%! assert_equal (D, {[1, 5]});
 
 ## Test input validation
 %!error<rangesearch: too few input arguments.> rangesearch (1)
