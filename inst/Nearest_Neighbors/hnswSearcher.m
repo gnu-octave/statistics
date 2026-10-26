@@ -63,7 +63,8 @@ classdef hnswSearcher
     ## @qcode{Distance} metric and can be any of the following:
     ##
     ## @itemize
-    ## @item For @qcode{'minkowski'}, a positive scalar exponent (default 2).
+    ## @item For @qcode{'minkowski'}, a positive scalar exponent (default 2);
+    ## @code{Inf} gives the Chebychev distance.
     ## @item For @qcode{'seuclidean'}, a nonnegative vector of scaling factors
     ## matching the number of columns in @qcode{X} (default is standard
     ## deviation of @qcode{X}).
@@ -249,7 +250,8 @@ classdef hnswSearcher
     ##
     ## @item @qcode{'P'} @tab Minkowski distance exponent, a positive
     ## scalar. Valid only when @qcode{'Distance'} is @qcode{'minkowski'}.
-    ## Default is 2.
+    ## Default is 2.  An exponent of @code{Inf} gives the Chebychev distance,
+    ## where MATLAB returns wrong neighbours.
     ##
     ## @item @qcode{'Scale'} @tab Nonnegative vector of scaling factors
     ## matching the number of columns in @var{X}. Valid only when
@@ -338,14 +340,27 @@ classdef hnswSearcher
       else
         error ("hnswSearcher: 'Distance' must be a string.");
       endif
+      if (! isempty (P) && ! strcmpi (obj.Distance, 'minkowski'))
+        error ("hnswSearcher: 'P' applies only to the minkowski metric.");
+      endif
+      if (! isempty (S) && ! strcmpi (obj.Distance, 'seuclidean'))
+        error (strcat ("hnswSearcher: 'Scale' applies only to the", ...
+                       " seuclidean metric."));
+      endif
+      if (! isempty (C) && ! strcmpi (obj.Distance, 'mahalanobis'))
+        error (strcat ("hnswSearcher: 'Cov' applies only to the", ...
+                       " mahalanobis metric."));
+      endif
 
       ## Set DistParameter
       if (strcmpi (obj.Distance, 'minkowski'))
         if (isempty (P))
           obj.DistParameter = 2;
         else
-          if (! (isscalar (P) && isnumeric (P) && P > 0 && isfinite (P)))
-            error ("hnswSearcher: 'P' must be a positive finite scalar.");
+          ## An exponent of Inf is the Chebychev distance, which pdist2
+          ## computes for every distance the graph is built and searched by
+          if (! (isscalar (P) && isnumeric (P) && P > 0))
+            error ("hnswSearcher: 'P' must be a positive scalar.");
           endif
           obj.DistParameter = P;
         endif
@@ -952,6 +967,29 @@ endfunction
 %! idx = knnsearch (hnswSearcher (X), Y, 'K', 3, 'SearchSetSize', 60);
 %! assert_equal (numel (unique (idx(:,1))) > 1, true);
 
+## A Minkowski exponent of Inf is the Chebychev distance: a searcher built
+## with it and the same draws as a Chebychev one answers as that one does.
+## MATLAB R2024a takes the exponent and returns wrong neighbours.
+%!test
+%! X = [1, 2; 4, 6; 0, 0; 3, 1; 5, 5; 2, 3];
+%! Y = [1, 1; 4, 4];
+%! rand ("seed", 7);
+%! A = hnswSearcher (X, 'Distance', 'minkowski', 'P', Inf);
+%! rand ("seed", 7);
+%! B = hnswSearcher (X, 'Distance', 'chebychev');
+%! [ia, Da] = knnsearch (A, Y, 'K', 2);
+%! [ib, Db] = knnsearch (B, Y, 'K', 2);
+%! assert_equal (A.Distance, 'minkowski');
+%! assert_equal (A.DistParameter, Inf);
+%! assert_equal (ia, ib);
+%! assert_equal (Da, [1, 1; 1, 2]);
+%! assert_equal (Db, [1, 1; 1, 2]);
+%!test
+%! X = [1, 2; 4, 6; 0, 0; 3, 1; 5, 5; 2, 3];
+%! A = createns (X, 'NSMethod', 'hnsw', 'Distance', 'minkowski', 'P', Inf);
+%! assert_equal (class (A), 'hnswSearcher');
+%! assert_equal (A.DistParameter, Inf);
+
 ## Test Input Validation
 
 %!error<hnswSearcher: too few input arguments.> ...
@@ -970,8 +1008,22 @@ endfunction
 %! hnswSearcher (ones (3,2), 'Distance', 'invalid')
 %!error<hnswSearcher: 'Distance' must be a string.> ...
 %! hnswSearcher (ones (3,2), 'Distance', 1)
-%!error<hnswSearcher: 'P' must be a positive finite scalar.> ...
+%!error<hnswSearcher: 'P' must be a positive scalar.> ...
 %! hnswSearcher (ones (3,2), 'Distance', 'minkowski', 'P', -1)
+%!error<hnswSearcher: 'P' must be a positive scalar.> ...
+%! hnswSearcher (ones (3,2), 'Distance', 'minkowski', 'P', NaN)
+%!error<hnswSearcher: 'P' applies only to the minkowski metric.> ...
+%! hnswSearcher (ones (3,2), 'P', 3)
+%!error<hnswSearcher: 'P' applies only to the minkowski metric.> ...
+%! hnswSearcher (ones (3,2), 'Distance', 'chebychev', 'P', 3)
+%!error<hnswSearcher: 'Scale' applies only to the seuclidean metric.> ...
+%! hnswSearcher (ones (3,2), 'Scale', [1, 1])
+%!error<hnswSearcher: 'Scale' applies only to the seuclidean metric.> ...
+%! hnswSearcher (ones (3,2), 'Distance', 'mahalanobis', 'Scale', [1, 1])
+%!error<hnswSearcher: 'Cov' applies only to the mahalanobis metric.> ...
+%! hnswSearcher (ones (3,2), 'Cov', eye (2))
+%!error<hnswSearcher: 'Cov' applies only to the mahalanobis metric.> ...
+%! hnswSearcher (ones (3,2), 'Distance', 'seuclidean', 'Cov', eye (2))
 %!error<hnswSearcher: 'Scale' must be a nonnegative vector matching X columns.> ...
 %! hnswSearcher (ones (3,2), 'Distance', 'seuclidean', 'Scale', [-1, 1])
 %!error<hnswSearcher: 'Cov' must be a square matrix matching X columns.> ...

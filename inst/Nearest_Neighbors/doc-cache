@@ -787,14 +787,15 @@ hnswSearcher.DistParameter
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 569
+# length: 603
 hnswSearcher: property DistParameter
 Distance parameter
 
 The type and value of the distance parameter depends on the selected
 Distance metric and can be any of the following:
 
-For 'minkowski', a positive scalar exponent (default 2).
+For 'minkowski', a positive scalar exponent (default 2);
+Inf gives the Chebychev distance.
 For 'seuclidean', a nonnegative vector of scaling factors
 matching the number of columns in X (default is standard
 deviation of X).
@@ -937,7 +938,7 @@ hnswSearcher.hnswSearcher
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1323
+# length: 1411
 hnswSearcher: obj = hnswSearcher (X)
 hnswSearcher: obj = hnswSearcher (X, name, value)
 Create an hnswSearcher object for approximate nearest neighbor
@@ -959,7 +960,8 @@ character vector (e.g., 'euclidean', 'minkowski',
 for supported metrics.
 'P' Minkowski distance exponent, a positive
 scalar. Valid only when 'Distance' is 'minkowski'.
-Default is 2.
+Default is 2. An exponent of Inf gives the Chebychev distance,
+where MATLAB returns wrong neighbours.
 'Scale' Nonnegative vector of scaling factors
 matching the number of columns in X. Valid only when
 'Distance' is 'seuclidean'. Default is std (X).
