@@ -984,12 +984,16 @@ endfunction
 ## The modes and the parent are read-only here, where MATLAB assigns them
 %!test
 %! m = meta.class.fromName ('stats.chart.BoxChart');
-%! nm = cellfun (@(p) p.Name, m.PropertyList, 'UniformOutput', false);
+%! p = m.PropertyList;
+%! if (iscell (p))
+%!   p = [p{:}];
+%! endif
+%! nm = {p.Name};
 %! i = find (strcmp (nm, 'XDataMode'), 1);
-%! assert_equal (m.PropertyList{i}.SetAccess, 'private');
-%! assert_equal (m.PropertyList{i}.GetAccess, 'public');
+%! assert_equal (p(i).SetAccess, 'private');
+%! assert_equal (p(i).GetAccess, 'public');
 %! i = find (strcmp (nm, 'Parent'), 1);
-%! assert_equal (m.PropertyList{i}.SetAccess, 'private');
+%! assert_equal (p(i).SetAccess, 'private');
 
 %!test  # the box spans the quartiles and the median lies across it
 %! hf = figure ('visible', 'off');
