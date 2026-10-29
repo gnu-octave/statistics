@@ -28,13 +28,15 @@
 ## response @var{y} on the predictor data @var{X}, penalized by the lasso (L1)
 ## or elastic-net penalty.  @var{X} is an @math{n}-by-@math{p} numeric matrix of
 ## @math{p} predictors at each of @math{n} observations, and @var{y} is a
-## numeric vector of @math{n} responses.  For the @qcode{'binomial'}
-## distribution @var{y} may also be a logical vector with @qcode{true} the
-## success, a categorical vector with exactly two categories whose second is
-## the success and whose undefined elements are missing, or an @math{n}-by-2
-## matrix whose first column holds the number of successes and whose second
-## holds the number of trials; a row with @qcode{NaN} in either column or with
-## no trials is removed.  @var{distr} names the distribution of
+## numeric vector of @math{n} responses.  For the @qcode{'normal'},
+## @qcode{'binomial'} and @qcode{'poisson'} distributions @var{y} may also be
+## a logical vector, @qcode{true} read as 1, or a categorical vector with
+## exactly two categories, the second read as 1 and undefined elements as
+## missing; for @qcode{'binomial'} the value 1 is the success.  For the
+## @qcode{'binomial'} distribution @var{y} may also be an @math{n}-by-2 matrix
+## whose first column holds the number of successes and whose second holds the
+## number of trials; a row with @qcode{NaN} in either column or with no trials
+## is removed.  @var{distr} names the distribution of
 ## the response: @qcode{'normal'} (default), @qcode{'binomial'},
 ## @qcode{'poisson'}, @qcode{'gamma'}, or @qcode{'inverse gaussian'}.  The
 ## canonical link function of the chosen distribution is used unless overridden
@@ -111,6 +113,12 @@
 ## must remain and, if @qcode{'Weights'} is given, at least two of them must
 ## have a non-zero weight.
 ##
+## A response at the edge of its range on every observation, all failures or
+## all successes for @qcode{'binomial'} and all zeros for @qcode{'poisson'},
+## has no finite fit.  @var{B} is then zero, the intercept places the fitted
+## mean at the limit of its range, and the default @var{Lambda} values are all
+## zero, as in MATLAB.  MATLAB's intercept there is about 102.5 in magnitude.
+##
 ## @seealso{lasso, glmfit, glmval, cvpartition}
 ## @end deftypefn
 
@@ -134,13 +142,14 @@ function [B, FitInfo] = lassoglm (X, y, distr, varargin)
     error ("lassoglm: unknown distribution '%s'.", distr);
   endif
 
-  ## A binomial response may be logical, categorical with two categories, or
-  ## a two-column matrix of successes and trials.  A row vector stays a
-  ## response vector.
+  ## A normal, binomial or poisson response may be logical or categorical
+  ## with two categories; a binomial one may also be a two-column matrix of
+  ## successes and trials.  A row vector stays a response vector.
   trials = [];
-  if (strcmp (distr, 'binomial') && islogical (y))
+  zeroone = any (strcmp (distr, {'normal', 'binomial', 'poisson'}));
+  if (zeroone && islogical (y))
     y = double (y);
-  elseif (strcmp (distr, 'binomial') && isa (y, 'categorical'))
+  elseif (zeroone && isa (y, 'categorical'))
     if (! (isvector (y) && numel (categories (y)) == 2))
       error (strcat ("lassoglm: a categorical Y must be a vector with", ...
                      " exactly two categories."));
@@ -340,9 +349,22 @@ function [B, FitInfo] = lassoglm (X, y, distr, varargin)
 
   ## Intercept-only (null) fit -- offset-aware.  Supplies the starting
   ## intercept B0, the null deviance (the path-trim scale), and the null-model
-  ## fitted mean MU0 used for the LAMBDA_MAX gradient.
-  [b0, mu0] = glm_null_fit (off, y, N, o, flink, dlink, ilink, varfun, ...
-                            mulims, intercept, maxiter, reltol);
+  ## fitted mean MU0 used for the LAMBDA_MAX gradient.  A response at the edge
+  ## of its range on every row has no finite fit: the intercept is set where
+  ## the fitted mean reaches the limit of its range, and B stays zero.
+  atlow = all (y ./ N <= mulims(1));
+  athigh = all (y ./ N >= mulims(2));
+  edge = intercept && (atlow || athigh);
+  if (edge && atlow)
+    b0 = flink (mulims(1)) - max (off);
+    mu0 = max (min (ilink (off + b0), mulims(2)), mulims(1));
+  elseif (edge)
+    b0 = flink (mulims(2)) - min (off);
+    mu0 = max (min (ilink (off + b0), mulims(2)), mulims(1));
+  else
+    [b0, mu0] = glm_null_fit (off, y, N, o, flink, dlink, ilink, varfun, ...
+                              mulims, intercept, maxiter, reltol);
+  endif
   nulldev = sum (pw .* devfun (mu0, y ./ N, N));
 
   ## Regularization path.
@@ -350,6 +372,8 @@ function [B, FitInfo] = lassoglm (X, y, distr, varargin)
   userlambda = ! isempty (lambda);
   if (userlambda)
     lampath = sort (lambda(:)', "descend");
+  elseif (edge)
+    lampath = zeros (1, numlambda);
   else
     deta0 = dlink (mu0);
     grad = Xs' * (ol .* (y ./ N - mu0) ./ (deta0 .* varfun (mu0, N)));
@@ -367,6 +391,10 @@ function [B, FitInfo] = lassoglm (X, y, distr, varargin)
   bs = zeros (p, 1);
   nkeep = L;
   for kk = 1:L
+    if (edge)
+      icept_eta(kk) = b0;
+      continue;
+    endif
     lam = lampath(kk);
     for outer = 1:maxiter
       bouter = bs;
@@ -837,6 +865,76 @@ endfunction
 %! B = lassoglm (Xs, yc, "binomial", "Lambda", 0.01);
 %! assert_equal (B, lassoglm (Xs, yd, "binomial", "Lambda", 0.01));
 %!test
+%! ## MATLAB parity: a logical Y is read as 0 and 1 for 'normal'.  R2024a
+%! ## stops short of the optimum at its default 'RelTol', hence 1e-4.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! yl = logical ([1 0 1 0 1 1 0 1]');
+%! [B, F] = lassoglm (Xs, yl, "normal", "Lambda", 0.01, "RelTol", 1e-10);
+%! assert_equal (B, [-0.032242354036557; 0.058218556273363], 1e-4);
+%! assert_equal (F.Intercept, 0.508107089934371, 1e-4);
+%! assert_equal (F.Deviance, 1.787206180927742, 1e-4);
+%!test
+%! ## MATLAB parity: a logical Y is read as 0 and 1 for 'poisson'.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! yl = logical ([1 0 1 0 1 1 0 1]');
+%! [B, F] = lassoglm (Xs, yl, "poisson", "Lambda", 0.01, "RelTol", 1e-10);
+%! assert_equal (B, [-0.051841404637406; 0.093560162977848], 1e-4);
+%! assert_equal (F.Intercept, -0.666532313337360, 1e-4);
+%! assert_equal (F.Deviance, 4.559139924308249, 1e-4);
+%!test
+%! ## MATLAB parity: a categorical Y reads its second category as 1 for
+%! ## 'poisson'.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! yc = categorical ({"a"; "b"; "a"; "b"; "a"; "a"; "b"; "a"});
+%! [B, F] = lassoglm (Xs, yc, "poisson", "Lambda", 0.01, "RelTol", 1e-10);
+%! assert_equal (B, [0.087166887965021; -0.157171639558528], 1e-4);
+%! assert_equal (F.Intercept, -0.690514209555808, 1e-4);
+%! assert_equal (F.Deviance, 5.648865520394161, 1e-4);
+%!test
+%! ## MATLAB parity: an undefined categorical element is missing for 'normal'.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! yc = categorical ({"a"; "b"; "a"; "b"; "a"; "a"; "b"; "a"});
+%! yc(2) = missing;
+%! [B, F] = lassoglm (Xs, yc, "normal", "Lambda", 0.01, "RelTol", 1e-10);
+%! assert_equal (B, [0.028851564044848; 0.004953960674243], 1e-4);
+%! assert_equal (F.Intercept, 0.120808314125238, 1e-4);
+%! assert_equal (F.Deviance, 1.381322945196538, 1e-4);
+%!test
+%! ## MATLAB parity: all failures have no finite fit; B is zero.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! [B, F] = lassoglm (Xs, zeros (8, 1), "binomial", "Lambda", 0.01);
+%! assert_equal (B, [0; 0]);
+%! assert_equal (F.DF, 0);
+%! assert_equal (F.Intercept, log (sqrt (eps) / (1 - sqrt (eps))), 1e-12);
+%! assert_equal (F.Deviance < 1e-6, true);
+%!test
+%! ## MATLAB parity: all successes have no finite fit; B is zero.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! [B, F] = lassoglm (Xs, ones (8, 1), "binomial", "Lambda", 0.01);
+%! assert_equal (B, [0; 0]);
+%! assert_equal (F.Intercept, log ((1 - sqrt (eps)) / sqrt (eps)), 1e-12);
+%! assert_equal (F.Deviance < 1e-6, true);
+%!test
+%! ## MATLAB parity: a two-column Y of all successes has no finite fit.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! Ns = [3 2 3 3 4 3 4 3]';
+%! [B, F] = lassoglm (Xs, [Ns, Ns], "binomial", "Lambda", 0.01);
+%! assert_equal (B, [0; 0]);
+%! assert_equal (F.Intercept, log ((1 - sqrt (eps)) / sqrt (eps)), 1e-12);
+%!test
+%! ## MATLAB parity: the default Lambda values are zero for all failures.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! [B, F] = lassoglm (Xs, zeros (8, 1), "binomial");
+%! assert_equal (B, zeros (2, 100));
+%! assert_equal (F.Lambda, zeros (1, 100));
+%!test
+%! ## MATLAB parity: a 'poisson' Y of all zeros has no finite fit.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! [B, F] = lassoglm (Xs, zeros (8, 1), "poisson", "Lambda", 0.01);
+%! assert_equal (B, [0; 0]);
+%! assert_equal (F.Intercept, log (realmin), 1e-12);
+%! assert_equal (F.Deviance < 1e-300, true);
+%!test
 %! ## MATLAB parity: an ordinal categorical Y is read as a nominal one.
 %! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
 %! c = {"a"; "b"; "a"; "b"; "a"; "a"; "b"; "a"};
@@ -912,6 +1010,11 @@ endfunction
 %!           'binomial')
 %!error<lassoglm: for the 'binomial' distribution Y must be a real vector or a two-column matrix.> ...
 %! lassoglm (X(1:3,:), {'a'; 'b'; 'a'}, 'binomial')
+%!error<lassoglm: a categorical Y must be a vector with exactly two categories.> ...
+%! lassoglm (X(1:3,:), categorical ({'a'; 'b'; 'a'}, {'a', 'b', 'c'}), ...
+%!           'normal')
+%!error<lassoglm: Y must be a real vector.> ...
+%! lassoglm (X(1:3,:), logical ([1; 0; 1]), 'gamma')
 %!error<lassoglm: 'Alpha' must be a scalar in .0, 1..> ...
 %! lassoglm ([1, 2; 3, 4], [1; 0], 'binomial', 'Alpha', 0)
 %!error<lassoglm: 'Lambda' must be a vector of non-negative values.> ...
