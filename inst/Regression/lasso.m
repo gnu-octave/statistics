@@ -60,9 +60,9 @@
 ## and unit variance before fitting (default @qcode{true}).  Coefficients are
 ## always returned on the original scale.
 ##
-## @item @qcode{'Weights'} @tab A real, finite, non-negative floating-point
-## vector with one element per row of @var{X}, as passed.  The weights of rows
-## removed because of @qcode{NaN} values are discarded with those rows, and the
+## @item @qcode{'Weights'} @tab A real, finite, non-negative vector of class
+## single or double, with one element per row of @var{X}.  The weights of rows
+## removed because of @qcode{NaN} values are dropped with those rows, and the
 ## remaining weights are normalized to sum to one.
 ##
 ## @item @qcode{'RelTol'} @tab Convergence tolerance for the coordinate descent
@@ -172,12 +172,12 @@ function [B, FitInfo] = lasso (X, y, varargin)
   if (! isempty (weights))
     if (! (isfloat (weights) && isreal (weights)
            && all (isfinite (weights(:))) && all (weights(:) >= 0)))
-      error (["lasso: 'Weights' must be a real, finite, non-negative ", ...
-              "floating-point vector."]);
+      error (strcat ("lasso: 'Weights' must be a real, finite,", ...
+                     " non-negative floating-point vector."));
     endif
     if (! (isvector (weights) && numel (weights) == rows (X)))
-      error (["lasso: 'Weights' must be a vector with one element per ", ...
-              "row of X."]);
+      error (strcat ("lasso: 'Weights' must be a vector with one element", ...
+                     " per row of X."));
     endif
     weights = double (weights(:));
   endif
@@ -190,12 +190,12 @@ function [B, FitInfo] = lasso (X, y, varargin)
   endif
   [n, p] = size (X);
   if (n < 2)
-    error (["lasso: at least two observations must remain after ", ...
-            "removing NaN values."]);
+    error (strcat ("lasso: at least two observations must remain after", ...
+                   " removing NaN values."));
   endif
   if (! isempty (weights) && nnz (weights) < 2)
-    error (["lasso: at least two of the remaining observations must ", ...
-            "have non-zero weight."]);
+    error (strcat ("lasso: at least two of the remaining observations", ...
+                   " must have non-zero weight."));
   endif
 
   ## Observation weights, normalised to sum to one.
@@ -477,40 +477,43 @@ endfunction
 %! yr = [1.1 1.9 3.2 3.9 5.1 6.2];
 %! assert_equal (lasso (Xr, yr, "Lambda", 0.1), lasso (Xr, yr', "Lambda", 0.1));
 
-%!test  # NaN rows are dropped together with their weights
-%! Xw = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%!test  # MATLAB parity: a NaN row in X drops its weight
+%! Xw = [1 2; 2 1; 3 5; NaN 3; 5 6; 6 4; 7 8; 8 7];
 %! yw = [1.1 1.9 3.2 3.9 5.1 6.2 6.8 8.1]';
 %! ww = [1 2 1 2 1 2 1 2]';
-%! Xw(4,1) = NaN;
 %! [B, I] = lasso (Xw, yw, "Lambda", 0.1, "Weights", ww);
 %! assert_equal (B, [0.968150410240289; 0], 1e-9);
 %! assert_equal (I.Intercept, 0.212878030846611, 1e-9);
-%! assert_equal (I.MSE, 0.0279610389610383, 1e-9);
-%! yw(2) = NaN;
-%! [B, I] = lasso (Xw, yw, "Lambda", 0.1, "Weights", ww);
-%! assert_equal (B, [0.9420707077; 0], 1e-9);
-%! assert_equal (I.Intercept, 0.4186111078, 1e-9);
-%! assert_equal (I.MSE, 0.02392857143, 1e-9);
+%! assert_equal (I.MSE, 0.027961038961038, 1e-9);
 
-%!test  # two remaining observations are enough to fit
+%!test  # MATLAB parity: NaN rows in X and in Y drop their weights
+%! Xw = [1 2; 2 1; 3 5; NaN 3; 5 6; 6 4; 7 8; 8 7];
+%! yw = [1.1 NaN 3.2 3.9 5.1 6.2 6.8 8.1]';
+%! ww = [1 2 1 2 1 2 1 2]';
+%! [B, I] = lasso (Xw, yw, "Lambda", 0.1, "Weights", ww);
+%! assert_equal (B, [0.942070707667087; 0], 1e-9);
+%! assert_equal (I.Intercept, 0.418611107831020, 1e-9);
+%! assert_equal (I.MSE, 0.023928571428572, 1e-9);
+
+%!test  # MATLAB parity: two remaining observations are enough to fit
 %! Xw = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
 %! yw = [1.1 1.9 3.2 3.9 5.1 6.2 6.8 8.1]';
 %! ww = [1 2 1 2 1 2 1 2]';
 %! Xw(3:8,1) = NaN;
 %! [B, I] = lasso (Xw, yw, "Lambda", 0.1, "Weights", ww);
-%! assert_equal (B, [0.5878679656; 0], 1e-9);
-%! assert_equal (I.Intercept, 0.6535533906, 1e-9);
+%! assert_equal (B, [0.587867965644036; 0], 1e-9);
+%! assert_equal (I.Intercept, 0.653553390593274, 1e-9);
 %! assert_equal (I.MSE, 0.01, 1e-9);
 
-%!test  # single weights give a double-precision result
+%!test  # MATLAB parity: single weights give a double-precision result
 %! Xw = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
 %! yw = [1.1 1.9 3.2 3.9 5.1 6.2 6.8 8.1]';
 %! ww = [1 2 1 2 1 2 1 2]';
 %! [B, I] = lasso (Xw, yw, "Lambda", 0.1, "Weights", single (ww));
 %! assert_equal (class (B), "double");
-%! assert_equal (B, [0.9679426302; 0], 1e-9);
-%! assert_equal (I.Intercept, 0.1829343924, 1e-9);
-%! assert_equal (I.MSE, 0.02817375887, 1e-9);
+%! assert_equal (B, [0.967942630210206; 0], 1e-9);
+%! assert_equal (I.Intercept, 0.182934392352372, 1e-9);
+%! assert_equal (I.MSE, 0.028173758865249, 1e-9);
 
 ## Test input validation
 %!error <Invalid call to lasso> lasso (1)
@@ -528,6 +531,12 @@ endfunction
 %! lasso (X, y, "Weights", complex (ones (20, 1), 0))
 %!error <lasso: 'Weights' must be a real, finite, non-negative floating-point vector.> ...
 %! lasso (X, y, "Weights", int8 (ones (20, 1)))
+%!error <lasso: 'Weights' must be a real, finite, non-negative floating-point vector.> ...
+%! lasso (X, y, "Weights", true (20, 1))
+%!error <lasso: 'Weights' must be a real, finite, non-negative floating-point vector.> ...
+%! Xn = X;  Xn(2,1) = NaN;
+%! w = ones (20, 1);  w(2) = NaN;
+%! lasso (Xn, y, "Weights", w)
 %!error <lasso: at least two of the remaining observations must have non-zero weight.> ...
 %! Xn = X;  Xn(2,1) = NaN;
 %! w = zeros (20, 1);  w([2 5]) = 1;

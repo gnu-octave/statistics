@@ -71,7 +71,9 @@
 ## @item @qcode{'Lambda'} @tab a vector of non-negative @math{lambda} values.
 ## @item @qcode{'Standardize'} @tab a logical value (default @qcode{true})
 ## specifying whether the predictors are standardized before fitting.
-## @item @qcode{'Weights'} @tab a vector of non-negative observation weights.
+## @item @qcode{'Weights'} @tab a real, non-negative vector of class single or
+## double, with one element per row of @var{X}.  A @qcode{NaN} weight marks its
+## observation as missing.
 ## @item @qcode{'Size'} @tab for the @qcode{'binomial'} distribution, the number
 ## of trials (a scalar or a per-observation vector); @var{y} holds the number of
 ## successes.  Default is 1 (Bernoulli responses).
@@ -93,6 +95,11 @@
 ## @item @qcode{'MCReps'} @tab the number of Monte-Carlo repetitions of the
 ## cross-validation (default 1).
 ## @end multitable
+##
+## Observations with @qcode{NaN} values in @var{X}, @var{y} or
+## @qcode{'Weights'} are removed before fitting.  At least two observations
+## must remain and, if @qcode{'Weights'} is given, at least two of them must
+## have a non-zero weight.
 ##
 ## @seealso{lasso, glmfit, glmval, cvpartition}
 ## @end deftypefn
@@ -178,10 +185,37 @@ function [B, FitInfo] = lassoglm (X, y, distr, varargin)
     error ("lassoglm: 'Lambda' must be a vector of non-negative values.");
   endif
 
-  ## Drop observations with missing values.
+  ## Weights are checked as given, before any row is dropped.
+  if (! isempty (weights))
+    if (! (isfloat (weights) && isreal (weights)))
+      error ("lassoglm: 'Weights' must be a real floating-point vector.");
+    endif
+    if (! (isvector (weights) && numel (weights) == rows (X)))
+      error (strcat ("lassoglm: 'Weights' must be a vector with one", ...
+                     " element per row of X."));
+    endif
+    if (any (weights(:) < 0 | isinf (weights(:))))
+      error ("lassoglm: 'Weights' must be non-negative and not infinite.");
+    endif
+    weights = double (weights(:));
+  endif
+
+  ## Drop observations with missing values, a NaN weight among them.
   ok = ! (any (isnan (X), 2) | isnan (y));
+  if (! isempty (weights))
+    ok &= ! isnan (weights);
+    weights = weights(ok);
+  endif
   X = X(ok,:);  y = y(ok);
   [n, p] = size (X);
+  if (n < 2)
+    error (strcat ("lassoglm: at least two observations must remain after", ...
+                   " removing NaN values."));
+  endif
+  if (! isempty (weights) && nnz (weights) < 2)
+    error (strcat ("lassoglm: at least two of the remaining observations", ...
+                   " must have non-zero weight."));
+  endif
 
   ## Number of binomial trials per observation (Size), default one.
   if (strcmp (distr, 'binomial'))
@@ -206,11 +240,7 @@ function [B, FitInfo] = lassoglm (X, y, distr, varargin)
   if (isempty (weights))
     pw = ones (n, 1);
   else
-    if (! (isnumeric (weights) && isvector (weights) && numel (weights) == n
-           && all (weights >= 0) && any (weights > 0)))
-      error ("lassoglm: 'Weights' must be a non-negative vector, one per observation.");
-    endif
-    pw = weights(:);
+    pw = weights;
   endif
   o = pw / sum (pw);
 
@@ -603,6 +633,48 @@ endfunction
 %! assert_equal (numel (F.SE), numel (F.Lambda));
 %! assert_equal (F.Lambda1SE >= F.LambdaMinDeviance, true);
 %! assert_equal (F.Index1SE >= F.IndexMinDeviance, true);
+%!test
+%! ## MATLAB parity: a NaN row in X drops its weight.  R2024a stops nearer the
+%! ## optimum at its default 'RelTol' than ours, hence 1e-8 here.
+%! Xw = [1 2; 2 1; 3 5; NaN 3; 5 6; 6 4; 7 8; 8 7];
+%! yw = [1 0 2 1 3 2 4 3]';
+%! ww = [1 2 1 2 1 2 1 2]';
+%! [B, F] = lassoglm (Xw, yw, "poisson", "Lambda", 0.1, "Weights", ww, ...
+%!                    "RelTol", 1e-8);
+%! assert_equal (B, [0; 0.270328055695712], 1e-6);
+%! assert_equal (F.Intercept, -0.720881899870004, 1e-6);
+%! assert_equal (F.Deviance, 3.139684900086630, 1e-6);
+%!test
+%! ## MATLAB parity: a NaN weight drops its row.
+%! Xw = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! yw = [1 0 2 1 3 2 4 3]';
+%! ww = [1 NaN 1 2 1 2 1 2]';
+%! [B, F] = lassoglm (Xw, yw, "poisson", "Lambda", 0.1, "Weights", ww, ...
+%!                    "RelTol", 1e-8);
+%! assert_equal (B, [0; 0.201726591245334], 1e-6);
+%! assert_equal (F.Intercept, -0.275203095895550, 1e-6);
+%! assert_equal (F.Deviance, 0.456977765877823, 1e-6);
+%!test
+%! ## MATLAB parity: two remaining observations are enough to fit.
+%! Xw = [1 2; 2 1; NaN 5; NaN 3; NaN 6; NaN 4; NaN 8; NaN 7];
+%! yw = [1 0 2 1 3 2 4 3]';
+%! ww = [1 2 1 2 1 2 1 2]';
+%! [B, F] = lassoglm (Xw, yw, "poisson", "Lambda", 0.1, "Weights", ww, ...
+%!                    "RelTol", 1e-8);
+%! assert_equal (B, [-2.496681686051138; 0], 1e-6);
+%! assert_equal (F.Intercept, 2.344204689224574, 1e-6);
+%! assert_equal (F.Deviance, 0.304953993765223, 1e-6);
+%!test
+%! ## MATLAB parity: single weights give a double-precision result.
+%! Xw = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! yw = [1 0 2 1 3 2 4 3]';
+%! ww = single ([1 2 1 2 1 2 1 2]');
+%! [B, F] = lassoglm (Xw, yw, "poisson", "Lambda", 0.1, "Weights", ww, ...
+%!                    "RelTol", 1e-8);
+%! assert_equal (class (B), "double");
+%! assert_equal (B, [0; 0.272130393791213], 1e-6);
+%! assert_equal (F.Intercept, -0.739508255321235, 1e-6);
+%! assert_equal (F.Deviance, 3.144646252896119, 1e-6);
 
 ## Test input validation
 %!error<Invalid call> lassoglm (1)
@@ -620,6 +692,26 @@ endfunction
 %! lassoglm ([1, 2; 3, 4], [1; 3], 'binomial')
 %!error<lassoglm: 'Offset' must be a numeric vector, one per observation.> ...
 %! lassoglm ([1, 2; 3, 4], [1; 0], 'binomial', 'Offset', [1, 2, 3])
+%!error<lassoglm: 'Weights' must be a real floating-point vector.> ...
+%! lassoglm (X, yp, 'poisson', 'Weights', int8 (ones (14, 1)))
+%!error<lassoglm: 'Weights' must be a real floating-point vector.> ...
+%! lassoglm (X, yp, 'poisson', 'Weights', true (14, 1))
+%!error<lassoglm: 'Weights' must be a real floating-point vector.> ...
+%! lassoglm (X, yp, 'poisson', 'Weights', complex (ones (14, 1), 0))
+%!error<lassoglm: 'Weights' must be a vector with one element per row of X.> ...
+%! Xn = X;  Xn(3,1) = NaN;
+%! lassoglm (Xn, yp, 'poisson', 'Weights', ones (13, 1))
+%!error<lassoglm: 'Weights' must be non-negative and not infinite.> ...
+%! lassoglm (X, yp, 'poisson', 'Weights', [Inf; ones(13,1)])
+%!error<lassoglm: 'Weights' must be non-negative and not infinite.> ...
+%! lassoglm (X, yp, 'poisson', 'Weights', [-1; ones(13,1)])
+%!error<lassoglm: at least two observations must remain after removing NaN values.> ...
+%! Xn = X;  Xn(2:14,1) = NaN;
+%! lassoglm (Xn, yp, 'poisson', 'Lambda', 0.1)
+%!error<lassoglm: at least two of the remaining observations must have non-zero weight.> ...
+%! Xn = X;  Xn(2,1) = NaN;
+%! w = zeros (14, 1);  w([2 5]) = 1;
+%! lassoglm (Xn, yp, 'poisson', 'Weights', w)
 %!error<lassoglm: 'Alpha' must be a scalar in .0, 1..> ...
 %! lassoglm ([1, 2; 3, 4], [1; 0], 'binomial', 'Alpha', 0)
 %!error<lassoglm: 'Lambda' must be a vector of non-negative values.> ...
