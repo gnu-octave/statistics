@@ -75,8 +75,10 @@
 ## double, with one element per row of @var{X}.  A @qcode{NaN} weight marks its
 ## observation as missing.
 ## @item @qcode{'Size'} @tab for the @qcode{'binomial'} distribution, the number
-## of trials (a scalar or a per-observation vector); @var{y} holds the number of
-## successes.  Default is 1 (Bernoulli responses).
+## of trials, a scalar or a vector with one element per row of @var{X};
+## @var{y} holds the number of successes.  Default is 1 (Bernoulli responses).
+## The trials of rows removed because of @qcode{NaN} values are dropped with
+## those rows.  @qcode{'Size'} is an Octave extension.
 ## @item @qcode{'Link'} @tab the link function to use instead of the family's
 ## canonical link.  Accepts any link name understood by @code{glmfit} (e.g.
 ## @qcode{'log'}, @qcode{'probit'}) or a numeric exponent for a power link.
@@ -224,6 +226,10 @@ function [B, FitInfo] = lassoglm (X, y, distr, varargin)
     elseif (isscalar (binomsize))
       N = binomsize * ones (n, 1);
     else
+      if (! (isvector (binomsize) && numel (binomsize) == numel (ok)))
+        error (strcat ("lassoglm: 'Size' must be a scalar or a vector with", ...
+                       " one element per row of X."));
+      endif
       N = binomsize(:);
       N = N(ok);
     endif
@@ -665,6 +671,16 @@ endfunction
 %! assert_equal (F.Intercept, 2.344204689224574, 1e-6);
 %! assert_equal (F.Deviance, 0.304953993765223, 1e-6);
 %!test
+%! ## A NaN row drops its number of trials.
+%! Xs = [1 2; 2 1; 3 5; NaN 3; 5 6; 6 4; 7 8; 8 7];
+%! ys = [1 0 2 1 3 2 2 3]';
+%! Ns = [3 2 3 3 4 3 4 3]';
+%! [B, F] = lassoglm (Xs, ys, "binomial", "Lambda", 0.1, "Size", Ns);
+%! [Br, Fr] = lassoglm (Xs([1:3, 5:8],:), ys([1:3, 5:8]), "binomial", ...
+%!                      "Lambda", 0.1, "Size", Ns([1:3, 5:8]));
+%! assert_equal (B, Br);
+%! assert_equal (F.Deviance, Fr.Deviance);
+%!test
 %! ## MATLAB parity: single weights give a double-precision result.
 %! Xw = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
 %! yw = [1 0 2 1 3 2 4 3]';
@@ -712,6 +728,11 @@ endfunction
 %! Xn = X;  Xn(2,1) = NaN;
 %! w = zeros (14, 1);  w([2 5]) = 1;
 %! lassoglm (Xn, yp, 'poisson', 'Weights', w)
+%!error<lassoglm: 'Size' must be a scalar or a vector with one element per row of X.> ...
+%! lassoglm (X, yb, 'binomial', 'Size', ones (15, 1))
+%!error<lassoglm: 'Size' must be a scalar or a vector with one element per row of X.> ...
+%! Xn = X;  Xn(3,1) = NaN;
+%! lassoglm (Xn, yb, 'binomial', 'Size', ones (13, 1))
 %!error<lassoglm: 'Alpha' must be a scalar in .0, 1..> ...
 %! lassoglm ([1, 2; 3, 4], [1; 0], 'binomial', 'Alpha', 0)
 %!error<lassoglm: 'Lambda' must be a vector of non-negative values.> ...
