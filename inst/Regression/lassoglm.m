@@ -28,7 +28,13 @@
 ## response @var{y} on the predictor data @var{X}, penalized by the lasso (L1)
 ## or elastic-net penalty.  @var{X} is an @math{n}-by-@math{p} numeric matrix of
 ## @math{p} predictors at each of @math{n} observations, and @var{y} is a
-## numeric vector of @math{n} responses.  @var{distr} names the distribution of
+## numeric vector of @math{n} responses.  For the @qcode{'binomial'}
+## distribution @var{y} may also be a logical vector with @qcode{true} the
+## success, a categorical vector with exactly two categories whose second is
+## the success and whose undefined elements are missing, or an @math{n}-by-2
+## matrix whose first column holds the number of successes and whose second
+## holds the number of trials; a row with @qcode{NaN} in either column or with
+## no trials is removed.  @var{distr} names the distribution of
 ## the response: @qcode{'normal'} (default), @qcode{'binomial'},
 ## @qcode{'poisson'}, @qcode{'gamma'}, or @qcode{'inverse gaussian'}.  The
 ## canonical link function of the chosen distribution is used unless overridden
@@ -74,11 +80,13 @@
 ## @item @qcode{'Weights'} @tab a real, non-negative vector of class single or
 ## double, with one element per row of @var{X}.  A @qcode{NaN} weight marks its
 ## observation as missing.
-## @item @qcode{'Size'} @tab for the @qcode{'binomial'} distribution, the number
-## of trials, a scalar or a vector with one element per row of @var{X};
-## @var{y} holds the number of successes.  Default is 1 (Bernoulli responses).
-## The trials of rows removed because of @qcode{NaN} values are dropped with
-## those rows.  @qcode{'Size'} is an Octave extension.
+## @item @qcode{'BinomialSize'} @tab for the @qcode{'binomial'} distribution,
+## the number of trials, a scalar or a vector with one element per row of
+## @var{X}; @var{y} holds the number of successes.  Default is 1 (Bernoulli
+## responses).  It describes the same model as the two-column @var{y}, whose
+## trials are used when both are given.  A row whose number of trials is
+## @qcode{NaN} or 0 is removed.  @qcode{'BinomialSize'} is an Octave
+## extension, and @qcode{'Size'} is accepted as an alias for it.
 ## @item @qcode{'Link'} @tab the link function to use instead of the family's
 ## canonical link.  Accepts any link name understood by @code{glmfit} (e.g.
 ## @qcode{'log'}, @qcode{'probit'}) or a numeric exponent for a power link.
@@ -114,13 +122,6 @@ function [B, FitInfo] = lassoglm (X, y, distr, varargin)
   if (! (isnumeric (X) && isreal (X) && ismatrix (X)))
     error ("lassoglm: X must be a real matrix.");
   endif
-  if (! (isnumeric (y) && isreal (y) && isvector (y)))
-    error ("lassoglm: Y must be a real vector.");
-  endif
-  y = y(:);
-  if (rows (X) != numel (y))
-    error ("lassoglm: X and Y must have the same number of observations.");
-  endif
   if (nargin < 3 || isempty (distr))
     distr = 'normal';
   endif
@@ -131,6 +132,35 @@ function [B, FitInfo] = lassoglm (X, y, distr, varargin)
   if (! any (strcmp (distr, {'normal', 'binomial', 'poisson', 'gamma', ...
                              'inverse gaussian'})))
     error ("lassoglm: unknown distribution '%s'.", distr);
+  endif
+
+  ## A binomial response may be logical, categorical with two categories, or
+  ## a two-column matrix of successes and trials.  A row vector stays a
+  ## response vector.
+  trials = [];
+  if (strcmp (distr, 'binomial') && islogical (y))
+    y = double (y);
+  elseif (strcmp (distr, 'binomial') && isa (y, 'categorical'))
+    if (! (isvector (y) && numel (categories (y)) == 2))
+      error (strcat ("lassoglm: a categorical Y must be a vector with", ...
+                     " exactly two categories."));
+    endif
+    y = double (y) - 1;
+  endif
+  if (strcmp (distr, 'binomial') && isnumeric (y) && isreal (y)
+      && ismatrix (y) && ! isvector (y) && columns (y) == 2)
+    trials = y(:,2);
+    y = y(:,1);
+  elseif (! (isnumeric (y) && isreal (y) && isvector (y)))
+    if (strcmp (distr, 'binomial'))
+      error (strcat ("lassoglm: for the 'binomial' distribution Y must be", ...
+                     " a real vector or a two-column matrix."));
+    endif
+    error ("lassoglm: Y must be a real vector.");
+  endif
+  y = y(:);
+  if (rows (X) != numel (y))
+    error ("lassoglm: X and Y must have the same number of observations.");
   endif
 
   ## Defaults and Name-Value parsing.
@@ -165,7 +195,8 @@ function [B, FitInfo] = lassoglm (X, y, distr, varargin)
       case "lambdaratio";    lambdaratio = varargin{k+1};
       case "standardize";    standardize = logical (varargin{k+1});
       case "weights";        weights = varargin{k+1};
-      case "size";           binomsize = varargin{k+1};
+      case {"binomialsize", "size"}
+        binomsize = varargin{k+1};
       case "link";           linkarg = varargin{k+1};
       case "offset";         offset = varargin{k+1};
       case "reltol";         reltol = varargin{k+1};
@@ -202,13 +233,35 @@ function [B, FitInfo] = lassoglm (X, y, distr, varargin)
     weights = double (weights(:));
   endif
 
-  ## Drop observations with missing values, a NaN weight among them.
-  ok = ! (any (isnan (X), 2) | isnan (y));
+  ## Number of binomial trials per observation, default one.  The trials in a
+  ## two-column Y take precedence over 'BinomialSize'.
+  N = ones (rows (X), 1);
+  if (strcmp (distr, 'binomial'))
+    if (! isempty (trials))
+      N = trials;
+    elseif (isscalar (binomsize))
+      N(:) = binomsize;
+    elseif (! isempty (binomsize))
+      if (! (isvector (binomsize) && numel (binomsize) == rows (X)))
+        error (strcat ("lassoglm: 'BinomialSize' must be a scalar or a", ...
+                       " vector with one element per row of X."));
+      endif
+      N = binomsize(:);
+    endif
+    if (! (isnumeric (N) && isreal (N)))
+      error ("lassoglm: the number of binomial trials must be real.");
+    endif
+    N = double (N);
+  endif
+
+  ## Drop observations with missing values: a NaN weight, a NaN or zero
+  ## number of trials among them.
+  ok = ! (any (isnan (X), 2) | isnan (y) | isnan (N) | N == 0);
   if (! isempty (weights))
     ok &= ! isnan (weights);
     weights = weights(ok);
   endif
-  X = X(ok,:);  y = y(ok);
+  X = X(ok,:);  y = y(ok);  N = N(ok);
   [n, p] = size (X);
   if (n < 2)
     error (strcat ("lassoglm: at least two observations must remain after", ...
@@ -219,36 +272,21 @@ function [B, FitInfo] = lassoglm (X, y, distr, varargin)
                    " must have non-zero weight."));
   endif
 
-  ## Number of binomial trials per observation (Size), default one.
-  if (strcmp (distr, 'binomial'))
-    if (isempty (binomsize))
-      N = ones (n, 1);
-    elseif (isscalar (binomsize))
-      N = binomsize * ones (n, 1);
-    else
-      if (! (isvector (binomsize) && numel (binomsize) == numel (ok)))
-        error (strcat ("lassoglm: 'Size' must be a scalar or a vector with", ...
-                       " one element per row of X."));
-      endif
-      N = binomsize(:);
-      N = N(ok);
-    endif
-    if (! (isnumeric (N) && all (N > 0)))
-      error ("lassoglm: 'Size' must be a positive scalar or vector.");
-    endif
-  else
-    N = ones (n, 1);
+  if (any (N < 0))
+    error ("lassoglm: the number of binomial trials must be non-negative.");
   endif
 
   ## Prior observation weights.  PW keeps the raw weights for the deviance sum;
-  ## O is normalised to sum to one and sets the scale of the penalty (as in
-  ## LASSO for the Gaussian case).
+  ## O, normalised to sum to one, centres and scales the predictors.
   if (isempty (weights))
     pw = ones (n, 1);
   else
     pw = weights;
   endif
   o = pw / sum (pw);
+  ## OL sets the scale of the loss: it is divided by the total number of
+  ## trials, as MATLAB divides it.
+  ol = pw / sum (pw .* N);
 
   ## Offset: a fixed per-observation term added to the linear predictor.
   if (isempty (offset))
@@ -267,7 +305,7 @@ function [B, FitInfo] = lassoglm (X, y, distr, varargin)
     case 'binomial'
       if (any (y < 0) || any (y > N))
         error (strcat ("lassoglm: for the 'binomial' distribution Y must be", ...
-                       " between 0 and 'Size'."));
+                       " between 0 and the number of trials."));
       endif
     case 'poisson'
       if (any (y < 0))
@@ -314,7 +352,7 @@ function [B, FitInfo] = lassoglm (X, y, distr, varargin)
     lampath = sort (lambda(:)', "descend");
   else
     deta0 = dlink (mu0);
-    grad = Xs' * (o .* (y ./ N - mu0) ./ (deta0 .* varfun (mu0, N)));
+    grad = Xs' * (ol .* (y ./ N - mu0) ./ (deta0 .* varfun (mu0, N)));
     lambda_max = max (abs (grad)) / alpha;
     if (isempty (lambdaratio))
       lambdaratio = ifelse (n < p, 1e-2, 1e-4);
@@ -339,7 +377,7 @@ function [B, FitInfo] = lassoglm (X, y, distr, varargin)
       deta = dlink (mu);
       ## Working response with the offset removed (fitted by intercept + Xs).
       zc = eta - off + (y ./ N - mu) .* deta;
-      W = o ./ (deta .^ 2 .* varfun (mu, N));
+      W = ol ./ (deta .^ 2 .* varfun (mu, N));
       sumW = sum (W);
       ## Inner coordinate descent on the penalized weighted least squares.
       for it = 1:maxiter
@@ -521,7 +559,7 @@ function dev = lassoglm_folddev_ (Xtr, ytr, Ntr, offtr, wtr, Xte, yte, Nte, ...
           "Intercept", intercept, "RelTol", reltol, "MaxIter", maxiter, ...
           "Weights", wtr, "Offset", offtr};
   if (strcmp (distr, "binomial"))
-    args = [args, {"Size", Ntr}];
+    args = [args, {"BinomialSize", Ntr}];
   endif
   if (! isempty (linkarg))
     args = [args, {"Link", linkarg}];
@@ -675,11 +713,137 @@ endfunction
 %! Xs = [1 2; 2 1; 3 5; NaN 3; 5 6; 6 4; 7 8; 8 7];
 %! ys = [1 0 2 1 3 2 2 3]';
 %! Ns = [3 2 3 3 4 3 4 3]';
-%! [B, F] = lassoglm (Xs, ys, "binomial", "Lambda", 0.1, "Size", Ns);
+%! [B, F] = lassoglm (Xs, ys, "binomial", "Lambda", 0.1, "BinomialSize", Ns);
 %! [Br, Fr] = lassoglm (Xs([1:3, 5:8],:), ys([1:3, 5:8]), "binomial", ...
-%!                      "Lambda", 0.1, "Size", Ns([1:3, 5:8]));
+%!                      "Lambda", 0.1, "BinomialSize", Ns([1:3, 5:8]));
 %! assert_equal (B, Br);
 %! assert_equal (F.Deviance, Fr.Deviance);
+%!test
+%! ## MATLAB parity: a two-column Y holds the successes and the trials.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! ys = [1 0 2 1 3 2 2 3]';
+%! Ns = [3 2 3 3 4 3 4 3]';
+%! [B, F] = lassoglm (Xs, [ys, Ns], "binomial", "Lambda", 0.1, ...
+%!                    "RelTol", 1e-10);
+%! assert_equal (B, [0.047756856379363; 0.108580852504688], 1e-8);
+%! assert_equal (F.Intercept, -0.503479881696499, 1e-8);
+%! assert_equal (F.Deviance, 6.500381919164349, 1e-8);
+%!test
+%! ## MATLAB parity: two-column Y without standardization.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! ys = [1 0 2 1 3 2 2 3]';
+%! Ns = [3 2 3 3 4 3 4 3]';
+%! [B, F] = lassoglm (Xs, [ys, Ns], "binomial", "Lambda", 0.1, ...
+%!                    "RelTol", 1e-10, "Standardize", false);
+%! assert_equal (B, [0.109801582646360; 0.172075761411567], 1e-8);
+%! assert_equal (F.Intercept, -1.091146717397907, 1e-8);
+%! assert_equal (F.Deviance, 5.474626800232128, 1e-8);
+%!test
+%! ## 'BinomialSize' describes the same model as a two-column Y.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! ys = [1 0 2 1 3 2 2 3]';
+%! Ns = [3 2 3 3 4 3 4 3]';
+%! [B, F] = lassoglm (Xs, [ys, Ns], "binomial", "Lambda", 0.1);
+%! [Bs, Fs] = lassoglm (Xs, ys, "binomial", "Lambda", 0.1, ...
+%!                      "BinomialSize", Ns);
+%! assert_equal (B, Bs);
+%! assert_equal (F.Deviance, Fs.Deviance);
+%!test
+%! ## 'Size' is an alias for 'BinomialSize'.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! ys = [1 0 2 1 3 2 2 3]';
+%! Ns = [3 2 3 3 4 3 4 3]';
+%! B = lassoglm (Xs, ys, "binomial", "Lambda", 0.1, "BinomialSize", Ns);
+%! assert_equal (lassoglm (Xs, ys, "binomial", "Lambda", 0.1, "Size", Ns), B);
+%!test
+%! ## The trials in a two-column Y take precedence over 'BinomialSize'.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! ys = [1 0 2 1 3 2 2 3]';
+%! Ns = [3 2 3 3 4 3 4 3]';
+%! B = lassoglm (Xs, [ys, Ns], "binomial", "Lambda", 0.1);
+%! assert_equal (lassoglm (Xs, [ys, Ns], "binomial", "Lambda", 0.1, ...
+%!                         "BinomialSize", 5), B);
+%!test
+%! ## MATLAB parity: a NaN number of trials drops its row.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! ys = [1 0 2 1 3 2 2 3]';
+%! Ns = [3 NaN 3 3 4 3 4 3]';
+%! B = lassoglm (Xs, [ys, Ns], "binomial", "Lambda", 0.1);
+%! r = [1, 3:8];
+%! assert_equal (B, lassoglm (Xs(r,:), [ys(r), Ns(r)], "binomial", ...
+%!                            "Lambda", 0.1));
+%!test
+%! ## MATLAB parity: a NaN number of successes drops its row.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! ys = [1 NaN 2 1 3 2 2 3]';
+%! Ns = [3 2 3 3 4 3 4 3]';
+%! B = lassoglm (Xs, [ys, Ns], "binomial", "Lambda", 0.1);
+%! r = [1, 3:8];
+%! assert_equal (B, lassoglm (Xs(r,:), [ys(r), Ns(r)], "binomial", ...
+%!                            "Lambda", 0.1));
+%!test
+%! ## MATLAB parity: a row with no trials is dropped.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! ys = [1 0 2 1 3 2 2 3]';
+%! Ns = [3 0 3 3 4 3 4 3]';
+%! B = lassoglm (Xs, [ys, Ns], "binomial", "Lambda", 0.1);
+%! r = [1, 3:8];
+%! assert_equal (B, lassoglm (Xs(r,:), [ys(r), Ns(r)], "binomial", ...
+%!                            "Lambda", 0.1));
+%!test
+%! ## A weight of 2 counts its row twice; R2024a returns one fit per row.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! ys = [1 0 2 1 3 2 2 3]';
+%! Ns = [3 2 3 3 4 3 4 3]';
+%! ws = [1 2 1 2 1 2 1 2]';
+%! r = [1 2 2 3 4 4 5 6 6 7 8 8];
+%! B = lassoglm (Xs, [ys, Ns], "binomial", "Lambda", 0.1, "Weights", ws, ...
+%!               "RelTol", 1e-10);
+%! Br = lassoglm (Xs(r,:), [ys(r), Ns(r)], "binomial", "Lambda", 0.1, ...
+%!                "RelTol", 1e-10);
+%! assert_equal (B, Br, 1e-12);
+%!test
+%! ## MATLAB parity: a logical Y takes true as the success.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! yl = logical ([1 0 1 0 1 1 0 1]');
+%! [B, F] = lassoglm (Xs, yl, "binomial", "Lambda", 0.1);
+%! assert_equal (B, [0; 0]);
+%! assert_equal (F.Intercept, 0.510825623765984, 1e-12);
+%! assert_equal (F.Deviance, 10.585011810527714, 1e-12);
+%!test
+%! ## MATLAB parity: a categorical Y takes its second category as the success.
+%! ## R2024a stops short of the optimum at its default 'RelTol', hence 1e-3.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! yc = categorical ({"a"; "b"; "a"; "b"; "a"; "a"; "b"; "a"});
+%! [B, F] = lassoglm (Xs, yc, "binomial", "Lambda", 0.01, "RelTol", 1e-10);
+%! assert_equal (B, [0.139722006326075; -0.252634000628786], 1e-3);
+%! assert_equal (F.Intercept, -0.018771754821193, 1e-3);
+%! assert_equal (F.Deviance, 10.206050689662469, 1e-3);
+%!test
+%! ## MATLAB parity: the success follows the order of the categories.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! c = {"a"; "b"; "a"; "b"; "a"; "a"; "b"; "a"};
+%! B = lassoglm (Xs, categorical (c, {"b", "a"}), "binomial", "Lambda", 0.01);
+%! assert_equal (B, lassoglm (Xs, double (strcmp (c, "a")), "binomial", ...
+%!                            "Lambda", 0.01));
+%!test
+%! ## MATLAB parity: an undefined categorical element is missing.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! c = {"a"; "b"; "a"; "b"; "a"; "a"; "b"; "a"};
+%! yc = categorical (c);
+%! yc(2) = missing;
+%! yd = double (strcmp (c, "b"));
+%! yd(2) = NaN;
+%! B = lassoglm (Xs, yc, "binomial", "Lambda", 0.01);
+%! assert_equal (B, lassoglm (Xs, yd, "binomial", "Lambda", 0.01));
+%!test
+%! ## MATLAB parity: an ordinal categorical Y is read as a nominal one.
+%! Xs = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
+%! c = {"a"; "b"; "a"; "b"; "a"; "a"; "b"; "a"};
+%! yo = categorical (c, {"a", "b"}, "Ordinal", true);
+%! B = lassoglm (Xs, yo, "binomial", "Lambda", 0.01);
+%! assert_equal (B, lassoglm (Xs, categorical (c), "binomial", ...
+%!                            "Lambda", 0.01));
 %!test
 %! ## MATLAB parity: single weights give a double-precision result.
 %! Xw = [1 2; 2 1; 3 5; 4 3; 5 6; 6 4; 7 8; 8 7];
@@ -704,7 +868,7 @@ endfunction
 %! lassoglm ([1, 2; 3, 4], [1; -1], 'poisson')
 %!error<lassoglm: for the 'gamma' distribution Y must be positive.> ...
 %! lassoglm ([1, 2; 3, 4], [1; 0], 'gamma')
-%!error<lassoglm: for the 'binomial' distribution Y must be between 0 and 'Size'.> ...
+%!error<lassoglm: for the 'binomial' distribution Y must be between 0 and the number of trials.> ...
 %! lassoglm ([1, 2; 3, 4], [1; 3], 'binomial')
 %!error<lassoglm: 'Offset' must be a numeric vector, one per observation.> ...
 %! lassoglm ([1, 2; 3, 4], [1; 0], 'binomial', 'Offset', [1, 2, 3])
@@ -728,11 +892,26 @@ endfunction
 %! Xn = X;  Xn(2,1) = NaN;
 %! w = zeros (14, 1);  w([2 5]) = 1;
 %! lassoglm (Xn, yp, 'poisson', 'Weights', w)
-%!error<lassoglm: 'Size' must be a scalar or a vector with one element per row of X.> ...
-%! lassoglm (X, yb, 'binomial', 'Size', ones (15, 1))
-%!error<lassoglm: 'Size' must be a scalar or a vector with one element per row of X.> ...
+%!error<lassoglm: 'BinomialSize' must be a scalar or a vector with one element per row of X.> ...
+%! lassoglm (X, yb, 'binomial', 'BinomialSize', ones (15, 1))
+%!error<lassoglm: 'BinomialSize' must be a scalar or a vector with one element per row of X.> ...
 %! Xn = X;  Xn(3,1) = NaN;
-%! lassoglm (Xn, yb, 'binomial', 'Size', ones (13, 1))
+%! lassoglm (Xn, yb, 'binomial', 'BinomialSize', ones (13, 1))
+%!error<lassoglm: the number of binomial trials must be non-negative.> ...
+%! lassoglm (X, yb, 'binomial', 'BinomialSize', [-1; ones(13,1)])
+%!error<lassoglm: the number of binomial trials must be real.> ...
+%! lassoglm (X, yb, 'binomial', 'BinomialSize', 1i)
+%!error<lassoglm: for the 'binomial' distribution Y must be between 0 and the number of trials.> ...
+%! lassoglm (X, [2 * yb, ones(14,1)], 'binomial')
+%!error<lassoglm: for the 'binomial' distribution Y must be a real vector or a two-column matrix.> ...
+%! lassoglm (X, [yb, ones(14,2)], 'binomial')
+%!error<lassoglm: Y must be a real vector.> ...
+%! lassoglm (X, [yp, ones(14,1)], 'poisson')
+%!error<lassoglm: a categorical Y must be a vector with exactly two categories.> ...
+%! lassoglm (X(1:3,:), categorical ({'a'; 'b'; 'a'}, {'a', 'b', 'c'}), ...
+%!           'binomial')
+%!error<lassoglm: for the 'binomial' distribution Y must be a real vector or a two-column matrix.> ...
+%! lassoglm (X(1:3,:), {'a'; 'b'; 'a'}, 'binomial')
 %!error<lassoglm: 'Alpha' must be a scalar in .0, 1..> ...
 %! lassoglm ([1, 2; 3, 4], [1; 0], 'binomial', 'Alpha', 0)
 %!error<lassoglm: 'Lambda' must be a vector of non-negative values.> ...
