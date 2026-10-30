@@ -23,14 +23,34 @@
 ## @deftypefn  {statistics} {@var{t} =} crosstab (@var{x1}, @var{x2})
 ## @deftypefnx {statistics} {@var{t} =} crosstab (@var{x1}, @dots{}, @var{xn})
 ## @deftypefnx {statistics} {[@var{t}, @var{chisq}, @var{p}, @var{labels}] =} crosstab (@dots{})
+## @deftypefnx {statistics} {[@dots{}] =} crosstab (@dots{}, @var{Name}, @var{Value})
 ##
 ## Create a cross-tabulation (contingency table) @var{t} from data vectors.
 ##
 ## The inputs @var{x1}, @var{x2}, ... @var{xn} must be vectors of equal length
 ## with a data type of numeric, logical, char array, categorical, strings,
 ## datetime, duration, or cell array of character vectors.  Missing values,
-## such as @qcode{NaN} or @qcode{NaT}, are not counted.  A @qcode{NaN}
-## duration is missing too, whereas MATLAB counts it as a group of its own.
+## such as @qcode{NaN} or @qcode{NaT}, are not counted by default.  A
+## @qcode{NaN} duration is missing too, whereas MATLAB counts it as a group of
+## its own.
+##
+## The following @qcode{Name-Value} pair is supported:
+##
+## @multitable @columnfractions 0.28 0.72
+## @headitem @var{Name} @tab @var{Value}
+##
+## @item @qcode{'IncludeMissingGroups'} @tab A numeric or logical scalar that
+## is not @qcode{NaN} (default @qcode{false}).  When nonzero or @qcode{true},
+## the missing values are counted as a group of their own, placed after the
+## other groups of every input that holds any.  The name is not case
+## sensitive.  Only its last occurrence counts.
+## @end multitable
+##
+## The label of the missing group is @qcode{NaN} for numeric inputs,
+## @qcode{<undefined>} for categorical, @qcode{<missing>} for strings,
+## @qcode{@{''@}} for cell arrays of character vectors, @qcode{NaT} for
+## datetime, the text of a @qcode{NaN} element for duration, and the blank row
+## itself for a char array.
 ##
 ## As additional return values @code{crosstab} returns the chi-square statistics
 ## @var{chisq}, its p-value @var{p} and a cell array @var{labels}, containing
@@ -40,7 +60,9 @@
 ## an unused one included, holding zeros.  The chi-square statistic and its
 ## p-value are computed over the rows and columns that hold observations,
 ## where MATLAB returns @code{NaN} for both whenever any row or column is
-## empty.
+## empty.  With the missing group counted, it follows every category here,
+## whereas MATLAB returns a table one row longer than its labels when an unused
+## category follows the last used one.
 ##
 ## @seealso{grp2idx, tabulate}
 ## @end deftypefn
@@ -52,6 +74,32 @@ function [t, chisq, p, labels] = crosstab (varargin)
     print_usage ();
   endif
 
+  ## Trailing Name-Value pairs start at the first text, from the third input
+  ## on, that is the option name; any other text is data.
+  optname = "IncludeMissingGroups";
+  isopt = @(s) ischar (s) && isrow (s) && strcmpi (s, optname);
+  nvars = nargin;
+  incmissing = false;
+  k = find (cellfun (isopt, varargin(3:end)), 1);
+  if (! isempty (k))
+    nvars = k + 1;
+    if (mod (nargin - nvars, 2) != 0)
+      error ("crosstab: optional arguments must be Name-Value pairs.");
+    endif
+    for j = nvars+1:2:nargin
+      if (! isopt (varargin{j}))
+        error ("crosstab: unknown parameter name.");
+      endif
+      value = varargin{j+1};
+      if (! (isscalar (value) && (isnumeric (value) || islogical (value))))
+        error (["crosstab: 'IncludeMissingGroups' must be a numeric or ", ...
+                "logical scalar."]);
+      endif
+      incmissing = logical (value);
+    endfor
+    varargin = varargin(1:nvars);
+  endif
+
   ## main - begin
   v_length = [];                    # vector of lengths of input vectors
   reshape_format = [];              # vector of the dimensions of t
@@ -59,7 +107,7 @@ function [t, chisq, p, labels] = crosstab (varargin)
   labels_data = {};                 # temporary cell array for unique labels
   coordinates = {};                 # cell array of unique elements
 
-  for i = 1:nargin
+  for i = 1:nvars
     vector = varargin{i};
     ## Convert char, cellstr, categorical, string, datetime, or duration to
     ## indexed numeric vector
@@ -99,15 +147,21 @@ function [t, chisq, p, labels] = crosstab (varargin)
       reshape_format(i) = numel (labels_data{i});
       coordinates(i) = (1:numel (labels_data{i}))';
     endif
+    ## Missing values form a last group of their own when they are counted
+    miss = isnan (vector);
+    if (incmissing && any (miss))
+      labels_data{i}{end+1,1} = crosstab_missing_label_ (varargin{i}, miss);
+      reshape_format(i) += 1;
+    endif
   endfor
 
   if (nargout > 3)
     max_rows = 0;
-    for i = 1:nargin
+    for i = 1:nvars
       max_rows = max (max_rows, numel (labels_data{i}));
     endfor
-    labels = cell (max_rows, nargin);
-    for i = 1:nargin
+    labels = cell (max_rows, nvars);
+    for i = 1:nvars
       col_labels = labels_data{i};
       labels(1:numel (col_labels), i) = col_labels;
     endfor
@@ -120,12 +174,18 @@ function [t, chisq, p, labels] = crosstab (varargin)
   ## Main logic:
   ## For each combination of x1, x2, ... xn, search in unique elements stored
   ## in coordinates for each dimension and increment the position value in t
-  ## multidimensional matrix (always if there is no NaN element in the combination).
+  ## multidimensional matrix (always if there is no NaN element in the
+  ## combination, or if the missing values are counted, in which case a NaN
+  ## goes to the last position of its dimension).
   for idx = 1:size (X, 1)
-    if (! any (isnan (X(idx,:))))
+    if (incmissing || ! any (isnan (X(idx,:))))
       location = zeros (1,size (X, 2));
       for jdx = 1:size (X,2)
-        location(jdx) = find (cell2mat (coordinates(jdx)) == X(idx, jdx));
+        if (isnan (X(idx, jdx)))
+          location(jdx) = reshape_format(jdx);
+        else
+          location(jdx) = find (cell2mat (coordinates(jdx)) == X(idx, jdx));
+        endif
       endfor
       t(num2cell (location){:}) += 1;
     endif
@@ -155,6 +215,28 @@ function [t, chisq, p, labels] = crosstab (varargin)
   endif
 endfunction
 
+## Label of the group that holds the missing values of the input X, whose
+## missing elements are flagged by MISS.
+function lbl = crosstab_missing_label_ (x, miss)
+
+  if (iscategorical (x))
+    lbl = "<undefined>";
+  elseif (isstring (x))
+    lbl = "<missing>";
+  elseif (iscellstr (x))
+    lbl = "{''}";
+  elseif (ischar (x))
+    lbl = x(find (miss, 1),:);
+  elseif (isdatetime (x))
+    lbl = "NaT";
+  elseif (isduration (x))
+    lbl = strtrim (char (x(find (miss, 1))));
+  else
+    lbl = "NaN";
+  endif
+
+endfunction
+
 ## Test input validation
 %!error crosstab ()
 %!error crosstab (1)
@@ -167,6 +249,12 @@ endfunction
 %! crosstab (repmat (datetime (2026, 1, 1), 2, 2), [1 2 3 4])
 %!error <crosstab: x1, x2 ... xn must be vectors.> ...
 %! crosstab (hours ([1 2; 3 4]), [1 2 3 4])
+%!error <crosstab: 'IncludeMissingGroups' must be a numeric or logical scalar.> ...
+%! crosstab ([1 2], [1 2], 'IncludeMissingGroups', 'yes')
+%!error <crosstab: optional arguments must be Name-Value pairs.> ...
+%! crosstab ([1 2], [1 2], 'IncludeMissingGroups')
+%!error <crosstab: unknown parameter name.> ...
+%! crosstab ([1 2], [1 2], 'IncludeMissingGroups', true, 'Foo', true)
 %!test
 %! load carbig
 %! [t, chisq, p, labels] = crosstab (cyl4, when, org);
@@ -445,3 +533,67 @@ endfunction
 %! assert_equal (t, [2 0 0; 0 1 0; 0 0 1]);
 %! assert_equal (chisq, 8, 1e-12);
 %! assert_equal (labels, {'1', '-1'; '2', '0.5'; '10', '2'});
+
+## Test IncludeMissingGroups
+%!test
+%! ## missing values are counted as a group of their own
+%! x = [1 2 NaN 1 2];
+%! y = [1 1 2 NaN 2];
+%! w = warning ();
+%! warning ('off');
+%! [t, chisq, p, labels] = crosstab (x, y, 'IncludeMissingGroups', true);
+%! warning (w);
+%! assert_equal (t, [1 0 1; 1 1 0; 0 1 0]);
+%! assert_equal (chisq, 3.75, 1e-12);
+%! assert_equal (p, 0.440896, 1e-6);
+%! assert_equal (labels, {'1', '1'; '2', '2'; 'NaN', 'NaN'});
+%!test
+%! ## missing values in several inputs share the combined cells
+%! x = [1 NaN 2 NaN]';
+%! y = [NaN NaN 1 2]';
+%! z = [1 1 NaN 2]';
+%! w = warning ();
+%! warning ('off');
+%! [t, chisq, p] = crosstab (x, y, z, 'IncludeMissingGroups', true);
+%! warning (w);
+%! expected = zeros (3, 3, 3);
+%! expected([7 9 15 20]) = 1;
+%! assert_equal (t, expected);
+%! assert_equal (chisq, 26, 1e-12);
+%! assert_equal (p, 0.165812, 1e-6);
+%!test
+%! ## the missing group of categorical, cellstr and string inputs
+%! y = [1; 2; 1; 2];
+%! w = warning ();
+%! warning ('off');
+%! [t1, ~, ~, l1] = crosstab (categorical ({'a'; 'b'; ''; 'a'}), y, ...
+%!                            'IncludeMissingGroups', true);
+%! [t2, ~, ~, l2] = crosstab ({'a'; 'b'; ''; 'a'}, y, ...
+%!                            'IncludeMissingGroups', true);
+%! [t3, ~, ~, l3] = crosstab (string ({'a'; 'b'; missing; 'a'}), y, ...
+%!                            'IncludeMissingGroups', true);
+%! warning (w);
+%! assert_equal (t1, [1 1; 0 1; 1 0]);
+%! assert_equal (t2, t1);
+%! assert_equal (t3, t1);
+%! assert_equal ({l1{3,1}, l2{3,1}, l3{3,1}}, ...
+%!               {'<undefined>', "{''}", '<missing>'});
+%!test
+%! ## the missing group of datetime, duration and char inputs
+%! y = [1; 2; 1; 2];
+%! d = [datetime(2026, 1, 1); NaT; datetime(2026, 1, 1); datetime(2025, 1, 1)];
+%! w = warning ();
+%! warning ('off');
+%! [t1, ~, ~, l1] = crosstab (d, y, 'IncludeMissingGroups', true);
+%! [t2, ~, ~, l2] = crosstab (hours ([1; NaN; 2; 1]), y, ...
+%!                            'IncludeMissingGroups', true);
+%! [~, ~, ~, l3] = crosstab (days ([1; NaN; 2; 1]), y, ...
+%!                           'IncludeMissingGroups', true);
+%! [t4, ~, ~, l4] = crosstab (['ab'; '  '; 'ab'; 'cd'], y, ...
+%!                            'IncludeMissingGroups', true);
+%! warning (w);
+%! assert_equal (t1, [0 1; 2 0; 0 1]);
+%! assert_equal (t2, [1 1; 1 0; 0 1]);
+%! assert_equal (t4, [2 0; 0 1; 0 1]);
+%! assert_equal ({l1{3,1}, l2{3,1}, l3{3,1}, l4{3,1}}, ...
+%!               {'NaT', 'NaN hr', 'NaN days', '  '});
