@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 87
+# columns: 88
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -3536,6 +3536,115 @@ regress_gp
 # elements: 1
 # length: 35
 Perform a linear regression t-test.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+rjtest
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3621
+statistics: h = rjtest (x)
+statistics: h = rjtest (x, name, value)
+statistics: [h, p] = rjtest (...)
+statistics: [h, p, rjstat, critval] = rjtest (...)
+Ryan-Joiner hypothesis test of composite normality.
+
+h = rjtest (x) performs the Ryan-Joiner test of the null
+hypothesis that the sample in the vector x comes from a normal
+distribution with unknown mean and variance, against the alternative that it
+does not come from a normal distribution. The result h is 1 if the
+test rejects the null hypothesis at the 5% significance level, and 0
+otherwise. x must be a vector of real values with at least four
+non-missing elements; NaN values are treated as missing and removed.
+
+The test statistic is the correlation between the sorted sample and the
+approximate expected normal order statistics of Blom,
+$$ R = \frac{\sum_{i=1}^n x_{(i)} b_i}
+{\sqrt{\sum_{i=1}^n (x_i - \bar{x})^2 \sum_{i=1}^n b_i^2}},
+\qquad b_i = \Phi^{-1}\left( \frac{i - 3/8}{n + 1/4} \right). $$
+R lies in (0,1], and small values of R are evidence
+against normality. R^2 is the statistic W' of the
+Shapiro-Francia test in swtest. To test for a lognormal
+distribution, test log (x).
+
+The following Name-Value pairs are supported:
+
+Name Value
+'Alpha' The significance level, a double or single scalar
+in the range (0,1). The default is 0.05.
+'MonteCarloTolerance' A positive finite double or single
+scalar. When given, p and critval are estimated by Monte Carlo
+simulation of normal samples of the same size, and enough samples are drawn
+for the standard error of p to fall below this value. The name may be
+shortened to 'MonteCarloTol'.
+
+Without 'MonteCarloTolerance' the critical value at the
+significance levels 0.01, 0.05 and 0.1 is the
+approximation of Ryan and Joiner,
+$$ c_\alpha (n) = \min \left( b_0 + \frac{b_1}{\sqrt{n}} + \frac{b_2}{n}
++ \frac{b_3}{n^2}, \; 1 \right), $$
+with the coefficients
+
+Alpha b0 b1 b2 b3
+0.01 0.9963 -0.0211 -1.4106 3.1791
+0.05 1.0063 -0.1288 -0.6118 1.3505
+0.10 1.0071 -0.1371 -0.3682 0.7780
+
+At other significance levels the critical value is interpolated between
+these three with a monotone piecewise cubic (pchip), extended below
+0.01 along the line through the values at 0.01 and
+0.05, and above 0.1 along the line to 1 at significance level
+1. The p-value is interpolated linearly in R through the points
+(0, 0), (c01, 0.01), (c05, 0.05), (c10, 0.1) and (1, 1), where c01, c05 and
+c10 are the three critical values, so away from those levels it is a rough
+guide only. The approximation is calibrated for samples of up to 100
+values, and a larger sample gives a warning; use
+'MonteCarloTolerance' for such samples, or for an accurate p-value.
+
+[h, p] = rjtest (...) also returns the p-value
+p of the test, the probability of observing a statistic as small as
+rjstat under the null hypothesis.
+
+[h, p, rjstat, critval] = rjtest (...)
+also returns the test statistic rjstat and the critical value
+critval at significance level alpha. The null hypothesis is
+rejected when rjstat < critval.
+
+A sample whose values are all equal has no defined statistic and is refused,
+as is a sample holding an infinite value, where MATLAB returns NaN
+for p, rjstat and critval and 1 for h. The option
+names are not case sensitive but must be given in full, bar
+'MonteCarloTol', where MATLAB accepts any shortened name.
+
+References:
+
+T. A. Ryan and B. L. Joiner. Normal probability plots and tests for
+normality. Technical report, Statistics Department, The Pennsylvania State
+University, 1976.
+
+G. Blom. Statistical Estimates and Transformed Beta-Variables.
+Wiley, New York, 1958.
+
+See also:
+swtest,
+adtest,
+jbtest,
+kstest,
+lillietest
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+Ryan-Joiner hypothesis test of composite normality.
 
 
 

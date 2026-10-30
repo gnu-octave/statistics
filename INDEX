@@ -70,6 +70,7 @@ Hypothesis Testing
  ranksum
  regression_ftest
  regression_ttest
+ rjtest
  runstest
  signrank
  signtest
