@@ -3511,7 +3511,7 @@ Perform a k-means clustering of the N*D matrix data.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 8
 kmedoids
@@ -3520,7 +3520,7 @@ kmedoids
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2776
+# length: 2959
 statistics: idx = kmedoids (X, k)
 statistics: [idx, C] = kmedoids (X, k)
 statistics: [idx, C, sumd] = kmedoids (X, k)
@@ -3565,10 +3565,11 @@ Name Value
 'jaccard', 'spearman', 'mahalanobis', or a custom
 distance function handle accepted by pdist2.
 'Algorithm' the optimization algorithm, either
-'pam' (default) for Partitioning Around Medoids, which searches over
-all medoid/non-medoid swaps, or 'small' for the faster Voronoi
-iteration that reassigns points and re-selects each cluster medoid until
-convergence.
+'pam' (default) for Partitioning Around Medoids, each iteration of
+which takes, for each medoid in turn, the swap with a non-medoid that most
+lowers the total distance, as MATLAB does, or 'small' for the faster
+Voronoi iteration that reassigns points and re-selects each cluster medoid
+until convergence, without the online phase MATLAB adds by default.
 'Start' the method used to choose the initial medoids:
 'plus' (default, k-means++), 'sample' (a random subset of the
 observations), 'cluster' (a preliminary pass on a subsample), or a
@@ -3580,7 +3581,8 @@ the clustering, each with a new set of initial medoids; the solution with the
 lowest total sum of distances is returned. The default is 1, or the size of
 the third dimension of a numeric 'Start'.
 'Options' a structure, as created by statset, whose
-'MaxIter' field caps the number of iterations (default 100).
+'MaxIter' field caps the number of iterations (default 100). A
+'MaxIter' of 0 returns the starting medoids.
 
 See also:
 kmeans,

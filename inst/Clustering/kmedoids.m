@@ -70,10 +70,11 @@
 ## distance function handle accepted by @code{pdist2}.
 ##
 ## @item @qcode{'Algorithm'} @tab the optimization algorithm, either
-## @qcode{'pam'} (default) for Partitioning Around Medoids, which searches over
-## all medoid/non-medoid swaps, or @qcode{'small'} for the faster Voronoi
-## iteration that reassigns points and re-selects each cluster medoid until
-## convergence.
+## @qcode{'pam'} (default) for Partitioning Around Medoids, each iteration of
+## which takes, for each medoid in turn, the swap with a non-medoid that most
+## lowers the total distance, as MATLAB does, or @qcode{'small'} for the faster
+## Voronoi iteration that reassigns points and re-selects each cluster medoid
+## until convergence, without the online phase MATLAB adds by default.
 ##
 ## @item @qcode{'Start'} @tab the method used to choose the initial medoids:
 ## @qcode{'plus'} (default, k-means++), @qcode{'sample'} (a random subset of the
@@ -88,7 +89,8 @@
 ## the third dimension of a numeric @qcode{'Start'}.
 ##
 ## @item @qcode{'Options'} @tab a structure, as created by @code{statset}, whose
-## @qcode{'MaxIter'} field caps the number of iterations (default 100).
+## @qcode{'MaxIter'} field caps the number of iterations (default 100).  A
+## @qcode{'MaxIter'} of 0 returns the starting medoids.
 ## @end multitable
 ##
 ## @seealso{kmeans, linkage, pdist2, dbscan}
@@ -294,20 +296,21 @@ function M = kpp_init (Dall, k)
   endfor
 endfunction
 
-## Partitioning Around Medoids: keep the best cost-reducing swap until none help
+## Partitioning Around Medoids: each iteration gives every medoid in turn the
+## swap with a non-medoid that most lowers the cost, until no swap helps
 function [M, iter] = pam_swap (Dall, M, maxiter)
   N       = rows (Dall);
   k       = numel (M);
   curcost = sum (min (Dall(:, M), [], 2));
   iter    = 0;
-  do
+  while (iter < maxiter)
     iter    += 1;
-    bestcost = curcost;
-    bj = 0;
-    bh = 0;
-    ismed     = false (N, 1);
-    ismed(M)  = true;
+    improved = false;
     for j = 1:k
+      bestcost = curcost;
+      bh       = 0;
+      ismed    = false (N, 1);
+      ismed(M) = true;
       for h = 1:N
         if (ismed(h))
           continue;
@@ -317,24 +320,26 @@ function [M, iter] = pam_swap (Dall, M, maxiter)
         c = sum (min (Dall(:, Mtry), [], 2));
         if (c < bestcost)
           bestcost = c;
-          bj = j;
           bh = h;
         endif
       endfor
+      if (bh > 0)
+        M(j)     = bh;
+        curcost  = bestcost;
+        improved = true;
+      endif
     endfor
-    improved = (bj > 0);
-    if (improved)
-      M(bj)   = bh;
-      curcost = bestcost;
+    if (! improved)
+      break;
     endif
-  until (! improved || iter >= maxiter)
+  endwhile
 endfunction
 
 ## Voronoi iteration ('small'): reassign, then re-select each cluster's medoid
 function [M, iter] = voronoi_step (Dall, M, maxiter)
   k    = numel (M);
   iter = 0;
-  do
+  while (iter < maxiter)
     iter += 1;
     oldM     = M;
     [~, lab] = min (Dall(:, M), [], 2);
@@ -346,7 +351,10 @@ function [M, iter] = voronoi_step (Dall, M, maxiter)
       [~, loc] = min (sum (Dall(members, members), 1));
       M(j)     = members(loc);
     endfor
-  until (isequal (M, oldM) || iter >= maxiter)
+    if (isequal (M, oldM))
+      break;
+    endif
+  endwhile
 endfunction
 
 %!demo
@@ -434,6 +442,64 @@ endfunction
 %! [idx, C, sumd, D, midx] = kmedoids (X, 3, "Start", X);
 %! assert_equal (sort (midx), [1; 2; 3]);
 %! assert_equal (sumd, [0; 0; 0], 1e-12);
+
+## Values checked against MATLAB R2024a, from fixed starts
+%!test
+%! load fisheriris
+%! [~, ~, sumd, ~, midx, info] = kmedoids (meas, 3, ...
+%!                                         "Start", meas([1, 51, 101],:));
+%! assert_equal (midx, [8; 79; 121]);
+%! assert_equal (sum (sumd), 83.91, 1e-10);
+%! assert_equal (info.iterations, 3);
+%!test
+%! load fisheriris
+%! [~, ~, sumd, ~, midx] = kmedoids (meas, 3, "Start", meas([1, 51, 101],:), ...
+%!                                   "Options", statset ("MaxIter", 1));
+%! assert_equal (midx, [27; 79; 121]);
+%! assert_equal (sum (sumd), 85.76, 1e-10);
+%!test
+%! load fisheriris
+%! [~, ~, sumd, ~, midx, info] = kmedoids (meas, 3, "Start", ...
+%!                                         meas([1, 51, 101],:), ...
+%!                                         "Distance", "cityblock");
+%! assert_equal (midx, [8; 56; 113]);
+%! assert_equal (sum (sumd), 162.5, 1e-10);
+%! assert_equal (info.iterations, 3);
+%!shared B, SB
+%! B = [sin((1:80)') * 5 + mod((1:80)', 3), cos((1:80)' * 1.3) * 3];
+%! SB = B([3, 17, 40, 66],:);
+%!test
+%! [~, ~, sumd, ~, midx, info] = kmedoids (B, 4, "Start", SB);
+%! assert_equal (midx, [43; 78; 40; 37]);
+%! assert_equal (sum (sumd), 297.96737390268027, 1e-10);
+%! assert_equal (info.iterations, 3);
+%!test
+%! [~, ~, sumd, ~, midx] = kmedoids (B, 4, "Start", SB, ...
+%!                                   "Options", statset ("MaxIter", 1));
+%! assert_equal (midx, [73; 78; 40; 37]);
+%! assert_equal (sum (sumd), 302.11064611307177, 1e-10);
+%!test
+%! [~, ~, sumd, ~, midx, info] = kmedoids (B, 4, "Start", SB, ...
+%!                                         "Algorithm", "small");
+%! assert_equal (midx, [66; 61; 40; 73]);
+%! assert_equal (sum (sumd), 372.93746096722396, 1e-10);
+%! assert_equal (info.iterations, 4);
+%!test
+%! [~, ~, sumd, ~, midx] = kmedoids (B, 4, "Start", SB, ...
+%!                                   "Algorithm", "small", ...
+%!                                   "Options", statset ("MaxIter", 2));
+%! assert_equal (midx, [66; 74; 40; 62]);
+%! assert_equal (sum (sumd), 382.94324386778817, 1e-10);
+%!test
+%! ## No iteration returns the starting medoids
+%! [~, ~, ~, ~, midx, info] = kmedoids (B, 4, "Start", SB, ...
+%!                                      "Options", statset ("MaxIter", 0));
+%! assert_equal (midx, [3; 17; 40; 66]);
+%! assert_equal (info.iterations, 0);
+%!test
+%! [~, ~, ~, ~, midx] = kmedoids (B, 4, "Start", SB, "Algorithm", "small", ...
+%!                                "Options", statset ("MaxIter", 0));
+%! assert_equal (midx, [3; 17; 40; 66]);
 
 ## Test input validation
 %!error <kmedoids: too few input arguments.> kmedoids (1)
