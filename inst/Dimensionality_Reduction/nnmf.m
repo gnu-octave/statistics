@@ -63,7 +63,8 @@
 ## @item @qcode{'Options'}
 ## A structure of algorithm options (as returned by @code{statset}) whose
 ## @qcode{MaxIter}, @qcode{TolFun}, and @qcode{TolX} fields control the
-## iteration.
+## iteration.  A @qcode{MaxIter} of 0 returns the starting factors, normalized,
+## with their residual, where MATLAB fails.
 ## @end table
 ##
 ## @seealso{pca, statset}
@@ -188,6 +189,8 @@ function [W, H, dnorm] = factorize (A, W, H, algorithm, opts, n, m)
 
   sqrteps = sqrt (eps);
   dnorm0 = Inf;
+  ## The residual of the starting point, returned when no iteration runs
+  dnorm = norm (A - W * H, "fro") / sqrt (n * m);
   for iter = 1:opts.MaxIter
     Wp = W;
     Hp = H;
@@ -275,6 +278,13 @@ endfunction
 %! ## The residual D matches the direct computation.
 %! [W, H, D] = nnmf (A, 2, "W0", W0, "H0", H0, "Options", opt);
 %! assert_equal (D, norm (A - W * H, "fro") / sqrt (numel (A)), 1e-12);
+
+%!test
+%! ## No iteration returns the starting point with its residual.
+%! [W, H, D] = nnmf (A, 2, "W0", W0, "H0", H0, ...
+%!                   "Options", struct ("MaxIter", 0));
+%! assert_equal (W * H, W0 * H0, 1e-12);
+%! assert_equal (D, norm (A - W0 * H0, "fro") / sqrt (numel (A)), 1e-12);
 
 ## Test input validation
 %!error<Invalid call to nnmf> nnmf (ones (4, 3))

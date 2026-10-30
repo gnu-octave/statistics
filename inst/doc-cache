@@ -272,7 +272,7 @@ statset
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4595
+# length: 4710
 statistics: options = statset ()
 statistics: options = statset (funcname)
 statistics: options = statset (name, value, ...)
@@ -322,8 +322,10 @@ Option Description
 "Display" Level of reporting: "off",
 "final", or "iter".
 "MaxFunEvals" Maximum number of objective function
-evaluations, a positive scalar.
-"MaxIter" Maximum number of iterations, a positive scalar.
+evaluations, a non-negative integer or Inf.
+"MaxIter" Maximum number of iterations, a non-negative
+integer or Inf. A limit of 0 asks for no iteration, so a function
+honouring it returns its starting point.
 "TolBnd" Positive scalar tolerance on parameter bounds.
 "TolFun" Non-negative scalar tolerance on the objective
 function value. A tolerance of 0 never stops on the change in the

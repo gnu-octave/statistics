@@ -2563,7 +2563,7 @@ Create a clustering evaluation object to find the optimal number of clusters.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 9
 fitgmdist
@@ -2572,7 +2572,7 @@ fitgmdist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2392
+# length: 2473
 statistics: GMdist = fitgmdist (data, k, param1, value1, ...)
 Fit a Gaussian mixture model with k components to data.
 Each row of data is a data sample. Each column is a variable.
@@ -2610,7 +2610,9 @@ number of free parameters.
 
 'Options': A structure with all of the following fields:
 
-MaxIter Maximum number of EM iterations (default 100).
+MaxIter Maximum number of EM iterations (default 100). A
+value of 0 returns the starting point with its likelihood, where MATLAB
+fails.
 TolFun Threshold increase in likelihood to terminate EM
 (default 1e-6).
 Display Possible values are:

@@ -67,8 +67,10 @@
 ## @item @qcode{"Display"} @tab Level of reporting: @qcode{"off"},
 ## @qcode{"final"}, or @qcode{"iter"}.
 ## @item @qcode{"MaxFunEvals"} @tab Maximum number of objective function
-## evaluations, a positive scalar.
-## @item @qcode{"MaxIter"} @tab Maximum number of iterations, a positive scalar.
+## evaluations, a non-negative integer or @code{Inf}.
+## @item @qcode{"MaxIter"} @tab Maximum number of iterations, a non-negative
+## integer or @code{Inf}.  A limit of 0 asks for no iteration, so a function
+## honouring it returns its starting point.
 ## @item @qcode{"TolBnd"} @tab Positive scalar tolerance on parameter bounds.
 ## @item @qcode{"TolFun"} @tab Non-negative scalar tolerance on the objective
 ## function value.  A tolerance of 0 never stops on the change in the
@@ -251,9 +253,9 @@ function value = check_value (field, value)
 
     case {'MaxFunEvals', 'MaxIter'}
       if (! (isnumeric (value) && isscalar (value) && isreal (value)
-             && isfloat (value) && value > 0))
-        error (strcat ("statset: option '%s' must be a real positive", ...
-                       " scalar."), field);
+             && isfloat (value) && value >= 0 && value == fix (value)))
+        error (strcat ("statset: option '%s' must be a non-negative", ...
+                       " integer or Inf."), field);
       endif
 
     case 'TolFun'
@@ -496,8 +498,8 @@ endfunction
 ## Print the option names and the values each accepts.
 function display_options ()
   tbl = {'Display', '[ {off} | final | iter ]'; ...
-         'MaxFunEvals', '[ positive scalar ]'; ...
-         'MaxIter', '[ positive scalar ]'; ...
+         'MaxFunEvals', '[ non-negative integer ]'; ...
+         'MaxIter', '[ non-negative integer ]'; ...
          'TolBnd', '[ positive scalar ]'; ...
          'TolFun', '[ non-negative scalar ]'; ...
          'TolTypeFun', '[ abs | rel ]'; ...
@@ -591,6 +593,12 @@ endfunction
 %! assert_equal (options.OutputFcn, '');
 
 %!test
+%! assert_equal (statset ('MaxIter', 0).MaxIter, 0);
+
+%!test
+%! assert_equal (statset ('MaxFunEvals', 0).MaxFunEvals, 0);
+
+%!test
 %! assert_equal (statset ('TolFun', 0).TolFun, 0);
 
 %!test
@@ -658,10 +666,6 @@ endfunction
 ## An empty value leaves the option unset
 %!test
 %! assert_equal (statset ('MaxIter', []), statset ());
-
-## A non-integer iteration count is accepted, as it is by MATLAB
-%!test
-%! assert_equal (statset ('MaxIter', 2.5).MaxIter, 2.5);
 
 %!test
 %! assert_equal (statset ('MaxIter', Inf).MaxIter, Inf);
@@ -815,14 +819,20 @@ endfunction
 %!error<statset: unrecognized option name 'NoSuchOption'.> ...
 %! statset ('NoSuchOption', 1)
 
-%!error<statset: option 'MaxIter' must be a real positive scalar.> ...
+%!error<statset: option 'MaxIter' must be a non-negative integer or Inf.> ...
 %! statset ('MaxIter', 'abc')
 
-%!error<statset: option 'MaxIter' must be a real positive scalar.> ...
+%!error<statset: option 'MaxIter' must be a non-negative integer or Inf.> ...
 %! statset ('MaxIter', -1)
 
-%!error<statset: option 'MaxIter' must be a real positive scalar.> ...
+%!error<statset: option 'MaxIter' must be a non-negative integer or Inf.> ...
 %! statset ('MaxIter', int32 (5))
+
+%!error<statset: option 'MaxIter' must be a non-negative integer or Inf.> ...
+%! statset ('MaxIter', 1.5)
+
+%!error<statset: option 'MaxFunEvals' must be a non-negative integer or Inf.> ...
+%! statset ('MaxFunEvals', -1)
 
 %!error<statset: option 'TolX' must be a real positive scalar.> ...
 %! statset ('TolX', -1)

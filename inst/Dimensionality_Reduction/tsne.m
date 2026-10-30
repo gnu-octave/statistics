@@ -92,7 +92,8 @@
 ## @item @qcode{'Options'}
 ## A structure (as returned by @code{statset}) whose @qcode{MaxIter} (default
 ## 1000) and @qcode{TolFun} (default @code{1e-10}) fields control the
-## optimization.
+## optimization.  A @qcode{MaxIter} of 0 returns the initial embedding with
+## its loss, where MATLAB returns a loss of 0 or @code{-Inf}.
 ## @end table
 ##
 ## The embedding is not unique: it depends on the initial configuration and the
@@ -449,6 +450,12 @@ function [Y, loss] = tsne_embedding (Y, P, exaggeration, learnrate, opts, ...
   endfor
 
   if (nargout > 1)
+    ## With no iteration run, the loss of the initial embedding
+    if (exact && isempty (Q))
+      [~, Q] = tsne_gradient (P, Y, N);
+    elseif (! exact && isempty (lossbh))
+      [~, lossbh] = tsne_gradient_bh (P, Y, N, ydims, theta);
+    endif
     if (exact)
       loss = P(:)' * log (P(:)) - P(:)' * log (Q(:));
     else
@@ -594,6 +601,27 @@ endfunction
 %!             "Perplexity", 4, "Options", struct ("MaxIter", 20));
 %!   assert_equal (size (Y), [20, d]);
 %! endfor
+
+%!test
+%! ## No iteration returns the initial embedding with its loss, which a
+%! ## single iteration also reports, the loss coming before each step.
+%! X = reshape (mod ((1:60)*7, 13), 12, 5) - 6;
+%! Y0 = reshape (mod ((1:24)*3, 7), 12, 2) - 3;
+%! args = {"Algorithm", "exact", "Distance", "euclidean", "Perplexity", 3, ...
+%!         "InitialY", Y0, "Standardize", false};
+%! [Y, loss] = tsne (X, args{:}, "Options", struct ("MaxIter", 0));
+%! [~, l1] = tsne (X, args{:}, "Options", struct ("MaxIter", 1, "TolFun", 0));
+%! assert_equal (Y, Y0);
+%! assert_equal (loss, l1);
+
+%!test
+%! X = reshape (mod ((1:60)*7, 13), 12, 5) - 6;
+%! Y0 = reshape (mod ((1:24)*3, 7), 12, 2) - 3;
+%! args = {"Algorithm", "barneshut", "Perplexity", 3, "InitialY", Y0};
+%! [Y, loss] = tsne (X, args{:}, "Options", struct ("MaxIter", 0));
+%! [~, l1] = tsne (X, args{:}, "Options", struct ("MaxIter", 1, "TolFun", 0));
+%! assert_equal (Y, Y0);
+%! assert_equal (loss, l1);
 
 ## Test input validation
 %!error<Invalid call to tsne> tsne ()

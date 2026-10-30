@@ -1026,7 +1026,7 @@ Nonclassical (metric and nonmetric) multidimensional scaling.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 4
 nnmf
@@ -1035,7 +1035,7 @@ nnmf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1622
+# length: 1720
 statistics: [W, H] = nnmf (A, K)
 statistics: [W, H, D] = nnmf (A, K)
 statistics: [...] = nnmf (..., Name, Value)
@@ -1077,7 +1077,8 @@ Ignored for a starting point fixed by both 'W0' and 'H0'.
 'Options'
 A structure of algorithm options (as returned by statset) whose
 MaxIter, TolFun, and TolX fields control the
-iteration.
+iteration. A MaxIter of 0 returns the starting factors, normalized,
+with their residual, where MATLAB fails.
 
 See also:
 pca,
@@ -2042,7 +2043,7 @@ Sparse filtering for feature extraction.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 4
 tsne
@@ -2051,7 +2052,7 @@ tsne
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2874
+# length: 2976
 statistics: Y = tsne (X)
 statistics: [Y, loss] = tsne (X)
 statistics: [...] = tsne (..., Name, Value)
@@ -2116,7 +2117,8 @@ An N x NumDimensions initial embedding (default
 'Options'
 A structure (as returned by statset) whose MaxIter (default
 1000) and TolFun (default 1e-10) fields control the
-optimization.
+optimization. A MaxIter of 0 returns the initial embedding with
+its loss, where MATLAB returns a loss of 0 or -Inf.
 
 The embedding is not unique: it depends on the initial configuration and the
 random state. Set 'InitialY' (or the random seed) for a reproducible

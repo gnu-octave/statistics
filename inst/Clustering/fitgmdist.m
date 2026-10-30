@@ -60,7 +60,9 @@
 ##
 ## @item @qcode{'Options'}: A structure with all of the following fields:
 ## @itemize
-## @item @qcode{MaxIter} Maximum number of EM iterations (default 100).
+## @item @qcode{MaxIter} Maximum number of EM iterations (default 100).  A
+## value of 0 returns the starting point with its likelihood, where MATLAB
+## fails.
 ## @item @qcode{TolFun} Threshold increase in likelihood to terminate EM
 ## (default 1e-6).
 ## @item @qcode{Display} Possible values are:
@@ -473,6 +475,15 @@ function obj = fitgmdist (data, k, varargin)
         endif
         log_likeli = new_log_likeli;
       endwhile
+      ## With no EM step run, the log-likelihood of the starting point
+      if (iter == 1)
+        lik = pdf (gmdistribution (mu, Sigma, p'), data);
+        if (isempty (weights))
+          log_likeli = sum (log (lik));
+        else
+          log_likeli = sum (weights(:,1) .* log (lik));
+        endif
+      endif
       if (log_likeli > best)
         best = log_likeli;
         best_params.mu    = mu;
@@ -565,4 +576,18 @@ endfunction
 %! GMModel = fitgmdist (score, 2, 'Options', options);
 %! assert_equal (isa (GMModel, 'gmdistribution'), true);
 %! assert_equal (GMModel.mu, [1.3212, -0.0954; -2.6424, 0.1909], 1e-4);
+
+## No EM step returns the starting point with its likelihood
+%!test
+%! load fisheriris
+%! X = meas(:,1:2);
+%! S = struct ('mu', X([1, 51],:), 'Sigma', cat (3, eye (2), eye (2)), ...
+%!             'ComponentProportion', [0.5, 0.5]);
+%! options = struct ('MaxIter', 0, 'TolFun', 1e-6, 'Display', 'off');
+%! G = fitgmdist (X, 2, 'Start', S, 'Options', options);
+%! assert_equal (G.mu, S.mu);
+%! assert_equal (G.NumIterations, 0);
+%! assert_equal (G.Converged, false);
+%! nll = -sum (log (pdf (gmdistribution (S.mu, S.Sigma, [0.5, 0.5]), X)));
+%! assert_equal (G.NegativeLogLikelihood, nll, 1e-10);
 
