@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 38
+# columns: 39
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -1515,6 +1515,135 @@ cmdscale
 # elements: 1
 # length: 20
 Procrustes Analysis.
+
+
+
+# name: <cell-element>
+# type: string
+# elements: 1
+# length: 7
+relieff
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5176
+statistics: idx = relieff (X, Y, k)
+statistics: idx = relieff (X, Y, k, name, value)
+statistics: [idx, weights] = relieff (...)
+Rank the importance of predictors with the ReliefF or RReliefF algorithm.
+
+idx = relieff (X, Y, k) ranks the
+predictors, the columns of the matrix X, by how well they tell apart
+observations with different responses Y, judged by the k
+nearest neighbors of each observation. idx is a row vector of
+column indices, from the most important predictor to the least.
+
+X is a matrix of type double or single, with one row per observation.
+Y holds one response per row of X: a numeric vector, a logical
+vector, a categorical vector, a cell array of character vectors, a string
+array, or a character matrix with one row per observation. A numeric
+Y is a regression problem and any other type a classification
+problem, unless 'method' says otherwise. Rows with a missing value
+(NaN) in X or a missing response (NaN, an empty or
+blank name, or an undefined category) are left out. k is a positive
+integer.
+
+[idx, weights] = relieff (...) also returns the
+weight of each predictor, a row vector in the order of the columns of
+X, of type double. A larger weight marks a more important predictor,
+and weights range from -1 to 1. idx sorts weights in
+descending order.
+
+Predictors are compared on their range: for continuous predictors, the
+difference between two observations in predictor j is
+|x_rj - x_qj| divided by the range of predictor j, and the
+distance between them is the sum of these differences over all predictors
+(city block distance). A predictor holding a single value is left out of
+the distance and has weight NaN, ranked last. For categorical
+predictors the difference is 0 when two observations share a value and 1
+otherwise. The neighbors of an observation are the k observations
+nearest to it, ties between equal distances going to the observation that
+comes first in X. Each neighbor counts with a weight that falls with
+its rank i among them as exp (-(i / sigma)^2), normalized to
+sum to 1 over the neighbors.
+
+For classification (ReliefF), each observation r has k
+nearest neighbors in its own class (hits) and k in each of the other
+classes (misses), or the whole class when it holds fewer. The weight of
+predictor j falls by the weighted difference to the hits and rises
+by the weighted difference to the misses of class c, scaled by
+p_c / (1 - p_r), p being the prior probabilities of the
+classes; each observation adds 1/m of its own share, m being
+the number of observations used. For regression (RReliefF), with
+dy the difference of two responses divided by the range of Y
+and dj the difference in predictor j, the weighted sums of
+dy, dj and dy dj over the k nearest neighbors
+of each observation are accumulated as W_dy, W_dj and
+W_dydj, and the weight of predictor j is
+W_dydj / W_dy - (W_dj - W_dydj) / (m - W_dy).
+
+The following Name-Value pairs are supported:
+
+Name Value
+'method' 'classification' or
+'regression'. The default is 'regression' for a numeric
+Y and 'classification' otherwise. A numeric Y may be
+classified, its distinct values being the classes, but only a numeric
+Y can be regressed.
+'prior' The prior probabilities of the classes, for
+classification only: 'empirical', the class frequencies in Y,
+which is the default; 'uniform', equal for every class; a numeric
+vector with one value per class; or a structure with the fields
+group, the class names, and prob, their probabilities. A
+numeric vector follows the order of the classes in Y: sorted values
+for a numeric, logical or categorical Y, and order of first
+appearance for text. A structure must name every class of Y and may
+name others, which are ignored. The probabilities are normalized to sum
+to 1, and the observations of a class with prior probability 0 are left
+out.
+'updates' The number of observations, drawn at random
+without replacement, for which neighbors are sought: a positive integer, or
+'all', the default, for every observation. A number at least as
+large as the number of observations uses them all.
+'categoricalx' 'on' to treat every predictor as
+categorical, or 'off', the default, to treat every predictor as
+continuous.
+'sigma' The distance scaling factor of the rank weights
+of the neighbors, a positive scalar. The default is Inf for
+classification, weighing all neighbors alike, and 50 for regression.
+
+When X is single, the weights are computed in single precision and
+returned as double. The option names are not case sensitive but must be
+given in full, where MATLAB accepts any shortened name. Where MATLAB
+accepts a non-integer k or 'updates', answers for complex or
+infinite values in X, gives weights for a single class of responses,
+and returns NaN for a constant response, relieff refuses
+them. It also accepts numeric class names in a 'prior' structure,
+which MATLAB refuses.
+
+References:
+
+I. Kononenko, E. Simec and M. Robnik-Sikonja. Overcoming the
+myopia of inductive learning algorithms with RELIEFF.
+Applied Intelligence, 7(1):39--55, 1997.
+
+M. Robnik-Sikonja and I. Kononenko. Theoretical and empirical
+analysis of ReliefF and RReliefF. Machine Learning,
+53(1-2):23--69, 2003.
+
+See also:
+pca,
+fitcknn,
+knnsearch
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 73
+Rank the importance of predictors with the ReliefF or RReliefF algorithm.
 
 
 

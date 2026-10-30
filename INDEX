@@ -283,6 +283,7 @@ Dimensionality Reduction
  princomp
  procrustes
  ReconstructionICA
+ relieff
  rica
  rotatefactors
  sparsefilt
