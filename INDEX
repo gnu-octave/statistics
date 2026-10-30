@@ -188,6 +188,7 @@ Machine Learning
  fitrnet
  fitrsvm
  fitrtree
+ fitSVMPosterior
  gamboostinter
  gamboostpairs
  gamboostpredict

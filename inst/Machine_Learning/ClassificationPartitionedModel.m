@@ -120,7 +120,9 @@ classdef ClassificationPartitionedModel
     ## Transformation function for classification scores
     ##
     ## Specified as a function handle for transforming the classification
-    ## scores.
+    ## scores.  @code{fitSVMPosterior} stores here the transformation from
+    ## scores to posterior probabilities it fits for an SVM, as
+    ## @code{ClassificationSVM.ScoreTransform} describes.
     ##
     ## @end deftp
     ScoreTransform               = [];

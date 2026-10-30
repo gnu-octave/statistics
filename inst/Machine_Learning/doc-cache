@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 1490
+# columns: 1493
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -16252,12 +16252,14 @@ ClassificationPartitionedModel.ScoreTransform
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 181
+# length: 334
 ClassificationPartitionedModel: property ScoreTransform
 Transformation function for classification scores
 
 Specified as a function handle for transforming the classification
-scores.
+scores. fitSVMPosterior stores here the transformation from
+scores to posterior probabilities it fits for an SVM, as
+ClassificationSVM.ScoreTransform describes.
 
 
 # name: <cell-element>
@@ -17442,7 +17444,7 @@ ClassificationSVM.ScoreTransform
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 982
+# length: 1244
 ClassificationSVM: property ScoreTransform
 Transformation function for classification scores
 
@@ -17471,6 +17473,12 @@ largest score to 1, and for all other classes to 0
 'symmetricismax' Sets the score for the class
 with the largest score to 1, and for all other classes to -1
 'symmetriclogit' 2 ./ (1 + exp (-x)) - 1
+
+fitPosterior stores the transformation from scores to
+posterior probabilities it fits as '@(S)sigmoid(S,A,B)',
+'@(S)step(S,LowerBound,UpperBound,PositiveClassProbability)'
+or '@(S)constant(S,K)'. Such a text may also be assigned
+directly, which MATLAB refuses.
 
 
 # name: <cell-element>
@@ -17826,6 +17834,89 @@ Y.
 # elements: 1
 # length: 60
 Classification edge, the mean of the classification margins.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+ClassificationSVM.fitPosterior
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2629
+ClassificationSVM: ScoreSVMModel = fitPosterior (obj)
+ClassificationSVM: ScoreSVMModel = fitPosterior (obj, name, value)
+ClassificationSVM: [ScoreSVMModel, ScoreTransform] = fitPosterior (...)
+Fit the transformation from scores to posterior probabilities.
+
+ScoreSVMModel = fitPosterior (obj) returns the
+two-class model obj with the transformation from the score of the
+second class, obj.ClassNames(2), to its posterior
+probability stored in its ScoreTransform property, so that
+predict and resubPredict return posterior probabilities,
+the two columns summing to 1. The transformation is fitted to scores
+the model gives observations it was not trained on, by 10-fold
+cross-validation unless one of the following options says otherwise.
+
+Name Value
+'KFold' The number of folds, an integer greater
+than 1. The default is 10.
+'Holdout' The fraction of the data held out, a
+scalar in the range (0,1); the transformation is fitted to the
+scores of the observations held out.
+'Leaveout' 'on' for leave-one-out
+cross-validation, or 'off' (default).
+'CVPartition' A cvpartition object over the
+observations of obj.
+
+Only one of these options may be given. The transformation is one of
+three:
+
+A sigmoid 1 / (1 + exp (A * s + B)) of the score s
+when the scores of the two classes overlap, with A and B
+fitted by maximum likelihood, as a logistic regression of the class on
+the score. Neither the observation weights nor the prior enter the
+fit, as in MATLAB.
+A step function when the scores separate the classes: 0 below the
+largest score of the first class, 1 above the smallest score of the
+second, and obj.Prior(2) between, with a warning.
+A constant when one class has prior probability 0, posterior 1
+for the other class.
+
+A ScoreTransform already set on obj is reset to
+'none' first, with a warning. The property holds the
+transformation as '@(S)sigmoid(S,A,B)',
+'@(S)step(S,LowerBound,UpperBound,PositiveClassProbability)'
+or '@(S)constant(S,K)', K being the index of the
+predicted class. Each parameter is written exactly, in the fewest
+significant digits that read back to it, where MATLAB shows seven, so
+a model saved and reloaded predicts as before. Such a text may also be
+assigned to the property directly, which MATLAB refuses.
+
+[ScoreSVMModel, ScoreTransform] = fitPosterior
+(...) also returns the parameters in a structure whose field
+Type is 'sigmoid', with fields Slope and
+Intercept, 'step', with fields LowerBound,
+UpperBound and PositiveClassProbability, or
+'constant', with the field PredictedClass.
+
+See also:
+fitSVMPosterior,
+CompactClassificationSVM.fitPosterior,
+ClassificationSVM.predict,
+fitcsvm,
+cvpartition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+Fit the transformation from scores to posterior probabilities.
 
 
 
@@ -25543,7 +25634,7 @@ CompactClassificationSVM.ScoreTransform
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 989
+# length: 1251
 CompactClassificationSVM: property ScoreTransform
 Transformation function for classification scores
 
@@ -25572,6 +25663,12 @@ largest score to 1, and for all other classes to 0
 'symmetricismax' Sets the score for the class
 with the largest score to 1, and for all other classes to -1
 'symmetriclogit' 2 ./ (1 + exp (-x)) - 1
+
+fitPosterior stores the transformation from scores to
+posterior probabilities it fits as '@(S)sigmoid(S,A,B)',
+'@(S)step(S,LowerBound,UpperBound,PositiveClassProbability)'
+or '@(S)constant(S,K)'. Such a text may also be assigned
+directly, which MATLAB refuses.
 
 
 # name: <cell-element>
@@ -25749,6 +25846,72 @@ Y.
 # elements: 1
 # length: 60
 Classification edge, the mean of the classification margins.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+CompactClassificationSVM.fitPosterior
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2222
+CompactClassificationSVM: ScoreSVMModel = fitPosterior (obj, X, Y)
+CompactClassificationSVM: ScoreSVMModel = fitPosterior (obj, Tbl, ResponseVarName)
+CompactClassificationSVM: ScoreSVMModel = fitPosterior (obj, Tbl, Y)
+CompactClassificationSVM: ScoreSVMModel = fitPosterior (obj, Tbl)
+CompactClassificationSVM: [ScoreSVMModel, ScoreTransform] = fitPosterior (...)
+Fit the transformation from scores to posterior probabilities.
+
+ScoreSVMModel = fitPosterior (obj, X, Y)
+returns the two-class model obj with the transformation from the
+score of the second class, obj.ClassNames(2), to its
+posterior probability stored in its ScoreTransform property, so
+that predict returns posterior probabilities, the two columns
+summing to 1. A compact model holds no training data, so the
+transformation is fitted to the scores it gives the predictors X,
+whose classes are Y, without cross-validation; data the model was
+not trained on give the better estimate. Rows whose score is
+NaN are left out.
+
+X may also be a table Tbl, whose variables are matched to
+the predictors the model was fitted on by name and not by position.
+The classes are then the variable ResponseVarName names, Y
+given beside the table, or the variable the model was fitted on.
+
+The transformation is a sigmoid 1 / (1 + exp (A * s + B)) of the
+score s when the scores of the two classes overlap, fitted by
+maximum likelihood without the prior or any weights; a step function
+when the scores separate the classes, 0 below the largest score of the
+first class, 1 above the smallest score of the second and
+obj.Prior(2) between, with a warning; and a constant,
+posterior 1 for the other class, when one class has prior probability
+0. A ScoreTransform already set on obj is reset to
+'none' first, with a warning. The property holds the
+transformation as ClassificationSVM.fitPosterior describes.
+
+[ScoreSVMModel, ScoreTransform] = fitPosterior
+(...) also returns the parameters in a structure whose field
+Type is 'sigmoid', with fields Slope and
+Intercept, 'step', with fields LowerBound,
+UpperBound and PositiveClassProbability, or
+'constant', with the field PredictedClass.
+
+See also:
+fitSVMPosterior,
+ClassificationSVM.fitPosterior,
+CompactClassificationSVM.predict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+Fit the transformation from scores to posterior probabilities.
 
 
 
@@ -46749,6 +46912,112 @@ ClassificationECOC
 # elements: 1
 # length: 64
 Coding design matrix for an error correcting output codes model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 15
+fitSVMPosterior
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3841
+statistics: ScoreSVMModel = fitSVMPosterior (SVMModel)
+statistics: ScoreSVMModel = fitSVMPosterior (SVMModel, name, value)
+statistics: ScoreSVMModel = fitSVMPosterior (SVMModel, X, Y)
+statistics: ScoreSVMModel = fitSVMPosterior (SVMModel, Tbl, ResponseVarName)
+statistics: ScoreSVMModel = fitSVMPosterior (SVMModel, Tbl, Y)
+statistics: ScoreSVMModel = fitSVMPosterior (SVMModel, Tbl)
+statistics: [ScoreSVMModel, ScoreTransform] = fitSVMPosterior (...)
+Fit the transformation from SVM scores to posterior probabilities.
+
+ScoreSVMModel = fitSVMPosterior (SVMModel) returns the
+two-class SVM classifier SVMModel with the transformation from the
+score of the second class, SVMModel.ClassNames(2), to its
+posterior probability stored in its ScoreTransform property, so
+that predict, or kfoldPredict for a cross-validated model,
+returns posterior probabilities, the two columns summing to 1.
+SVMModel is a ClassificationSVM, a
+CompactClassificationSVM or a ClassificationPartitionedModel
+cross-validating an SVM, and ScoreSVMModel is of the same class.
+
+The transformation is fitted to scores of observations the model was not
+trained on:
+
+For a ClassificationSVM, scores from cross-validating it,
+10-fold unless one of the options below says otherwise.
+For a ClassificationPartitionedModel, its own out-of-fold
+scores, from the partition it was built with; no option may be given.
+With predictors X and their classes Y, the scores the
+model gives X, without cross-validation; a
+CompactClassificationSVM holds no training data and needs them.
+X may also be a table Tbl, matched to the predictors by
+variable name, with the classes in the variable ResponseVarName
+names, in Y, or in the variable the model was fitted on. Rows whose
+score is NaN are left out.
+
+Name Value
+'KFold' The number of folds, an integer greater
+than 1. The default is 10.
+'Holdout' The fraction of the data held out, a
+scalar in the range (0,1).
+'Leaveout' 'on' for leave-one-out
+cross-validation, or 'off' (default).
+'CVPartition' A cvpartition object over the
+observations of SVMModel.
+
+Only one of these options may be given, and only with a
+ClassificationSVM and no data. The transformation is one of three:
+
+A sigmoid 1 / (1 + exp (A * s + B)) of the score s
+when the scores of the two classes overlap, with A and B
+fitted by maximum likelihood, as a logistic regression of the class on the
+score. Neither the observation weights nor the prior enter the fit, as in
+MATLAB.
+A step function when the scores separate the classes: 0 below the
+largest score of the first class, 1 above the smallest score of the second,
+and SVMModel.Prior(2) between, with a warning.
+A constant when one class has prior probability 0, posterior 1 for
+the other class.
+
+A ScoreTransform already set on SVMModel is reset to
+'none' first, with a warning. The property holds the
+transformation as '@(S)sigmoid(S,A,B)',
+'@(S)step(S,LowerBound,UpperBound,PositiveClassProbability)' or
+'@(S)constant(S,K)', K being the index of the predicted
+class. Each parameter is written exactly, in the fewest significant
+digits that read back to it, where MATLAB shows seven, so a model saved and
+reloaded predicts as before. The folds of a cross-validated model keep
+'none', the transformation being applied to the scores they give
+together.
+
+[ScoreSVMModel, ScoreTransform] = fitSVMPosterior
+(...) also returns the parameters in a structure whose field
+Type is 'sigmoid', with fields Slope and
+Intercept, 'step', with fields LowerBound,
+UpperBound and PositiveClassProbability, or
+'constant', with the field PredictedClass.
+
+Reference: J. Platt. Probabilistic outputs for support vector machines and
+comparisons to regularized likelihood methods. In Advances in Large
+Margin Classifiers, MIT Press, 2000.
+
+See also:
+ClassificationSVM.fitPosterior,
+CompactClassificationSVM.fitPosterior,
+fitcsvm,
+cvpartition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 66
+Fit the transformation from SVM scores to posterior probabilities.
 
 
 

@@ -312,6 +312,12 @@ classdef CompactClassificationSVM < PredictiveModel
     ## @item @qcode{'symmetriclogit'} @tab @math{2 ./ (1 + exp (-x)) - 1}
     ## @end multitable
     ##
+    ## @code{fitPosterior} stores the transformation from scores to
+    ## posterior probabilities it fits as @qcode{'@@(S)sigmoid(S,A,B)'},
+    ## @qcode{'@@(S)step(S,LowerBound,UpperBound,PositiveClassProbability)'}
+    ## or @qcode{'@@(S)constant(S,K)'}.  Such a text may also be assigned
+    ## directly, which MATLAB refuses.
+    ##
     ## @end deftp
     ScoreTransform      = 'none';
 
@@ -967,6 +973,103 @@ classdef CompactClassificationSVM < PredictiveModel
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {CompactClassificationSVM} {@var{ScoreSVMModel} =} fitPosterior (@var{obj}, @var{X}, @var{Y})
+    ## @deftypefnx {CompactClassificationSVM} {@var{ScoreSVMModel} =} fitPosterior (@var{obj}, @var{Tbl}, @var{ResponseVarName})
+    ## @deftypefnx {CompactClassificationSVM} {@var{ScoreSVMModel} =} fitPosterior (@var{obj}, @var{Tbl}, @var{Y})
+    ## @deftypefnx {CompactClassificationSVM} {@var{ScoreSVMModel} =} fitPosterior (@var{obj}, @var{Tbl})
+    ## @deftypefnx {CompactClassificationSVM} {[@var{ScoreSVMModel}, @var{ScoreTransform}] =} fitPosterior (@dots{})
+    ##
+    ## Fit the transformation from scores to posterior probabilities.
+    ##
+    ## @code{@var{ScoreSVMModel} = fitPosterior (@var{obj}, @var{X}, @var{Y})}
+    ## returns the two-class model @var{obj} with the transformation from the
+    ## score of the second class, @code{@var{obj}.ClassNames(2)}, to its
+    ## posterior probability stored in its @qcode{ScoreTransform} property, so
+    ## that @code{predict} returns posterior probabilities, the two columns
+    ## summing to 1.  A compact model holds no training data, so the
+    ## transformation is fitted to the scores it gives the predictors @var{X},
+    ## whose classes are @var{Y}, without cross-validation; data the model was
+    ## not trained on give the better estimate.  Rows whose score is
+    ## @qcode{NaN} are left out.
+    ##
+    ## @var{X} may also be a table @var{Tbl}, whose variables are matched to
+    ## the predictors the model was fitted on by name and not by position.
+    ## The classes are then the variable @var{ResponseVarName} names, @var{Y}
+    ## given beside the table, or the variable the model was fitted on.
+    ##
+    ## The transformation is a sigmoid @code{1 / (1 + exp (A * s + B))} of the
+    ## score @math{s} when the scores of the two classes overlap, fitted by
+    ## maximum likelihood without the prior or any weights; a step function
+    ## when the scores separate the classes, 0 below the largest score of the
+    ## first class, 1 above the smallest score of the second and
+    ## @code{@var{obj}.Prior(2)} between, with a warning; and a constant,
+    ## posterior 1 for the other class, when one class has prior probability
+    ## 0.  A @qcode{ScoreTransform} already set on @var{obj} is reset to
+    ## @qcode{'none'} first, with a warning.  The property holds the
+    ## transformation as @code{ClassificationSVM.fitPosterior} describes.
+    ##
+    ## @code{[@var{ScoreSVMModel}, @var{ScoreTransform}] = fitPosterior
+    ## (@dots{})} also returns the parameters in a structure whose field
+    ## @qcode{Type} is @qcode{'sigmoid'}, with fields @qcode{Slope} and
+    ## @qcode{Intercept}, @qcode{'step'}, with fields @qcode{LowerBound},
+    ## @qcode{UpperBound} and @qcode{PositiveClassProbability}, or
+    ## @qcode{'constant'}, with the field @qcode{PredictedClass}.
+    ##
+    ## @seealso{fitSVMPosterior, ClassificationSVM.fitPosterior,
+    ## CompactClassificationSVM.predict}
+    ## @end deftypefn
+    function [this, ScoreTransform] = fitPosterior (this, X, Y)
+
+      if (nargin < 3 && ! (nargin > 1 && istable (X)))
+        error (strcat ("CompactClassificationSVM.fitPosterior: too few", ...
+                       " input arguments."));
+      endif
+      if (classCount (this.ClassNames) != 2)
+        error (strcat ("CompactClassificationSVM.fitPosterior: the model", ...
+                       " must have exactly two classes."));
+      endif
+
+      ## A table carries the classes: named in the call, given beside the
+      ## table, or the variable the model was fitted on
+      if (nargin < 3)
+        Y = [];
+      endif
+      [X, Y] = tableResponse (this, 'fitPosterior', X, Y, {}, nargin > 2);
+      if (rows (X) != rows (Y))
+        error (strcat ("CompactClassificationSVM.fitPosterior: Y must", ...
+                       " have the same number of rows as X."));
+      endif
+
+      if (! strcmp (this.ScoreTransform, 'none'))
+        warning (strcat ("CompactClassificationSVM.fitPosterior: resetting", ...
+                         " 'ScoreTransform' to 'none' before fitting the", ...
+                         " transformation."));
+        this.ScoreTransform = 'none';
+      endif
+
+      s = [];
+      k = [];
+      if (all (this.Prior > 0))
+        [~, scores] = predict (this, X);
+        s = scores(:,2);
+        [k, errmsg] = labelIndices (this.ClassNames, Y);
+        if (! isempty (errmsg))
+          error ("CompactClassificationSVM.fitPosterior: %s", errmsg);
+        endif
+      endif
+
+      [st, ScoreTransform, separated] = svmPosterior (s, k, this.Prior, ...
+                                                      this.ClassNames);
+      if (separated)
+        warning (strcat ("CompactClassificationSVM.fitPosterior: the", ...
+                         " classes are perfectly separated, so the", ...
+                         " transformation is a step function."));
+      endif
+      this.ScoreTransform = st;
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationSVM} {} savemodel (@var{obj}, @var{filename})
     ##
     ## Save a CompactClassificationSVM object.
@@ -1538,3 +1641,97 @@ endclassdef
 %! assert_equal (margin (Mdl, T(:,1:2), y), a);
 %! assert_equal (margin (Mdl, T, 'Species'), a);
 %! assert_equal (margin (Mdl, T), a);
+
+## Test output for fitPosterior method
+## Values checked against MATLAB R2024a, whose SMO solver gives scores up to
+## 1e-5 away from LIBSVM's
+%!test
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! C = compact (fitcsvm (X, Y, 'KernelFunction', 'linear'));
+%! [M, ST] = fitPosterior (C, X, Y);
+%! assert_equal (class (M), 'CompactClassificationSVM');
+%! assert_equal (ST.Type, 'sigmoid');
+%! assert_equal (ST.Slope, -3.3591642562674378, 1e-4);
+%! assert_equal (ST.Intercept, -0.1511873140962528, 1e-4);
+%! tok = regexp (M.ScoreTransform, '^@\(S\)sigmoid\(S,([^,]+),([^)]+)\)$', ...
+%!               'tokens', 'once');
+%! assert_equal (str2double (tok)', [ST.Slope, ST.Intercept]);
+%!test
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! C = compact (fitcsvm (X, Y, 'KernelFunction', 'linear'));
+%! [~, ST] = fitPosterior (C, X(1:2:end, :), Y(1:2:end));
+%! assert_equal (ST.Slope, -3.4804281119663738, 1e-4);
+%! assert_equal (ST.Intercept, -0.25030354136184213, 1e-4);
+%!test
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! C = compact (fitcsvm (X, Y, 'KernelFunction', 'linear'));
+%! [~, ST1] = fitPosterior (C, X(2:end, :), Y(2:end));
+%! [~, ST2] = fitPosterior (C, [NaN, NaN; X(2:end, :)], Y);
+%! assert_equal (ST2, ST1);
+%!test
+%! load fisheriris
+%! T = table (meas(51:150, 3), meas(51:150, 4), species(51:150), ...
+%!            'VariableNames', {'PL', 'PW', 'Species'});
+%! C = compact (fitcsvm (T, 'Species', 'KernelFunction', 'linear'));
+%! [~, ST] = fitPosterior (C, meas(51:150, 3:4), species(51:150));
+%! [~, ST1] = fitPosterior (C, T, 'Species');
+%! [~, ST2] = fitPosterior (C, T);
+%! [~, ST3] = fitPosterior (C, T(:,1:2), species(51:150));
+%! assert_equal (ST1, ST);
+%! assert_equal (ST2, ST);
+%! assert_equal (ST3, ST);
+%!warning <CompactClassificationSVM.fitPosterior: the classes are perfectly separated, so the transformation is a step function.> ...
+%! load fisheriris
+%! X = meas(1:100, 3:4);
+%! Y = species(1:100);
+%! C = compact (fitcsvm (X, Y, 'KernelFunction', 'linear'));
+%! [~, ST] = fitPosterior (C, X, Y);
+%! assert_equal (ST.Type, 'step');
+%! assert_equal (ST.LowerBound, -0.909999999999998, 1e-4);
+%! assert_equal (ST.UpperBound, 0.790000000000004, 1e-4);
+%! assert_equal (ST.PositiveClassProbability, 0.5);
+%!warning <CompactClassificationSVM.fitPosterior: resetting 'ScoreTransform' to 'none' before fitting the transformation.> ...
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! C = compact (fitcsvm (X, Y, 'KernelFunction', 'linear'));
+%! [M, ST1] = fitPosterior (C, X, Y);
+%! [~, ST2] = fitPosterior (M, X, Y);
+%! assert_equal (ST2, ST1);
+%!test
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! C = compact (fitcsvm (X, species(51:150), 'KernelFunction', 'linear', ...
+%!                       'Prior', [1, 0]));
+%! [M, ST] = fitPosterior (C, X, species(51:150));
+%! assert_equal (ST.Type, 'constant');
+%! assert_equal (ST.PredictedClass, {'versicolor'});
+%! assert_equal (M.ScoreTransform, '@(S)constant(S,1)');
+
+## Test input validation for fitPosterior method
+%!error <CompactClassificationSVM.fitPosterior: too few input arguments.> ...
+%! load fisheriris
+%! C = compact (fitcsvm (meas(51:150, 3:4), species(51:150)));
+%! fitPosterior (C)
+%!error <CompactClassificationSVM.fitPosterior: too few input arguments.> ...
+%! load fisheriris
+%! C = compact (fitcsvm (meas(51:150, 3:4), species(51:150)));
+%! fitPosterior (C, meas(51:150, 3:4))
+%!error <CompactClassificationSVM.fitPosterior: the model must have exactly two classes.> ...
+%! load fisheriris
+%! C = compact (fitcsvm (meas(51:150, 3:4), ones (100, 1)));
+%! fitPosterior (C, meas(51:150, 3:4), ones (100, 1))
+%!error <CompactClassificationSVM.fitPosterior: Y must have the same number of rows as X.> ...
+%! load fisheriris
+%! C = compact (fitcsvm (meas(51:150, 3:4), species(51:150)));
+%! fitPosterior (C, meas(51:150, 3:4), species(51:100))
+%!error <CompactClassificationSVM.fitPosterior: Y must hold only classes the model was trained on.> ...
+%! load fisheriris
+%! C = compact (fitcsvm (meas(51:150, 3:4), species(51:150)));
+%! fitPosterior (C, meas(1:100, 3:4), species(1:100))

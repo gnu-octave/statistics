@@ -42,6 +42,29 @@ function [f, st] = parseScoreTransform (ScoreTransform, classname)
     f = ScoreTransform;
     st = func2str (ScoreTransform);
   else
+    ## The transformations fitPosterior and fitSVMPosterior estimate, written
+    ## as MATLAB writes them, with the parameters in full precision
+    tok = regexp (ScoreTransform, ...
+                  '^@\(S\)(sigmoid|step|constant)\(S,([^()]*)\)$', ...
+                  'tokens', 'once');
+    if (! isempty (tok))
+      v = str2double (strsplit (tok{2}, ','));
+      nv = struct ('sigmoid', 2, 'step', 3, 'constant', 1).(tok{1});
+      if (numel (v) != nv || ! all (isfinite (v))
+          || (nv == 1 && ! any (v == [1, 2])))
+        error ("%s: unrecognized 'ScoreTransform' function.", classname);
+      endif
+      st = ScoreTransform;
+      switch (tok{1})
+        case 'sigmoid'
+          f = @(x) sigmoidPosterior (x, v(1), v(2));
+        case 'step'
+          f = @(x) stepPosterior (x, v(1), v(2), v(3));
+        case 'constant'
+          f = @(x) constantPosterior (x, v(1));
+      endswitch
+      return;
+    endif
     if (! ismember (ScoreTransform, stList))
       error ("%s: unrecognized 'ScoreTransform' function.", classname);
     endif
@@ -88,4 +111,29 @@ function out = symmetricismax (score)
   out = - ones (size (score), class (score));
   [~, k] = max (score, [], 2);
   out(sub2ind (size (score), (1:rows (score))', k)) = 1;
+endfunction
+
+## Posterior of the second class from its score in the second column of a
+## two-class SCORE, P = 1 / (1 + exp (A * s + B)), returned with its
+## complement for the first class.
+function out = sigmoidPosterior (score, A, B)
+  P = 1 ./ (1 + exp (A * score(:,2) + B));
+  out = [1 - P, P];
+endfunction
+
+## 0 below LB, PI between LB and UB, and 1 above UB, for the second class.
+function out = stepPosterior (score, LB, UB, PI)
+  s = score(:,2);
+  P = PI * ones (size (s), class (score));
+  P(s < LB) = 0;
+  P(s > UB) = 1;
+  P(isnan (s)) = NaN;
+  out = [1 - P, P];
+endfunction
+
+## Posterior 1 for class K and 0 for the other.
+function out = constantPosterior (score, K)
+  out = zeros (rows (score), 2, class (score));
+  out(:,K) = 1;
+  out(isnan (score(:,2)),:) = NaN;
 endfunction

@@ -513,6 +513,12 @@ classdef ClassificationSVM < PredictiveModel
     ## @item @qcode{'symmetriclogit'} @tab @math{2 ./ (1 + exp (-x)) - 1}
     ## @end multitable
     ##
+    ## @code{fitPosterior} stores the transformation from scores to
+    ## posterior probabilities it fits as @qcode{'@@(S)sigmoid(S,A,B)'},
+    ## @qcode{'@@(S)step(S,LowerBound,UpperBound,PositiveClassProbability)'}
+    ## or @qcode{'@@(S)constant(S,K)'}.  Such a text may also be assigned
+    ## directly, which MATLAB refuses.
+    ##
     ## @end deftp
     ScoreTransform      = 'none';
 
@@ -2124,6 +2130,128 @@ classdef ClassificationSVM < PredictiveModel
     endfunction
 
     ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationSVM} {@var{ScoreSVMModel} =} fitPosterior (@var{obj})
+    ## @deftypefnx {ClassificationSVM} {@var{ScoreSVMModel} =} fitPosterior (@var{obj}, @var{name}, @var{value})
+    ## @deftypefnx {ClassificationSVM} {[@var{ScoreSVMModel}, @var{ScoreTransform}] =} fitPosterior (@dots{})
+    ##
+    ## Fit the transformation from scores to posterior probabilities.
+    ##
+    ## @code{@var{ScoreSVMModel} = fitPosterior (@var{obj})} returns the
+    ## two-class model @var{obj} with the transformation from the score of the
+    ## second class, @code{@var{obj}.ClassNames(2)}, to its posterior
+    ## probability stored in its @qcode{ScoreTransform} property, so that
+    ## @code{predict} and @code{resubPredict} return posterior probabilities,
+    ## the two columns summing to 1.  The transformation is fitted to scores
+    ## the model gives observations it was not trained on, by 10-fold
+    ## cross-validation unless one of the following options says otherwise.
+    ##
+    ## @multitable @columnfractions 0.28 0.7
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'KFold'} @tab The number of folds, an integer greater
+    ## than 1.  The default is 10.
+    ##
+    ## @item @qcode{'Holdout'} @tab The fraction of the data held out, a
+    ## scalar in the range @math{(0,1)}; the transformation is fitted to the
+    ## scores of the observations held out.
+    ##
+    ## @item @qcode{'Leaveout'} @tab @qcode{'on'} for leave-one-out
+    ## cross-validation, or @qcode{'off'} (default).
+    ##
+    ## @item @qcode{'CVPartition'} @tab A @qcode{cvpartition} object over the
+    ## observations of @var{obj}.
+    ## @end multitable
+    ##
+    ## Only one of these options may be given.  The transformation is one of
+    ## three:
+    ##
+    ## @itemize
+    ## @item A sigmoid @code{1 / (1 + exp (A * s + B))} of the score @math{s}
+    ## when the scores of the two classes overlap, with @math{A} and @math{B}
+    ## fitted by maximum likelihood, as a logistic regression of the class on
+    ## the score.  Neither the observation weights nor the prior enter the
+    ## fit, as in MATLAB.
+    ## @item A step function when the scores separate the classes: 0 below the
+    ## largest score of the first class, 1 above the smallest score of the
+    ## second, and @code{@var{obj}.Prior(2)} between, with a warning.
+    ## @item A constant when one class has prior probability 0, posterior 1
+    ## for the other class.
+    ## @end itemize
+    ##
+    ## A @qcode{ScoreTransform} already set on @var{obj} is reset to
+    ## @qcode{'none'} first, with a warning.  The property holds the
+    ## transformation as @qcode{'@@(S)sigmoid(S,A,B)'},
+    ## @qcode{'@@(S)step(S,LowerBound,UpperBound,PositiveClassProbability)'}
+    ## or @qcode{'@@(S)constant(S,K)'}, @math{K} being the index of the
+    ## predicted class.  Each parameter is written exactly, in the fewest
+    ## significant digits that read back to it, where MATLAB shows seven, so
+    ## a model saved and reloaded predicts as before.  Such a text may also be
+    ## assigned to the property directly, which MATLAB refuses.
+    ##
+    ## @code{[@var{ScoreSVMModel}, @var{ScoreTransform}] = fitPosterior
+    ## (@dots{})} also returns the parameters in a structure whose field
+    ## @qcode{Type} is @qcode{'sigmoid'}, with fields @qcode{Slope} and
+    ## @qcode{Intercept}, @qcode{'step'}, with fields @qcode{LowerBound},
+    ## @qcode{UpperBound} and @qcode{PositiveClassProbability}, or
+    ## @qcode{'constant'}, with the field @qcode{PredictedClass}.
+    ##
+    ## @seealso{fitSVMPosterior, CompactClassificationSVM.fitPosterior,
+    ## ClassificationSVM.predict, fitcsvm, cvpartition}
+    ## @end deftypefn
+    function [this, ScoreTransform] = fitPosterior (this, varargin)
+
+      if (classCount (this.ClassNames) != 2)
+        error (strcat ("ClassificationSVM.fitPosterior: the model must", ...
+                       " have exactly two classes."));
+      endif
+
+      ## Only the cross-validation options, which cvPartitionOf builds the
+      ## partition from; it takes 'CrossVal' too, which is not one of them
+      if (any (strcmpi (varargin(1:2:end), 'CrossVal')))
+        error (strcat ("ClassificationSVM.fitPosterior: unknown", ...
+                       " parameter name 'CrossVal'."));
+      endif
+      [part, rest] = cvPartitionOf (varargin, this.Y, this.NumObservations, ...
+                                    "ClassificationSVM.fitPosterior");
+      if (! isempty (rest))
+        if (ischar (rest{1}))
+          error (strcat ("ClassificationSVM.fitPosterior: unknown", ...
+                         " parameter name '%s'."), rest{1});
+        endif
+        error (strcat ("ClassificationSVM.fitPosterior: optional", ...
+                       " arguments must be given in Name-Value pairs."));
+      endif
+
+      if (! strcmp (this.ScoreTransform, 'none'))
+        warning (strcat ("ClassificationSVM.fitPosterior: resetting", ...
+                         " 'ScoreTransform' to 'none' before fitting the", ...
+                         " transformation."));
+        this.ScoreTransform = 'none';
+      endif
+
+      ## Scores of observations left out of the fit, which a prior of zero
+      ## makes unnecessary
+      s = [];
+      k = [];
+      if (all (this.Prior > 0))
+        CVMdl = crossval (this, 'CVPartition', part);
+        [~, scores] = kfoldPredict (CVMdl);
+        s = scores(:,2);
+        k = labelIndices (this.ClassNames, this.Y);
+      endif
+
+      [st, ScoreTransform, separated] = svmPosterior (s, k, this.Prior, ...
+                                                      this.ClassNames);
+      if (separated)
+        warning (strcat ("ClassificationSVM.fitPosterior: the classes are", ...
+                         " perfectly separated, so the transformation is a", ...
+                         " step function."));
+      endif
+      this.ScoreTransform = st;
+
+    endfunction
+
+    ## -*- texinfo -*-
     ## @deftypefn  {ClassificationSVM} {@var{e} =} edge (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {ClassificationSVM} {@var{e} =} edge (@dots{}, @qcode{"Weights"}, @var{w})
     ## @deftypefnx {ClassificationSVM} {@var{e} =} edge (@var{obj}, @var{Tbl}, @var{ResponseVarName})
@@ -3347,6 +3475,172 @@ endclassdef
 %! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'CVPartition', 'a')
 %!error<ClassificationSVM.crossval: invalid parameter name in optional paired arguments> ...
 %! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'some', 'some')
+
+## Test output for fitPosterior method
+## Values checked against MATLAB R2024a, whose SMO solver gives scores up to
+## 1.3e-3 away from LIBSVM's out of fold
+%!test
+%! load fisheriris
+%! Mdl = fitcsvm (meas(51:150, 3:4), species(51:150), ...
+%!                'KernelFunction', 'linear');
+%! [M, ST] = fitPosterior (Mdl, 'Leaveout', 'on');
+%! assert_equal (ST.Type, 'sigmoid');
+%! assert_equal (ST.Slope, -3.4011027773863747, 1e-3);
+%! assert_equal (ST.Intercept, -0.092575940016464561, 1e-4);
+%! tok = regexp (M.ScoreTransform, '^@\(S\)sigmoid\(S,([^,]+),([^)]+)\)$', ...
+%!               'tokens', 'once');
+%! assert_equal (str2double (tok)', [ST.Slope, ST.Intercept]);
+%!test
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Mdl = fitcsvm (X, species(51:150), 'KernelFunction', 'linear');
+%! [M, ST] = fitPosterior (Mdl, 'Leaveout', 'on');
+%! [~, s] = predict (Mdl, X([1 2 60 61], :));
+%! [~, p] = predict (M, X([1 2 60 61], :));
+%! P = 1 ./ (1 + exp (ST.Slope * s(:,2) + ST.Intercept));
+%! assert_equal (p, [1 - P, P], 1e-15);
+%! assert_equal (p, [0.96472018335949683, 0.035279816640503191; ...
+%!                   0.98248291693946965, 0.017517083060530327; ...
+%!                   1.8241290766773943e-07, 0.99999981758709233; ...
+%!                   0.013923286598323315, 0.98607671340167669], 1e-4);
+%!test
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Mdl = fitcsvm (X, species(51:150), 'KernelFunction', 'linear');
+%! M = fitPosterior (Mdl, 'Leaveout', 'on');
+%! [~, p] = resubPredict (M);
+%! [~, q] = predict (M, X);
+%! assert_equal (p, q);
+%!test
+%! load fisheriris
+%! Mdl = fitcsvm (meas(51:150, 3:4), species(51:150), ...
+%!                'KernelFunction', 'linear');
+%! [~, ST1] = fitPosterior (Mdl, 'Leaveout', 'on');
+%! [~, ST2] = fitPosterior (Mdl, 'CVPartition', cvpartition (100, 'LeaveOut'));
+%! assert_equal (ST2, ST1);
+%!warning <ClassificationSVM.fitPosterior: resetting 'ScoreTransform' to 'none' before fitting the transformation.> ...
+%! load fisheriris
+%! Mdl = fitcsvm (meas(51:150, 3:4), species(51:150), ...
+%!                'KernelFunction', 'linear');
+%! [M, ST1] = fitPosterior (Mdl, 'Leaveout', 'on');
+%! [~, ST2] = fitPosterior (M, 'Leaveout', 'on');
+%! assert_equal (ST2, ST1);
+%!warning <ClassificationSVM.fitPosterior: the classes are perfectly separated, so the transformation is a step function.> ...
+%! load fisheriris
+%! Mdl = fitcsvm (meas(1:100, 3:4), species(1:100), 'KernelFunction', 'linear');
+%! [M, ST] = fitPosterior (Mdl, 'Leaveout', 'on');
+%! assert_equal (ST.Type, 'step');
+%! assert_equal (ST.LowerBound, -0.8446461538461536, 1e-6);
+%! assert_equal (ST.UpperBound, 0.68965517241379271, 1e-6);
+%! assert_equal (ST.PositiveClassProbability, 0.5);
+%! tok = regexp (M.ScoreTransform, '^@\(S\)step\(S,([^,]+),([^,]+),0.5\)$', ...
+%!               'tokens', 'once');
+%! assert_equal (str2double (tok)', [ST.LowerBound, ST.UpperBound]);
+%!warning <ClassificationSVM.fitPosterior: the classes are perfectly separated> ...
+%! load fisheriris
+%! Mdl = fitcsvm (meas(1:100, 3:4), species(1:100), 'KernelFunction', 'linear');
+%! M = fitPosterior (Mdl, 'Leaveout', 'on');
+%! [~, p] = predict (M, [2.45, 0.8; 1.4, 0.2; 4.5, 1.5]);
+%! assert_equal (p, [0.5, 0.5; 1, 0; 0, 1]);
+%!warning <ClassificationSVM.fitPosterior: the classes are perfectly separated> ...
+%! load fisheriris
+%! Mdl = fitcsvm (meas(1:70, 3:4), species(1:70), 'KernelFunction', 'linear');
+%! [~, ST] = fitPosterior (Mdl, 'Leaveout', 'on');
+%! assert_equal (ST.PositiveClassProbability, 0.2857142857142857, 1e-15);
+%!warning <ClassificationSVM.fitPosterior: the classes are perfectly separated> ...
+%! load fisheriris
+%! Mdl = fitcsvm (meas(1:100, 3:4), species(1:100), 'KernelFunction', ...
+%!                'linear', 'Prior', [0.2, 0.8]);
+%! [~, ST] = fitPosterior (Mdl, 'Leaveout', 'on');
+%! assert_equal (ST.PositiveClassProbability, 0.8, 1e-15);
+%!warning <ClassificationSVM.fitPosterior: the classes are perfectly separated> ...
+%! load fisheriris
+%! Mdl = fitcsvm (meas(1:70, 3:4), species(1:70), 'KernelFunction', ...
+%!                'linear', 'Weights', 1 + mod ((1:70)', 3));
+%! [~, ST] = fitPosterior (Mdl, 'Leaveout', 'on');
+%! assert_equal (ST.PositiveClassProbability, 0.27857142857142858, 1e-15);
+%!test
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Mdl = fitcsvm (X, species(51:150), 'KernelFunction', 'linear', ...
+%!                'Prior', [1, 0]);
+%! [M, ST] = fitPosterior (Mdl);
+%! assert_equal (ST.Type, 'constant');
+%! assert_equal (ST.PredictedClass, {'versicolor'});
+%! assert_equal (M.ScoreTransform, '@(S)constant(S,1)');
+%! [~, p] = predict (M, X([1, 60], :));
+%! assert_equal (p, [1, 0; 1, 0]);
+%!test
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Mdl = fitcsvm (X, species(51:150), 'KernelFunction', 'linear');
+%! M = fitPosterior (Mdl, 'Leaveout', 'on');
+%! fname = [tempname(), '.mat'];
+%! savemodel (M, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (M2.ScoreTransform, M.ScoreTransform);
+%! [~, p] = predict (M, X(1:5, :));
+%! [~, p2] = predict (M2, X(1:5, :));
+%! assert_equal (p2, p);
+%!test
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Mdl = fitcsvm (X, species(51:150), 'KernelFunction', 'linear');
+%! [~, s] = predict (Mdl, X(1:3, :));
+%! Mdl.ScoreTransform = '@(S)sigmoid(S,-2,0.5)';
+%! [~, p] = predict (Mdl, X(1:3, :));
+%! P = 1 ./ (1 + exp (-2 * s(:,2) + 0.5));
+%! assert_equal (p, [1 - P, P], 1e-15);
+
+## Test input validation for fitPosterior method
+%!error <ClassificationSVM.fitPosterior: the model must have exactly two classes.> ...
+%! load fisheriris
+%! fitPosterior (fitcsvm (meas(51:150, 3:4), ones (100, 1)))
+%!error <ClassificationSVM.fitPosterior: unknown parameter name 'Foo'.> ...
+%! load fisheriris
+%! Mdl = fitcsvm (meas(51:150, 3:4), species(51:150));
+%! fitPosterior (Mdl, 'Foo', 5)
+%!error <ClassificationSVM.fitPosterior: unknown parameter name 'CrossVal'.> ...
+%! load fisheriris
+%! Mdl = fitcsvm (meas(51:150, 3:4), species(51:150));
+%! fitPosterior (Mdl, 'CrossVal', 'on')
+%!error <ClassificationSVM.fitPosterior: optional arguments must be given in Name-Value pairs.> ...
+%! load fisheriris
+%! Mdl = fitcsvm (meas(51:150, 3:4), species(51:150));
+%! fitPosterior (Mdl, 5, 5)
+%!error <ClassificationSVM.fitPosterior: optional arguments must be given in Name-Value pairs.> ...
+%! load fisheriris
+%! Mdl = fitcsvm (meas(51:150, 3:4), species(51:150));
+%! fitPosterior (Mdl, 'KFold')
+%!error <ClassificationSVM.fitPosterior: you can use only one of 'KFold', 'Holdout', 'Leaveout', or 'CVPartition' options.> ...
+%! load fisheriris
+%! Mdl = fitcsvm (meas(51:150, 3:4), species(51:150));
+%! fitPosterior (Mdl, 'KFold', 5, 'Holdout', 0.2)
+%!error <ClassificationSVM.fitPosterior: 'KFold' must be an integer value greater than 1.> ...
+%! load fisheriris
+%! Mdl = fitcsvm (meas(51:150, 3:4), species(51:150));
+%! fitPosterior (Mdl, 'KFold', 1)
+%!error <ClassificationSVM.fitPosterior: 'KFold' must be an integer value greater than 1.> ...
+%! load fisheriris
+%! Mdl = fitcsvm (meas(51:150, 3:4), species(51:150));
+%! fitPosterior (Mdl, 'KFold', 2.5)
+%!error <ClassificationSVM.fitPosterior: 'Holdout' must be a numeric value between 0 and 1.> ...
+%! load fisheriris
+%! Mdl = fitcsvm (meas(51:150, 3:4), species(51:150));
+%! fitPosterior (Mdl, 'Holdout', 0)
+%!error <ClassificationSVM.fitPosterior: 'Leaveout' must be either 'on' or 'off'.> ...
+%! load fisheriris
+%! Mdl = fitcsvm (meas(51:150, 3:4), species(51:150));
+%! fitPosterior (Mdl, 'Leaveout', 'yes')
+%!error <ClassificationSVM.fitPosterior: 'CVPartition' must be a cvpartition object.> ...
+%! load fisheriris
+%! Mdl = fitcsvm (meas(51:150, 3:4), species(51:150));
+%! fitPosterior (Mdl, 'CVPartition', 5)
+%!error <ClassificationSVM.fitPosterior: 'CVPartition' must be built over the same number of observations as the data.> ...
+%! load fisheriris
+%! Mdl = fitcsvm (meas(51:150, 3:4), species(51:150));
+%! fitPosterior (Mdl, 'CVPartition', cvpartition (50, 'KFold', 5))
 %!error <ClassificationSVM.savemodel: too few input arguments.> ...
 %! savemodel (ClassificationSVM ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]))
 %!error <ClassificationSVM.savemodel: FNAME must be a character vector.> ...
