@@ -68,8 +68,10 @@
 ## @item @qcode{'RelTol'} @tab Convergence tolerance for the coordinate descent
 ## (default @math{1e-4}).
 ##
-## @item @qcode{'MaxIter'} @tab Maximum number of coordinate-descent iterations
-## (default @math{1e5}).
+## @item @qcode{'MaxIter'} @tab Maximum number of coordinate-descent
+## iterations, a non-negative integer (default @math{1e5}).  A value of 0
+## returns the starting point, every coefficient 0, where MATLAB's
+## @code{lasso} refuses 0 and its @code{lassoglm} accepts it.
 ##
 ## @item @qcode{'DFmax'} @tab The maximum number of non-zero coefficients; the
 ## default sequence stops once this is exceeded.
@@ -161,6 +163,10 @@ function [B, FitInfo] = lasso (X, y, varargin)
   endif
   if (! isempty (lambda) && (! isnumeric (lambda) || any (lambda < 0)))
     error ("lasso: 'Lambda' must be a vector of non-negative values.");
+  endif
+  if (! (isnumeric (maxiter) && isreal (maxiter) && isscalar (maxiter)
+         && isfinite (maxiter) && maxiter >= 0 && maxiter == fix (maxiter)))
+    error ("lasso: 'MaxIter' must be a non-negative integer.");
   endif
   if (! intercept && standardize)
     warning (["lasso: when the 'Intercept' value is false, the " ...
@@ -515,7 +521,18 @@ endfunction
 %! assert_equal (I.Intercept, 0.182934392352372, 1e-9);
 %! assert_equal (I.MSE, 0.028173758865249, 1e-9);
 
+## No iteration returns the starting point
+%!test
+%! load fisheriris
+%! [B, FitInfo] = lasso (meas(:,2:4), meas(:,1), 'MaxIter', 0);
+%! assert_equal (all (B(:) == 0), true);
+%! assert_equal (FitInfo.Intercept, repmat (mean (meas(:,1)), 1, 100), 1e-12);
+
 ## Test input validation
+%!error <lasso: 'MaxIter' must be a non-negative integer.> ...
+%! lasso (X, y, 'MaxIter', -1)
+%!error <lasso: 'MaxIter' must be a non-negative integer.> ...
+%! lasso (X, y, 'MaxIter', 1.5)
 %!error <Invalid call to lasso> lasso (1)
 %!error <lasso: X and Y must have the same number of observations.> ...
 %! lasso ([1 2; 3 4], [1 2 3]')

@@ -12435,7 +12435,7 @@ Inverse prediction from a simple linear regression.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 5
 lasso
@@ -12444,7 +12444,7 @@ lasso
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2563
+# length: 3076
 statistics: B = lasso (X, y)
 statistics: [B, FitInfo] = lasso (X, y)
 statistics: [...] = lasso (..., Name, Value)
@@ -12481,11 +12481,16 @@ when the number of observations is below the number of predictors).
 'Standardize' Whether to standardize X to zero mean
 and unit variance before fitting (default true). Coefficients are
 always returned on the original scale.
-'Weights' A vector of non-negative observation weights.
+'Weights' A real, finite, non-negative vector of class
+single or double, with one element per row of X. The weights of rows
+removed because of NaN values are dropped with those rows, and the
+remaining weights are normalized to sum to one.
 'RelTol' Convergence tolerance for the coordinate descent
 (default 1e-4).
-'MaxIter' Maximum number of coordinate-descent iterations
-(default 1e5).
+'MaxIter' Maximum number of coordinate-descent
+iterations, a non-negative integer (default 1e5). A value of 0
+returns the starting point, every coefficient 0, where MATLAB's
+lasso refuses 0 and its lassoglm accepts it.
 'DFmax' The maximum number of non-zero coefficients; the
 default sequence stops once this is exceeded.
 'Intercept' Whether to fit a constant term (default
@@ -12496,6 +12501,10 @@ FitInfo.
 cross-validation of the mean squared error, or a cvpartition object.
 'MCReps' The number of Monte-Carlo repetitions of the
 cross-validation (default 1).
+
+Observations with NaN values in X or y are removed before
+fitting. At least two observations must remain and, if 'Weights' is
+given, at least two of them must have a non-zero weight.
 
 When 'CV' is used, FitInfo.MSE is the cross-validated
 error, plus SE, LambdaMinMSE, IndexMinMSE,
@@ -12519,7 +12528,7 @@ Lasso and elastic-net regularized least-squares regression.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 8
 lassoglm
@@ -12528,7 +12537,7 @@ lassoglm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3248
+# length: 4700
 statistics: B = lassoglm (X, y)
 statistics: B = lassoglm (X, y, distr)
 statistics: B = lassoglm (X, y, distr, Name, Value)
@@ -12540,7 +12549,15 @@ least-squares regression coefficients for a generalized linear model of the
 response y on the predictor data X, penalized by the lasso (L1)
 or elastic-net penalty. X is an n-by-p numeric matrix of
 p predictors at each of n observations, and y is a
-numeric vector of n responses. distr names the distribution of
+numeric vector of n responses. For the 'normal',
+'binomial' and 'poisson' distributions y may also be
+a logical vector, true read as 1, or a categorical vector with
+exactly two categories, the second read as 1 and undefined elements as
+missing; for 'binomial' the value 1 is the success. For the
+'binomial' distribution y may also be an n-by-2 matrix
+whose first column holds the number of successes and whose second holds the
+number of trials; a row with NaN in either column or with no trials
+is removed. distr names the distribution of
 the response: 'normal' (default), 'binomial',
 'poisson', 'gamma', or 'inverse gaussian'. The
 canonical link function of the chosen distribution is used unless overridden
@@ -12580,17 +12597,25 @@ values towards 0 approach ridge regression.
 'Lambda' a vector of non-negative lambda values.
 'Standardize' a logical value (default true)
 specifying whether the predictors are standardized before fitting.
-'Weights' a vector of non-negative observation weights.
-'Size' for the 'binomial' distribution, the number
-of trials (a scalar or a per-observation vector); y holds the number of
-successes. Default is 1 (Bernoulli responses).
+'Weights' a real, non-negative vector of class single or
+double, with one element per row of X. A NaN weight marks its
+observation as missing.
+'BinomialSize' for the 'binomial' distribution,
+the number of trials, a scalar or a vector with one element per row of
+X; y holds the number of successes. Default is 1 (Bernoulli
+responses). It describes the same model as the two-column y, whose
+trials are used when both are given. A row whose number of trials is
+NaN or 0 is removed. 'BinomialSize' is an Octave
+extension, and 'Size' is accepted as an alias for it.
 'Link' the link function to use instead of the family's
 canonical link. Accepts any link name understood by glmfit (e.g.
 'log', 'probit') or a numeric exponent for a power link.
 'Offset' a numeric vector, one value per observation,
 added as a fixed term to the linear predictor (not penalized or fitted).
 'RelTol' convergence tolerance for the coordinate descent.
-'MaxIter' maximum number of iterations.
+'MaxIter' maximum number of iterations, a non-negative
+integer. A value of 0 returns the starting point, every coefficient 0, as
+MATLAB does.
 'DFmax' maximum number of nonzero coefficients.
 'Intercept' a logical value (default true) whether
 to fit an intercept term.
@@ -12601,6 +12626,17 @@ random, so the selected lambda values are not reproducible without a
 fixed random seed.
 'MCReps' the number of Monte-Carlo repetitions of the
 cross-validation (default 1).
+
+Observations with NaN values in X, y or
+'Weights' are removed before fitting. At least two observations
+must remain and, if 'Weights' is given, at least two of them must
+have a non-zero weight.
+
+A response at the edge of its range on every observation, all failures or
+all successes for 'binomial' and all zeros for 'poisson',
+has no finite fit. B is then zero, the intercept places the fitted
+mean at the limit of its range, and the default Lambda values are all
+zero, as in MATLAB. MATLAB's intercept there is about 102.5 in magnitude.
 
 See also:
 lasso,

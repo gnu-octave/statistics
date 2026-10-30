@@ -95,7 +95,9 @@
 ## @item @qcode{'Offset'} @tab a numeric vector, one value per observation,
 ## added as a fixed term to the linear predictor (not penalized or fitted).
 ## @item @qcode{'RelTol'} @tab convergence tolerance for the coordinate descent.
-## @item @qcode{'MaxIter'} @tab maximum number of iterations.
+## @item @qcode{'MaxIter'} @tab maximum number of iterations, a non-negative
+## integer.  A value of 0 returns the starting point, every coefficient 0, as
+## MATLAB does.
 ## @item @qcode{'DFmax'} @tab maximum number of nonzero coefficients.
 ## @item @qcode{'Intercept'} @tab a logical value (default @qcode{true}) whether
 ## to fit an intercept term.
@@ -225,6 +227,10 @@ function [B, FitInfo] = lassoglm (X, y, distr, varargin)
   endif
   if (! isempty (lambda) && (! isnumeric (lambda) || any (lambda < 0)))
     error ("lassoglm: 'Lambda' must be a vector of non-negative values.");
+  endif
+  if (! (isnumeric (maxiter) && isreal (maxiter) && isscalar (maxiter)
+         && isfinite (maxiter) && maxiter >= 0 && maxiter == fix (maxiter)))
+    error ("lassoglm: 'MaxIter' must be a non-negative integer.");
   endif
 
   ## Weights are checked as given, before any row is dropped.
@@ -954,7 +960,26 @@ endfunction
 %! assert_equal (F.Intercept, -0.739508255321235, 1e-6);
 %! assert_equal (F.Deviance, 3.144646252896119, 1e-6);
 
+## No iteration returns the starting point; values checked against
+## MATLAB R2024a
+%!test
+%! load fisheriris
+%! [B, FitInfo] = lassoglm (meas(:,2:4), meas(:,1), 'normal', 'MaxIter', 0);
+%! assert_equal (all (B(:) == 0), true);
+%! assert_equal (FitInfo.Intercept(end), 5.843333333, 1e-9);
+%!test
+%! load fisheriris
+%! y = double (strcmp (species, 'virginica'));
+%! [B, FitInfo] = lassoglm (meas(:,2:4), y, 'binomial', 'MaxIter', 0);
+%! assert_equal (all (B(:) == 0), true);
+%! assert_equal (FitInfo.Intercept(end), -0.6931471806, 1e-9);
+%! assert_equal (FitInfo.Deviance(end), 190.9542505, 1e-7);
+
 ## Test input validation
+%!error <lassoglm: 'MaxIter' must be a non-negative integer.> ...
+%! lassoglm ([1, 2; 3, 4; 5, 6], [1; 2; 3], 'normal', 'MaxIter', -1)
+%!error <lassoglm: 'MaxIter' must be a non-negative integer.> ...
+%! lassoglm ([1, 2; 3, 4; 5, 6], [1; 2; 3], 'normal', 'MaxIter', 1.5)
 %!error<Invalid call> lassoglm (1)
 %!error<lassoglm: X must be a real matrix.> lassoglm ("a", [1;2])
 %!error<lassoglm: Y must be a real vector.> lassoglm ([1, 2; 3, 4], "a")
