@@ -39,11 +39,12 @@
 ## @multitable @columnfractions 0.28 0.72
 ## @headitem @var{Name} @tab @var{Value}
 ##
-## @item @qcode{'IncludeMissingGroups'} @tab A numeric or logical scalar that
-## is not @qcode{NaN} (default @qcode{false}).  When nonzero or @qcode{true},
-## the missing values are counted as a group of their own, placed after the
-## other groups of every input that holds any.  The name is not case
-## sensitive.  Only its last occurrence counts.
+## @item @qcode{'IncludeMissingGroups'} @tab A real double, single or logical
+## scalar that is not @qcode{NaN} (default @qcode{false}).  When nonzero or
+## @qcode{true}, the missing values are counted as a group of their own, placed
+## after the other groups of every input that holds any.  The name is not case
+## sensitive and may be shortened to @qcode{'IncludeMissing'}; any other text
+## is read as data.  Only its last occurrence counts.
 ## @end multitable
 ##
 ## The label of the missing group is @qcode{NaN} for numeric inputs,
@@ -75,9 +76,10 @@ function [t, chisq, p, labels] = crosstab (varargin)
   endif
 
   ## Trailing Name-Value pairs start at the first text, from the third input
-  ## on, that is the option name; any other text is data.
-  optname = "IncludeMissingGroups";
-  isopt = @(s) ischar (s) && isrow (s) && strcmpi (s, optname);
+  ## on, that is the option name or its short form, case free; any other text
+  ## is data.
+  optnames = {"IncludeMissingGroups", "IncludeMissing"};
+  isopt = @(s) ischar (s) && isrow (s) && any (strcmpi (s, optnames));
   nvars = nargin;
   incmissing = false;
   k = find (cellfun (isopt, varargin(3:end)), 1);
@@ -87,13 +89,21 @@ function [t, chisq, p, labels] = crosstab (varargin)
       error ("crosstab: optional arguments must be Name-Value pairs.");
     endif
     for j = nvars+1:2:nargin
-      if (! isopt (varargin{j}))
-        error ("crosstab: unknown parameter name.");
+      name = varargin{j};
+      if (! isopt (name))
+        if (ischar (name) && isrow (name))
+          error ("crosstab: unknown parameter name '%s'.", name);
+        endif
+        error ("crosstab: optional arguments must be Name-Value pairs.");
       endif
       value = varargin{j+1};
-      if (! (isscalar (value) && (isnumeric (value) || islogical (value))))
-        error (["crosstab: 'IncludeMissingGroups' must be a numeric or ", ...
-                "logical scalar."]);
+      if (! (isscalar (value) && (isfloat (value) || islogical (value))
+             && isreal (value)))
+        error (["crosstab: 'IncludeMissingGroups' must be a real double, ", ...
+                "single or logical scalar."]);
+      endif
+      if (isnan (value))
+        error ("crosstab: 'IncludeMissingGroups' cannot be NaN.");
       endif
       incmissing = logical (value);
     endfor
@@ -249,12 +259,24 @@ endfunction
 %! crosstab (repmat (datetime (2026, 1, 1), 2, 2), [1 2 3 4])
 %!error <crosstab: x1, x2 ... xn must be vectors.> ...
 %! crosstab (hours ([1 2; 3 4]), [1 2 3 4])
-%!error <crosstab: 'IncludeMissingGroups' must be a numeric or logical scalar.> ...
+%!error <crosstab: 'IncludeMissingGroups' must be a real double, single or logical scalar.> ...
 %! crosstab ([1 2], [1 2], 'IncludeMissingGroups', 'yes')
+%!error <crosstab: 'IncludeMissingGroups' must be a real double, single or logical scalar.> ...
+%! crosstab ([1 2], [1 2], 'IncludeMissingGroups', int8 (1))
+%!error <crosstab: 'IncludeMissingGroups' must be a real double, single or logical scalar.> ...
+%! crosstab ([1 2], [1 2], 'IncludeMissingGroups', 1i)
+%!error <crosstab: 'IncludeMissingGroups' must be a real double, single or logical scalar.> ...
+%! crosstab ([1 2], [1 2], 'IncludeMissingGroups', [])
+%!error <crosstab: 'IncludeMissingGroups' cannot be NaN.> ...
+%! crosstab ([1 2], [1 2], 'IncludeMissingGroups', NaN)
 %!error <crosstab: optional arguments must be Name-Value pairs.> ...
 %! crosstab ([1 2], [1 2], 'IncludeMissingGroups')
-%!error <crosstab: unknown parameter name.> ...
+%!error <crosstab: optional arguments must be Name-Value pairs.> ...
+%! crosstab ([1 2], [1 2], 'IncludeMissingGroups', true, 5, true)
+%!error <crosstab: unknown parameter name 'Foo'.> ...
 %! crosstab ([1 2], [1 2], 'IncludeMissingGroups', true, 'Foo', true)
+%!error <crosstab: unknown parameter name 'Include'.> ...
+%! crosstab ([1 2], [1 2], 'IncludeMissing', true, 'Include', true)
 %!test
 %! load carbig
 %! [t, chisq, p, labels] = crosstab (cyl4, when, org);
@@ -597,3 +619,14 @@ endfunction
 %! assert_equal (t4, [2 0; 0 1; 0 1]);
 %! assert_equal ({l1{3,1}, l2{3,1}, l3{3,1}, l4{3,1}}, ...
 %!               {'NaT', 'NaN hr', 'NaN days', '  '});
+%!test
+%! t = crosstab ([1 2 NaN 1 2], [1 1 2 NaN 2], 'includemissing', true);
+%! assert_equal (t, [1 0 1; 1 1 0; 0 1 0]);
+%!test
+%! t = crosstab ([1 2 NaN 1 2], [1 1 2 NaN 2], 'IncludeMissingGroups', ...
+%!               single (2));
+%! assert_equal (t, [1 0 1; 1 1 0; 0 1 0]);
+%!test
+%! t = crosstab ([1 2 NaN 1 2], [1 1 2 NaN 2], 'IncludeMissingGroups', ...
+%!               true, 'IncludeMissingGroups', false);
+%! assert_equal (t, [1 0; 1 1]);

@@ -40,17 +40,35 @@ crosstab
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 990
+# length: 1911
 statistics: t = crosstab (x1, x2)
 statistics: t = crosstab (x1, ..., xn)
 statistics: [t, chisq, p, labels] = crosstab (...)
+statistics: [...] = crosstab (..., Name, Value)
 Create a cross-tabulation (contingency table) t from data vectors.
 
 The inputs x1, x2, ... xn must be vectors of equal length
 with a data type of numeric, logical, char array, categorical, strings,
 datetime, duration, or cell array of character vectors. Missing values,
-such as NaN or NaT, are not counted. A NaN
-duration is missing too, whereas MATLAB counts it as a group of its own.
+such as NaN or NaT, are not counted by default. A
+NaN duration is missing too, whereas MATLAB counts it as a group of
+its own.
+
+The following Name-Value pair is supported:
+
+Name Value
+'IncludeMissingGroups' A real double, single or logical
+scalar that is not NaN (default false). When nonzero or
+true, the missing values are counted as a group of their own, placed
+after the other groups of every input that holds any. The name is not case
+sensitive and may be shortened to 'IncludeMissing'; any other text
+is read as data. Only its last occurrence counts.
+
+The label of the missing group is NaN for numeric inputs,
+<undefined> for categorical, <missing> for strings,
+{''} for cell arrays of character vectors, NaT for
+datetime, the text of a NaN element for duration, and the blank row
+itself for a char array.
 
 As additional return values crosstab returns the chi-square statistics
 chisq, its p-value p and a cell array labels, containing
@@ -60,7 +78,9 @@ A categorical input has a row or column for every one of its categories,
 an unused one included, holding zeros. The chi-square statistic and its
 p-value are computed over the rows and columns that hold observations,
 where MATLAB returns NaN for both whenever any row or column is
-empty.
+empty. With the missing group counted, it follows every category here,
+whereas MATLAB returns a table one row longer than its labels when an unused
+category follows the last used one.
 
 See also:
 grp2idx,
