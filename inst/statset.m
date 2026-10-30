@@ -70,8 +70,9 @@
 ## evaluations, a positive scalar.
 ## @item @qcode{"MaxIter"} @tab Maximum number of iterations, a positive scalar.
 ## @item @qcode{"TolBnd"} @tab Positive scalar tolerance on parameter bounds.
-## @item @qcode{"TolFun"} @tab Positive scalar tolerance on the objective
-## function value.
+## @item @qcode{"TolFun"} @tab Non-negative scalar tolerance on the objective
+## function value.  A tolerance of 0 never stops on the change in the
+## objective, leaving @qcode{"MaxIter"} to end the iterations.
 ## @item @qcode{"TolTypeFun"} @tab Whether @qcode{"TolFun"} is absolute,
 ## @qcode{"abs"}, or relative, @qcode{"rel"}.
 ## @item @qcode{"TolX"} @tab Positive scalar tolerance on the parameters.
@@ -255,7 +256,14 @@ function value = check_value (field, value)
                        " scalar."), field);
       endif
 
-    case {'TolBnd', 'TolFun', 'TolX', 'Tune'}
+    case 'TolFun'
+      if (! (isnumeric (value) && isscalar (value) && isreal (value)
+             && isfloat (value) && value >= 0))
+        error (strcat ("statset: option 'TolFun' must be a real", ...
+                       " non-negative scalar."));
+      endif
+
+    case {'TolBnd', 'TolX', 'Tune'}
       if (! (isnumeric (value) && isscalar (value) && isreal (value)
              && isfloat (value) && value > 0))
         error (strcat ("statset: option '%s' must be a real positive", ...
@@ -491,7 +499,7 @@ function display_options ()
          'MaxFunEvals', '[ positive scalar ]'; ...
          'MaxIter', '[ positive scalar ]'; ...
          'TolBnd', '[ positive scalar ]'; ...
-         'TolFun', '[ positive scalar ]'; ...
+         'TolFun', '[ non-negative scalar ]'; ...
          'TolTypeFun', '[ abs | rel ]'; ...
          'TolX', '[ positive scalar ]'; ...
          'TolTypeX', '[ abs | rel ]'; ...
@@ -581,6 +589,12 @@ endfunction
 %! assert_equal (options.MaxIter, 1000);
 %! assert_equal (options.TolFun, 1e-10);
 %! assert_equal (options.OutputFcn, '');
+
+%!test
+%! assert_equal (statset ('TolFun', 0).TolFun, 0);
+
+%!test
+%! assert_equal (statset ('TolFun', Inf).TolFun, Inf);
 
 %!test
 %! options = statset ('sequentialfs');
@@ -812,6 +826,15 @@ endfunction
 
 %!error<statset: option 'TolX' must be a real positive scalar.> ...
 %! statset ('TolX', -1)
+
+%!error<statset: option 'TolX' must be a real positive scalar.> ...
+%! statset ('TolX', 0)
+
+%!error<statset: option 'TolBnd' must be a real positive scalar.> ...
+%! statset ('TolBnd', 0)
+
+%!error<statset: option 'TolFun' must be a real non-negative scalar.> ...
+%! statset ('TolFun', -1)
 
 %!error<statset: option 'Tune' must be a real positive scalar.> ...
 %! statset ('Tune', 0)

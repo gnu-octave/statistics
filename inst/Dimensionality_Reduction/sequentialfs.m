@@ -541,7 +541,7 @@ endfunction
 %!test
 %! T = [100, 10, 20, 9.05, 30, 9.5, 25, 9.05];
 %! [tf, h] = sequentialfs (@(Z, w) T(m (Z)), X, y, 'CV', 'none', ...
-%!                         'Options', struct ('TolFun', 0));
+%!                         'Options', statset ('TolFun', 0));
 %! assert_equal (tf, true (1, 3));
 %! assert_equal (h.Crit, [10, 9.05, 9.05]);
 %!test
