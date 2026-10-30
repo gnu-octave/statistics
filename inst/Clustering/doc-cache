@@ -3369,7 +3369,7 @@ Compute the inconsistency coefficient for each link of a hierarchical cluster tr
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 6
 kmeans
@@ -3378,7 +3378,7 @@ kmeans
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4475
+# length: 4780
 statistics: idx = kmeans (data, k)
 statistics: [idx, centers] = kmeans (data, k)
 statistics: [idx, centers, sumd] = kmeans (data, k)
@@ -3484,9 +3484,15 @@ If 'Start' is numeric, then 'Replicates' defaults to
 (and must equal) the size of the third dimension of start.
 Otherwise it defaults to 1.
 'MaxIter' The maximum number of iterations to perform
-for each replicate. If the maximum change of any centroid is less than
-0.001, then the replicate terminates even if 'MaxIter' iterations
-have not occurred. The default is 100.
+for each replicate, a non-negative integer. If the maximum change of any
+centroid is less than 0.001, then the replicate terminates even if
+'MaxIter' iterations have not occurred. The default is 100. A
+value of 0 returns the starting centroids and the assignment to them,
+where MATLAB runs one iteration.
+'Options' A structure, such as statset returns,
+whose MaxIter and Display fields are used when the
+'MaxIter' and 'Display' options are not given; its other
+fields are ignored.
 
 Example:
 

@@ -386,6 +386,10 @@ function obj = fitgmdist (data, k, varargin)
 
       while (incr > TolFun && iter <= MaxIter)
         iter = iter + 1;
+        ## The parameters this step's log-likelihood belongs to
+        prev_mu = mu;
+        prev_Sigma = Sigma;
+        prev_p = p;
         #######################################
         ## "E step"
         ## Calculate probability of class  l  given observations
@@ -475,6 +479,13 @@ function obj = fitgmdist (data, k, varargin)
         endif
         log_likeli = new_log_likeli;
       endwhile
+      ## Converged, return the parameters of the last log-likelihood, as
+      ## MATLAB does; stopped by MaxIter, the last update
+      if (iter > 1 && incr <= TolFun)
+        mu = prev_mu;
+        Sigma = prev_Sigma;
+        p = prev_p;
+      endif
       ## With no EM step run, the log-likelihood of the starting point
       if (iter == 1)
         lik = pdf (gmdistribution (mu, Sigma, p'), data);
@@ -590,4 +601,29 @@ endfunction
 %! assert_equal (G.Converged, false);
 %! nll = -sum (log (pdf (gmdistribution (S.mu, S.Sigma, [0.5, 0.5]), X)));
 %! assert_equal (G.NegativeLogLikelihood, nll, 1e-10);
+
+## Values checked against MATLAB R2024a.  Converged, the parameters are those
+## of the reported likelihood; stopped by MaxIter, those of the last update.
+%!test
+%! load fisheriris
+%! X = meas(:,1:2);
+%! S = struct ('mu', X([1, 51],:), 'Sigma', cat (3, eye (2), eye (2)), ...
+%!             'ComponentProportion', [0.5, 0.5]);
+%! options = struct ('MaxIter', 100, 'TolFun', 1e-6, 'Display', 'off');
+%! G = fitgmdist (X, 2, 'Start', S, 'Options', options);
+%! assert_equal (G.NumIterations, 20);
+%! assert_equal (G.mu, [5.0163712005056782, 3.4547434334001554; ...
+%!                      6.2366722729173318, 2.8683079098768118], 1e-8);
+%! assert_equal (G.NegativeLogLikelihood, 225.91571677229396, 1e-8);
+%! assert_equal (-sum (log (pdf (G, X))), G.NegativeLogLikelihood, 1e-10);
+%!test
+%! load fisheriris
+%! X = meas(:,1:2);
+%! S = struct ('mu', X([1, 51],:), 'Sigma', cat (3, eye (2), eye (2)), ...
+%!             'ComponentProportion', [0.5, 0.5]);
+%! options = struct ('MaxIter', 5, 'TolFun', 1e-6, 'Display', 'off');
+%! G = fitgmdist (X, 2, 'Start', S, 'Options', options);
+%! assert_equal (G.mu, [5.2685393078279175, 3.1752930402569604; ...
+%!                      6.4612669859457217, 2.9305204763341486], 1e-10);
+%! assert_equal (G.NegativeLogLikelihood, 250.92335726435553, 1e-10);
 

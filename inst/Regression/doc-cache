@@ -12188,7 +12188,7 @@ Fit a repeated measures model.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 6
 glmfit
@@ -12197,7 +12197,7 @@ glmfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4649
+# length: 4735
 statistics: b = glmfit (X, y, distribution)
 statistics: b = glmfit (X, y, distribution, Name, Value)
 statistics: [b, dev] = glmfit (...)
@@ -12256,10 +12256,11 @@ of the same size.
 response y specifying an offset variable in the fit. It is used as an
 additional predictor with a coefficient value fixed at 1.
 'Options' A scalar structure containing the fields
-MaxIter and TolX. MaxIter must be a scalar positive
-integer specifying the maximum number of iteration allowed for fitting the
-model, and TolX must be a positive scalar value specifying the
-termination tolerance.
+MaxIter and TolX. MaxIter must be a non-negative
+integer specifying the maximum number of iterations allowed for fitting the
+model, counted after the first weighted fit, as in MATLAB, so a value of 0
+returns that first fit. TolX must be a positive scalar value
+specifying the termination tolerance.
 'Weights' An nx1 numeric vector of nonnegative
 values, where n is the number of observations in X. By default,
 it is ones (n, 1).

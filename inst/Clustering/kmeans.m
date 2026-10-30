@@ -149,9 +149,15 @@
 ## (and must equal) the size of the third dimension of @var{start}.
 ## Otherwise it defaults to 1.
 ## @item @qcode{'MaxIter'} @tab The maximum number of iterations to perform
-## for each replicate.  If the maximum change of any centroid is less than
-## 0.001, then the replicate terminates even if @qcode{'MaxIter'} iterations
-## have not occurred.  The default is 100.
+## for each replicate, a non-negative integer.  If the maximum change of any
+## centroid is less than 0.001, then the replicate terminates even if
+## @qcode{'MaxIter'} iterations have not occurred.  The default is 100.  A
+## value of 0 returns the starting centroids and the assignment to them,
+## where MATLAB runs one iteration.
+## @item @qcode{'Options'} @tab A structure, such as @code{statset} returns,
+## whose @qcode{MaxIter} and @qcode{Display} fields are used when the
+## @qcode{'MaxIter'} and @qcode{'Display'} options are not given; its other
+## fields are ignored.
 ## @end multitable
 ##
 ## Example:
@@ -165,16 +171,31 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
 
   ## Parse optional Name-Value paired arguments
   optNames = {'EmptyAction', 'Start', 'MaxIter', 'Distance', ...
-              'Replicates', 'Display'};
-  dfValues = {'singleton', 'plus', 100, 'sqeuclidean', 1, 'off'};
-  [emptyaction, start, max_iter, distance, replicates, display, args] = ...
-                      parsePairedArguments (optNames, dfValues, varargin(:));
+              'Replicates', 'Display', 'Options'};
+  dfValues = {'singleton', 'plus', 100, 'sqeuclidean', 1, 'off', []};
+  [emptyaction, start, max_iter, distance, replicates, display, options, ...
+   args] = parsePairedArguments (optNames, dfValues, varargin(:));
 
   ## The 'Start' check below distinguishes a 'Replicates' the caller gave from
-  ## the default, which the parsed value cannot show on its own.
+  ## the default, which the parsed value cannot show on its own; 'Options'
+  ## likewise yields to a 'MaxIter' or 'Display' given by name.
   optargNames = varargin(1:2:end);
-  replicates_set_explicitly = any (cellfun (@(x) ischar (x) ...
-                              && strcmpi (x, 'Replicates'), optargNames));
+  given = @(name) any (cellfun (@(x) ischar (x) && strcmpi (x, name), ...
+                                optargNames));
+  replicates_set_explicitly = given ('Replicates');
+  if (! isempty (options))
+    if (! (isstruct (options) && isscalar (options)))
+      error ("kmeans: 'Options' must be a structure.");
+    endif
+    if (! given ('MaxIter') && isfield (options, 'MaxIter')
+        && ! isempty (options.MaxIter))
+      max_iter = options.MaxIter;
+    endif
+    if (! given ('Display') && isfield (options, 'Display')
+        && ! isempty (options.Display))
+      display = options.Display;
+    endif
+  endif
 
   ## Input checking, validate the matrix
   if (! (isnumeric (data) && ismatrix (data) && isreal (data)))
@@ -202,7 +223,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
     name = args{1};
     if (! ischar (name))
       error ("kmeans: optional arguments must be Name-Value pairs.");
-    elseif (any (strcmpi (name, {'OnlinePhase', 'Options'})))
+    elseif (strcmpi (name, 'OnlinePhase'))
       warning ("kmeans: Ignoring unimplemented option '%s'.", name);
       args(1:min (2, numel (args))) = [];
     elseif (any (strcmpi (name, optNames)))
@@ -245,7 +266,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
   if (isempty (max_iter))
     max_iter = 100;
   elseif (! isnumeric (max_iter) || ! isscalar (max_iter)
-     || ! isreal (max_iter) || max_iter < 1)
+     || ! isreal (max_iter) || max_iter < 0 || max_iter != fix (max_iter))
     d = strtrim (disp (max_iter));
     if (length (d) > 20)
       d = '';
@@ -689,8 +710,39 @@ endfunction
 ## An unimplemented option is ignored with a warning
 %!warning<kmeans: Ignoring unimplemented option 'OnlinePhase'.> ...
 %! kmeans ([1 1; 1.2 1.1; 8 8; 8.3 8.1], 2, 'OnlinePhase', 'on');
-%!warning<kmeans: Ignoring unimplemented option 'Options'.> ...
-%! kmeans ([1 1; 1.2 1.1; 8 8; 8.3 8.1], 2, 'Options', struct ());
+
+## 'Options' gives MaxIter and Display unless they are given by name; values
+## checked against MATLAB R2024a
+%!test
+%! load fisheriris
+%! S = warning ('off', 'all');
+%! [~, C] = kmeans (meas, 3, 'Start', meas([1, 51, 101],:), ...
+%!                  'Options', statset ('MaxIter', 1));
+%! warning (S);
+%! assert_equal (C, [5.0057, 3.3698, 1.5604, 0.29057; ...
+%!                   6.0567, 2.7967, 4.4817, 1.4467; ...
+%!                   6.6973, 3.0324, 5.7324, 2.1], 1e-4);
+%!test
+%! load fisheriris
+%! [~, C] = kmeans (meas, 3, 'Start', meas([1, 51, 101],:), 'MaxIter', 50, ...
+%!                  'Options', statset ('MaxIter', 1));
+%! assert_equal (C, [5.006, 3.428, 1.462, 0.246; ...
+%!                   5.9016, 2.7484, 4.3935, 1.4339; ...
+%!                   6.85, 3.0737, 5.7421, 2.0711], 1e-4);
+%!test
+%! out = evalc (strcat ("kmeans ([1 1; 1.2 1.1; 8 8; 8.3 8.1], 2,", ...
+%!                      " 'Start', [1 1; 8 8],", ...
+%!                      " 'Options', statset ('Display', 'final'));"));
+%! assert_equal (strncmp (out, "Replicate 1,", 12), true);
+
+## No iteration returns the starting centroids and the assignment to them
+%!test
+%! X = [1 1; 2 2; 3 3; 9 9; 9.5 9.6; 20 20];
+%! S = warning ('off', 'all');
+%! [idx, C] = kmeans (X, 3, 'MaxIter', 0, 'Start', [1 1; 2 2; 3 3]);
+%! warning (S);
+%! assert_equal (C, [1 1; 2 2; 3 3]);
+%! assert_equal (idx, [1; 2; 3; 3; 3; 3]);
 
 ## A replicate that runs out of iterations warns
 %!warning<kmeans: failed to converge in 1 iterations.> ...
@@ -750,6 +802,10 @@ endfunction
 %! kmeans (rand (4,3), 2, 'MAXITER', i)
 %!error<kmeans: invalid MaxIter '-1'.> ...
 %! kmeans (rand (4,3), 2, 'MaxIter', -1)
+%!error<kmeans: invalid MaxIter '1.5000'.> ...
+%! kmeans (rand (4,3), 2, 'MaxIter', 1.5)
+%!error<kmeans: 'Options' must be a structure.> ...
+%! kmeans (rand (4,3), 2, 'Options', 1)
 %!error<kmeans: invalid MaxIter '1   2'.> ...
 %! kmeans (rand (4,3), 2, 'maxiter', [1 2])
 %!error<kmeans: invalid MaxIter 'one'.> ...

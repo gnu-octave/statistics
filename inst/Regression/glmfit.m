@@ -86,10 +86,11 @@
 ## additional predictor with a coefficient value fixed at 1.
 ##
 ## @item @qcode{'Options'} @tab A scalar structure containing the fields
-## @qcode{MaxIter} and @qcode{TolX}.  @qcode{MaxIter} must be a scalar positive
-## integer specifying the maximum number of iteration allowed for fitting the
-## model, and @qcode{TolX} must be a positive scalar value specifying the
-## termination tolerance.
+## @qcode{MaxIter} and @qcode{TolX}.  @qcode{MaxIter} must be a non-negative
+## integer specifying the maximum number of iterations allowed for fitting the
+## model, counted after the first weighted fit, as in MATLAB, so a value of 0
+## returns that first fit.  @qcode{TolX} must be a positive scalar value
+## specifying the termination tolerance.
 ##
 ## @item @qcode{'Weights'} @tab An @math{n*1} numeric vector of nonnegative
 ## values, where @math{n} is the number of observations in @var{X}.  By default,
@@ -276,8 +277,9 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
         endif
         MaxIter = options.MaxIter;
         TolX = options.TolX;
-        if (! isscalar (MaxIter) || MaxIter <= 0 || fix (MaxIter) != MaxIter)
-          error (strcat ("glmfit: 'MaxIter' in 'Options' structure must", " be a positive integer."));
+        if (! isscalar (MaxIter) || MaxIter < 0 || fix (MaxIter) != MaxIter)
+          error (strcat ("glmfit: 'MaxIter' in 'Options' structure must", ...
+                         " be a non-negative integer."));
         endif
         if (! isscalar (TolX) || TolX <= 0)
           error (strcat ("glmfit: 'TolX' in 'Options' structure must", " be a positive scalar."));
@@ -347,12 +349,14 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
     mu = ilink(eta);
   endif
 
-  ## Initialize coefficient vector and iterations
+  ## Initialize coefficient vector and iterations.  The first weighted fit is
+  ## not counted, as in MATLAB, so MaxIter allows MaxIter + 1 fits.
   numc = size (X, 2);
   Bnew = zeros (numc, 1);
   seps = sqrt (eps);
   iter = 0;
-  while (iter < MaxIter)
+  converged = false;
+  while (iter <= MaxIter)
     iter += 1;
     Bold = Bnew;
 
@@ -397,12 +401,13 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
 
     ## Break if TolX is reached
     if (! any (abs (Bnew - Bold) > TolX * max (seps, abs (Bold))))
+      converged = true;
       break;
     endif
   endwhile
 
   ## Warn if iteration limit is reached
-  if (iter == MaxIter)
+  if (! converged)
     warning ("glmfit: maximum number of iterations has been reached.");
   endif
 
@@ -620,6 +625,35 @@ endfunction
 %! b = glmfit (u, exp (0.1 * u) .* (1 + 0.2 * sin (u)), 'inverse gaussian');
 %! assert_equal (b, [0.1324742958; -0.004405637293], -1e-8);
 
+## The first weighted fit is not counted against MaxIter, as in MATLAB;
+## values checked against MATLAB R2024a, on separated data that reach the limit
+%!test
+%! x = (1:10)';
+%! y = 2 * exp (0.3 * x) + sin (x) / 10 > 20;
+%! S = warning ('off', 'all');
+%! b = glmfit (x, y, 'binomial', ...
+%!             'Options', struct ('MaxIter', 0, 'TolX', 1e-6));
+%! warning (S);
+%! assert_equal (b', [-4.3775021196025969, 0.61904070378218545], 1e-12);
+%!test
+%! x = (1:10)';
+%! y = 2 * exp (0.3 * x) + sin (x) / 10 > 20;
+%! S = warning ('off', 'all');
+%! b = glmfit (x, y, 'binomial', ...
+%!             'Options', struct ('MaxIter', 1, 'TolX', 1e-6));
+%! warning (S);
+%! assert_equal (b', [-7.5991011550861405, 1.044776006603054], 1e-12);
+%!test
+%! x = (1:10)';
+%! y = 2 * exp (0.3 * x) + sin (x) / 10 > 20;
+%! S = warning ('off', 'all');
+%! b = glmfit (x, y, 'binomial');
+%! warning (S);
+%! assert_equal (b', [-607.50428633551712, 81.561811975812105], -1e-12);
+%!warning <glmfit: maximum number of iterations has been reached.> ...
+%! glmfit ((1:10)', (1:10)' > 5, 'binomial', ...
+%!         'Options', struct ('MaxIter', 0, 'TolX', 1e-6));
+
 ## Test input validation
 %!error <glmfit: too few input arguments.> glmfit ()
 %!error <glmfit: too few input arguments.> glmfit (1)
@@ -730,13 +764,11 @@ endfunction
 %! glmfit (rand (5,2), rand (5,1), 'poisson', 'options', true)
 %!error <glmfit: 'Options' must be a structure containing the fields 'MaxIter', and 'TolX'.> ...
 %! glmfit (rand (5,2), rand (5,1), 'poisson', 'options', struct ('MaxIter', 100))
-%!error <glmfit: 'MaxIter' in 'Options' structure must be a positive integer.> ...
+%!error <glmfit: 'MaxIter' in 'Options' structure must be a non-negative integer.> ...
 %! glmfit (rand (5,2), rand (5,1), 'poisson', 'options', struct ('MaxIter', 4.5, 'TolX', 1e-6))
-%!error <glmfit: 'MaxIter' in 'Options' structure must be a positive integer.> ...
-%! glmfit (rand (5,2), rand (5,1), 'poisson', 'options', struct ('MaxIter', 0, 'TolX', 1e-6))
-%!error <glmfit: 'MaxIter' in 'Options' structure must be a positive integer.> ...
+%!error <glmfit: 'MaxIter' in 'Options' structure must be a non-negative integer.> ...
 %! glmfit (rand (5,2), rand (5,1), 'poisson', 'options', struct ('MaxIter', -100, 'TolX', 1e-6))
-%!error <glmfit: 'MaxIter' in 'Options' structure must be a positive integer.> ...
+%!error <glmfit: 'MaxIter' in 'Options' structure must be a non-negative integer.> ...
 %! glmfit (rand (5,2), rand (5,1), 'poisson', 'options', struct ('MaxIter', [50 ,50], 'TolX', 1e-6))
 %!error <glmfit: 'TolX' in 'Options' structure must be a positive scalar.> ...
 %! glmfit (rand (5,2), rand (5,1), 'poisson', 'options', struct ('MaxIter', 100, 'TolX', 0))
