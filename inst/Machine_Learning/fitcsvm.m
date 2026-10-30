@@ -145,8 +145,18 @@
 ## zero weight is left out.  The model's @code{W} keeps the class of the
 ## weights, while every computation runs in double, so @code{Prior} is double
 ## where MATLAB returns single.
-## A class whose prior is 0, or whose misclassification costs are all 0, is
-## removed from the data before fitting, with a warning, as in MATLAB.
+##
+## @item @qcode{'Prior'} @tab @qcode{'empirical'} (default), @qcode{'uniform'},
+## a vector with one element per class, or a structure with fields
+## @qcode{ClassNames} and @qcode{ClassProbs}.  A class whose prior is 0, or
+## whose misclassification costs are all 0, is removed from the data before
+## fitting, with a warning, as in MATLAB.
+##
+## @item @qcode{'Cost'} @tab A square matrix of misclassification costs,
+## @code{Cost(i,j)} being the cost of classifying into class @math{j} an
+## observation of class @math{i}, @code{1 - eye (2)} by default; or a structure
+## with fields @qcode{ClassNames} and @qcode{ClassificationCosts}, which names
+## its own order of the classes and is permuted to the model's.
 ##
 ## @item @qcode{'BoxConstraint'} @tab A positive scalar that specifies the
 ## upper bound of the Lagrange multipliers, i.e. the parameter C, which is used

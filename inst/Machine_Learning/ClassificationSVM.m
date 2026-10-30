@@ -700,6 +700,18 @@ classdef ClassificationSVM < PredictiveModel
     ## weights, while every computation runs in double, so @code{Prior} is
     ## double where MATLAB returns single.
     ##
+    ## @item @qcode{'Prior'} @tab @qcode{'empirical'} (default),
+    ## @qcode{'uniform'}, a vector with one element per class, or a structure
+    ## with fields @qcode{ClassNames} and @qcode{ClassProbs}.
+    ## A class whose prior is 0, or whose misclassification costs are all 0,
+    ## is removed from the data before fitting, with a warning, as in MATLAB.
+    ##
+    ## @item @qcode{'Cost'} @tab A square matrix of misclassification costs,
+    ## @code{Cost(i,j)} being the cost of classifying into class @math{j} an
+    ## observation of class @math{i}, @code{1 - eye (2)} by default; or a
+    ## structure with fields @qcode{ClassNames} and @qcode{ClassificationCosts},
+    ## which names its own order of the classes and is permuted to the model's.
+    ##
     ## @item @qcode{'BoxConstraint'} @tab A positive scalar specifying the
     ## box constraint parameter.  Default is 1.
     ##
@@ -828,10 +840,13 @@ classdef ClassificationSVM < PredictiveModel
                        " non-negative numeric vector, 'empirical'", ...
                        " or 'uniform'."));
       endif
+      ## A structure names its own order, and is permuted to the model's
+      ## once the classes are known
       if (! isempty (Cost) &&
-          ! (isnumeric (Cost) && issquare (Cost) && all (Cost(:) >= 0)))
+          ! (isstruct (Cost)
+             || (isnumeric (Cost) && issquare (Cost) && all (Cost(:) >= 0))))
         error (strcat ("ClassificationSVM: 'Cost' must be a", ...
-                       " non-negative square matrix."));
+                       " non-negative square matrix or a structure."));
       endif
       if (! isempty (SVMtype)
           && (! any (strcmp (SVMtype, {'c_svc', 'nu_svc', 'one_class_svm'}))))
@@ -969,6 +984,12 @@ classdef ClassificationSVM < PredictiveModel
                          " per class."));
         endif
         Prior = Prior(:)' / sum (Prior);
+      endif
+      if (isstruct (Cost))
+        [Cost, errmsg] = costMatrix (Cost, this.ClassNames);
+        if (! isempty (errmsg))
+          error ("ClassificationSVM: %s", errmsg);
+        endif
       endif
       if (isempty (Cost))
         Cost = ones (nclasses) - eye (nclasses);
@@ -3003,7 +3024,7 @@ endclassdef
 
 %!error<ClassificationSVM: 'Prior' must be a non-negative numeric vector, 'empirical' or 'uniform'.> ...
 %! fitcsvm (ones (10,2), [1;1;1;1;1;2;2;2;2;2], 'Prior', 'nope')
-%!error<ClassificationSVM: 'Cost' must be a non-negative square matrix.> ...
+%!error<ClassificationSVM: 'Cost' must be a non-negative square matrix or a structure.> ...
 %! fitcsvm (ones (10,2), [1;1;1;1;1;2;2;2;2;2], 'Cost', [0, 1])
 %!error<ClassificationSVM: 'Prior' must have one entry per class.> ...
 %! fitcsvm (ones (10,2), [1;1;1;1;1;2;2;2;2;2], 'Prior', [1, 1, 1])
@@ -4278,3 +4299,28 @@ endclassdef
 %! [label, score] = predict (M2, X([1, 60], :));
 %! assert_equal (label, {'virginica'; 'virginica'});
 %! assert_equal (score, [-1, 1; -1, 1]);
+
+## Test a 'Cost' given as a structure, permuted by name to the model's order,
+## as MATLAB R2024a permutes it
+%!test
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! S = struct ('ClassNames', {{'virginica', 'versicolor'}}, ...
+%!             'ClassificationCosts', [0, 2; 1, 0]);
+%! Mdl = ClassificationSVM (X, Y, 'Cost', S);
+%! assert_equal (Mdl.Cost, [0, 1; 2, 0]);
+%! assert_equal (Mdl.Prior, [0.5, 0.5]);
+%!test
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! S = struct ('ClassNames', {{'virginica', 'versicolor'}}, ...
+%!             'ClassificationCosts', [0, 2; 1, 0]);
+%! M1 = ClassificationSVM (X, Y, 'Cost', S);
+%! M2 = ClassificationSVM (X, Y, 'Cost', [0, 1; 2, 0]);
+%! assert_equal (predict (M1, X), predict (M2, X));
+%!error <ClassificationSVM: 'Cost' given as a struct must have the fields 'ClassNames' and 'ClassificationCosts'.> ...
+%! load fisheriris
+%! ClassificationSVM (meas(51:150, 3:4), species(51:150), ...
+%!                    'Cost', struct ('a', 1));

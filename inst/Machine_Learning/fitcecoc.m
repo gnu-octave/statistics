@@ -68,6 +68,9 @@
 ##
 ## @item @qcode{'Cost'} @tab @tab A @math{KxK} matrix of misclassification
 ## costs.  The default is @code{1 - eye (K)}.
+## Or a structure with fields @qcode{ClassNames} and
+## @qcode{ClassificationCosts}, which names its own order of the classes and is
+## permuted to the model's.
 ##
 ## @item @qcode{'Prior'} @tab @tab @qcode{'empirical'} (default),
 ## @qcode{'uniform'}, or a vector with one element per class.

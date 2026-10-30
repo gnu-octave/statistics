@@ -2063,3 +2063,28 @@ endfunction
 %! load fisheriris
 %! ClassificationEnsemble (meas(51:150, 3:4), species(51:150), ...
 %!                         'Cost', [0, 1; 0, 0]);
+
+## Test a 'Cost' given as a structure, permuted by name to the model's order,
+## as MATLAB R2024a permutes it
+%!test
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! S = struct ('ClassNames', {{'virginica', 'versicolor'}}, ...
+%!             'ClassificationCosts', [0, 2; 1, 0]);
+%! Mdl = ClassificationEnsemble (X, Y, 'Cost', S);
+%! assert_equal (Mdl.Cost, [0, 1; 2, 0]);
+%! assert_equal (Mdl.Prior, [0.5, 0.5]);
+%!test
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! S = struct ('ClassNames', {{'virginica', 'versicolor'}}, ...
+%!             'ClassificationCosts', [0, 2; 1, 0]);
+%! M1 = ClassificationEnsemble (X, Y, 'Cost', S);
+%! M2 = ClassificationEnsemble (X, Y, 'Cost', [0, 1; 2, 0]);
+%! assert_equal (predict (M1, X), predict (M2, X));
+%!error <ClassificationEnsemble: 'Cost' given as a struct must have the fields 'ClassNames' and 'ClassificationCosts'.> ...
+%! load fisheriris
+%! ClassificationEnsemble (meas(51:150, 3:4), species(51:150), ...
+%!                         'Cost', struct ('a', 1));

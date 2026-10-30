@@ -8787,7 +8787,7 @@ ClassificationKernel.ClassificationKernel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3125
+# length: 3261
 ClassificationKernel: obj = ClassificationKernel (X, Y)
 ClassificationKernel: obj = ClassificationKernel (Tbl, ResponseVarName)
 ClassificationKernel: obj = ClassificationKernel (Tbl, formula)
@@ -8832,6 +8832,9 @@ megabytes, 4e3 by default.
 of Y, in the order the model keeps them; by default they are
 sorted.
 'Cost' A square misclassification cost matrix.
+Or a structure with fields ClassNames and
+ClassificationCosts, which names its own order of the classes and
+is permuted to the model's.
 'Prior' 'empirical', the default,
 'uniform', a vector of probabilities, or a structure with
 ClassNames and ClassProbs fields.
@@ -9677,7 +9680,7 @@ ClassificationLinear.ClassificationLinear
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4614
+# length: 4750
 ClassificationLinear: obj = ClassificationLinear (X, Y)
 ClassificationLinear: obj = ClassificationLinear (Tbl, ResponseVarName)
 ClassificationLinear: obj = ClassificationLinear (Tbl, formula)
@@ -9751,6 +9754,9 @@ quasi-Newton solvers keep, 15 by default.
 of Y. Observations of any other class are dropped. The model
 keeps the classes in this order; by default they are sorted.
 'Cost' A square misclassification cost matrix.
+Or a structure with fields ClassNames and
+ClassificationCosts, which names its own order of the classes and
+is permuted to the model's.
 'Prior' 'empirical', the default,
 'uniform', a vector of probabilities, or a structure with
 ClassNames and ClassProbs fields.
@@ -16895,7 +16901,7 @@ ClassificationSVM.ClassificationSVM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4829
+# length: 5394
 ClassificationSVM: obj = ClassificationSVM (X, Y)
 ClassificationSVM: obj = ClassificationSVM (Tbl, ResponseVarName)
 ClassificationSVM: obj = ClassificationSVM (Tbl, formula)
@@ -16979,6 +16985,16 @@ standardization uses weighted means and standard deviations, and a row of
 zero weight is left out. The model's W keeps the class of the
 weights, while every computation runs in double, so Prior is
 double where MATLAB returns single.
+'Prior' 'empirical' (default),
+'uniform', a vector with one element per class, or a structure
+with fields ClassNames and ClassProbs.
+A class whose prior is 0, or whose misclassification costs are all 0,
+is removed from the data before fitting, with a warning, as in MATLAB.
+'Cost' A square matrix of misclassification costs,
+Cost(i,j) being the cost of classifying into class j an
+observation of class i, 1 - eye (2) by default; or a
+structure with fields ClassNames and ClassificationCosts,
+which names its own order of the classes and is permuted to the model's.
 'BoxConstraint' A positive scalar specifying the
 box constraint parameter. Default is 1.
 'Nu' A positive scalar in the range (0,1]
@@ -47137,7 +47153,7 @@ fitcecoc
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4561
+# length: 4697
 statistics: Mdl = fitcecoc (X, Y)
 statistics: Mdl = fitcecoc (Tbl, ResponseVarName)
 statistics: Mdl = fitcecoc (Tbl, formula)
@@ -47180,6 +47196,9 @@ the rows of the coding matrix, Prior and Cost take them in.
 By default they are sorted.
 'Cost' A KxK matrix of misclassification
 costs. The default is 1 - eye (K).
+Or a structure with fields ClassNames and
+ClassificationCosts, which names its own order of the classes and is
+permuted to the model's.
 'Prior' 'empirical' (default),
 'uniform', or a vector with one element per class.
 A class whose prior is 0 is removed from the data before fitting, with a
@@ -47257,7 +47276,7 @@ fitcensemble
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 10472
+# length: 10608
 statistics: Mdl = fitcensemble (X, Y)
 statistics: Mdl = fitcensemble (Tbl, ResponseVarName)
 statistics: Mdl = fitcensemble (Tbl, formula)
@@ -47429,6 +47448,9 @@ integer n, to print a line after every n trees.
 scores are laid out; by default they are sorted.
 'Cost' A KxK matrix of misclassification
 costs. The default is 1 - eye (K).
+Or a structure with fields ClassNames and
+ClassificationCosts, which names its own order of the classes and is
+permuted to the model's.
 'Prior' 'empirical' (default),
 'uniform', or a vector with one element per class.
 A class whose prior is 0 is removed from the data before fitting, with a
@@ -48310,7 +48332,7 @@ fitcsvm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 8742
+# length: 9166
 statistics: Mdl = fitcsvm (X, Y)
 statistics: Mdl = fitcsvm (Tbl, ResponseVarName)
 statistics: Mdl = fitcsvm (Tbl, formula)
@@ -48418,8 +48440,16 @@ standardization uses weighted means and standard deviations, and a row of
 zero weight is left out. The model's W keeps the class of the
 weights, while every computation runs in double, so Prior is double
 where MATLAB returns single.
-A class whose prior is 0, or whose misclassification costs are all 0, is
-removed from the data before fitting, with a warning, as in MATLAB.
+'Prior' 'empirical' (default), 'uniform',
+a vector with one element per class, or a structure with fields
+ClassNames and ClassProbs. A class whose prior is 0, or
+whose misclassification costs are all 0, is removed from the data before
+fitting, with a warning, as in MATLAB.
+'Cost' A square matrix of misclassification costs,
+Cost(i,j) being the cost of classifying into class j an
+observation of class i, 1 - eye (2) by default; or a structure
+with fields ClassNames and ClassificationCosts, which names
+its own order of the classes and is permuted to the model's.
 'BoxConstraint' A positive scalar that specifies the
 upper bound of the Lagrange multipliers, i.e. the parameter C, which is used
 for training 'C_SVC' and 'one_class_SVM' type of models. It

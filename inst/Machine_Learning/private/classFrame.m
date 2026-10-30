@@ -150,6 +150,13 @@ function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
     Prior = Prior(:)' / sum (Prior);
   endif
 
+  ## A structure names its own order, and is permuted to the model's
+  if (isstruct (Cost))
+    [Cost, errmsg] = costMatrix (Cost, F.ClassNames);
+    if (! isempty (errmsg))
+      error ("%s: %s", classname, errmsg);
+    endif
+  endif
   if (isempty (Cost))
     Cost = ones (nclasses) - eye (nclasses);
   elseif (rows (Cost) != nclasses || columns (Cost) != nclasses)

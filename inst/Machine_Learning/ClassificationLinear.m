@@ -365,6 +365,9 @@ classdef ClassificationLinear < PredictiveModel
     ## keeps the classes in this order; by default they are sorted.
     ##
     ## @item @qcode{'Cost'} @tab A square misclassification cost matrix.
+    ## Or a structure with fields @qcode{ClassNames} and
+    ## @qcode{ClassificationCosts}, which names its own order of the classes and
+    ## is permuted to the model's.
     ##
     ## @item @qcode{'Prior'} @tab @qcode{'empirical'}, the default,
     ## @qcode{'uniform'}, a vector of probabilities, or a structure with
@@ -618,12 +621,14 @@ classdef ClassificationLinear < PredictiveModel
                        " vector, or a cell array of character", ...
                        " vectors."));
       endif
+      ## A structure names its own order, and is permuted to the model's
       if (! isempty (CostIn) &&
-          ! (isnumeric (CostIn) && isreal (CostIn)
-             && ismatrix (CostIn) && ndims (CostIn) == 2
-             && rows (CostIn) == columns (CostIn)))
+          ! (isstruct (CostIn)
+             || (isnumeric (CostIn) && isreal (CostIn)
+                 && ismatrix (CostIn) && ndims (CostIn) == 2
+                 && rows (CostIn) == columns (CostIn))))
         error (strcat ("ClassificationLinear: 'Cost' must be a", ...
-                       " square numeric matrix."));
+                       " square numeric matrix or a structure."));
       endif
       if (! isempty (Prior) &&
           ! ((ischar (Prior) && any (strcmpi (Prior, {'empirical', ...
@@ -2166,3 +2171,28 @@ endclassdef
 %! Mdl = ClassificationLinear (meas(51:150, 3:4), species(51:150), ...
 %!                            'Cost', [0, 1; 0, 0]);
 %! assert_equal (Mdl.Prior, [1, 0]);
+
+## Test a 'Cost' given as a structure, permuted by name to the model's order,
+## as MATLAB R2024a permutes it
+%!test
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! S = struct ('ClassNames', {{'virginica', 'versicolor'}}, ...
+%!             'ClassificationCosts', [0, 2; 1, 0]);
+%! Mdl = ClassificationLinear (X, Y, 'Cost', S);
+%! assert_equal (Mdl.Cost, [0, 1; 2, 0]);
+%! assert_equal (Mdl.Prior, [0.5, 0.5]);
+%!test
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! S = struct ('ClassNames', {{'virginica', 'versicolor'}}, ...
+%!             'ClassificationCosts', [0, 2; 1, 0]);
+%! M1 = ClassificationLinear (X, Y, 'Cost', S);
+%! M2 = ClassificationLinear (X, Y, 'Cost', [0, 1; 2, 0]);
+%! assert_equal (predict (M1, X), predict (M2, X));
+%!error <ClassificationLinear: 'Cost' given as a struct must have the fields 'ClassNames' and 'ClassificationCosts'.> ...
+%! load fisheriris
+%! ClassificationLinear (meas(51:150, 3:4), species(51:150), ...
+%!                       'Cost', struct ('a', 1));
