@@ -72,6 +72,8 @@
 ## @item @qcode{'Prior'} @tab A numeric vector specifying the prior
 ## probabilities for each class.  The order of the elements in @qcode{Prior}
 ## corresponds to the order of the classes in @qcode{ClassNames}.
+## A class whose prior is 0 is removed from the data before fitting, with a
+## warning, as in MATLAB.
 ##
 ## @item @qcode{'Weights'} @tab A single or double vector of nonnegative
 ## observation weights, one per row of @var{X}.  Each class carries its prior,

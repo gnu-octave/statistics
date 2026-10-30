@@ -809,8 +809,11 @@ classdef ClassificationSVM < PredictiveModel
                        " vector, or a cell array of character", ...
                        " vectors."));
       endif
+      ## A named class with prior 0 is removed below, so it may be absent
+      exempt = [];
       if (! isempty (ClassNames))
-        [~, errmsg] = namedClasses (glY, ClassNames);
+        exempt = zeroPriorNames (ClassNames, Prior, Cost);
+        [~, errmsg] = namedClasses (glY, ClassNames, exempt);
         if (! isempty (errmsg))
           error ("ClassificationSVM: %s", errmsg);
         endif
@@ -944,7 +947,7 @@ classdef ClassificationSVM < PredictiveModel
       ## only by a row with missing predictors is still a class of the model
       ## The classes keep the type of Y, sorted or in the order ClassNames
       ## gives them.
-      [this.ClassNames, gret] = classOrder (Yret, ClassNames);
+      [this.ClassNames, gret] = classOrder (Yret, ClassNames, exempt);
       gY = gret(cobs);
       nclasses = classCount (this.ClassNames);
 
@@ -972,6 +975,31 @@ classdef ClassificationSVM < PredictiveModel
       elseif (rows (Cost) != nclasses)
         error (strcat ("ClassificationSVM: the number of rows and columns", ...
                        " in 'Cost' must correspond to the classes in Y."));
+      endif
+
+      ## A class with prior 0, or that costs nothing to misclassify, is never
+      ## predicted and weighs nothing, so its observations are removed
+      [drop, Prior, msg] = removedClasses (Prior, Cost, this.ClassNames, gret);
+      if (all (drop))
+        error ("ClassificationSVM: every class has prior probability 0.");
+      elseif (any (drop))
+        if (! isempty (msg))
+          warning ("ClassificationSVM: %s", msg);
+        endif
+        keep = ! drop(gret);
+        used = find (RowsUsed);
+        RowsUsed(used(! keep)) = false;
+        this.X = this.X(keep,:);
+        this.Y = this.Y(keep,:);
+        this.RawWeights = this.RawWeights(keep);
+        RawWeights = RawWeights(keep);
+        kc = keep(cobs);
+        X = X(kc,:);
+        Y = Y(kc,:);
+        gY = gY(kc);
+        wc = wc(kc);
+        cobs = cobs(keep);
+        gret = gret(keep);
       endif
       this.Prior = Prior;
       this.Cost = Cost;
@@ -1425,6 +1453,12 @@ classdef ClassificationSVM < PredictiveModel
 
       ## Predict labels and scores from new data
       [out, ~, scores] = svmpredict (ones (rows (XC), 1), XC, this.Model, '-q');
+      ## A model fitted on the second class alone, the first removed for its
+      ## prior of 0, holds LIBSVM's single label -1, whose decision value of
+      ## 1 points to that class
+      if (isscalar (this.Model.Label) && this.Model.Label == -1)
+        scores = -scores;
+      endif
 
       ## Expand scores for two classes
       if (classCount (this.ClassNames) == 2)
@@ -1522,6 +1556,12 @@ classdef ClassificationSVM < PredictiveModel
 
       ## Predict labels and scores from new data
       [out, ~, scores] = svmpredict (ones (rows (X), 1), X, this.Model, '-q');
+      ## A model fitted on the second class alone, the first removed for its
+      ## prior of 0, holds LIBSVM's single label -1, whose decision value of
+      ## 1 points to that class
+      if (isscalar (this.Model.Label) && this.Model.Label == -1)
+        scores = -scores;
+      endif
 
       ## Expand scores for two classes
       if (classCount (this.ClassNames) == 2)
@@ -1633,6 +1673,12 @@ classdef ClassificationSVM < PredictiveModel
         X = (X - this.Mu) ./ this.Sigma;
       endif
       [~, ~, dec_values_L] = svmpredict (Ypm, X, this.Model, '-q');
+      ## A model fitted on the second class alone, the first removed for its
+      ## prior of 0, holds LIBSVM's single label -1, whose decision value of
+      ## 1 points to that class
+      if (isscalar (this.Model.Label) && this.Model.Label == -1)
+        dec_values_L = -dec_values_L;
+      endif
       m = 2 * Ypm .* dec_values_L;
       ## A one-class model has no second class to measure a margin against,
       ## and R2024a returns NaN for every row, so edge is NaN too.
@@ -1806,6 +1852,12 @@ classdef ClassificationSVM < PredictiveModel
         X = (X - this.Mu) ./ this.Sigma;
       endif
       [~, ~, dec_values_L] = svmpredict (Ypm, X, this.Model, '-q');
+      ## A model fitted on the second class alone, the first removed for its
+      ## prior of 0, holds LIBSVM's single label -1, whose decision value of
+      ## 1 points to that class
+      if (isscalar (this.Model.Label) && this.Model.Label == -1)
+        dec_values_L = -dec_values_L;
+      endif
 
         ## Compute the margin
         margin = Ypm .* dec_values_L;
@@ -4151,3 +4203,78 @@ endclassdef
 %! Mdl = ClassificationSVM (X, [ones(10, 1); 2 * ones(10, 1)], 'Standardize', true);
 %! assert_equal (Mdl.Sigma(2), 1);
 
+## Test a class with prior 0, whose observations are removed before fitting,
+## as MATLAB R2024a and R2026b remove them
+%!warning <ClassificationSVM: the observations of class 'virginica' are removed, its prior probability being 0.> ...
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! Mdl = ClassificationSVM (X, Y, 'Prior', [1, 0]);
+%! assert_equal (Mdl.NumObservations, 50);
+%! assert_equal (Mdl.RowsUsed, [true(50, 1); false(50, 1)]);
+%! assert_equal (Mdl.Prior, [1, 0]);
+%! assert_equal (predict (Mdl, meas([51, 110], 3:4)), ...
+%!               {'versicolor'; 'versicolor'});
+%!test
+%! ## A named class with prior 0 may be absent, having nothing to remove
+%! load fisheriris
+%! X = meas(51:100, 3:4);
+%! Y = species(51:100);
+%! C = {'versicolor', 'virginica'};
+%! Mdl = ClassificationSVM (X, Y, 'ClassNames', C, 'Prior', [1, 0]);
+%! assert_equal (Mdl.ClassNames, {'versicolor'; 'virginica'});
+%! assert_equal (predict (Mdl, meas(51, 3:4)), {'versicolor'});
+%!warning <ClassificationSVM: the observations of class 'virginica' are removed> ...
+%! load fisheriris
+%! Mdl = ClassificationSVM (meas(51:150, 3:4), species(51:150), ...
+%!                         'Cost', [0, 1; 0, 0]);
+%! assert_equal (Mdl.NumObservations, 50);
+%! assert_equal (Mdl.Prior, [1, 0]);
+%!warning <ClassificationSVM: the observations of class 'versicolor' are removed> ...
+%! ## The class left is the second, and the scores point to it
+%! load fisheriris
+%! Mdl = ClassificationSVM (meas(51:150, 3:4), species(51:150), ...
+%!                         'Prior', [0, 1]);
+%! [label, score] = predict (Mdl, meas([51, 110], 3:4));
+%! assert_equal (label, {'virginica'; 'virginica'});
+%! assert_equal (score, [-1, 1; -1, 1]);
+%!warning <ClassificationSVM: the observations of class 'virginica' are removed> ...
+%! load fisheriris
+%! Mdl = ClassificationSVM (meas(51:150, 3:4), species(51:150), ...
+%!                         'Prior', [1, 0]);
+%! CVMdl = crossval (Mdl, 'KFold', 5);
+%! assert_equal (CVMdl.NumObservations, 50);
+%! assert_equal (numel (kfoldPredict (CVMdl)), 50);
+%!warning <ClassificationSVM: the observations of class 'virginica' are removed> ...
+%! ## A missing predictor in a kept row leaves it used, as in R2024a
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! X([3, 70], 1) = NaN;
+%! Mdl = ClassificationSVM (X, species(51:150), 'Prior', [1, 0]);
+%! assert_equal ([Mdl.NumObservations, rows(Mdl.X), nnz(Mdl.RowsUsed)], ...
+%!               [50, 50, 50]);
+%!warning <ClassificationSVM: the observations of class 'virginica' are removed> ...
+%! ## The weights left are renormalized over the class kept, as in R2024a
+%! load fisheriris
+%! W = 1 + mod ((1:100)', 3);
+%! Mdl = ClassificationSVM (meas(51:150, 3:4), species(51:150), ...
+%!                         'Prior', [1, 0], 'Weights', W);
+%! assert_equal (Mdl.W(1:3)', [2, 3, 1] / 101, 1e-15);
+%!test
+%! load fisheriris
+%! g = [ones(50, 1); 2 * ones(50, 1)];
+%! Mdl = ClassificationSVM (meas(51:100, 3:4), g(1:50), 'ClassNames', ...
+%!                         [1, 2], 'Prior', [1, 0]);
+%! assert_equal (Mdl.ClassNames, [1; 2]);
+%! assert_equal (predict (Mdl, meas(51, 3:4)), 1);
+%!warning <ClassificationSVM: the observations of class 'versicolor' are removed> ...
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Mdl = ClassificationSVM (X, species(51:150), 'Prior', [0, 1]);
+%! fname = [tempname(), '.mat'];
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! [label, score] = predict (M2, X([1, 60], :));
+%! assert_equal (label, {'virginica'; 'virginica'});
+%! assert_equal (score, [-1, 1; -1, 1]);

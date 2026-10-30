@@ -196,6 +196,8 @@
 ## The model's @code{W} keeps the class of the weights, while every computation
 ## runs in double, so @code{Prior} and the predictions are double where MATLAB
 ## returns single.
+## A class whose prior is 0 is removed from the data before fitting, with a
+## warning, as in MATLAB.
 ##
 ## @end multitable
 ## You can parse either a @qcode{'Formula'} or an @qcode{'Interactions'}

@@ -923,6 +923,8 @@ classdef ClassificationKNN < PredictiveModel
     ## Alternatively, you can specify @qcode{'empirical'} to use the empirical
     ## class probabilities or @qcode{'uniform'} to assume equal class
     ## probabilities.
+    ## A class whose prior is 0 is removed from the data before fitting, with a
+    ## warning, as in MATLAB.
     ##
     ## @item @qcode{'Weights'} @tab A single or double vector of nonnegative
     ## observation weights, one per row of @var{X}.  Each class carries its
@@ -1116,10 +1118,6 @@ classdef ClassificationKNN < PredictiveModel
                              " string array, a logical vector, a numeric", ...
                              " vector, or a cell array of character", ...
                              " vectors."));
-            endif
-            [~, errmsg] = namedClasses (glY, ClassNames);
-            if (! isempty (errmsg))
-              error ("ClassificationKNN: %s", errmsg);
             endif
 
           case 'prior'
@@ -1316,8 +1314,15 @@ classdef ClassificationKNN < PredictiveModel
       this.ExpandedPredictorNames = PredictorNames;
       this.ResponseName   = ResponseName;
 
-      ## Handle class names
+      ## Handle class names, checked once every option is read: a named
+      ## class with prior 0 is removed below, so it may be absent
+      exempt = [];
       if (! isempty (ClassNames))
+        exempt = zeroPriorNames (ClassNames, Prior, []);
+        [~, errmsg] = namedClasses (glY, ClassNames, exempt);
+        if (! isempty (errmsg))
+          error ("ClassificationKNN: %s", errmsg);
+        endif
         ## The observations of a class ClassNames leaves out are dropped
         gY(! ismember (gY, namedClasses (glY, ClassNames))) = NaN;
       endif
@@ -1347,7 +1352,7 @@ classdef ClassificationKNN < PredictiveModel
       ## Renew groups in Y over the retained observations, so a class held
       ## only by a row with missing predictors is still a class of the model;
       ## the classes are sorted or in the order ClassNames gives them
-      [this.ClassNames, gret] = classOrder (Yret, ClassNames);
+      [this.ClassNames, gret] = classOrder (Yret, ClassNames, exempt);
       gY = gret(cobs);
 
       ## Check X contains valid data
@@ -1376,6 +1381,34 @@ classdef ClassificationKNN < PredictiveModel
       ## Handle Cost and Prior
       this.Cost  = Cost;
       this.Prior = Prior;
+
+      ## A class with prior 0 is never predicted, so its observations are
+      ## removed; one that costs nothing to misclassify is kept, as MATLAB's
+      ## learner keeps it
+      [drop, P, msg] = removedClasses (this.Prior, [], ...
+                                       this.ClassNames, gret);
+      if (all (drop))
+        error ("ClassificationKNN: every class has prior probability 0.");
+      elseif (any (drop))
+        if (! isempty (msg))
+          warning ("ClassificationKNN: %s", msg);
+        endif
+        keep = ! drop(gret);
+        used = find (RowsUsed);
+        RowsUsed(used(! keep)) = false;
+        this.X = this.X(keep,:);
+        this.Y = this.Y(keep,:);
+        this.RawWeights = this.RawWeights(keep);
+        kc = keep(cobs);
+        X = X(kc,:);
+        Y = Y(kc,:);
+        gY = gY(kc);
+        cobs = cobs(keep);
+        gret = gret(keep);
+        this.NumObservations = rows (this.X);
+        this.RowsUsed = RowsUsed;
+        this.Prior = P;
+      endif
       ## Each class carries its prior, spread over its own observations in
       ## proportion to their weights.  Every retained row gets one, those
       ## missing a predictor included, so that W lines up with X.
@@ -4682,3 +4715,50 @@ endfunction
 %! Mdl = ClassificationKNN (X, [ones(10, 1); 2 * ones(10, 1)], 'Standardize', true);
 %! assert_equal (Mdl.Sigma(2), 1);
 
+## Test a class with prior 0, whose observations are removed before fitting,
+## as MATLAB R2024a and R2026b remove them
+%!warning <ClassificationKNN: the observations of class 'virginica' are removed, its prior probability being 0.> ...
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! Mdl = ClassificationKNN (X, Y, 'Prior', [1, 0]);
+%! assert_equal (Mdl.NumObservations, 50);
+%! assert_equal (Mdl.RowsUsed, [true(50, 1); false(50, 1)]);
+%! assert_equal (Mdl.Prior, [1, 0]);
+%! assert_equal (predict (Mdl, meas([51, 110], 3:4)), ...
+%!               {'versicolor'; 'versicolor'});
+%!warning <ClassificationKNN: the observations of class 'virginica' are removed> ...
+%! load fisheriris
+%! Mdl = ClassificationKNN (meas, species, 'Prior', [0.5, 0.5, 0]);
+%! assert_equal (predict (Mdl, meas([1, 51, 101], :)), ...
+%!               {'setosa'; 'versicolor'; 'versicolor'});
+%!test
+%! ## A named class with prior 0 may be absent, having nothing to remove
+%! load fisheriris
+%! X = meas(51:100, 3:4);
+%! Y = species(51:100);
+%! C = {'versicolor', 'virginica'};
+%! Mdl = ClassificationKNN (X, Y, 'ClassNames', C, 'Prior', [1, 0]);
+%! assert_equal (Mdl.ClassNames, {'versicolor'; 'virginica'});
+%! assert_equal (predict (Mdl, meas(51, 3:4)), {'versicolor'});
+%!warning <ClassificationKNN: the observations of class 'virginica' are removed> ...
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! X([3, 70], 1) = NaN;
+%! Mdl = ClassificationKNN (X, species(51:150), 'Prior', [1, 0]);
+%! assert_equal ([Mdl.NumObservations, rows(Mdl.X), nnz(Mdl.RowsUsed)], ...
+%!               [50, 50, 50]);
+%!test
+%! ## A class that costs nothing to misclassify is kept, as in R2024a
+%! load fisheriris
+%! Mdl = ClassificationKNN (meas(51:150, 3:4), species(51:150), ...
+%!                         'Cost', [0, 1; 0, 0]);
+%! assert_equal (Mdl.NumObservations, 100);
+%! assert_equal (Mdl.Prior, [0.5, 0.5]);
+%!test
+%! load fisheriris
+%! Y = char (species(51:100));
+%! C = char ({'versicolor', 'virginica'});
+%! Mdl = ClassificationKNN (meas(51:100, 3:4), Y, 'ClassNames', C, ...
+%!                         'Prior', [1, 0]);
+%! assert_equal (cellstr (predict (Mdl, meas(51, 3:4))), {'versicolor'});

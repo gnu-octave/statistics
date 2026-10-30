@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} {[@var{pos}, @var{errmsg}] =} namedClasses (@var{C}, @var{ClassNames})
+## @deftypefn {Private Function} {[@var{pos}, @var{errmsg}] =} namedClasses (@var{C}, @var{ClassNames}, @var{exempt})
 ## Where each class a @qcode{'ClassNames'} option names sits among the classes
 ## of a response.
 ##
@@ -27,9 +27,12 @@
 ## class by @qcode{'true'} or @qcode{'false'}; a numeric or logical name never
 ## matches a text class.  @var{errmsg} is empty when every name matched, and
 ## otherwise the body of the message the caller raises under its own name.
+## @var{exempt}, a logical over @var{ClassNames} and empty by default, marks
+## the classes that may be absent, those removed for a prior of 0; an absent
+## class has position 0.
 ## @end deftypefn
 
-function [pos, errmsg] = namedClasses (C, ClassNames)
+function [pos, errmsg] = namedClasses (C, ClassNames, exempt = [])
 
   errmsg = "";
   textC = ! (isnumeric (C) || islogical (C));
@@ -47,7 +50,12 @@ function [pos, errmsg] = namedClasses (C, ClassNames)
   else
     pos = labelIndices (C, ClassNames);
   endif
-  if (isempty (pos) || ! all (pos > 0))
+  ## A class removed for its prior of 0 may be absent
+  absent = (pos(:) == 0);
+  if (! isempty (exempt))
+    absent &= ! exempt(:);
+  endif
+  if (isempty (pos) || any (absent))
     errmsg = "not all 'ClassNames' are present in Y.";
   endif
 

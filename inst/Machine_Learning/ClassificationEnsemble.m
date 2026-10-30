@@ -546,7 +546,8 @@ classdef ClassificationEnsemble < PredictiveModel
         error ("%s: invalid optional paired argument.", caller);
       endif
 
-      F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, caller, false);
+      F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, caller, false, ...
+                      'refuse');
       K = classCount (F.ClassNames);
 
       ## The method, by default the one MATLAB chooses for the class count.
@@ -1213,6 +1214,10 @@ classdef ClassificationEnsemble < PredictiveModel
       rs = this.Resampling;
       m = ceil (this.BagFResample * n);
 
+      ## The classes the trees are shown: a class removed for its prior of 0
+      ## has no observation left, and the trees' scores are mapped back to
+      ## the ensemble's classes by name
+      fitted = labelsFromIndex (this.ClassNames, unique (g));
       for c = 1:N
         if (this.Stopped)
           break;
@@ -1232,8 +1237,7 @@ classdef ClassificationEnsemble < PredictiveModel
             else
               T = compact (ClassificationTree (this.X, this.Y, ...
                                                'Weights', d, ...
-                                               'ClassNames', ...
-                                               this.ClassNames, ...
+                                               'ClassNames', fitted, ...
                                                ctree{:}, this.TreeArgs{:}));
             endif
             gh = labelIndices (this.ClassNames, predict (T, this.X));
@@ -1284,8 +1288,7 @@ classdef ClassificationEnsemble < PredictiveModel
               D = this.State.D;
               T = compact (ClassificationTree (this.X, this.Y, ...
                                                'Weights', sum (D, 2), ...
-                                               'ClassNames', ...
-                                               this.ClassNames, ...
+                                               'ClassNames', fitted, ...
                                                ctree{:}, this.TreeArgs{:}));
             endif
             [~, s] = predict (T, this.X);
@@ -2029,3 +2032,34 @@ endfunction
 %!                   'NumLearningCycles', 10);
 %! assert_equal (nthargout (2, @predict, A, meas), nthargout (2, @predict, ...
 %!               B, meas));
+
+## Test a class with prior 0, whose observations are removed before fitting,
+## as MATLAB R2024a and R2026b remove them
+%!warning <ClassificationEnsemble: the observations of class 'virginica' are removed, its prior probability being 0.> ...
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! Mdl = ClassificationEnsemble (X, Y, 'Prior', [1, 0]);
+%! assert_equal (Mdl.NumObservations, 50);
+%! assert_equal (Mdl.RowsUsed, [true(50, 1); false(50, 1)]);
+%! assert_equal (Mdl.Prior, [1, 0]);
+%! assert_equal (predict (Mdl, meas([51, 110], 3:4)), ...
+%!               {'versicolor'; 'versicolor'});
+%!warning <ClassificationEnsemble: the observations of class 'virginica' are removed> ...
+%! load fisheriris
+%! Mdl = ClassificationEnsemble (meas, species, 'Prior', [0.5, 0.5, 0]);
+%! assert_equal (predict (Mdl, meas([1, 51, 101], :)), ...
+%!               {'setosa'; 'versicolor'; 'versicolor'});
+%!test
+%! ## A named class with prior 0 may be absent, having nothing to remove
+%! load fisheriris
+%! X = meas(51:100, 3:4);
+%! Y = species(51:100);
+%! C = {'versicolor', 'virginica'};
+%! Mdl = ClassificationEnsemble (X, Y, 'ClassNames', C, 'Prior', [1, 0]);
+%! assert_equal (Mdl.ClassNames, {'versicolor'; 'virginica'});
+%! assert_equal (predict (Mdl, meas(51, 3:4)), {'versicolor'});
+%!error <ClassificationEnsemble: every row of 'Cost' must hold a positive cost.> ...
+%! load fisheriris
+%! ClassificationEnsemble (meas(51:150, 3:4), species(51:150), ...
+%!                         'Cost', [0, 1; 0, 0]);

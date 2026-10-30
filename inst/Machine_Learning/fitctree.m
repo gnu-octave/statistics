@@ -125,6 +125,8 @@
 ## @item @qcode{'Prior'} @tab @qcode{'empirical'} (default),
 ## @qcode{'uniform'}, a numeric vector with one element per class, or a
 ## structure with fields @qcode{ClassNames} and @qcode{ClassProbs}.
+## A class whose prior is 0, or whose misclassification costs are all 0, is
+## removed from the data before fitting, with a warning, as in MATLAB.
 ##
 ## @item @qcode{'Prune'} @tab @qcode{'on'} (default) or @qcode{'off'}.  When
 ## on, the cost complexity pruning sequence is estimated and reported in

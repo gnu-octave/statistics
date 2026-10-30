@@ -374,6 +374,8 @@ classdef ClassificationKernel < PredictiveModel
     ## @item @qcode{'Prior'} @tab @qcode{'empirical'}, the default,
     ## @qcode{'uniform'}, a vector of probabilities, or a structure with
     ## @qcode{ClassNames} and @qcode{ClassProbs} fields.
+    ## A class whose prior is 0, or whose misclassification costs are all 0, is
+    ## removed from the data before fitting, with a warning, as in MATLAB.
     ##
     ## @item @qcode{'ScoreTransform'} @tab A transformation applied to the
     ## scores, named or given as a function handle.
@@ -1816,3 +1818,28 @@ endclassdef
 %! randn ('seed', 1);
 %! B = fitckernel (X, Y, 'Weights', double (single (w)));
 %! assert_equal (nthargout (2, @predict, A, X), nthargout (2, @predict, B, X));
+
+## Test a class with prior 0, whose observations are removed before fitting,
+## as MATLAB R2024a and R2026b remove them
+%!warning <ClassificationKernel: the observations of class 'virginica' are removed, its prior probability being 0.> ...
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! Mdl = ClassificationKernel (X, Y, 'Prior', [1, 0]);
+%! assert_equal (Mdl.Prior, [1, 0]);
+%! assert_equal (predict (Mdl, meas([51, 110], 3:4)), ...
+%!               {'versicolor'; 'versicolor'});
+%!test
+%! ## A named class with prior 0 may be absent, having nothing to remove
+%! load fisheriris
+%! X = meas(51:100, 3:4);
+%! Y = species(51:100);
+%! C = {'versicolor', 'virginica'};
+%! Mdl = ClassificationKernel (X, Y, 'ClassNames', C, 'Prior', [1, 0]);
+%! assert_equal (Mdl.ClassNames, {'versicolor'; 'virginica'});
+%! assert_equal (predict (Mdl, meas(51, 3:4)), {'versicolor'});
+%!warning <ClassificationKernel: the observations of class 'virginica' are removed> ...
+%! load fisheriris
+%! Mdl = ClassificationKernel (meas(51:150, 3:4), species(51:150), ...
+%!                            'Cost', [0, 1; 0, 0]);
+%! assert_equal (Mdl.Prior, [1, 0]);

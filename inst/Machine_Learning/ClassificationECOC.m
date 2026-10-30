@@ -361,7 +361,7 @@ classdef ClassificationECOC < PredictiveModel
       endif
 
       F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
-                      'ClassificationECOC', false);
+                      'ClassificationECOC', false, 'keep');
       K = classCount (F.ClassNames);
 
       ## The coding design, named or given outright.
@@ -420,10 +420,19 @@ classdef ClassificationECOC < PredictiveModel
       for j = 1:L
         take = M(F.gY, j) != 0;
         by = M(F.gY(take), j);
+        ## A side left without observations, its classes removed for a prior
+        ## of 0, has prior 0 in its learner too, which then fits the other
+        ## side alone, as MATLAB's does
+        pr = [];
+        if (! any (by == -1))
+          pr = [0, 1];
+        elseif (! any (by == 1))
+          pr = [1, 0];
+        endif
         this.BinaryLearners{j} = ...
           ClassificationECOC.ecocFitBinary (tmpl, F.X(take,:), by, ...
                                             F.W(take), PredictorNames, ...
-                                            CatPreds);
+                                            CatPreds, pr);
         this.LearnerWeights(j) = sum (F.W(take));
       endfor
 
@@ -878,7 +887,7 @@ classdef ClassificationECOC < PredictiveModel
     ## Fit one binary learner.  Its two classes are given outright as -1 and
     ## +1 so that the second is always the one the column calls +1, which is
     ## the score the decoding reads.
-    function Mdl = ecocFitBinary (tmpl, X, y, w, pnames, cats = [])
+    function Mdl = ecocFitBinary (tmpl, X, y, w, pnames, cats = [], pr = [])
 
       ## An ensemble template carries the method, cycles and learners under
       ## names of its own, which the ensemble takes under fitcensemble's.
@@ -907,6 +916,9 @@ classdef ClassificationECOC < PredictiveModel
       ## equal ones differ in the last bits; only a real spread counts.
       if (max (w) - min (w) > 1e-12 * max (w))
         args(end+1:end+2) = {'Weights', w};
+      endif
+      if (! isempty (pr))
+        args(end+1:end+2) = {'Prior', pr};
       endif
 
       if (ensemble && strcmp (tmpl.Method, 'Bag'))
@@ -1254,3 +1266,55 @@ endclassdef
 %! assert_equal (NegLoss, [-2, -0.1264612831076871, -0.4152333784029093], ...
 %!               1e-12);
 
+## Test a class with prior 0, whose observations are removed before fitting,
+## as MATLAB R2024a and R2026b remove them
+%!warning <ClassificationECOC: the observations of class 'virginica' are removed, its prior probability being 0.> ...
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! Mdl = ClassificationECOC (X, Y, 'Prior', [1, 0]);
+%! assert_equal (Mdl.NumObservations, 50);
+%! assert_equal (Mdl.RowsUsed, [true(50, 1); false(50, 1)]);
+%! assert_equal (Mdl.Prior, [1, 0]);
+%! assert_equal (predict (Mdl, meas([51, 110], 3:4)), ...
+%!               {'versicolor'; 'versicolor'});
+%!warning <ClassificationECOC: the observations of class 'virginica' are removed> ...
+%! load fisheriris
+%! Mdl = ClassificationECOC (meas, species, 'Prior', [0.5, 0.5, 0]);
+%! assert_equal (predict (Mdl, meas([1, 51, 101], :)), ...
+%!               {'setosa'; 'versicolor'; 'versicolor'});
+%!test
+%! ## A named class with prior 0 may be absent, having nothing to remove
+%! load fisheriris
+%! X = meas(51:100, 3:4);
+%! Y = species(51:100);
+%! C = {'versicolor', 'virginica'};
+%! Mdl = ClassificationECOC (X, Y, 'ClassNames', C, 'Prior', [1, 0]);
+%! assert_equal (Mdl.ClassNames, {'versicolor'; 'virginica'});
+%! assert_equal (predict (Mdl, meas(51, 3:4)), {'versicolor'});
+%!warning <ClassificationECOC: the observations of class 'virginica' are removed> ...
+%! ## Each learner left with one side fits it alone; scores as R2024a's
+%! load fisheriris
+%! Mdl = ClassificationECOC (meas, species, 'Prior', [0.5, 0.5, 0]);
+%! [~, score] = predict (Mdl, meas([1, 51, 101], :));
+%! assert_equal (score, [0, -0.636121215772315, -1; ...
+%!                       -0.891685729975082, 0, -1; ...
+%!                       -1.324242131075491, 0, -1], 1e-4);
+%!test
+%! load fisheriris
+%! Mdl = ClassificationECOC (meas(51:150, 3:4), species(51:150), ...
+%!                          'Cost', [0, 1; 0, 0]);
+%! assert_equal (Mdl.NumObservations, 100);
+%! assert_equal (Mdl.Prior, [0.5, 0.5]);
+%!warning <ClassificationECOC: the observations of class 'virginica' are removed> ...
+%! load fisheriris
+%! Mdl = ClassificationECOC (meas, species, 'Learners', 'tree', ...
+%!                          'Prior', [0.5, 0.5, 0]);
+%! assert_equal (predict (Mdl, meas([1, 51, 101], :)), ...
+%!               {'setosa'; 'versicolor'; 'versicolor'});
+%!warning <ClassificationECOC: the observations of class 'virginica' are removed> ...
+%! load fisheriris
+%! Mdl = ClassificationECOC (meas, species, 'Learners', 'knn', ...
+%!                          'Prior', [0.5, 0.5, 0]);
+%! assert_equal (predict (Mdl, meas([1, 51, 101], :)), ...
+%!               {'setosa'; 'versicolor'; 'versicolor'});

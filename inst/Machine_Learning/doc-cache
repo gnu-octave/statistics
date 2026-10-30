@@ -5540,7 +5540,7 @@ ClassificationGAM.ClassificationGAM
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3980
+# length: 4076
 ClassificationGAM: obj = ClassificationGAM (X, Y)
 ClassificationGAM: obj = ClassificationGAM (Tbl, ResponseVarName)
 ClassificationGAM: obj = ClassificationGAM (Tbl, formula)
@@ -5593,6 +5593,8 @@ probabilities. The prior weighs the boosted-tree fit: each class
 carries its prior, spread over its observations in proportion to
 'Weights', and an empirical prior is each class's share of the
 weight.
+A class whose prior is 0 is removed from the data before fitting, with a
+warning, as in MATLAB.
 'ScoreTransform' A user-defined function handle
 or a character vector specifying one of the following builtin functions
 specifying the transformation applied to predicted classification scores.
@@ -7313,7 +7315,7 @@ ClassificationKNN.ClassificationKNN
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5804
+# length: 5900
 ClassificationKNN: obj = ClassificationKNN (X, Y)
 ClassificationKNN: obj = ClassificationKNN (Tbl, ResponseVarName)
 ClassificationKNN: obj = ClassificationKNN (Tbl, formula)
@@ -7360,6 +7362,8 @@ corresponds to the order of the classes in ClassNames.
 Alternatively, you can specify 'empirical' to use the empirical
 class probabilities or 'uniform' to assume equal class
 probabilities.
+A class whose prior is 0 is removed from the data before fitting, with a
+warning, as in MATLAB.
 'Weights' A single or double vector of nonnegative
 observation weights, one per row of X. Each class carries its
 prior, spread over its observations in proportion to their weights, and a
@@ -8783,7 +8787,7 @@ ClassificationKernel.ClassificationKernel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2984
+# length: 3125
 ClassificationKernel: obj = ClassificationKernel (X, Y)
 ClassificationKernel: obj = ClassificationKernel (Tbl, ResponseVarName)
 ClassificationKernel: obj = ClassificationKernel (Tbl, formula)
@@ -8831,6 +8835,8 @@ sorted.
 'Prior' 'empirical', the default,
 'uniform', a vector of probabilities, or a structure with
 ClassNames and ClassProbs fields.
+A class whose prior is 0, or whose misclassification costs are all 0, is
+removed from the data before fitting, with a warning, as in MATLAB.
 'ScoreTransform' A transformation applied to the
 scores, named or given as a function handle.
 'Weights' One nonnegative weight per observation, as a
@@ -9671,7 +9677,7 @@ ClassificationLinear.ClassificationLinear
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4473
+# length: 4614
 ClassificationLinear: obj = ClassificationLinear (X, Y)
 ClassificationLinear: obj = ClassificationLinear (Tbl, ResponseVarName)
 ClassificationLinear: obj = ClassificationLinear (Tbl, formula)
@@ -9748,6 +9754,8 @@ keeps the classes in this order; by default they are sorted.
 'Prior' 'empirical', the default,
 'uniform', a vector of probabilities, or a structure with
 ClassNames and ClassProbs fields.
+A class whose prior is 0, or whose misclassification costs are all 0, is
+removed from the data before fitting, with a warning, as in MATLAB.
 'ScoreTransform' A transformation applied to the
 scores, named or given as a function handle.
 'Weights' One nonnegative weight per observation, as a
@@ -18590,7 +18598,7 @@ ClassificationTree.ClassificationTree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4022
+# length: 4163
 ClassificationTree: obj = ClassificationTree (X, Y)
 ClassificationTree: obj = ClassificationTree (Tbl, ResponseVarName)
 ClassificationTree: obj = ClassificationTree (Tbl, formula)
@@ -18652,6 +18660,8 @@ naming the columns of X.
 'uniform', a numeric vector with one element per class, or a
 structure with fields ClassNames and
 ClassProbs.
+A class whose prior is 0, or whose misclassification costs are all 0, is
+removed from the data before fitting, with a warning, as in MATLAB.
 'Prune' 'on' (default) or 'off'.
 When on, the cost complexity pruning sequence is estimated and
 reported in PruneList and PruneAlpha. The tree returned
@@ -47127,7 +47137,7 @@ fitcecoc
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4465
+# length: 4561
 statistics: Mdl = fitcecoc (X, Y)
 statistics: Mdl = fitcecoc (Tbl, ResponseVarName)
 statistics: Mdl = fitcecoc (Tbl, formula)
@@ -47172,6 +47182,8 @@ By default they are sorted.
 costs. The default is 1 - eye (K).
 'Prior' 'empirical' (default),
 'uniform', or a vector with one element per class.
+A class whose prior is 0 is removed from the data before fitting, with a
+warning, as in MATLAB.
 'Weights' A nonnegative single or double vector with
 one element per observation. The default is uniform. The model's W
 keeps the class of the weights, while every computation runs in double, so
@@ -47245,7 +47257,7 @@ fitcensemble
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 10309
+# length: 10472
 statistics: Mdl = fitcensemble (X, Y)
 statistics: Mdl = fitcensemble (Tbl, ResponseVarName)
 statistics: Mdl = fitcensemble (Tbl, formula)
@@ -47419,6 +47431,9 @@ scores are laid out; by default they are sorted.
 costs. The default is 1 - eye (K).
 'Prior' 'empirical' (default),
 'uniform', or a vector with one element per class.
+A class whose prior is 0 is removed from the data before fitting, with a
+warning, as in MATLAB.
+A row of misclassification costs with no positive cost is refused.
 'Weights' A nonnegative single or double vector with
 one weight per observation. The default is uniform. The model's W
 keeps the class of the weights, while every computation runs in double, so
@@ -47467,7 +47482,7 @@ fitcgam
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 8058
+# length: 8154
 statistics: Mdl = fitcgam (X, Y)
 statistics: Mdl = fitcgam (Tbl, ResponseVarName)
 statistics: Mdl = fitcgam (Tbl, formula)
@@ -47618,6 +47633,8 @@ observation weights, one per row of X. Each class carries its
 The model's W keeps the class of the weights, while every computation
 runs in double, so Prior and the predictions are double where MATLAB
 returns single.
+A class whose prior is 0 is removed from the data before fitting, with a
+warning, as in MATLAB.
 
 You can parse either a 'Formula' or an 'Interactions'
 optional parameter. Parsing both parameters will result an error.
@@ -47703,7 +47720,7 @@ fitcknn
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 11361
+# length: 11457
 statistics: Mdl = fitcknn (X, Y)
 statistics: Mdl = fitcknn (Tbl, ResponseVarName)
 statistics: Mdl = fitcknn (Tbl, formula)
@@ -47748,6 +47765,8 @@ in this order; by default they are sorted.
 'Prior' A numeric vector specifying the prior
 probabilities for each class. The order of the elements in Prior
 corresponds to the order of the classes in ClassNames.
+A class whose prior is 0 is removed from the data before fitting, with a
+warning, as in MATLAB.
 'Weights' A single or double vector of nonnegative
 observation weights, one per row of X. Each class carries its prior,
 spread over its observations in proportion to their weights, and a neighbour
@@ -48016,7 +48035,7 @@ fitcnb
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4190
+# length: 4286
 statistics: Mdl = fitcnb (X, Y)
 statistics: Mdl = fitcnb (Tbl, ResponseVarName)
 statistics: Mdl = fitcnb (Tbl, formula)
@@ -48063,6 +48082,8 @@ this order; by default they are sorted.
 of each class, in the order of ClassNames, or the character vector
 'empirical' (default) to take the class frequencies, or
 'uniform' to give every class the same probability.
+A class whose prior is 0 is removed from the data before fitting, with a
+warning, as in MATLAB.
 'Cost' A square numeric matrix of misclassification
 costs, where Cost(i,j) is the cost of classifying an observation of
 class i into class j. The default is one off the diagonal and
@@ -48124,7 +48145,7 @@ fitcnet
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 7126
+# length: 7222
 statistics: Mdl = fitcnet (X, Y)
 statistics: Mdl = fitcnet (Tbl, ResponseVarName)
 statistics: Mdl = fitcnet (Tbl, formula)
@@ -48173,6 +48194,8 @@ The model keeps the classes in this order; by default they are sorted.
 'Prior' A numeric vector specifying the prior
 probabilities for each class. The order of the elements in Prior
 corresponds to the order of the classes in ClassNames.
+A class whose prior is 0 is removed from the data before fitting, with a
+warning, as in MATLAB.
 'LayerSizes' A vector of positive integers that
 defines the sizes of the fully connected layers in the neural network model.
 Each element in LayerSizes corresponds to the number of outputs for the
@@ -48287,7 +48310,7 @@ fitcsvm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 8601
+# length: 8742
 statistics: Mdl = fitcsvm (X, Y)
 statistics: Mdl = fitcsvm (Tbl, ResponseVarName)
 statistics: Mdl = fitcsvm (Tbl, formula)
@@ -48395,6 +48418,8 @@ standardization uses weighted means and standard deviations, and a row of
 zero weight is left out. The model's W keeps the class of the
 weights, while every computation runs in double, so Prior is double
 where MATLAB returns single.
+A class whose prior is 0, or whose misclassification costs are all 0, is
+removed from the data before fitting, with a warning, as in MATLAB.
 'BoxConstraint' A positive scalar that specifies the
 upper bound of the Lagrange multipliers, i.e. the parameter C, which is used
 for training 'C_SVC' and 'one_class_SVM' type of models. It
@@ -48474,7 +48499,7 @@ fitctree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5694
+# length: 5835
 statistics: Mdl = fitctree (X, Y)
 statistics: Mdl = fitctree (Tbl, ResponseVarName)
 statistics: Mdl = fitctree (Tbl, formula)
@@ -48567,6 +48592,8 @@ naming the columns of X.
 'Prior' 'empirical' (default),
 'uniform', a numeric vector with one element per class, or a
 structure with fields ClassNames and ClassProbs.
+A class whose prior is 0, or whose misclassification costs are all 0, is
+removed from the data before fitting, with a warning, as in MATLAB.
 'Prune' 'on' (default) or 'off'. When
 on, the cost complexity pruning sequence is estimated and reported in
 PruneList and PruneAlpha. The tree returned is the unpruned

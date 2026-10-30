@@ -822,8 +822,11 @@ classdef ClassificationNeuralNetwork < PredictiveModel
                        " array, a logical vector, a numeric vector, or a", ...
                        " cell array of character vectors."));
       endif
+      ## A named class with prior 0 is removed below, so it may be absent
+      exempt = [];
       if (! isempty (ClassNames))
-        [~, errmsg] = namedClasses (glY, ClassNames);
+        exempt = zeroPriorNames (ClassNames, Prior, []);
+        [~, errmsg] = namedClasses (glY, ClassNames, exempt);
         if (! isempty (errmsg))
           error ("ClassificationNeuralNetwork: %s", errmsg);
         endif
@@ -999,7 +1002,7 @@ classdef ClassificationNeuralNetwork < PredictiveModel
       ## Renew groups in Y over the retained observations, so a class held
       ## only by a row with missing predictors is still a class of the model;
       ## the classes are sorted or in the order ClassNames gives them
-      [this.ClassNames, gret] = classOrder (Yret, ClassNames);
+      [this.ClassNames, gret] = classOrder (Yret, ClassNames, exempt);
       gY = gret(cobs);
 
       ## Dummy code the categorical predictors on the rows the fit draws on.
@@ -1075,6 +1078,36 @@ classdef ClassificationNeuralNetwork < PredictiveModel
         error (strcat ("ClassificationNeuralNetwork: 'Prior' must be", ...
                        " 'empirical', 'uniform', or a non-negative numeric", ...
                        " vector with one entry per class."));
+      endif
+
+      ## A class with prior 0 is never predicted, so its observations are
+      ## removed; one that costs nothing to misclassify is kept, as MATLAB's
+      ## learner keeps it
+      [drop, P, msg] = removedClasses (this.Prior, [], ...
+                                       this.ClassNames, gret);
+      if (all (drop))
+        error (strcat ("ClassificationNeuralNetwork: every class has prior", ...
+                       " probability 0."));
+      elseif (any (drop))
+        if (! isempty (msg))
+          warning ("ClassificationNeuralNetwork: %s", msg);
+        endif
+        keep = ! drop(gret);
+        used = find (RowsUsed);
+        RowsUsed(used(! keep)) = false;
+        this.X = this.X(keep,:);
+        this.Y = this.Y(keep,:);
+        wret = wret(keep);
+        kc = keep(cobs);
+        X = X(kc,:);
+        Y = Y(kc,:);
+        gY = gY(kc);
+        wfit = wfit(kc);
+        cobs = cobs(keep);
+        gret = gret(keep);
+        this.NumObservations = rows (this.X);
+        this.RowsUsed = RowsUsed;
+        this.Prior = P;
       endif
       ## W has one entry per stored observation, those missing a predictor
       ## included, so it lines up with X; the fit sees the complete ones.
@@ -1175,7 +1208,16 @@ classdef ClassificationNeuralNetwork < PredictiveModel
                        " vector does not match the number of layers."));
       endif
 
-      Mdl = fcnntrain (X, gY, LayerSizes, Activations, ...
+      ## The engine makes one output per class it is shown, so a class
+      ## removed for its prior of 0 is left out of the numbering
+      gYfit = gY;
+      fitted = this.Prior > 0;
+      if (! all (fitted))
+        renum = cumsum (fitted);
+        gYfit = renum(gY);
+        gYfit = gYfit(:);
+      endif
+      Mdl = fcnntrain (X, gYfit, LayerSizes, Activations, ...
                        OutputLayerActivation, NumThreads, ...
                        LearningRate, IterationLimit, DisplayInfo, ...
                        LossFunction, SolverOptions);
@@ -1317,6 +1359,15 @@ classdef ClassificationNeuralNetwork < PredictiveModel
                                       this.Activations, ...
                                       this.OutputLayerActivation, ...
                                       XC, NumThreads);
+      ## A class removed for its prior of 0 had no output of its own: the
+      ## scores of the classes fitted go back to their places, 0 for it
+      fitted = find (this.Prior > 0);
+      if (numel (fitted) < numel (this.Prior))
+        full = zeros (rows (scores), numel (this.Prior), class (scores));
+        full(:,fitted) = scores;
+        scores = full;
+        labels = reshape (fitted(labels), size (labels));
+      endif
       ## A row missing a predictor, or holding a level the fit did not see,
       ## has no score: a rectified missing value would make one up.  It
       ## takes the class of largest prior, as MATLAB R2024a labels it.
@@ -1377,6 +1428,15 @@ classdef ClassificationNeuralNetwork < PredictiveModel
                                       this.Activations, ...
                                       this.OutputLayerActivation, ...
                                       X, NumThreads);
+      ## A class removed for its prior of 0 had no output of its own: the
+      ## scores of the classes fitted go back to their places, 0 for it
+      fitted = find (this.Prior > 0);
+      if (numel (fitted) < numel (this.Prior))
+        full = zeros (rows (scores), numel (this.Prior), class (scores));
+        full(:,fitted) = scores;
+        scores = full;
+        labels = reshape (fitted(labels), size (labels));
+      endif
       ## A row missing a predictor, or holding a level the fit did not see,
       ## has no score: a rectified missing value would make one up.  It
       ## takes the class of largest prior, as MATLAB R2024a labels it.
@@ -3123,3 +3183,51 @@ endfunction
 %! Mdl = ClassificationNeuralNetwork (X, [ones(10, 1); 2 * ones(10, 1)], 'Standardize', true);
 %! assert_equal (Mdl.Sigma(2), 1);
 
+## Test a class with prior 0, whose observations are removed before fitting,
+## as MATLAB R2024a and R2026b remove them
+%!warning <ClassificationNeuralNetwork: the observations of class 'virginica' are removed, its prior probability being 0.> ...
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! Mdl = ClassificationNeuralNetwork (X, Y, 'Prior', [1, 0]);
+%! assert_equal (Mdl.NumObservations, 50);
+%! assert_equal (Mdl.RowsUsed, [true(50, 1); false(50, 1)]);
+%! assert_equal (Mdl.Prior, [1, 0]);
+%! assert_equal (predict (Mdl, meas([51, 110], 3:4)), ...
+%!               {'versicolor'; 'versicolor'});
+%!warning <ClassificationNeuralNetwork: the observations of class 'virginica' are removed> ...
+%! load fisheriris
+%! Mdl = ClassificationNeuralNetwork (meas, species, 'Prior', [0.5, 0.5, 0]);
+%! assert_equal (predict (Mdl, meas([1, 51, 101], :)), ...
+%!               {'setosa'; 'versicolor'; 'versicolor'});
+%!test
+%! ## A named class with prior 0 may be absent, having nothing to remove
+%! load fisheriris
+%! X = meas(51:100, 3:4);
+%! Y = species(51:100);
+%! C = {'versicolor', 'virginica'};
+%! Mdl = ClassificationNeuralNetwork (X, Y, 'ClassNames', C, 'Prior', [1, 0]);
+%! assert_equal (Mdl.ClassNames, {'versicolor'; 'virginica'});
+%! assert_equal (predict (Mdl, meas(51, 3:4)), {'versicolor'});
+%!warning <ClassificationNeuralNetwork: the observations of class 'versicolor' are removed> ...
+%! ## A class removed from the middle keeps a score of 0
+%! load fisheriris
+%! Mdl = ClassificationNeuralNetwork (meas, species, 'Prior', [0.5, 0, 0.5]);
+%! [label, score] = predict (Mdl, meas([1, 51, 101], :));
+%! assert_equal (any (strcmp (label, 'versicolor')), false);
+%! assert_equal (score(:,2), [0; 0; 0]);
+%!test
+%! load fisheriris
+%! Mdl = ClassificationNeuralNetwork (meas(51:150, 3:4), species(51:150), ...
+%!                                   'Cost', [0, 1; 0, 0]);
+%! assert_equal (Mdl.NumObservations, 100);
+%! assert_equal (Mdl.Prior, [0.5, 0.5]);
+%!warning <ClassificationNeuralNetwork: the observations of class 'versicolor' are removed> ...
+%! load fisheriris
+%! Mdl = ClassificationNeuralNetwork (meas, species, 'Prior', [0.5, 0, 0.5]);
+%! fname = [tempname(), '.mat'];
+%! savemodel (compact (Mdl), fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! [~, score] = predict (M2, meas([1, 51, 101], :));
+%! assert_equal (score(:,2), [0; 0; 0]);

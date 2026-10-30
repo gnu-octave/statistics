@@ -772,6 +772,8 @@ classdef ClassificationTree < PredictiveModel
     ## @qcode{'uniform'}, a numeric vector with one element per class, or a
     ## structure with fields @qcode{ClassNames} and
     ## @qcode{ClassProbs}.
+    ## A class whose prior is 0, or whose misclassification costs are all 0, is
+    ## removed from the data before fitting, with a warning, as in MATLAB.
     ##
     ## @item @qcode{'Prune'} @tab @qcode{'on'} (default) or @qcode{'off'}.
     ## When on, the cost complexity pruning sequence is estimated and
@@ -882,8 +884,11 @@ classdef ClassificationTree < PredictiveModel
                        " vector, or a cell array of character", ...
                        " vectors."));
       endif
+      ## A named class with prior 0 is removed below, so it may be absent
+      exempt = [];
       if (! isempty (ClassNames))
-        [~, errmsg] = namedClasses (glY, ClassNames);
+        exempt = zeroPriorNames (ClassNames, Prior, Cost);
+        [~, errmsg] = namedClasses (glY, ClassNames, exempt);
         if (! isempty (errmsg))
           error ("ClassificationTree: %s", errmsg);
         endif
@@ -1075,7 +1080,7 @@ classdef ClassificationTree < PredictiveModel
 
       ## The classes, in the type the response was given in, sorted or in the
       ## order ClassNames gives them
-      [this.ClassNames, gY] = classOrder (Y, ClassNames);
+      [this.ClassNames, gY] = classOrder (Y, ClassNames, exempt);
       K = classCount (this.ClassNames);
 
       ## The raw weights, kept so that reassigning Prior can re-derive W
@@ -1109,6 +1114,31 @@ classdef ClassificationTree < PredictiveModel
         this.Prior = P / sum (P);
       else
         this.Prior = Prior;
+      endif
+
+      ## A class with prior 0, or that costs nothing to misclassify, is never
+      ## predicted and weighs nothing, so its observations are removed
+      [drop, P, msg] = removedClasses (this.Prior, this.Cost, ...
+                                       this.ClassNames, gY);
+      if (all (drop))
+        error ("ClassificationTree: every class has prior probability 0.");
+      elseif (any (drop))
+        if (! isempty (msg))
+          warning ("ClassificationTree: %s", msg);
+        endif
+        keep = ! drop(gY);
+        used = find (RowsUsed);
+        RowsUsed(used(! keep)) = false;
+        X = X(keep,:);
+        Y = Y(keep,:);
+        gY = gY(keep);
+        RawWeights = RawWeights(keep);
+        this.X = X;
+        this.Y = Y;
+        this.NumObservations = rows (X);
+        this.RowsUsed = RowsUsed;
+        this.RawWeights = this.RawWeights(keep);
+        this.Prior = P;
       endif
 
       ## Weights scaled so that each class carries its prior and the whole
@@ -3438,3 +3468,67 @@ endfunction
 %! B = ClassificationTree (meas, species, 'Weights', double (single (w)));
 %! assert_equal (nthargout (2, @predict, A, meas), nthargout (2, @predict, ...
 %!               B, meas));
+
+## Test a class with prior 0, whose observations are removed before fitting,
+## as MATLAB R2024a and R2026b remove them
+%!warning <ClassificationTree: the observations of class 'virginica' are removed, its prior probability being 0.> ...
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! Mdl = ClassificationTree (X, Y, 'Prior', [1, 0]);
+%! assert_equal (Mdl.NumObservations, 50);
+%! assert_equal (Mdl.RowsUsed, [true(50, 1); false(50, 1)]);
+%! assert_equal (Mdl.Prior, [1, 0]);
+%! assert_equal (predict (Mdl, meas([51, 110], 3:4)), ...
+%!               {'versicolor'; 'versicolor'});
+%!warning <ClassificationTree: the observations of class 'virginica' are removed> ...
+%! load fisheriris
+%! Mdl = ClassificationTree (meas, species, 'Prior', [0.5, 0.5, 0]);
+%! assert_equal (predict (Mdl, meas([1, 51, 101], :)), ...
+%!               {'setosa'; 'versicolor'; 'versicolor'});
+%!test
+%! ## A named class with prior 0 may be absent, having nothing to remove
+%! load fisheriris
+%! X = meas(51:100, 3:4);
+%! Y = species(51:100);
+%! C = {'versicolor', 'virginica'};
+%! Mdl = ClassificationTree (X, Y, 'ClassNames', C, 'Prior', [1, 0]);
+%! assert_equal (Mdl.ClassNames, {'versicolor'; 'virginica'});
+%! assert_equal (predict (Mdl, meas(51, 3:4)), {'versicolor'});
+%!warning <ClassificationTree: the observations of class 'virginica' are removed> ...
+%! load fisheriris
+%! Mdl = ClassificationTree (meas(51:150, 3:4), species(51:150), ...
+%!                          'Cost', [0, 1; 0, 0]);
+%! assert_equal (Mdl.NumObservations, 50);
+%! assert_equal (Mdl.Prior, [1, 0]);
+%!warning <ClassificationTree: the observations of class 'virginica' are removed> ...
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! X([3, 70], 1) = NaN;
+%! Mdl = ClassificationTree (X, species(51:150), 'Prior', [1, 0]);
+%! assert_equal ([Mdl.NumObservations, rows(Mdl.X), nnz(Mdl.RowsUsed)], ...
+%!               [50, 50, 50]);
+%!warning <ClassificationTree: the observations of class 'virginica' are removed> ...
+%! ## A cost given as a structure removes the class it makes free
+%! load fisheriris
+%! S = struct ('ClassNames', {{'virginica', 'versicolor'}}, ...
+%!             'ClassificationCosts', [0, 0; 1, 0]);
+%! Mdl = ClassificationTree (meas(51:150, 3:4), species(51:150), 'Cost', S);
+%! assert_equal (Mdl.NumObservations, 50);
+%! assert_equal (Mdl.Prior, [1, 0]);
+%!test
+%! load fisheriris
+%! Y = categorical (species(51:100));
+%! C = {'versicolor', 'virginica'};
+%! Mdl = ClassificationTree (meas(51:100, 3:4), Y, 'ClassNames', C, ...
+%!                          'Prior', [1, 0]);
+%! assert_equal (cellstr (Mdl.ClassNames), C');
+%!warning <ClassificationTree: the observations of class 'versicolor' are removed> ...
+%! load fisheriris
+%! Mdl = ClassificationTree (meas, species, 'Prior', [0.5, 0, 0.5]);
+%! fname = [tempname(), '.mat'];
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (predict (M2, meas([1, 51, 101], :)), ...
+%!               predict (Mdl, meas([1, 51, 101], :)));

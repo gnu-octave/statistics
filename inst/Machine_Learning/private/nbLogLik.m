@@ -59,6 +59,12 @@ function L = nbLogLik (X, D, DP, k, CL)
   ## posterior and is not computed.
   if (ischar (D))
     for i = 1:k
+      ## A class removed for its prior of 0 has no parameters and no
+      ## likelihood
+      if (isempty (DP{i,1}))
+        L(:,i) = -Inf;
+        continue;
+      endif
       for j = 1:p
         t = X(:,j) * log (DP{i,j});
         t(isnan (X(:,j))) = 0;
@@ -69,6 +75,10 @@ function L = nbLogLik (X, D, DP, k, CL)
   endif
 
   for i = 1:k
+    if (isempty (DP{i,1}))
+      L(:,i) = -Inf;
+      continue;
+    endif
     for j = 1:p
 
       switch (D{j})

@@ -740,6 +740,8 @@ classdef ClassificationGAM < PredictiveModel
     ## carries its prior, spread over its observations in proportion to
     ## @qcode{'Weights'}, and an empirical prior is each class's share of the
     ## weight.
+    ## A class whose prior is 0 is removed from the data before fitting, with a
+    ## warning, as in MATLAB.
     ##
     ## @item @qcode{'ScoreTransform'} @tab A user-defined function handle
     ## or a character vector specifying one of the following builtin functions
@@ -873,8 +875,11 @@ classdef ClassificationGAM < PredictiveModel
                        " vector, or a cell array of character", ...
                        " vectors."));
       endif
+      ## A named class with prior 0 is removed below, so it may be absent
+      exempt = [];
       if (! isempty (ClassNames))
-        [~, errmsg] = namedClasses (glY, ClassNames);
+        exempt = zeroPriorNames (ClassNames, Prior, []);
+        [~, errmsg] = namedClasses (glY, ClassNames, exempt);
         if (! isempty (errmsg))
           error ("ClassificationGAM: %s", errmsg);
         endif
@@ -1194,7 +1199,7 @@ classdef ClassificationGAM < PredictiveModel
 
       ## Renew groups in Y: the classes keep the type of Y, sorted or in the
       ## order ClassNames gives them.
-      [this.ClassNames, gY] = classOrder (Y, ClassNames);
+      [this.ClassNames, gY] = classOrder (Y, ClassNames, exempt);
 
       ## Check that we are dealing only with binary classification
       if (classCount (this.ClassNames) > 2)
@@ -1239,6 +1244,35 @@ classdef ClassificationGAM < PredictiveModel
       else
         ## Numeric prior - normalize to sum to 1
         this.Prior = Prior(:)' / sum (Prior);
+      endif
+
+      ## A class with prior 0 is never predicted, so its observations are
+      ## removed; one that costs nothing to misclassify is kept, as MATLAB's
+      ## learner keeps it
+      gret = labelIndices (this.ClassNames, this.Y);
+      [drop, P, msg] = removedClasses (this.Prior, [], ...
+                                       this.ClassNames, gret);
+      if (all (drop))
+        error ("ClassificationGAM: every class has prior probability 0.");
+      elseif (any (drop))
+        if (! isempty (msg))
+          warning ("ClassificationGAM: %s", msg);
+        endif
+        keep = ! drop(gret);
+        used = find (RowsUsed);
+        RowsUsed(used(! keep)) = false;
+        this.X = this.X(keep,:);
+        this.Y = this.Y(keep,:);
+        Wret = Wret(keep);
+        kc = keep(cobs);
+        X = X(kc,:);
+        Y = Y(kc);
+        gY = gY(kc);
+        Wfit = Wfit(kc);
+        cobs = cobs(keep);
+        this.NumObservations = rows (this.X);
+        this.RowsUsed = RowsUsed;
+        this.Prior = P;
       endif
 
       ## A scalar 'Knots', 'Order' or 'DoF' applies to every predictor, which
@@ -4266,3 +4300,31 @@ endfunction
 %! B = ClassificationGAM (X, Y, 'Weights', double (single (w)));
 %! assert_equal (nthargout (2, @predict, A, X), ...
 %!               nthargout (2, @predict, B, X), 1e-8);
+
+## Test a class with prior 0, whose observations are removed before fitting,
+## as MATLAB R2024a and R2026b remove them
+%!warning <ClassificationGAM: the observations of class 'virginica' are removed, its prior probability being 0.> ...
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! Mdl = ClassificationGAM (X, Y, 'Prior', [1, 0]);
+%! assert_equal (Mdl.NumObservations, 50);
+%! assert_equal (Mdl.RowsUsed, [true(50, 1); false(50, 1)]);
+%! assert_equal (Mdl.Prior, [1, 0]);
+%! assert_equal (predict (Mdl, meas([51, 110], 3:4)), ...
+%!               {'versicolor'; 'versicolor'});
+%!test
+%! ## A named class with prior 0 may be absent, having nothing to remove
+%! load fisheriris
+%! X = meas(51:100, 3:4);
+%! Y = species(51:100);
+%! C = {'versicolor', 'virginica'};
+%! Mdl = ClassificationGAM (X, Y, 'ClassNames', C, 'Prior', [1, 0]);
+%! assert_equal (Mdl.ClassNames, {'versicolor'; 'virginica'});
+%! assert_equal (predict (Mdl, meas(51, 3:4)), {'versicolor'});
+%!test
+%! load fisheriris
+%! Mdl = ClassificationGAM (meas(51:150, 3:4), species(51:150), ...
+%!                         'Cost', [0, 1; 0, 0]);
+%! assert_equal (Mdl.NumObservations, 100);
+%! assert_equal (Mdl.Prior, [0.5, 0.5]);

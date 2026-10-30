@@ -71,6 +71,8 @@
 ## of each class, in the order of @qcode{ClassNames}, or the character vector
 ## @qcode{'empirical'} (default) to take the class frequencies, or
 ## @qcode{'uniform'} to give every class the same probability.
+## A class whose prior is 0 is removed from the data before fitting, with a
+## warning, as in MATLAB.
 ##
 ## @item @qcode{'Cost'} @tab A square numeric matrix of misclassification
 ## costs, where @code{Cost(i,j)} is the cost of classifying an observation of

@@ -496,6 +496,15 @@ classdef CompactClassificationNeuralNetwork < PredictiveModel
                                       this.Activations, ...
                                       this.OutputLayerActivation, ...
                                       XC, NumThreads);
+      ## A class removed for its prior of 0 had no output of its own: the
+      ## scores of the classes fitted go back to their places, 0 for it
+      fitted = find (this.Prior > 0);
+      if (numel (fitted) < numel (this.Prior))
+        full = zeros (rows (scores), numel (this.Prior), class (scores));
+        full(:,fitted) = scores;
+        scores = full;
+        labels = reshape (fitted(labels), size (labels));
+      endif
       ## A row missing a predictor, or holding a level the fit did not see,
       ## has no score: a rectified missing value would make one up.  It
       ## takes the class of largest prior, as MATLAB R2024a labels it.

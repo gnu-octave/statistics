@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} {[@var{C}, @var{gY}] =} classOrder (@var{Y}, @var{ClassNames})
+## @deftypefn {Private Function} {[@var{C}, @var{gY}] =} classOrder (@var{Y}, @var{ClassNames}, @var{exempt})
 ## The classes of a response in the order a classifier lays them out, and the
 ## class of each observation.
 ##
@@ -25,11 +25,27 @@
 ## class it leaves out being left out of @var{C}.  Names match the classes as
 ## @code{namedClasses} matches them.  @var{gY} is the index into
 ## @var{C} of each observation, zero for one whose class was left out.
+## @var{exempt}, a logical over @var{ClassNames} and empty by default, marks
+## the classes removed for a prior of 0, which keep their place among the
+## classes though absent from @var{Y}.
 ## @end deftypefn
 
-function [C, gY] = classOrder (Y, ClassNames)
+function [C, gY] = classOrder (Y, ClassNames, exempt = [])
 
   C = uniqueLabels (Y);
+  ## A named class removed for its prior of 0 may be absent from Y; it is
+  ## added to the labels the classes are drawn from, so it keeps its place
+  if (! isempty (ClassNames) && any (exempt))
+    pos = namedClasses (C, ClassNames);
+    absent = (pos(:) == 0) & exempt(:);
+    if (any (absent))
+      if (ischar (ClassNames))
+        C = uniqueLabels (namesAsLabels (Y, ClassNames(absent,:)));
+      else
+        C = uniqueLabels (namesAsLabels (Y, ClassNames(absent)));
+      endif
+    endif
+  endif
   if (! isempty (ClassNames))
     pos = namedClasses (C, ClassNames);
     pos = pos(pos > 0);

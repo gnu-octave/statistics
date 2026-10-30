@@ -18,6 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {Private Function} {@var{F} =} classFrame (@var{X}, @var{Y}, @var{ClassNames}, @var{Prior}, @var{Cost}, @var{Weights}, @var{classname})
 ## @deftypefnx {Private Function} {@var{F} =} classFrame (@dots{}, @var{binary})
+## @deftypefnx {Private Function} {@var{F} =} classFrame (@dots{}, @var{binary}, @var{costRule})
 ##
 ## Resolve the classes, the prior, the cost and the observation weights of a
 ## classifier.
@@ -44,10 +45,15 @@
 ##
 ## @var{classname} names the caller in every error message.
 ##
+## @var{costRule} says what a class whose misclassification costs are all
+## zero does, as MATLAB's learners differ: @qcode{'remove'}, the default, its
+## observations removed like those of a class with prior 0, as the linear
+## and kernel classifiers do; @qcode{'keep'}, as ECOC does; or
+## @qcode{'refuse'}, an error, as the ensemble does.
 ## @end deftypefn
 
 function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
-                         classname, binary = true)
+                         classname, binary = true, costRule = 'remove')
 
   if (! (isnumeric (X) && isreal (X) && ismatrix (X) && ndims (X) == 2))
     error ("%s: invalid values in X.", classname);
@@ -62,8 +68,16 @@ function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
   [gY, gnY, glY] = grp2idx (Y);
 
   ## Keep only the named classes, if any were named.
+  ## A named class with prior 0 is removed below, so it may be absent; so is
+  ## one that costs nothing to misclassify, where the cost removes it too
+  rmCost = [];
+  if (strcmp (costRule, 'remove'))
+    rmCost = Cost;
+  endif
+  exempt = [];
   if (! isempty (ClassNames))
-    [pos, errmsg] = namedClasses (glY, ClassNames);
+    exempt = zeroPriorNames (ClassNames, Prior, rmCost);
+    [pos, errmsg] = namedClasses (glY, ClassNames, exempt);
     if (! isempty (errmsg))
       error ("%s: %s", classname, errmsg);
     endif
@@ -103,7 +117,7 @@ function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
   endif
 
   ## The classes, sorted or in the order ClassNames gives them.
-  [F.ClassNames, gY] = classOrder (F.Y, ClassNames);
+  [F.ClassNames, gY] = classOrder (F.Y, ClassNames, exempt);
   nclasses = classCount (F.ClassNames);
   F.gY = gY;
   [F.n, F.p] = size (F.X);
@@ -135,7 +149,6 @@ function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
     endif
     Prior = Prior(:)' / sum (Prior);
   endif
-  F.Prior = Prior;
 
   if (isempty (Cost))
     Cost = ones (nclasses) - eye (nclasses);
@@ -144,6 +157,36 @@ function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
                    " correspond to the classes in Y."), classname);
   endif
   F.Cost = Cost;
+
+  ## A class with prior 0, or, where COSTRULE says so, one that costs
+  ## nothing to misclassify, is never predicted and weighs nothing, so its
+  ## observations are removed.  Boosting cannot weigh a class whose costs are
+  ## all zero and refuses it, as MATLAB's ensemble does.
+  if (strcmp (costRule, 'refuse') && nclasses > 1 && any (all (Cost == 0, 2)))
+    error ("%s: every row of 'Cost' must hold a positive cost.", classname);
+  endif
+  if (strcmp (costRule, 'remove'))
+    rmCost = Cost;
+  endif
+  [drop, Prior, msg] = removedClasses (Prior, rmCost, F.ClassNames, gY);
+  if (all (drop))
+    error ("%s: every class has prior probability 0.", classname);
+  elseif (any (drop))
+    if (! isempty (msg))
+      warning ("%s: %s", classname, msg);
+    endif
+    keep = ! drop(gY);
+    used = find (RowsUsed);
+    RowsUsed(used(! keep)) = false;
+    F.RowsUsed = RowsUsed;
+    F.X = F.X(keep,:);
+    F.Y = F.Y(keep,:);
+    F.Weights = F.Weights(keep);
+    gY = gY(keep);
+    F.gY = gY;
+    [F.n, F.p] = size (F.X);
+  endif
+  F.Prior = Prior;
 
   ## MATLAB folds the cost matrix into the prior before it weights the
   ## observations: a class that is costlier to misclassify carries more

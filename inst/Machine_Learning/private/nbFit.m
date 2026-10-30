@@ -61,6 +61,9 @@ function [DP, K, S, W, CL] = nbFit (X, gY, k, D, w, Kernel, Support, ...
   if (ischar (D))
     for i = 1:k
       xk = X(gY == i, :);
+      if (isempty (xk))
+        continue;
+      endif
       ## Weighted counts, the weights scaled to the class's size so that the
       ## smoothing weighs as it does without them, as R2024a counts
       wk = w(gY == i);
@@ -93,9 +96,10 @@ function [DP, K, S, W, CL] = nbFit (X, gY, k, D, w, Kernel, Support, ...
       xij = X(idx, j);
       wij = w(idx);
 
+      ## Only a class removed for its prior of 0 holds no observation, and
+      ## its parameters stay empty, as MATLAB leaves them
       if (isempty (xij))
-        error (strcat (classname, ": class", sprintf (" %d", i), ...
-                       " holds no observation."));
+        continue;
       endif
 
       switch (D{j})

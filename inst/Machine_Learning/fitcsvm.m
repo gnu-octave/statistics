@@ -145,6 +145,8 @@
 ## zero weight is left out.  The model's @code{W} keeps the class of the
 ## weights, while every computation runs in double, so @code{Prior} is double
 ## where MATLAB returns single.
+## A class whose prior is 0, or whose misclassification costs are all 0, is
+## removed from the data before fitting, with a warning, as in MATLAB.
 ##
 ## @item @qcode{'BoxConstraint'} @tab A positive scalar that specifies the
 ## upper bound of the Lagrange multipliers, i.e. the parameter C, which is used

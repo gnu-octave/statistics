@@ -193,6 +193,9 @@
 ## costs.  The default is @code{1 - eye (K)}.
 ## @item @qcode{'Prior'} @tab @tab @qcode{'empirical'} (default),
 ## @qcode{'uniform'}, or a vector with one element per class.
+## A class whose prior is 0 is removed from the data before fitting, with a
+## warning, as in MATLAB.
+## A row of misclassification costs with no positive cost is refused.
 ## @item @qcode{'Weights'} @tab @tab A nonnegative single or double vector with
 ## one weight per observation.  The default is uniform.  The model's @code{W}
 ## keeps the class of the weights, while every computation runs in double, so
@@ -1003,3 +1006,17 @@ endfunction
 
 %!error<ClassificationEnsemble: a model formula holds main effects only, so no products, powers or wildcards.> ...
 %! fitcensemble (fceT, 'Species ~ SL*PW')
+
+## A class with prior 0 in the bagged and RUSBoost ensembles, its 50
+## observations removed, as in MATLAB R2024a
+%!warning <the observations of class 'virginica' are removed> ...
+%! load fisheriris
+%! Mdl = fitcensemble (meas, species, 'Method', 'Bag', 'Prior', [0.5, 0.5, 0]);
+%! assert_equal (Mdl.NumObservations, 100);
+%! assert_equal (predict (Mdl, meas([1, 51, 101], :)), ...
+%!               {'setosa'; 'versicolor'; 'versicolor'});
+%!warning <the observations of class 'virginica' are removed> ...
+%! load fisheriris
+%! Mdl = fitcensemble (meas, species, 'Method', 'RUSBoost', ...
+%!                     'Prior', [0.5, 0.5, 0]);
+%! assert_equal (Mdl.NumObservations, 100);

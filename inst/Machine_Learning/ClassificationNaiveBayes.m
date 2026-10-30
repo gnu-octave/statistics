@@ -438,16 +438,17 @@ classdef ClassificationNaiveBayes < PredictiveModel
       this.Prior = P(:)' / sum (P);
       ## The weights follow the prior, so reassigning one re-derives the other.
       ## Weights that were given keep their class in W, computed as double.
+      ## Either way only the rows the model was fitted on carry a weight.
+      used = this.RowsUsed;
+      if (isempty (used))
+        used = true (rows (this.Y), 1);
+      endif
       if (! isempty (this.RawWeights))
-        used = this.RowsUsed;
-        if (isempty (used))
-          used = true (rows (this.Y), 1);
-        endif
         gY = labelIndices (this.ClassNames, this.Y(used,:));
         this.W = cast (priorNormalize (double (this.RawWeights), gY, ...
                                        this.Prior), class (this.RawWeights));
       elseif (! isempty (this.Y))
-        gY = labelIndices (this.ClassNames, this.Y);
+        gY = labelIndices (this.ClassNames, this.Y(used,:));
         keep = gY > 0;
         this.W = priorWeights (this.Prior, gY(keep), sum (keep));
       endif
@@ -631,9 +632,21 @@ classdef ClassificationNaiveBayes < PredictiveModel
       else
         ## The named classes, in the type of the response
         U = uniqueLabels (Yf);
-        [pos, errmsg] = namedClasses (U, ClassNames);
+        ## A named class with prior 0 is removed below, so it may be absent;
+        ## it is added to the labels the classes are drawn from
+        exempt = zeroPriorNames (ClassNames, Prior, []);
+        [pos, errmsg] = namedClasses (U, ClassNames, exempt);
         if (! isempty (errmsg))
           error ("ClassificationNaiveBayes: %s", errmsg);
+        endif
+        absent = (pos(:) == 0);
+        if (any (absent))
+          if (ischar (ClassNames))
+            U = uniqueLabels (namesAsLabels (Yf, ClassNames(absent,:)));
+          else
+            U = uniqueLabels (namesAsLabels (Yf, ClassNames(absent)));
+          endif
+          pos = namedClasses (U, ClassNames);
         endif
         C = U(pos,:);
       endif
@@ -697,6 +710,31 @@ classdef ClassificationNaiveBayes < PredictiveModel
         this.Prior = ones (1, nCls) / nCls;
       else
         this.Prior = Prior;
+      endif
+
+      ## A class with prior 0 is never predicted, so its observations are
+      ## removed; one that costs nothing to misclassify is kept, as MATLAB's
+      ## learner keeps it
+      [drop, P, msg] = removedClasses (this.Prior, [], ...
+                                       this.ClassNames, gY);
+      if (all (drop))
+        error (strcat ("ClassificationNaiveBayes: every class has prior", ...
+                       " probability 0."));
+      elseif (any (drop))
+        if (! isempty (msg))
+          warning ("ClassificationNaiveBayes: %s", msg);
+        endif
+        keep = ! drop(gY);
+        Xf = Xf(keep,:);
+        Yf = Yf(keep,:);
+        gY = gY(keep);
+        ok(ok) = keep;
+        this.RowsUsed = ok;
+        this.NumObservations = rows (Xf);
+        if (! isempty (this.RawWeights))
+          this.RawWeights = this.RawWeights(keep);
+        endif
+        this.Prior = P;
       endif
 
       this.ScoreTransform = ScoreTransform;
@@ -2268,3 +2306,56 @@ endclassdef
 %! assert_equal (nthargout (2, @predict, Mdl2, meas(51,:)), ...
 %!               nthargout (2, @predict, Mdl, meas(51,:)), 1e-15);
 
+## Test a class with prior 0, whose observations are removed before fitting,
+## as MATLAB R2024a and R2026b remove them
+%!warning <ClassificationNaiveBayes: the observations of class 'virginica' are removed, its prior probability being 0.> ...
+%! load fisheriris
+%! X = meas(51:150, 3:4);
+%! Y = species(51:150);
+%! Mdl = ClassificationNaiveBayes (X, Y, 'Prior', [1, 0]);
+%! assert_equal (Mdl.NumObservations, 50);
+%! assert_equal (Mdl.RowsUsed, [true(50, 1); false(50, 1)]);
+%! assert_equal (Mdl.Prior, [1, 0]);
+%! assert_equal (predict (Mdl, meas([51, 110], 3:4)), ...
+%!               {'versicolor'; 'versicolor'});
+%!warning <ClassificationNaiveBayes: the observations of class 'virginica' are removed> ...
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (meas, species, 'Prior', [0.5, 0.5, 0]);
+%! assert_equal (predict (Mdl, meas([1, 51, 101], :)), ...
+%!               {'setosa'; 'versicolor'; 'versicolor'});
+%!test
+%! ## A named class with prior 0 may be absent, having nothing to remove
+%! load fisheriris
+%! X = meas(51:100, 3:4);
+%! Y = species(51:100);
+%! C = {'versicolor', 'virginica'};
+%! Mdl = ClassificationNaiveBayes (X, Y, 'ClassNames', C, 'Prior', [1, 0]);
+%! assert_equal (Mdl.ClassNames, {'versicolor'; 'virginica'});
+%! assert_equal (predict (Mdl, meas(51, 3:4)), {'versicolor'});
+%!warning <ClassificationNaiveBayes: the observations of class 'virginica' are removed> ...
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (meas(51:150, 3:4), species(51:150), ...
+%!                                'Prior', [1, 0]);
+%! assert_equal (Mdl.DistributionParameters(2,:), {[], []});
+%!test
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (meas(51:150, 3:4), species(51:150), ...
+%!                                'Cost', [0, 1; 0, 0]);
+%! assert_equal (Mdl.NumObservations, 100);
+%! assert_equal (Mdl.Prior, [0.5, 0.5]);
+%!test
+%! load fisheriris
+%! Y = string (species(51:100));
+%! C = {'versicolor', 'virginica'};
+%! Mdl = ClassificationNaiveBayes (meas(51:100, 3:4), Y, 'ClassNames', C, ...
+%!                                'Prior', [1, 0]);
+%! assert_equal (char (predict (Mdl, meas(51, 3:4))), 'versicolor');
+%!warning <ClassificationNaiveBayes: the observations of class 'versicolor' are removed> ...
+%! load fisheriris
+%! Mdl = ClassificationNaiveBayes (meas, species, 'Prior', [0.5, 0, 0.5]);
+%! fname = [tempname(), '.mat'];
+%! savemodel (Mdl, fname);
+%! M2 = loadmodel (fname);
+%! delete (fname);
+%! assert_equal (predict (M2, meas([1, 51, 101], :)), ...
+%!               predict (Mdl, meas([1, 51, 101], :)));

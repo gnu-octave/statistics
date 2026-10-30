@@ -558,6 +558,12 @@ classdef CompactClassificationSVM < PredictiveModel
 
       ## Predict labels and scores from new data
       [out, ~, scores] = svmpredict (ones (rows (XC), 1), XC, this.Model, '-q');
+      ## A model fitted on the second class alone, the first removed for its
+      ## prior of 0, holds LIBSVM's single label -1, whose decision value of
+      ## 1 points to that class
+      if (isscalar (this.Model.Label) && this.Model.Label == -1)
+        scores = -scores;
+      endif
 
       ## Expand scores for two classes
       if (classCount (this.ClassNames) == 2)
@@ -685,6 +691,12 @@ classdef CompactClassificationSVM < PredictiveModel
         X = (X - this.Mu) ./ this.Sigma;
       endif
       [~, ~, dec_values_L] = svmpredict (Ypm, X, this.Model, '-q');
+      ## A model fitted on the second class alone, the first removed for its
+      ## prior of 0, holds LIBSVM's single label -1, whose decision value of
+      ## 1 points to that class
+      if (isscalar (this.Model.Label) && this.Model.Label == -1)
+        dec_values_L = -dec_values_L;
+      endif
       m = 2 * Ypm .* dec_values_L;
       ## A one-class model has no second class to measure a margin against,
       ## and R2024a returns NaN for every row, so edge is NaN too.
@@ -858,6 +870,12 @@ classdef CompactClassificationSVM < PredictiveModel
         X = (X - this.Mu) ./ this.Sigma;
       endif
       [~, ~, dec_values_L] = svmpredict (Ypm, X, this.Model, '-q');
+      ## A model fitted on the second class alone, the first removed for its
+      ## prior of 0, holds LIBSVM's single label -1, whose decision value of
+      ## 1 points to that class
+      if (isscalar (this.Model.Label) && this.Model.Label == -1)
+        dec_values_L = -dec_values_L;
+      endif
 
         ## Compute the margin
         margin = Ypm .* dec_values_L;
