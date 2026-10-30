@@ -263,7 +263,7 @@ Read one option out of a statistics options structure.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 7
 statset
@@ -272,7 +272,7 @@ statset
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4475
+# length: 4489
 statistics: options = statset ()
 statistics: options = statset (funcname)
 statistics: options = statset (name, value, ...)
@@ -368,8 +368,9 @@ glmfit, gmdistribution, gpfit, kmeans,
 kmedoids, lasso, lassoglm, lognfit,
 mdscale, mlecov, mlecustom, mvncdf,
 mvtcdf, nbinfit, nlinfit, nnmf, normfit,
-pca, plsregress, ppca, rocmetrics, tsne,
-wblfit, GeneralizedLinearMixedModel, and
+pca, plsregress, ppca, rocmetrics,
+sequentialfs, tsne, wblfit,
+GeneralizedLinearMixedModel, and
 LinearMixedModel.
 
 Any function accepting an "Options" argument also accepts a plain

@@ -286,6 +286,7 @@ Dimensionality Reduction
  relieff
  rica
  rotatefactors
+ sequentialfs
  sparsefilt
  SparseFiltering
  tsne

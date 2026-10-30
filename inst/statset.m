@@ -114,8 +114,9 @@
 ## @code{kmedoids}, @code{lasso}, @code{lassoglm}, @code{lognfit},
 ## @code{mdscale}, @code{mlecov}, @code{mlecustom}, @code{mvncdf},
 ## @code{mvtcdf}, @code{nbinfit}, @code{nlinfit}, @code{nnmf}, @code{normfit},
-## @code{pca}, @code{plsregress}, @code{ppca}, @code{rocmetrics}, @code{tsne},
-## @code{wblfit}, @code{GeneralizedLinearMixedModel}, and
+## @code{pca}, @code{plsregress}, @code{ppca}, @code{rocmetrics},
+## @code{sequentialfs}, @code{tsne}, @code{wblfit},
+## @code{GeneralizedLinearMixedModel}, and
 ## @code{LinearMixedModel}.
 ##
 ## Any function accepting an @qcode{"Options"} argument also accepts a plain
@@ -463,6 +464,13 @@ function options = func_defaults (options, fname)
       options.DerivStep = dstep;
       options.FunValCheck = 'on';
 
+    case 'sequentialfs'
+      options.Display = 'off';
+      options.MaxIter = Inf;
+      options.TolTypeFun = 'rel';
+      options.UseParallel = false;
+      options.UseSubstreams = false;
+
     case 'tsne'
       options.Display = 'off';
       options.MaxIter = 1000;
@@ -573,6 +581,13 @@ endfunction
 %! assert_equal (options.MaxIter, 1000);
 %! assert_equal (options.TolFun, 1e-10);
 %! assert_equal (options.OutputFcn, '');
+
+%!test
+%! options = statset ('sequentialfs');
+%! assert_equal (options.Display, 'off');
+%! assert_equal (options.MaxIter, Inf);
+%! assert_equal (options.TolFun, []);
+%! assert_equal (options.TolTypeFun, 'rel');
 
 %!test
 %! options = statset ('nnmf');

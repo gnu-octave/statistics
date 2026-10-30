@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 39
+# columns: 40
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -1833,6 +1833,136 @@ procrustes
 # elements: 1
 # length: 31
 Rotate a factor-loading matrix.
+
+
+
+# name: <cell-element>
+# type: string
+# elements: 1
+# length: 12
+sequentialfs
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5198
+statistics: tf = sequentialfs (fun, X, y)
+statistics: tf = sequentialfs (fun, X1, ..., XN)
+statistics: tf = sequentialfs (..., name, value)
+statistics: [tf, history] = sequentialfs (...)
+Sequential feature selection.
+
+tf = sequentialfs (fun, X, y) selects the
+columns of X that best predict y, adding one column at a time,
+each time the one that lowers the cross-validated criterion computed by
+fun the most, until no column lowers it enough. tf is a
+logical row vector, true for each selected column of X. By default
+the criterion is estimated by 10-fold cross-validation, on a random
+partition of the rows that is not stratified.
+
+fun is a function handle called as
+criterion = fun (XTRAIN, ytrain, XTEST,
+ytest), where XTRAIN and ytrain are the training rows of
+X, restricted to the candidate columns, and of y, and
+XTEST and ytest the test rows. It returns a real scalar, which
+is typically a loss summed over the test rows: the values fun
+returns for every test set are summed and divided by the total number of
+test rows, so a loss averaged over the test rows must be multiplied by
+their number. Lower values are better.
+
+tf = sequentialfs (fun, X1, ..., XN)
+partitions the rows of every data argument alike, all of which must have
+the same number of rows, at least two, and selects columns of X1
+only. fun is then called with the training parts of all of them
+followed by the test parts, fun (X1TRAIN, ...,
+XNTRAIN, X1TEST, ..., XNTEST). The data arguments
+are the leading arguments up to the first option name.
+
+The following Name-Value pairs are supported:
+
+Name Value
+'CV' How the criterion is validated: a positive
+integer k, greater than 1 and not greater than the number of rows,
+for k-fold cross-validation on a random partition that is not
+stratified; a cvpartition object; 'resubstitution', calling
+fun (X, y, X, y) on all rows and
+dividing by their number; or 'none', calling fun
+(X, y) on all rows and taking its value as it is. The
+default is 10.
+'MCReps' The number of Monte Carlo repetitions of the
+cross-validation, a positive integer, each on a new random partition, the
+criterion being summed over all of them before it is divided by the total
+number of test rows. The default is 1. It is set to 1, with a warning,
+when 'CV' is 'none' or 'resubstitution', or a
+cvpartition object for leave-one-out, resubstitution or a custom
+partition, none of which can be drawn anew.
+'Direction' 'forward', the default, starts from
+no column and adds one at each step; 'backward' starts from all
+columns and removes one at each step.
+'KeepIn' Columns always selected, given as a logical
+vector with one element per column of X or as column indices. The
+default is none.
+'KeepOut' Columns never selected, given as
+'KeepIn'. A column cannot be in both.
+'NFeatures' The number of columns to select, a positive
+integer. The search then goes on until that many columns are selected,
+whatever the criterion and MaxIter. The default selects by the
+criterion alone.
+'NullModel' true to let the selection hold no
+column, in which case fun must accept data arguments with no column;
+the default is false. A forward search then starts by evaluating
+the empty selection, and a backward search may remove the last column.
+'Options' A structure, such as statset
+('sequentialfs') returns, with the fields Display, 'off'
+(the default), 'final' or 'iter'; MaxIter, the
+largest number of steps, Inf by default; TolFun, the
+tolerance on the criterion, 1e-6 for a forward search and 0 for a
+backward search by default; and TolTypeFun, 'rel' (the
+default) or 'abs'. Missing or empty fields take their defaults.
+
+At each step every remaining column is tried and the one giving the
+lowest criterion is taken, the first of them in the order of the columns
+on a tie; a criterion of NaN is never taken over a number. The
+search stops when no column is left, after MaxIter steps, or when
+the new criterion c is greater than c_0 - TolFun (|c_0| +
+sqrt (eps)) for a relative tolerance, or than c_0 - TolFun for an
+absolute one, c_0 being the criterion before the step, so a step
+that leaves the criterion unchanged is taken when TolFun is 0. A
+criterion of NaN on either side never stops the search. The
+first column of a forward search is always added, unless
+'NullModel' or 'KeepIn' gives a starting selection to
+compare it with.
+
+[tf, history] = sequentialfs (...) also returns a
+structure with the fields In, a logical matrix whose row i
+marks the columns selected after step i, and Crit, a row
+vector of the criterion after each step. The starting selection is the
+first step when it is evaluated: always for a backward search, and for a
+forward search when 'KeepIn' or 'NullModel' is given. Both
+fields are empty when nothing is evaluated.
+
+The option names are not case sensitive but must be given in full, where
+MATLAB accepts any shortened name. sequentialfs refuses an
+'NFeatures' of 0, a 'CV' larger than the number of rows,
+a 'NullModel' other than true or false, and a criterion that is
+not a real number, all of which MATLAB accepts. Parallel computation is
+not supported, and the UseParallel, UseSubstreams and
+Streams options are ignored.
+
+See also:
+relieff,
+cvpartition,
+crossval,
+statset,
+stepwiselm
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+Sequential feature selection.
 
 
 
