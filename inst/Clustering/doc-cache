@@ -3378,7 +3378,7 @@ kmeans
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4780
+# length: 4991
 statistics: idx = kmeans (data, k)
 statistics: [idx, centers] = kmeans (data, k)
 statistics: [idx, centers, sumd] = kmeans (data, k)
@@ -3487,6 +3487,9 @@ Otherwise it defaults to 1.
 for each replicate, a non-negative integer. If the maximum change of any
 centroid is less than 0.001, then the replicate terminates even if
 'MaxIter' iterations have not occurred. The default is 100. A
+replicate stopped by 'MaxIter' returns the assignment its last
+centroids were computed from, with the sums of distances to them, as MATLAB
+does, so the centroids are always the means of the returned clusters. A
 value of 0 returns the starting centroids and the assignment to them,
 where MATLAB runs one iteration.
 'Options' A structure, such as statset returns,

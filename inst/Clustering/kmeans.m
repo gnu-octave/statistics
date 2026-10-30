@@ -152,6 +152,9 @@
 ## for each replicate, a non-negative integer.  If the maximum change of any
 ## centroid is less than 0.001, then the replicate terminates even if
 ## @qcode{'MaxIter'} iterations have not occurred.  The default is 100.  A
+## replicate stopped by @qcode{'MaxIter'} returns the assignment its last
+## centroids were computed from, with the sums of distances to them, as MATLAB
+## does, so the centroids are always the means of the returned clusters.  A
 ## value of 0 returns the starting centroids and the assignment to them,
 ## where MATLAB runs one iteration.
 ## @item @qcode{'Options'} @tab A structure, such as @code{statset} returns,
@@ -213,9 +216,6 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
 
   ## Number of samples, counted after the missing rows have been removed
   n_rows = rows (data);
-
-  ## Used for convergence of the centroids
-  err = 1;
 
   ## Anything left over is an unimplemented option, which is ignored with a
   ## warning, a known name given without a value, or an unknown name.
@@ -378,10 +378,6 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
   best         = Inf;
   best_centers = [];
   for rep = 1:replicates
-    ## keep track of the number of data points that change class
-    old_classes = zeros (rows (data), 1);
-    n_changes = -1;
-
     ## check for the 'start' property
     switch (lower (start))
       case 'sample'
@@ -406,14 +402,18 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
         centers = start(:,:,rep);
     endswitch
 
-    ## Run the algorithm
-    iter = 1;
-
-    ## Classify once before the loop; to set sumd, and  if  max_iter == 0
-    ## Compute distances and classify
+    ## Run the algorithm.  Each iteration moves the centroids to the means of
+    ## their clusters and measures every point against them, reassigning the
+    ## points only to go on, so that the centroids, the classes and the sums
+    ## returned belong together, as in MATLAB.  With no iteration, the
+    ## starting centroids are returned with the assignment to them.
     [D, classes, sumd] = update_dist (data, centers, D, k, dist);
-
-    while (err > 0.001 && iter <= max_iter && n_changes != 0)
+    total     = sum (sumd);
+    n_changes = n_rows;
+    converged = false;
+    iter      = 0;
+    while (iter < max_iter)
+      iter++;
       ## Calculate new centroids
       replaced_centroids = [];        ## Used by "emptyaction = singleton"
       for i = 1:k
@@ -452,46 +452,57 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
         endif
       endfor
 
-      ## Compute distances, classes and sums
-      [D, classes, new_sumd] = update_dist (data, centers, D, k, dist);
-      ## calculate the difference in the sum of distances
-      err  = sum (sumd - new_sumd);
-      ## update the current sum of distances
-      sumd = new_sumd;
-      ## compute the number of class changes
-      n_changes = sum (old_classes != classes);
-      old_classes = classes;
+      ## Distances to the new centroids, the sums for the current classes,
+      ## and the change in their total
+      [D, new_classes] = update_dist (data, centers, D, k, dist);
+      for i = 1:k
+        sumd(i) = sum (D(classes == i,i));
+      endfor
+      err   = total - sum (sumd);
+      total = sum (sumd);
 
-      ## display iteration status
+      ## display iteration status: the points moved by the last reassignment
       if (strcmp (display, 'iter'))
-        printf ("%6d\t%6d\t%8d\t%12.3f\n", (iter), 1, ...
-          n_changes, sum (sumd));
+        printf ("%6d\t%6d\t%8d\t%12g\n", iter, 1, n_changes, total);
       endif
-      iter++;
+
+      ## Stop when no point would move or the total barely falls; otherwise
+      ## reassign, unless this was the last iteration allowed
+      n_changes = sum (new_classes != classes);
+      if (n_changes == 0 || err <= 0.001)
+        converged = true;
+        break;
+      endif
+      if (iter < max_iter)
+        classes = new_classes;
+      endif
     endwhile
     ## throw a warning if the algorithm did not converge
-    if (iter > max_iter && err > 0.001 && n_changes != 0)
+    if (! converged)
       warning ("kmeans: failed to converge in %d iterations.", max_iter);
     endif
 
     if (sum (sumd) < sum (best) || isinf (best))
-      best = sumd;
+      best         = sumd;
       best_centers = centers;
+      best_classes = classes;
+      best_D       = D;
     endif
 
     ## display final results
     if (strcmp (display, 'final'))
-      printf ("Replicate %d, %d iterations, total sum of distances = %.3f.\n", ...
+      printf ("Replicate %d, %d iterations, total sum of distances = %g.\n", ...
               rep, iter, sum (sumd));
     endif
   endfor
   centers = best_centers;
-  ## Compute final distances, classes and sums
-  [D, classes, sumd] = update_dist (data, centers, D, k, dist);
+  classes = best_classes;
+  sumd    = best;
+  D       = best_D;
 
   ## display final results
   if (strcmp (display, 'final') || strcmp (display, 'iter'))
-    printf ("Best total sum of distances = %.3f\n", sum (sumd));
+    printf ("Best total sum of distances = %g\n", sum (sumd));
   endif
 
   ## Return with equal size as inputs
@@ -734,6 +745,42 @@ endfunction
 %!                      " 'Start', [1 1; 8 8],", ...
 %!                      " 'Options', statset ('Display', 'final'));"));
 %! assert_equal (strncmp (out, "Replicate 1,", 12), true);
+
+## Stopped by MaxIter, the classes and sums are those the last centroids were
+## computed from; values and display checked against MATLAB R2024a
+%!test
+%! load fisheriris
+%! S = warning ('off', 'all');
+%! [idx, C, sumd] = kmeans (meas, 3, 'Start', meas([1, 51, 101],:), ...
+%!                          'MaxIter', 1);
+%! warning (S);
+%! assert_equal ([sum(idx == 1), sum(idx == 2), sum(idx == 3)], [53, 60, 37]);
+%! assert_equal (sum (sumd), 96.1098007, 1e-7);
+%! assert_equal (C, [mean(meas(idx == 1,:)); mean(meas(idx == 2,:)); ...
+%!                   mean(meas(idx == 3,:))], 1e-12);
+%!test
+%! load fisheriris
+%! S = warning ('off', 'all');
+%! [idx, ~, sumd] = kmeans (meas, 3, 'Start', meas([1, 51, 101],:), ...
+%!                          'MaxIter', 2);
+%! warning (S);
+%! assert_equal ([sum(idx == 1), sum(idx == 2), sum(idx == 3)], [50, 62, 38]);
+%! assert_equal (sum (sumd), 79.3554652, 1e-7);
+%!test
+%! load fisheriris
+%! out = evalc (strcat ("kmeans (meas, 3, 'Start', meas([1, 51, 101],:),", ...
+%!                      " 'Display', 'final');"));
+%! assert_equal (out, ["Replicate 1, 3 iterations, total sum of distances", ...
+%!                     " = 78.8514.\nBest total sum of distances = 78.8514\n"]);
+%!test
+%! load fisheriris
+%! out = evalc (strcat ("kmeans (meas, 3, 'Start', meas([1, 51, 101],:),", ...
+%!                      " 'Display', 'iter');"));
+%! assert_equal (out, ["  iter\t phase\t     num\t         sum\n", ...
+%!                     "     1\t     1\t     150\t     96.1098\n", ...
+%!                     "     2\t     1\t      14\t     79.3555\n", ...
+%!                     "     3\t     1\t       2\t     78.8514\n", ...
+%!                     "Best total sum of distances = 78.8514\n"]);
 
 ## No iteration returns the starting centroids and the assignment to them
 %!test
