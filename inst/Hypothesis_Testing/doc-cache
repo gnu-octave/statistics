@@ -1922,7 +1922,7 @@ friedman
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3127
+# length: 3370
 statistics: p = friedman (x)
 statistics: p = friedman (x, reps)
 statistics: p = friedman (x, reps, displayopt)
@@ -1971,11 +1971,15 @@ block ranks the columns in the same order; without replicates this is the
 usual W = Q / (b (c - 1)). By default the interval inverts the
 noncentral chi-square distribution of Q on c - 1 degrees of
 freedom, taken as Q's distribution under the alternative, which it
-is for many blocks, and bounds the expected value of W,
-(c - 1 + lambda) / Q_max for the noncentrality lambda; the
-lower bound is therefore above zero, W itself averaging 1/b
-where the columns do not differ. Three options after displayopt,
-also an Octave extension, set it:
+is for many blocks, and bounds the concordance beyond chance,
+lambda / Q_max for the noncentrality lambda, which is 0
+where the columns do not differ. W itself includes the agreement
+expected by chance, averaging (c - 1) / Q_max, which is 1/b
+without replicates, where the columns do not differ; the estimate of the
+concordance beyond chance that the interval matches is
+max (W - (c - 1) / Q_max, 0). The bootstrap interval bounds
+W itself. Three options after displayopt, also an Octave
+extension, set the interval:
 
 Name Value
 'Alpha' The significance level of the interval, a

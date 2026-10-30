@@ -72,11 +72,15 @@
 ## usual @math{W = Q / (b (c - 1))}.  By default the interval inverts the
 ## noncentral chi-square distribution of @math{Q} on @math{c - 1} degrees of
 ## freedom, taken as @math{Q}'s distribution under the alternative, which it
-## is for many blocks, and bounds the expected value of @math{W},
-## @math{(c - 1 + lambda) / Q_max} for the noncentrality @math{lambda}; the
-## lower bound is therefore above zero, @math{W} itself averaging @math{1/b}
-## where the columns do not differ.  Three options after @var{displayopt},
-## also an Octave extension, set it:
+## is for many blocks, and bounds the concordance beyond chance,
+## @math{lambda / Q_max} for the noncentrality @math{lambda}, which is 0
+## where the columns do not differ.  @math{W} itself includes the agreement
+## expected by chance, averaging @math{(c - 1) / Q_max}, which is @math{1/b}
+## without replicates, where the columns do not differ; the estimate of the
+## concordance beyond chance that the interval matches is
+## @code{max (W - (c - 1) / Q_max, 0)}.  The bootstrap interval bounds
+## @math{W} itself.  Three options after @var{displayopt}, also an Octave
+## extension, set the interval:
 ##
 ## @multitable @columnfractions 0.32 0.66
 ## @headitem @var{Name} @tab @var{Value}
@@ -228,12 +232,12 @@ function [p, tbl, stats] = friedman (x, reps, displayopt, varargin)
     stats.meanranks = mean (m);
     stats.sigma = sqrt (sigmasq);
     ## Kendall's W, Q over the value it takes under complete concordance,
-    ## and its interval, which bounds the expected value of W
+    ## and its interval, which bounds the concordance beyond chance, the
+    ## noncentrality over Qmax
     qmax = r * reps ^ 2 * (c ^ 2 - 1) / (reps * c + 1);
     stats.KendallsW = chi_r / qmax;
     if (strcmpi (citype, 'exact'))
-      stats.KendallsWCI = min ((__ncx2bounds__ (chi_r, c - 1, alpha) ...
-                                + c - 1) / qmax, 1);
+      stats.KendallsWCI = min (__ncx2bounds__ (chi_r, c - 1, alpha) / qmax, 1);
     else
       ## Each block as one row, its replicates of a column side by side
       B = zeros (r, reps * c);
@@ -415,15 +419,19 @@ endfunction
 %! [~, ~, stats] = friedman (x, 1, 'off');
 %! assert_equal (stats.KendallsW, 0.02046783625730994, -1e-13);
 %! ## Q falls below the upper 2.5% point of the central distribution, so the
-%! ## lower bound is the expected W of no effect, (c - 1) / (b (c - 1))
-%! assert_equal (stats.KendallsWCI(1), 1 / 6, -1e-14);
+%! ## concordance beyond chance may be 0
+%! assert_equal (stats.KendallsWCI(1), 0);
+%! assert_equal (stats.KendallsWCI(2), 0.0906309740164431, -1e-10);
 %!test
 %! x = [1, 2, 3, 4; 1, 3, 2, 4; 2, 1, 3, 4; 1, 2, 4, 3; 1, 2, 3, 4];
 %! [~, tbl, stats] = friedman (x, 1, 'off');
 %! assert_equal (stats.KendallsW, 0.776, -1e-14);
-%! lambda = stats.KendallsWCI(1) * 15 - 3;
+%! lambda = stats.KendallsWCI(1) * 15;
 %! assert_equal (ncx2cdf (tbl{2,5}, 3, lambda), 0.975, -1e-10);
 %! assert_equal (stats.KendallsWCI(2), 1);
+%! ## The estimate of the concordance beyond chance lies within it
+%! w = stats.KendallsW - 3 / 15;
+%! assert_equal (w > stats.KendallsWCI(1) && w < stats.KendallsWCI(2), true);
 %!test
 %! load popcorn;
 %! [~, tbl, stats] = friedman (popcorn, 3, 'off');
