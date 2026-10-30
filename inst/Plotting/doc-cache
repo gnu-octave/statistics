@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 179
+# columns: 180
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -333,6 +333,56 @@ rotatefactors
 # elements: 1
 # length: 45
 Create a biplot of the coefficients in coefs.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 15
+blandAltmanPlot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1319
+statistics: blandAltmanPlot (X, Y)
+statistics: blandAltmanPlot (ax, X, Y)
+statistics: blandAltmanPlot (..., Name, Value)
+statistics: H = blandAltmanPlot (...)
+Bland-Altman plot of the agreement between two measurement methods.
+
+blandAltmanPlot (X, Y) draws, for each subject measured
+by both methods, the difference X - Y against the mean
+of the two measurements, with a solid line at the bias, the mean
+difference, dashed lines at the limits of agreement, and dotted lines at
+the bounds of the confidence interval of each. limitsOfAgreement
+computes them, and the options it takes, 'Multiplier' and
+'Alpha', are passed on to it, as are X and Y, whose
+requirements it states. A pattern in the points, the differences growing
+with the mean for instance, is a sign that the limits, which assume one
+spread of differences throughout, do not describe the methods well.
+
+blandAltmanPlot (ax, ...) draws into the axes ax
+rather than the current axes.
+
+H = blandAltmanPlot (...) returns the graphics objects
+drawn, in a row vector: the points, the lines at the bias, the lower limit
+and the upper limit, and the dotted pairs of lines of the intervals of the
+bias, the lower limit and the upper limit, each pair one line object. Each
+carries a DisplayName, so legend labels them.
+
+See also:
+limitsOfAgreement,
+gardnerAltmanPlot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 67
+Bland-Altman plot of the agreement between two measurement methods.
 
 
 

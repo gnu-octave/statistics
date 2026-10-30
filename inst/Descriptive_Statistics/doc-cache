@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 23
+# columns: 26
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -123,6 +123,122 @@ Vol. 52, 1998, pp 119-126
 # elements: 1
 # length: 41
 Confidence level of multinomial portions.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+cohenKappa
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3875
+statistics: kappa = cohenKappa (x, y)
+statistics: kappa = cohenKappa (T)
+statistics: kappa = cohenKappa (..., name, value)
+statistics: [kappa, ci] = cohenKappa (...)
+statistics: [kappa, ci, stats] = cohenKappa (...)
+Cohen's kappa, the agreement between two raters beyond chance.
+
+kappa = cohenKappa (x, y) returns Cohen's kappa
+for two raters who each assigned the same subjects to categories, the
+ratings of the first in the vector x and of the second in y.
+The ratings may be numeric or logical, categorical, or text: a character
+matrix with one rating per row, a cell array of character vectors, or a
+string array, the two raters' of the same kind. A subject whose rating by
+either rater is missing, NaN, an undefined category, an empty text
+or a missing string, is left out.
+
+kappa = cohenKappa (T) takes the agreement table
+instead, a square matrix of counts whose element T(i,j) is
+the number of subjects the first rater assigned to category i and
+the second to category j.
+
+With po the proportion of subjects on whom the raters agree and
+pe the proportion expected by chance from each rater's own
+frequencies of the categories,
+$$ \kappa = \frac{p_o - p_e}{1 - p_e}, $$
+1 for perfect agreement, 0 for agreement no better than chance, and
+negative for less. Weighted kappa counts partial agreement between
+ordered categories, weighting each pair of categories i and
+j by w(i,j), 1 when they are the same, in both po
+and pe.
+
+The following Name-Value pairs are supported:
+
+Name Value
+'Weights' 'none' (default), unweighted kappa;
+'linear', w(i,j) = 1 - abs (i - j) / (c - 1);
+'quadratic', w(i,j) = 1 - (i - j)^2 / (c - 1)^2, for
+c categories in their order; or a c-by-c matrix of
+agreement weights between 0 and 1, with ones on its diagonal.
+'Categories' The categories, in their order: numeric
+for numeric ratings, text for text or categorical ratings. The default is
+the sorted values of numeric ratings, the categories of categorical
+ratings in their own order, unused ones included, and the sorted texts of
+text ratings. A category neither rater used counts towards c
+and spaces the others: placed between used categories it changes linear
+and quadratic kappa, placed after them it does not. Not accepted with
+T, whose rows and columns are the categories.
+'Alpha' The significance level of the confidence
+interval, a scalar in the range (0,1). The default is
+0.05.
+
+[kappa, ci] = cohenKappa (...) also returns the
+100 (1 - alpha) percent confidence interval of kappa, from its
+large-sample standard error (Fleiss, Cohen and Everitt, 1969), clipped to
+[-1, 1].
+
+[kappa, ci, stats] = cohenKappa (...) also
+returns a structure with the fields
+
+po the observed agreement, weighted if weights are
+given
+pe the agreement expected by chance
+se the standard error of kappa that ci is based
+on
+zval the statistic of the test that kappa is 0, kappa
+over its standard error when there is no agreement beyond chance
+p the two-sided p-value of that test
+n the number of subjects
+table the agreement table
+categories the categories, a numeric column or a cell
+array of character vectors
+weights the matrix of weights used
+
+Kappa is undefined when chance alone predicts complete agreement, as when
+both raters use a single category, and such ratings are refused.
+Agreement among more than two raters is measured by fleissKappa.
+MATLAB has no Cohen's kappa, so cohenKappa is specific to Octave.
+
+References:
+
+J. Cohen. A coefficient of agreement for nominal scales.
+Educational and Psychological Measurement, 20(1):37--46, 1960.
+
+J. Cohen. Weighted kappa: nominal scale agreement with provision for
+scaled disagreement or partial credit. Psychological Bulletin,
+70(4):213--220, 1968.
+
+J. L. Fleiss, J. Cohen and B. S. Everitt. Large sample standard errors of
+kappa and weighted kappa. Psychological Bulletin, 72(5):323--327,
+1969.
+
+See also:
+fleissKappa,
+crosstab,
+limitsOfAgreement
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+Cohen's kappa, the agreement between two raters beyond chance.
 
 
 
@@ -343,6 +459,107 @@ ecdfhist
 # elements: 1
 # length: 58
 Empirical (Kaplan-Meier) cumulative distribution function.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+fleissKappa
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3295
+statistics: kappa = fleissKappa (X)
+statistics: kappa = fleissKappa (X, name, value)
+statistics: [kappa, stats] = fleissKappa (...)
+Fleiss' kappa, the agreement among several raters beyond chance.
+
+kappa = fleissKappa (X) returns Fleiss' kappa for
+m raters who each assigned the same n subjects to
+categories, X holding one row per subject and one column per rater.
+The ratings may be numeric or logical, categorical, or text in a cell array
+of character vectors or a string array. A subject with a missing rating,
+NaN, an undefined category, an empty text or a missing string, is
+left out, every subject having to be rated by all m raters.
+
+With N(i,j) the number of raters who put subject i in
+category j, p(j) the proportion of all ratings in category
+j, Pbar the mean over the subjects of
+(sum (N(i,:) .^ 2) - m) / (m * (m - 1)), the proportion of pairs
+of raters who agree, and Pe = sum (p .^ 2),
+$$ \kappa = \frac{\bar P - P_e}{1 - P_e}, $$
+1 for perfect agreement and 0 for agreement no better than chance. With
+two raters it is Scott's pi, not Cohen's kappa, chance being estimated
+from the ratings of all raters together; cohenKappa measures the
+agreement of two raters from their own frequencies.
+
+The following Name-Value pairs are supported:
+
+Name Value
+'Categories' The categories: numeric for numeric
+ratings, text for text or categorical ratings. The default is the sorted
+values of numeric ratings, the categories of categorical ratings, unused
+ones included, and the sorted texts of text ratings. A category no rater
+used has a kappa of NaN in stats.
+'Exact' false (default) for Fleiss' kappa, or
+true for the variant of Conger (1980), which takes each rater's own
+frequencies into account and equals Cohen's kappa for two raters. It has
+no test, and stats then holds NaN for its statistic and
+p-value.
+
+[kappa, stats] = fleissKappa (...) also returns a
+structure with the fields
+
+po the observed agreement Pbar
+pe the agreement expected by chance
+se the standard error of kappa when there is no
+agreement beyond chance (Fleiss, Nee and Landis, 1979)
+zval the statistic of the test that kappa is 0,
+kappa / se
+p the two-sided p-value of that test
+n the number of subjects
+raters the number of raters m
+counts the n-by-c matrix N
+categories the categories, a numeric column or a cell
+array of character vectors
+categorykappa the kappa of each category, the agreement
+on whether a subject belongs to it
+categoryzval the statistic of the test that each
+category's kappa is 0
+categoryp the two-sided p-value of that test
+
+No confidence interval is given, there being no standard large-sample
+standard error for kappa away from 0. Kappa is undefined when chance
+alone predicts complete agreement, as when every rating falls in one
+category, and such ratings are refused. MATLAB has no Fleiss' kappa, so
+fleissKappa is specific to Octave.
+
+References:
+
+J. L. Fleiss. Measuring nominal scale agreement among many raters.
+Psychological Bulletin, 76(5):378--382, 1971.
+
+J. L. Fleiss, J. C. M. Nee and J. R. Landis. Large sample variance of
+kappa in the case of different sets of raters. Psychological
+Bulletin, 86(5):974--977, 1979.
+
+A. J. Conger. Integration and generalization of kappas for multiple
+raters. Psychological Bulletin, 88(2):322--328, 1980.
+
+See also:
+cohenKappa,
+friedman
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 64
+Fleiss' kappa, the agreement among several raters beyond chance.
 
 
 
@@ -795,6 +1012,84 @@ ecdf
 # elements: 1
 # length: 34
 Kernel smoothing density estimate.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+limitsOfAgreement
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2423
+statistics: LoA = limitsOfAgreement (X, Y)
+statistics: LoA = limitsOfAgreement (X, Y, name, value)
+statistics: [LoA, stats] = limitsOfAgreement (...)
+Bland-Altman limits of agreement between two measurement methods.
+
+LoA = limitsOfAgreement (X, Y) compares two
+methods that measured the same subjects, the measurements of the first in
+the vector X and of the second, in the same order, in Y. With
+d = X - Y the differences, dbar their mean and
+s their standard deviation, the bias of the first method against
+the second is dbar and the limits of agreement are
+dbar - 1.96 * s and dbar + 1.96 * s, between which about 95%
+of the differences between the methods fall when the differences are
+normal. Two methods
+agree well enough to be used in place of one another when the limits are
+too close to matter in practice, a judgement the data cannot make.
+
+LoA is a table with the rows Bias, LowerLimit and
+UpperLimit and the variables Estimate and
+ConfidenceIntervals, each row's confidence interval at the level
+100 (1 - alpha) percent: dbar + [-1, 1] * t * s / sqrt (n)
+for the bias and [-1, 1] * t * sqrt (3 * s^2 / n) about each limit,
+t being the 1 - alpha / 2 quantile of Student's t
+distribution on n - 1 degrees of freedom and n the number of
+subjects (Bland and Altman, 1986). X and Y are vectors of
+type double or single, of the same length, and a subject with a missing
+value (NaN) in either is left out. Where either is single, so are
+the results.
+
+The following Name-Value pairs are supported:
+
+Name Value
+'Multiplier' The number of standard deviations from
+the bias to each limit, a positive scalar. The default is 1.96, which
+Bland and Altman use.
+'Alpha' The significance level of the confidence
+intervals, a scalar in the range (0,1). The default is
+0.05.
+
+[LoA, stats] = limitsOfAgreement (...) also returns
+a structure with the fields sd, the standard deviation of the
+differences, n, the number of subjects, differences and
+means, the difference and the mean of the two measurements of each
+subject, which blandAltmanPlot draws.
+
+The bias with its interval is the paired mean difference of
+meanEffectSize. MATLAB has no limits of agreement, so
+limitsOfAgreement is specific to Octave.
+
+Reference: J. M. Bland and D. G. Altman. Statistical methods for
+assessing agreement between two methods of clinical measurement.
+The Lancet, 327(8476):307--310, 1986.
+
+See also:
+blandAltmanPlot,
+meanEffectSize,
+cohenKappa
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 65
+Bland-Altman limits of agreement between two measurement methods.
 
 
 

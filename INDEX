@@ -2,14 +2,17 @@ statistics >> Statistics
 Descriptive Statistics
  cdfcalc
  cl_multinom
+ cohenKappa
  corr
  dcov
  ecdf
+ fleissKappa
  geomean
  grpstats
  harmmean
  jackknife
  ksdensity
+ limitsOfAgreement
  mvksdensity
  nancov
  nanmax
@@ -471,6 +474,7 @@ Plotting
  bar3
  bar3h
  biplot
+ blandAltmanPlot
  boxchart
  boxplot
  cdfplot
