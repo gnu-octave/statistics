@@ -166,8 +166,10 @@
 ## @itemize
 ## @item
 ## @var{varnames} must be a cell array of strings with each element containing a
-## factor name for each column of @var{GROUP}.  By default (if not parsed as
-## optional argument), @var{varnames} are "X1","X2","X3", etc.
+## factor name for each column of @var{GROUP}, or a character matrix with one
+## name per row.  By default (if not parsed as optional argument),
+## @var{varnames} are "X1","X2","X3", etc.  @var{stats}.varnames holds them
+## as a column.
 ## @end itemize
 ##
 ## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "alpha", @var{alpha})}
@@ -460,12 +462,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           error (strcat ("anovan: all variable names must", ...
                          " be character or character arrays."));
         endif
-      elseif (ischar (VARNAMES))
-        nvarnames = 1;
-        VARNAMES = {VARNAMES};
-      elseif (isstring (VARNAMES))
-        nvarnames = 1;
-        VARNAMES = {char(VARNAMES)};
+      elseif (ischar (VARNAMES) || isstring (VARNAMES))
+        ## One name per row of a character matrix, as in MATLAB
+        VARNAMES = cellstr (VARNAMES);
+        nvarnames = numel (VARNAMES);
       else
         error (strcat ("anovan: varnames is not of a valid type.", ...
                        " Must be a cell array of character arrays,", ...
@@ -479,6 +479,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       error (strcat ("anovan: number of variable names is not equal", ...
                      " to the number of grouping variables."));
     endif
+    ## A column whatever shape the names came in, as MATLAB returns them
+    VARNAMES = VARNAMES(:);
 
     ## Evaluate random argument (if applicable)
     if (! isempty (RANDOM))
@@ -2547,7 +2549,7 @@ endfunction
 %! [~, tbl, s] = anovan (y, {A, B}, 'model', 'full', 'random', 2, ...
 %!                       'display', 'off');
 %! assert_equal (tbl(2:4, 1), {'X1'; 'X2'; 'X1:X2'});
-%! assert_equal (s.varnames, {'X1', 'X2'});
+%! assert_equal (s.varnames, {'X1'; 'X2'});
 %! assert_equal (any (cellfun (@(t) any (t == "'"), s.txtems)), false);
 %! assert_equal (any (cellfun (@(t) any (t == "'"), s.txtdenom)), false);
 
@@ -2567,3 +2569,20 @@ endfunction
 %! end_unwind_protect
 %! assert_equal (! isempty (strfind (txt, "X2'")), true);
 %! assert_equal (! isempty (strfind (txt, "X1:X2'")), true);
+
+## Test the shape of stats.varnames, checked against MATLAB R2024a
+%!test
+%! y = [1, 2, 3, 4, 5, 6, 7, 8.5]';
+%! g = {[1, 1, 2, 2, 1, 1, 2, 2]', [1, 2, 1, 2, 1, 2, 1, 2]'};
+%! [~, ~, s] = anovan (y, g, 'display', 'off');
+%! assert_equal (s.varnames, {'X1'; 'X2'});
+%!test
+%! y = [1, 2, 3, 4, 5, 6, 7, 8.5]';
+%! g = {[1, 1, 2, 2, 1, 1, 2, 2]', [1, 2, 1, 2, 1, 2, 1, 2]'};
+%! [~, ~, s] = anovan (y, g, 'display', 'off', 'varnames', {'A', 'B'});
+%! assert_equal (s.varnames, {'A'; 'B'});
+%!test
+%! y = [1, 2, 3, 4, 5, 6, 7, 8.5]';
+%! g = {[1, 1, 2, 2, 1, 1, 2, 2]', [1, 2, 1, 2, 1, 2, 1, 2]'};
+%! [~, ~, s] = anovan (y, g, 'display', 'off', 'varnames', ['A'; 'B']);
+%! assert_equal (s.varnames, {'A'; 'B'});

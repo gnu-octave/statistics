@@ -924,7 +924,7 @@ anovan
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 10274
+# length: 10358
 statistics: p = anovan (Y, GROUP)
 statistics: p = anovan (Y, GROUP, name, value)
 statistics: [p, atab] = anovan (...)
@@ -1035,8 +1035,10 @@ for its lower powers but not for its higher ones.
 [...] = anovan (Y, GROUP, "varnames", varnames)
 
 varnames must be a cell array of strings with each element containing a
-factor name for each column of GROUP. By default (if not parsed as
-optional argument), varnames are "X1","X2","X3", etc.
+factor name for each column of GROUP, or a character matrix with one
+name per row. By default (if not parsed as optional argument),
+varnames are "X1","X2","X3", etc. stats.varnames holds them
+as a column.
 
 [...] = anovan (Y, GROUP, "alpha", alpha)
 
