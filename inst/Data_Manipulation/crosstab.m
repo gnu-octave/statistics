@@ -20,7 +20,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{t} =} crosstab (@var{x1}, @var{x2})
+## @deftypefn  {statistics} {@var{t} =} crosstab (@var{x1})
+## @deftypefnx {statistics} {@var{t} =} crosstab (@var{x1}, @var{x2})
 ## @deftypefnx {statistics} {@var{t} =} crosstab (@var{x1}, @dots{}, @var{xn})
 ## @deftypefnx {statistics} {[@var{t}, @var{chisq}, @var{p}, @var{labels}] =} crosstab (@dots{})
 ## @deftypefnx {statistics} {[@dots{}] =} crosstab (@dots{}, @var{Name}, @var{Value})
@@ -57,6 +58,10 @@
 ## @var{chisq}, its p-value @var{p} and a cell array @var{labels}, containing
 ## the labels of each input argument.
 ##
+## With a single input, @var{t} is a column holding the count of each group,
+## and @var{chisq} and @var{p} are @code{NaN}, there being no second variable
+## to test independence against.  A char row is a single observation.
+##
 ## A categorical input has a row or column for every one of its categories,
 ## an unused one included, holding zeros.  The chi-square statistic and its
 ## p-value are computed over the rows and columns that hold observations,
@@ -71,20 +76,20 @@
 function [t, chisq, p, labels] = crosstab (varargin)
 
   ## check input
-  if (nargin < 2)
+  if (nargin < 1)
     print_usage ();
   endif
 
-  ## Trailing Name-Value pairs start at the first text, from the third input
+  ## Trailing Name-Value pairs start at the first text, from the second input
   ## on, that is the option name or its short form, case free; any other text
   ## is data.
   optnames = {"IncludeMissingGroups", "IncludeMissing"};
   isopt = @(s) ischar (s) && isrow (s) && any (strcmpi (s, optnames));
   nvars = nargin;
   incmissing = false;
-  k = find (cellfun (isopt, varargin(3:end)), 1);
+  k = find (cellfun (isopt, varargin(2:end)), 1);
   if (! isempty (k))
-    nvars = k + 1;
+    nvars = k;
     if (mod (nargin - nvars, 2) != 0)
       error ("crosstab: optional arguments must be Name-Value pairs.");
     endif
@@ -179,7 +184,8 @@ function [t, chisq, p, labels] = crosstab (varargin)
     labels = {};
   endif
 
-  t = zeros (reshape_format);
+  ## A single input gives a column, not a square matrix
+  t = zeros ([reshape_format, 1]);
 
   ## Main logic:
   ## For each combination of x1, x2, ... xn, search in unique elements stored
@@ -215,7 +221,7 @@ function [t, chisq, p, labels] = crosstab (varargin)
       keep{d} = find (tot(:) > 0);
     endfor
     tt = t(keep{:});
-    if (isscalar (tt) || isempty (tt))
+    if (nvars == 1 || isscalar (tt) || isempty (tt))
       chisq = NaN;
       p = NaN;
     else
@@ -249,7 +255,6 @@ endfunction
 
 ## Test input validation
 %!error crosstab ()
-%!error crosstab (1)
 %!error <crosstab: x1, x2 ... xn must be vectors.> crosstab (ones (2), [1 1])
 %!error <crosstab: x1, x2 ... xn must be vectors.> crosstab ([1 1], ones (2))
 %!error <x1, x2 .* must be vectors of the same length> crosstab ([1], [1 2])
@@ -555,6 +560,45 @@ endfunction
 %! assert_equal (t, [2 0 0; 0 1 0; 0 0 1]);
 %! assert_equal (chisq, 8, 1e-12);
 %! assert_equal (labels, {'1', '-1'; '2', '0.5'; '10', '2'});
+
+## Test a single input
+%!test
+%! [t, chisq, p, labels] = crosstab ([1 2 NaN 1 2]);
+%! assert_equal (t, [2; 2]);
+%! assert_equal (chisq, NaN);
+%! assert_equal (p, NaN);
+%! assert_equal (labels, {'1'; '2'});
+%!test
+%! [t, chisq, p, labels] = crosstab ([1 1 2 2 2 3]');
+%! assert_equal (t, [2; 3; 1]);
+%! assert_equal (chisq, NaN);
+%! assert_equal (p, NaN);
+%! assert_equal (labels, {'1'; '2'; '3'});
+%!test
+%! [t, chisq, p, labels] = crosstab (1);
+%! assert_equal (t, 1);
+%! assert_equal (chisq, NaN);
+%! assert_equal (labels, {'1'});
+%!test
+%! [t, ~, ~, labels] = crosstab (NaN);
+%! assert_equal (t, zeros (0, 1));
+%! assert_equal (labels, cell (0, 1));
+%!test
+%! [t, ~, ~, labels] = crosstab ('abca');
+%! assert_equal (t, 1);
+%! assert_equal (labels, {'abca'});
+%!test
+%! [t, ~, ~, labels] = crosstab (['ab'; 'cd'; 'ab']);
+%! assert_equal (t, [2; 1]);
+%! assert_equal (labels, {'ab'; 'cd'});
+%!test
+%! c = categorical ({'a'; 'b'; 'a'}, {'a', 'b', 'c'});
+%! [t, ~, ~, labels] = crosstab (c);
+%! assert_equal (t, [2; 1; 0]);
+%! assert_equal (labels, {'a'; 'b'; 'c'});
+%!test
+%! t = crosstab ([1 2 NaN 1 2], 'IncludeMissingGroups', true);
+%! assert_equal (t, [2; 2; 1]);
 
 ## Test IncludeMissingGroups
 %!test
