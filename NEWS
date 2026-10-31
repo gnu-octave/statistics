@@ -79,3 +79,154 @@
     vectors (#529); a matrix response holds counts, one column per category,
     with new options 'interactions', 'weights', 'iterationlimit' and
     'tolerance', as in MATLAB.
+
+ Summary of important user-visible changes for statistics 2.1.1:
+-------------------------------------------------------------------
+
+ Important Notice: lassoglm divides its loss by the total number of binomial
+                   trials, as MATLAB does, so a fit with more than one trial
+                   per row gives different coefficients at a given Lambda.
+
+ Backwards incompatible improvements:
+ ====================================
+
+ ** anovan:
+    stats.varnames is a column, as in MATLAB, where it kept the shape the
+    names were given in and the default names were a row.
+
+ ** friedman:
+    KendallsWCI bounds the concordance beyond chance, which is 0 where the
+    columns do not differ, where it bounded the expected value of Kendall's
+    W and could exclude W itself; KendallsW and the bootstrap interval are
+    unchanged.
+
+ ** lasso, lassoglm:
+    'Weights' has one element per row of X, as given; a vector already
+    shortened to the rows without NaN, and integer, logical, complex or
+    infinite weights, raise an error (#534).
+
+ ** lassoglm:
+    the loss is divided by the total number of binomial trials, as in
+    MATLAB, so a fit with more than one trial per row gives different
+    coefficients at a given Lambda; 'Size' is renamed 'BinomialSize', as in
+    fitglm, and 'Size' stays as an alias.
+
+ New functions and methods:
+ ==========================
+
+ ** cohenKappa, fleissKappa:
+    agreement between two raters, unweighted or weighted, with a confidence
+    interval and a test, and among several raters.  MATLAB has neither.
+
+ ** fitSVMPosterior, fitPosterior:
+    fit the transformation from a two-class SVM's scores to posterior
+    probabilities, a sigmoid, a step function for separated classes or a
+    constant, as in MATLAB; predict then returns posterior probabilities.
+
+ ** limitsOfAgreement, blandAltmanPlot:
+    the Bland-Altman limits of agreement between two measurement methods,
+    as numbers and as a plot.  MATLAB has neither.
+
+ ** relieff:
+    ranks predictors by importance with ReliefF for classification and
+    RReliefF for regression, as in MATLAB.
+
+ ** rjtest:
+    the Ryan-Joiner test of normality, as in MATLAB R2026b, with p-values
+    from Ryan and Joiner's approximation or by Monte Carlo simulation.
+
+ ** sequentialfs:
+    selects predictors by forward or backward sequential search on a
+    cross-validated criterion, as in MATLAB; statset ('sequentialfs') gives
+    its default options.
+
+ Bug fixes:
+ ==========
+
+ ** fitcknn, fitcnb:
+    a class with prior 0 could be predicted by fitcknn, its observations
+    still counted as neighbours, and made fitcnb fail, saying its data had
+    zero variance.
+
+ ** fitgmdist:
+    on convergence, returned the parameters of one step beyond those whose
+    likelihood it reported, and a 'MaxIter' of 0 raised an error; it
+    returns the parameters of the reported likelihood, as MATLAB does.
+
+ ** glmfit:
+    ran one iteration fewer than MATLAB for a given 'MaxIter', which changed
+    the coefficients wherever the limit was reached; a 'MaxIter' of 0,
+    returning the first weighted fit, is accepted.
+
+ ** isoutlier:
+    a 'ThresholdFactor' of 0 is accepted, as documented (#536); an integer
+    factor gave thresholds rounded to integers and a single one single
+    thresholds; a NaN, logical, text or complex factor raises an error, as
+    in MATLAB, where it was taken.
+
+ ** kmeans:
+    stopped by 'MaxIter', returned centroids that were not the means of the
+    returned clusters, and the 'final' and 'iter' displays counted one
+    iteration too many.
+
+ ** kmedoids:
+    with 'Algorithm', 'pam', took one swap per iteration where MATLAB gives
+    every medoid in turn its best swap, so it needed more iterations and
+    labelled the clusters in another order; a 'MaxIter' of 0 returns the
+    starting medoids, where it made one pass.
+
+ ** lasso, lassoglm:
+    a full weight vector raised an error whenever X or Y held NaN; the
+    weights of dropped rows are dropped with them, and lassoglm takes a NaN
+    weight as a missing observation, as MATLAB does (#534).
+
+ ** lassoglm:
+    hung when every response was at the edge of its range, all failures or
+    all successes for 'binomial' and all zeros for 'poisson'; B is zero, as
+    in MATLAB.  A 'Size' vector of any length was taken, and the wrong
+    number of trials used.
+
+ ** nnmf, tsne:
+    a 'MaxIter' of 0 raised an error; they return the starting point with
+    its residual or loss.
+
+ Improvements:
+ =============
+
+ ** anovan:
+    'varnames' is taken as a character matrix with one name per row, as in
+    MATLAB.
+
+ ** crosstab:
+    'IncludeMissingGroups' counts missing values as a group of their own,
+    as in MATLAB (#535); a single input gives a column of counts.
+
+ ** fitcsvm, fitctree, fitcknn, fitcnb, fitcnet, fitcgam, fitcensemble,
+    fitcecoc, fitclinear, fitckernel:
+    a class with prior 0 is removed from the data before fitting, with a
+    warning, as in MATLAB, and in fitcsvm, fitctree, fitclinear and
+    fitckernel also one whose misclassification costs are all 0;
+    NumObservations, RowsUsed and cross-validation count the rows kept.
+    fitcdiscr keeps such a class, as MATLAB does.
+
+ ** fitcsvm, fitcensemble, fitcecoc, fitclinear, fitckernel:
+    'Cost' is taken as a structure with fields ClassNames and
+    ClassificationCosts, as in MATLAB and as the other classifiers already
+    did.
+
+ ** kmeans:
+    'Options' is taken as in MATLAB, where it was ignored with a warning; a
+    'MaxIter' of 0 returns the starting centroids.
+
+ ** lasso, lassoglm:
+    a negative or non-integer 'MaxIter' raises an error, where it was taken;
+    a 'MaxIter' of 0 returns the starting point, every coefficient 0.
+
+ ** lassoglm:
+    a binomial Y is taken as a two-column matrix of successes and trials, a
+    logical vector or a two-category categorical vector, as in MATLAB, and a
+    logical or two-category categorical Y for 'normal' and 'poisson' too.
+
+ ** statset:
+    a 'TolFun', 'MaxIter' or 'MaxFunEvals' of 0 is accepted, as in MATLAB;
+    a non-integer count raises an error.
