@@ -124,7 +124,11 @@
 ## from 0 to 1, specifying the critical @math{alpha}-value of the respective
 ## test, and it is 0.05 by default.  For the @qcode{'quartiles'} method, the
 ## detection threshold factor replaces the number of interquartile ranges, which
-## is 1.5 by default.
+## is 1.5 by default.  A factor of 0 for @qcode{'grubbs'} or @qcode{'gesd'}
+## detects no outliers and returns @qcode{NaN} for @var{L} and @var{U}, as
+## MATLAB does.  With @qcode{'grubbs'}, a positive factor as small as
+## @qcode{1e-300} still gives finite thresholds, where MATLAB returns
+## @qcode{NaN}.
 ##
 ## @item @qcode{'MaxNumOutliers'} is only relevant to the @qcode{'gesd'} method
 ## and it must be a positive integer scalar specifying the maximum number of
@@ -294,9 +298,11 @@ function [TF, L, U, C] = isoutlier (x, varargin)
             error ("isoutlier: 'ThresholdFactor' must be followed by a value.");
           endif
           ThresholdFactor = varargin{2};
-          if (! isscalar (ThresholdFactor) || ThresholdFactor < 0)
+          if (! (isnumeric (ThresholdFactor) && isreal (ThresholdFactor) &&
+                 isscalar (ThresholdFactor) && ThresholdFactor >= 0))
             error ("isoutlier: threshold factor must be a nonnegative scalar.");
           endif
+          ThresholdFactor = double (ThresholdFactor);
           varargin([1:2]) = [];
 
         case 'maxnumoutliers'
@@ -924,6 +930,20 @@ endfunction
 %! assert_equal (TF, false (1, 15))
 %! assert_equal ([L, U], [NaN, NaN])
 %! assert_equal (C, 77.86666666666666, 1e-12)
+%!test
+%! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
+%! [TF, L, U] = isoutlier (A, 'grubbs', 'ThresholdFactor', 1e-300);
+%! assert_equal (TF, false (1, 15))
+%! assert_equal (isfinite ([L, U]), [true, true])
+%!test
+%! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
+%! [TF, L, U] = isoutlier (A, 'ThresholdFactor', int8 (2));
+%! assert_equal (TF, logical ([0 0 0 1 0 0 0 0 1 0 0 0 0 0 0]))
+%! assert_equal ([L, U], [53.069591125977595, 64.930408874022405], 1e-12)
+%!test
+%! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
+%! [~, L, U] = isoutlier (A, 'ThresholdFactor', single (2));
+%! assert_equal ([L, U], [53.069591125977595, 64.930408874022405], 1e-12)
 
 ## An option that needs a value says so instead of failing on varargin{2}.
 %!error<isoutlier: specify a window length after 'movmean'.> ...
@@ -1008,6 +1028,14 @@ endfunction
 %! isoutlier (A, 'movmean', 5, 'ThresholdFactor', [1:14]);
 %!error<isoutlier: threshold factor must be a nonnegative scalar.> ...
 %! isoutlier (A, 'movmean', 5, 'ThresholdFactor', -1);
+%!error<isoutlier: threshold factor must be a nonnegative scalar.> ...
+%! isoutlier (A, 'ThresholdFactor', NaN);
+%!error<isoutlier: threshold factor must be a nonnegative scalar.> ...
+%! isoutlier (A, 'ThresholdFactor', true);
+%!error<isoutlier: threshold factor must be a nonnegative scalar.> ...
+%! isoutlier (A, 'ThresholdFactor', 'a');
+%!error<isoutlier: threshold factor must be a nonnegative scalar.> ...
+%! isoutlier (A, 'ThresholdFactor', 1i);
 %!error<isoutlier: threshold factor must be in> ...
 %! isoutlier (A, 'gesd', 'ThresholdFactor', 3);
 %!error<isoutlier: threshold factor must be in> ...

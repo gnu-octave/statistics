@@ -561,7 +561,7 @@ isoutlier
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 6501
+# length: 6712
 statistics: TF = isoutlier (x)
 statistics: TF = isoutlier (x, method)
 statistics: TF = isoutlier (x, 'percentiles', threshold)
@@ -660,7 +660,11 @@ the number of standard deviations, which is 3 by default. For methods
 from 0 to 1, specifying the critical alpha-value of the respective
 test, and it is 0.05 by default. For the 'quartiles' method, the
 detection threshold factor replaces the number of interquartile ranges, which
-is 1.5 by default.
+is 1.5 by default. A factor of 0 for 'grubbs' or 'gesd'
+detects no outliers and returns NaN for L and U, as
+MATLAB does. With 'grubbs', a positive factor as small as
+1e-300 still gives finite thresholds, where MATLAB returns
+NaN.
 'MaxNumOutliers' is only relevant to the 'gesd' method
 and it must be a positive integer scalar specifying the maximum number of
 outliers returned by the 'gesd' method. By default, it is the
