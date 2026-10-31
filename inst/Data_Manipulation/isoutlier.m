@@ -294,7 +294,7 @@ function [TF, L, U, C] = isoutlier (x, varargin)
             error ("isoutlier: 'ThresholdFactor' must be followed by a value.");
           endif
           ThresholdFactor = varargin{2};
-          if (! isscalar (ThresholdFactor) || ThresholdFactor <= 0)
+          if (! isscalar (ThresholdFactor) || ThresholdFactor < 0)
             error ("isoutlier: threshold factor must be a nonnegative scalar.");
           endif
           varargin([1:2]) = [];
@@ -905,6 +905,25 @@ endfunction
 %! assert_equal (TF, logical ([1 1; 0 0; 0 0; 1 1]))
 %! assert_equal (L, [2, 3], 1e-12)
 %! assert_equal (U, [52.5, 7.5], 1e-12)
+
+## A zero threshold factor is accepted
+%!test
+%! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
+%! [TF, L, U, C] = isoutlier (A, 'ThresholdFactor', 0);
+%! assert_equal (TF, logical ([1 0 1 1 0 1 1 1 1 1 1 1 1 1 1]))
+%! assert_equal ([L, U, C], [59, 59, 59])
+%!test
+%! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
+%! [TF, L, U, C] = isoutlier (A, 'grubbs', 'ThresholdFactor', 0);
+%! assert_equal (TF, false (1, 15))
+%! assert_equal ([L, U], [NaN, NaN])
+%! assert_equal (C, 77.86666666666666, 1e-12)
+%!test
+%! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
+%! [TF, L, U, C] = isoutlier (A, 'gesd', 'ThresholdFactor', 0);
+%! assert_equal (TF, false (1, 15))
+%! assert_equal ([L, U], [NaN, NaN])
+%! assert_equal (C, 77.86666666666666, 1e-12)
 
 ## An option that needs a value says so instead of failing on varargin{2}.
 %!error<isoutlier: specify a window length after 'movmean'.> ...
