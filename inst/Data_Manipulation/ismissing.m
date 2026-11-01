@@ -63,6 +63,9 @@
 ##
 ## @item @qcode{char} and @qcode{cellstr} indicators also match @qcode{string}
 ## data in @var{A}.
+##
+## @item @qcode{single}, integer, and @qcode{logical} indicators also match
+## @qcode{double} data in @var{A}.
 ## @end itemize
 ##
 ## Note: the generic @code{ismissing} function from the statistics package only
@@ -93,7 +96,8 @@ function TF = ismissing (A, indicator)
   endif
 
   if ((! isempty (indicator)) &&
-      ((isnumeric (A) && ! isnumeric (indicator)) ||
+      ((isnumeric (A) && ! (isnumeric (indicator) ||
+       (isa (A, "double") && islogical (indicator)))) ||
        (iscellstr (A) && ! iscellstr (indicator)) ||
        (ischar (A) && ! ischar (indicator)) ||
        (islogical (A) && ! (islogical (indicator) || isnumeric (indicator)))))
@@ -208,6 +212,9 @@ endfunction
 %!assert_equal (ismissing ([true, false, true]), [false, false, false])
 %!assert_equal (ismissing ([true, false, true], 1), [true, false, true])
 %!assert_equal (ismissing ([true, false, true], 0), [false, true, false])
+%!assert_equal (ismissing ([1, 0, 2, 1], [true, false]), ...
+%!        logical ([1, 1, 0, 1]))
+%!assert_equal (ismissing ([NaN, 1], true), [false, true])
 %!assert_equal (ismissing ({'', 'a', 'f'}), [true, false, false])
 %!assert_equal (ismissing ({'', 'a', 'f'}, 'a'), [false, true, false])
 %!assert_equal (ismissing ({'', 'a', 'f'}, {'a', 'g'}), [false, true, false])
