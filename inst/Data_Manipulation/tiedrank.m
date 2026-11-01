@@ -65,13 +65,13 @@ function [r, tieadj] = tiedrank (x, tieflag, bidir, tol)
 
   if (nargin < 2)
     tieflag = false;
-  elseif (! isscalar (tieflag) || ! (isnumeric (tieflag) || isbool (tieflag)))
-    error ("tiedrank: TIEFLAG must be a numeric or boolean scalar.");
+  else
+    tieflag = read_flag (tieflag, "TIEFLAG");
   endif
   if (nargin < 3)
     bidir = false;
-  elseif (! isscalar (bidir) || ! (isnumeric (bidir) || isbool (bidir)))
-    error ("tiedrank: BIDIR must be a numeric or boolean scalar.");
+  else
+    bidir = read_flag (bidir, "BIDIR");
   endif
   if (nargin < 4)
     tol = 0;
@@ -181,6 +181,17 @@ function [r, tieadj] = rank_vector (x, tieflag, bidir, tol)
   r = reshape (r, size (x));
 endfunction
 
+## Read a flag the way IF reads a condition: it is set only when it is not
+## empty and all of its elements are nonzero
+function tf = read_flag (flag, name)
+  if (! (isnumeric (flag) || islogical (flag) || ischar (flag))
+      || any (isnan (flag(:))))
+    error (strcat ("tiedrank: %s must be a numeric, logical, or", ...
+                   " character array without NaN values."), name);
+  endif
+  tf = ! isempty (flag) && all (flag(:));
+endfunction
+
 ## testing against mileage data and results from Matlab
 %!test
 %! [r,tieadj] = tiedrank ([10, 20, 30, 40, 20]);
@@ -223,6 +234,20 @@ endfunction
 %! assert_equal (tiedrank ([Inf, Inf, 1]), [2.5, 2.5, 1]);
 %! assert_equal (tiedrank ([Inf, Inf, 1], 0, 0, 0), [2.5, 2.5, 1]);
 
+%!test
+%! ## An empty flag keeps its default, so BIDIR can be set on its own
+%! [r, tieadj] = tiedrank ([10, 20, 30, 40, 20], [], 1);
+%! assert_equal (r, [1, 2.5, 2, 1, 2.5]);
+%! assert_equal (tieadj, 3);
+%!test
+%! ## A flag is set only when all of its elements are nonzero
+%! [~, tieadj] = tiedrank ([10, 20, 30, 40, 20], [1, 0]);
+%! assert_equal (tieadj, 3);
+%! [~, tieadj] = tiedrank ([10, 20, 30, 40, 20], [1, 1]);
+%! assert_equal (tieadj, [1; 0; 18]);
+%! [~, tieadj] = tiedrank ([10, 20, 30, 40, 20], 'A');
+%! assert_equal (tieadj, [1; 0; 18]);
+
 ## Test input validation
 %!test
 %! ## A matrix is ranked column by column, as MATLAB does, and TIEADJ carries
@@ -259,18 +284,10 @@ endfunction
 %! assert_equal (r(:,:,2), [1, 1; 2, 2]);
 %! assert_equal (size (tieadj), [1, 2, 2]);
 
-%!error <tiedrank: TIEFLAG must be a numeric or boolean scalar.> ...
-%! tiedrank ([1, 2, 3, 4, 5], [1, 1])
-%!error <tiedrank: TIEFLAG must be a numeric or boolean scalar.> ...
-%! tiedrank ([1, 2, 3, 4, 5], 'A')
-%!error <tiedrank: TIEFLAG must be a numeric or boolean scalar.> ...
-%! tiedrank ([1, 2, 3, 4, 5], [true, true])
-%!error <tiedrank: BIDIR must be a numeric or boolean scalar.> ...
-%! tiedrank ([1, 2, 3, 4, 5], 0, [1, 1])
-%!error <tiedrank: BIDIR must be a numeric or boolean scalar.> ...
-%! tiedrank ([1, 2, 3, 4, 5], 0, 'A')
-%!error <tiedrank: BIDIR must be a numeric or boolean scalar.> ...
-%! tiedrank ([1, 2, 3, 4, 5], 0, [true, true])
+%!error <tiedrank: TIEFLAG must be a numeric, logical, or character array without NaN values.> ...
+%! tiedrank ([1, 2, 3, 4, 5], {})
+%!error <tiedrank: BIDIR must be a numeric, logical, or character array without NaN values.> ...
+%! tiedrank ([1, 2, 3, 4, 5], 0, NaN)
 %!error <tiedrank: TOL must be a non-negative numeric array.> ...
 %! tiedrank ([1, 2, 3, 4, 5], 0, 0, -1)
 %!error <tiedrank: TOL must be a non-negative numeric array.> ...
