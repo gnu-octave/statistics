@@ -25,8 +25,9 @@
 ## the dummy variables associated with the grouping variables in @var{group}.
 ## Each row in @var{D} corresponds to the same observation across all variables
 ## in @var{group} and each column in @var{D} corresponds to a separate dummy
-## variable.  @var{D} is a numeric matrix of @qcode{double} data type containing
-## ones and zeros.
+## variable.  @var{D} is a numeric matrix containing ones and zeros, of
+## @qcode{single} data type when @var{group} is a @qcode{single} array and of
+## @qcode{double} data type otherwise.
 ##
 ## The grouping variable in @var{group} can be specified in one of the following
 ## options:
@@ -144,6 +145,9 @@ function D = dummyvar (g)
       endfor
       D(isnan (tmp), ij - K(i) + 1:ij) = NaN;
     endfor
+    if (isa (g, 'single'))
+      D = single (D);
+    endif
 
   ## --- CELLSTRING branch ---
   elseif (iscellstr (g) && isvector (g))
@@ -171,7 +175,7 @@ function D = dummyvar (g)
     D = [];
     for i = 1:numel (g)
       g_var = g{i};
-      D_var = dummyvar (g_var);
+      D_var = double (dummyvar (g_var));
       D = [D, D_var];
     endfor
 
@@ -187,6 +191,10 @@ endfunction
 %!assert_equal (dummyvar (zeros (0, 3)), zeros (0, 0))
 %!assert_equal (dummyvar ({[], []}), [])
 %!assert_equal (dummyvar ([1; NaN; 2]), [1, 0; NaN, NaN; 0, 1])
+%!assert_equal (dummyvar (single ([1; NaN; 2])), ...
+%!              single ([1, 0; NaN, NaN; 0, 1]))
+%!assert_equal (dummyvar ({single([1; 2]), single([2; 1])}), ...
+%!              [1, 0, 0, 1; 0, 1, 1, 0])
 %!test
 %! ## numeric grouping vector
 %! g = [1; 2; 1; 3; 2];
