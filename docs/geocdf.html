@@ -213,14 +213,17 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
 					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
+					<li><a href="cohenKappa.html" class="text-decoration-none font-monospace"><small>cohenKappa</small></a></li>
 					<li><a href="corr.html" class="text-decoration-none font-monospace"><small>corr</small></a></li>
 					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
 					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
+					<li><a href="fleissKappa.html" class="text-decoration-none font-monospace"><small>fleissKappa</small></a></li>
 					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
 					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
 					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
 					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
 					<li><a href="ksdensity.html" class="text-decoration-none font-monospace"><small>ksdensity</small></a></li>
+					<li><a href="limitsOfAgreement.html" class="text-decoration-none font-monospace"><small>limitsOfAgreement</small></a></li>
 					<li><a href="mvksdensity.html" class="text-decoration-none font-monospace"><small>mvksdensity</small></a></li>
 					<li><a href="nancov.html" class="text-decoration-none font-monospace"><small>nancov</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
@@ -301,6 +304,7 @@
 					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
 					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
 					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
+					<li><a href="rjtest.html" class="text-decoration-none font-monospace"><small>rjtest</small></a></li>
 					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
 					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
 					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
@@ -448,6 +452,7 @@
 					<li><a href="fitrnet.html" class="text-decoration-none font-monospace"><small>fitrnet</small></a></li>
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
 					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
+					<li><a href="fitSVMPosterior.html" class="text-decoration-none font-monospace"><small>fitSVMPosterior</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
@@ -579,8 +584,10 @@
 					<li><a href="princomp.html" class="text-decoration-none font-monospace"><small>princomp</small></a></li>
 					<li><a href="procrustes.html" class="text-decoration-none font-monospace"><small>procrustes</small></a></li>
 					<li><a href="ReconstructionICA.html" class="text-decoration-none font-monospace"><small>ReconstructionICA</small></a></li>
+					<li><a href="relieff.html" class="text-decoration-none font-monospace"><small>relieff</small></a></li>
 					<li><a href="rica.html" class="text-decoration-none font-monospace"><small>rica</small></a></li>
 					<li><a href="rotatefactors.html" class="text-decoration-none font-monospace"><small>rotatefactors</small></a></li>
+					<li><a href="sequentialfs.html" class="text-decoration-none font-monospace"><small>sequentialfs</small></a></li>
 					<li><a href="sparsefilt.html" class="text-decoration-none font-monospace"><small>sparsefilt</small></a></li>
 					<li><a href="SparseFiltering.html" class="text-decoration-none font-monospace"><small>SparseFiltering</small></a></li>
 					<li><a href="tsne.html" class="text-decoration-none font-monospace"><small>tsne</small></a></li>
@@ -1014,6 +1021,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="blandAltmanPlot.html" class="text-decoration-none font-monospace"><small>blandAltmanPlot</small></a></li>
 					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
@@ -1126,7 +1134,7 @@
   <a href="geostat.html">geostat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/848e0a5/inst/Distribution_Functions/geocdf.m">geocdf</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/1cd743a/inst/Distribution_Functions/geocdf.m">geocdf</a>
 </p>
 </div>
         <div class="card rounded my-4">

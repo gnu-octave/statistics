@@ -213,14 +213,17 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
 					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
+					<li><a href="cohenKappa.html" class="text-decoration-none font-monospace"><small>cohenKappa</small></a></li>
 					<li><a href="corr.html" class="text-decoration-none font-monospace"><small>corr</small></a></li>
 					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
 					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
+					<li><a href="fleissKappa.html" class="text-decoration-none font-monospace"><small>fleissKappa</small></a></li>
 					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
 					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
 					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
 					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
 					<li><a href="ksdensity.html" class="text-decoration-none font-monospace"><small>ksdensity</small></a></li>
+					<li><a href="limitsOfAgreement.html" class="text-decoration-none font-monospace"><small>limitsOfAgreement</small></a></li>
 					<li><a href="mvksdensity.html" class="text-decoration-none font-monospace"><small>mvksdensity</small></a></li>
 					<li><a href="nancov.html" class="text-decoration-none font-monospace"><small>nancov</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
@@ -301,6 +304,7 @@
 					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
 					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
 					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
+					<li><a href="rjtest.html" class="text-decoration-none font-monospace"><small>rjtest</small></a></li>
 					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
 					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
 					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
@@ -448,6 +452,7 @@
 					<li><a href="fitrnet.html" class="text-decoration-none font-monospace"><small>fitrnet</small></a></li>
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
 					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
+					<li><a href="fitSVMPosterior.html" class="text-decoration-none font-monospace"><small>fitSVMPosterior</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
@@ -579,8 +584,10 @@
 					<li><a href="princomp.html" class="text-decoration-none font-monospace"><small>princomp</small></a></li>
 					<li><a href="procrustes.html" class="text-decoration-none font-monospace"><small>procrustes</small></a></li>
 					<li><a href="ReconstructionICA.html" class="text-decoration-none font-monospace"><small>ReconstructionICA</small></a></li>
+					<li><a href="relieff.html" class="text-decoration-none font-monospace"><small>relieff</small></a></li>
 					<li><a href="rica.html" class="text-decoration-none font-monospace"><small>rica</small></a></li>
 					<li><a href="rotatefactors.html" class="text-decoration-none font-monospace"><small>rotatefactors</small></a></li>
+					<li><a href="sequentialfs.html" class="text-decoration-none font-monospace"><small>sequentialfs</small></a></li>
 					<li><a href="sparsefilt.html" class="text-decoration-none font-monospace"><small>sparsefilt</small></a></li>
 					<li><a href="SparseFiltering.html" class="text-decoration-none font-monospace"><small>SparseFiltering</small></a></li>
 					<li><a href="tsne.html" class="text-decoration-none font-monospace"><small>tsne</small></a></li>
@@ -1014,6 +1021,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="blandAltmanPlot.html" class="text-decoration-none font-monospace"><small>blandAltmanPlot</small></a></li>
 					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
@@ -1110,7 +1118,7 @@
   <a href="ClassificationSVM.html">ClassificationSVM</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/848e0a5/inst/Machine_Learning/CompactClassificationSVM.m">CompactClassificationSVM</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/1cd743a/inst/Machine_Learning/CompactClassificationSVM.m">CompactClassificationSVM</a>
 </p>
 </div>
         <p class="lead my-3">The <code>CompactClassificationSVM</code> class contains the following properties:</p>
@@ -2322,6 +2330,12 @@ Transformation function for classification scores
 </table>
 </div>
 
+<p> <code>fitPosterior</code> stores the transformation from scores to
+ posterior probabilities it fits as <code>'@(S)sigmoid(S,A,B)'</code>,
+ <code>'@(S)step(S,LowerBound,UpperBound,PositiveClassProbability)'</code>
+ or <code>'@(S)constant(S,K)'</code>.  Such a text may also be assigned
+ directly, which MATLAB refuses.
+</p>
 
         <div class="card rounded my-4">
           <div class="card-header card-header-mod">
@@ -2862,6 +2876,117 @@ Classification edge, the mean of the classification margins.
             </div>
           </div>
           <div class="collapse" id="CompactClassificationSVM_edge-example1">
+            <div class="card-body">
+                <p>Create a support vectors machine classifier and its compact version</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);</pre>
+                <p>and compare their size</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas;
+ Y = species;
+ selected_classes = unique (Y)(randperm (3, 2));
+ selected_indices = ismember (Y, selected_classes);
+ X_selected = X(selected_indices, :);
+ Y_selected = Y(selected_indices);
+ Mdl = fitcsvm (X_selected, Y_selected, 'ClassNames', selected_classes);
+ CMdl = crossval (Mdl)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CMdl =
+
+  ClassificationPartitionedModel
+
+      CrossValidatedModel: 'SVM'
+             ResponseName: 'Y'
+               ClassNames: {'versicolor' 'setosa'}
+          NumObservations: 100
+                    KFold: 10
+           ScoreTransform: 'none'</pre>
+
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#CompactClassificationSVM_fitPosterior"
+              aria-expanded="false" aria-controls="CompactClassificationSVM_fitPosterior">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>fitPosterior</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Fit the transformation from scores to posterior probabilities.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="CompactClassificationSVM_fitPosterior">
+            <div class="border-bottom py-2">
+<p class="h5 fs"><code>CompactClassificationSVM: <var>ScoreSVMModel</var> = <b>fitPosterior</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>CompactClassificationSVM: <var>ScoreSVMModel</var> = <b>fitPosterior</b> (<var>obj</var>, <var>Tbl</var>, <var>ResponseVarName</var>)</code></p>
+<p class="h5 fs"><code>CompactClassificationSVM: <var>ScoreSVMModel</var> = <b>fitPosterior</b> (<var>obj</var>, <var>Tbl</var>, <var>Y</var>)</code></p>
+<p class="h5 fs"><code>CompactClassificationSVM: <var>ScoreSVMModel</var> = <b>fitPosterior</b> (<var>obj</var>, <var>Tbl</var>)</code></p>
+<p class="h5 fs fs-last"><code>CompactClassificationSVM: [<var>ScoreSVMModel</var>, <var>ScoreTransform</var>] = <b>fitPosterior</b> (&hellip;)</code></p>
+<p> </p>
+<p> <code><var>ScoreSVMModel</var> = fitPosterior (<var>obj</var>, <var>X</var>, <var>Y</var>)</code>
+ returns the two-class model <var>obj</var> with the transformation from the
+ score of the second class, <code><var>obj</var>.ClassNames(2)</code>, to its
+ posterior probability stored in its <code>ScoreTransform</code> property, so
+ that <code>predict</code> returns posterior probabilities, the two columns
+ summing to 1.  A compact model holds no training data, so the
+ transformation is fitted to the scores it gives the predictors <var>X</var>,
+ whose classes are <var>Y</var>, without cross-validation; data the model was
+ not trained on give the better estimate.  Rows whose score is
+ <code>NaN</code> are left out.
+</p>
+<p> <var>X</var> may also be a table <var>Tbl</var>, whose variables are matched to
+ the predictors the model was fitted on by name and not by position.
+ The classes are then the variable <var>ResponseVarName</var> names, <var>Y</var>
+ given beside the table, or the variable the model was fitted on.
+</p>
+<p> The transformation is a sigmoid <code>1 / (1 + exp (A * s + B))</code> of the
+ score <em class="math">s</em> when the scores of the two classes overlap, fitted by
+ maximum likelihood without the prior or any weights; a step function
+ when the scores separate the classes, 0 below the largest score of the
+ first class, 1 above the smallest score of the second and
+ <code><var>obj</var>.Prior(2)</code> between, with a warning; and a constant,
+ posterior 1 for the other class, when one class has prior probability
+ 0.  A <code>ScoreTransform</code> already set on <var>obj</var> is reset to
+ <code>'none'</code> first, with a warning.  The property holds the
+ transformation as <code>ClassificationSVM.fitPosterior</code> describes.
+</p>
+<p> <code>[<var>ScoreSVMModel</var>, <var>ScoreTransform</var>] = fitPosterior
+ (&hellip;)</code> also returns the parameters in a structure whose field
+ <code>Type</code> is <code>'sigmoid'</code>, with fields <code>Slope</code> and
+ <code>Intercept</code>, <code>'step'</code>, with fields <code>LowerBound</code>,
+ <code>UpperBound</code> and <code>PositiveClassProbability</code>, or
+ <code>'constant'</code>, with the field <code>PredictedClass</code>.
+</p>
+<p> <strong>See also: </strong>
+  <a href="fitSVMPosterior.html">fitSVMPosterior</a>, 
+  <a href="ClassificationSVM.html#ClassificationSVM_fitPosterior">ClassificationSVM.fitPosterior</a>, 
+  <a href="CompactClassificationSVM.html#CompactClassificationSVM_predict">CompactClassificationSVM.predict</a>
+</p>
+
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <button class="btn btn-link fs-4 fw-normal d-inline-block mr-2 p-0 text-reset text-decoration-none"
+                  type="button" data-bs-toggle="collapse"
+                  data-bs-target="#CompactClassificationSVM_fitPosterior-example1" aria-expanded="false"
+                  aria-controls="CompactClassificationSVM_fitPosterior-example1">
+                Example: 1
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="collapse" id="CompactClassificationSVM_fitPosterior-example1">
             <div class="card-body">
                 <p>Create a support vectors machine classifier and its compact version</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);</pre>

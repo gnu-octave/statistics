@@ -213,14 +213,17 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
 					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
+					<li><a href="cohenKappa.html" class="text-decoration-none font-monospace"><small>cohenKappa</small></a></li>
 					<li><a href="corr.html" class="text-decoration-none font-monospace"><small>corr</small></a></li>
 					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
 					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
+					<li><a href="fleissKappa.html" class="text-decoration-none font-monospace"><small>fleissKappa</small></a></li>
 					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
 					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
 					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
 					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
 					<li><a href="ksdensity.html" class="text-decoration-none font-monospace"><small>ksdensity</small></a></li>
+					<li><a href="limitsOfAgreement.html" class="text-decoration-none font-monospace"><small>limitsOfAgreement</small></a></li>
 					<li><a href="mvksdensity.html" class="text-decoration-none font-monospace"><small>mvksdensity</small></a></li>
 					<li><a href="nancov.html" class="text-decoration-none font-monospace"><small>nancov</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
@@ -301,6 +304,7 @@
 					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
 					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
 					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
+					<li><a href="rjtest.html" class="text-decoration-none font-monospace"><small>rjtest</small></a></li>
 					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
 					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
 					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
@@ -448,6 +452,7 @@
 					<li><a href="fitrnet.html" class="text-decoration-none font-monospace"><small>fitrnet</small></a></li>
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
 					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
+					<li><a href="fitSVMPosterior.html" class="text-decoration-none font-monospace"><small>fitSVMPosterior</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
@@ -579,8 +584,10 @@
 					<li><a href="princomp.html" class="text-decoration-none font-monospace"><small>princomp</small></a></li>
 					<li><a href="procrustes.html" class="text-decoration-none font-monospace"><small>procrustes</small></a></li>
 					<li><a href="ReconstructionICA.html" class="text-decoration-none font-monospace"><small>ReconstructionICA</small></a></li>
+					<li><a href="relieff.html" class="text-decoration-none font-monospace"><small>relieff</small></a></li>
 					<li><a href="rica.html" class="text-decoration-none font-monospace"><small>rica</small></a></li>
 					<li><a href="rotatefactors.html" class="text-decoration-none font-monospace"><small>rotatefactors</small></a></li>
+					<li><a href="sequentialfs.html" class="text-decoration-none font-monospace"><small>sequentialfs</small></a></li>
 					<li><a href="sparsefilt.html" class="text-decoration-none font-monospace"><small>sparsefilt</small></a></li>
 					<li><a href="SparseFiltering.html" class="text-decoration-none font-monospace"><small>SparseFiltering</small></a></li>
 					<li><a href="tsne.html" class="text-decoration-none font-monospace"><small>tsne</small></a></li>
@@ -1014,6 +1021,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="blandAltmanPlot.html" class="text-decoration-none font-monospace"><small>blandAltmanPlot</small></a></li>
 					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
@@ -1102,7 +1110,15 @@
  response <var>y</var> on the predictor data <var>X</var>, penalized by the lasso (L1)
  or elastic-net penalty.  <var>X</var> is an <em class="math">n</em>-by-<em class="math">p</em> numeric matrix of
  <em class="math">p</em> predictors at each of <em class="math">n</em> observations, and <var>y</var> is a
- numeric vector of <em class="math">n</em> responses.  <var>distr</var> names the distribution of
+ numeric vector of <em class="math">n</em> responses.  For the <code>'normal'</code>,
+ <code>'binomial'</code> and <code>'poisson'</code> distributions <var>y</var> may also be
+ a logical vector, <code>true</code> read as 1, or a categorical vector with
+ exactly two categories, the second read as 1 and undefined elements as
+ missing; for <code>'binomial'</code> the value 1 is the success.  For the
+ <code>'binomial'</code> distribution <var>y</var> may also be an <em class="math">n</em>-by-2 matrix
+ whose first column holds the number of successes and whose second holds the
+ number of trials; a row with <code>NaN</code> in either column or with no trials
+ is removed.  <var>distr</var> names the distribution of
  the response: <code>'normal'</code> (default), <code>'binomial'</code>,
  <code>'poisson'</code>, <code>'gamma'</code>, or <code>'inverse gaussian'</code>.  The
  canonical link function of the chosen distribution is used unless overridden
@@ -1148,17 +1164,25 @@
 <tr><td width="20%"><code>'Lambda'</code></td><td width="75%">a vector of non-negative <em class="math">lambda</em> values.</td></tr>
 <tr><td width="20%"><code>'Standardize'</code></td><td width="75%">a logical value (default <code>true</code>)
  specifying whether the predictors are standardized before fitting.</td></tr>
-<tr><td width="20%"><code>'Weights'</code></td><td width="75%">a vector of non-negative observation weights.</td></tr>
-<tr><td width="20%"><code>'Size'</code></td><td width="75%">for the <code>'binomial'</code> distribution, the number
- of trials (a scalar or a per-observation vector); <var>y</var> holds the number of
- successes.  Default is 1 (Bernoulli responses).</td></tr>
+<tr><td width="20%"><code>'Weights'</code></td><td width="75%">a real, non-negative vector of class single or
+ double, with one element per row of <var>X</var>.  A <code>NaN</code> weight marks its
+ observation as missing.</td></tr>
+<tr><td width="20%"><code>'BinomialSize'</code></td><td width="75%">for the <code>'binomial'</code> distribution,
+ the number of trials, a scalar or a vector with one element per row of
+ <var>X</var>; <var>y</var> holds the number of successes.  Default is 1 (Bernoulli
+ responses).  It describes the same model as the two-column <var>y</var>, whose
+ trials are used when both are given.  A row whose number of trials is
+ <code>NaN</code> or 0 is removed.  <code>'BinomialSize'</code> is an Octave
+ extension, and <code>'Size'</code> is accepted as an alias for it.</td></tr>
 <tr><td width="20%"><code>'Link'</code></td><td width="75%">the link function to use instead of the family&rsquo;s
  canonical link.  Accepts any link name understood by <code>glmfit</code> (e.g.
  <code>'log'</code>, <code>'probit'</code>) or a numeric exponent for a power link.</td></tr>
 <tr><td width="20%"><code>'Offset'</code></td><td width="75%">a numeric vector, one value per observation,
  added as a fixed term to the linear predictor (not penalized or fitted).</td></tr>
 <tr><td width="20%"><code>'RelTol'</code></td><td width="75%">convergence tolerance for the coordinate descent.</td></tr>
-<tr><td width="20%"><code>'MaxIter'</code></td><td width="75%">maximum number of iterations.</td></tr>
+<tr><td width="20%"><code>'MaxIter'</code></td><td width="75%">maximum number of iterations, a non-negative
+ integer.  A value of 0 returns the starting point, every coefficient 0, as
+ MATLAB does.</td></tr>
 <tr><td width="20%"><code>'DFmax'</code></td><td width="75%">maximum number of nonzero coefficients.</td></tr>
 <tr><td width="20%"><code>'Intercept'</code></td><td width="75%">a logical value (default <code>true</code>) whether
  to fit an intercept term.</td></tr>
@@ -1172,6 +1196,17 @@
 </table>
 </div>
 
+<p> Observations with <code>NaN</code> values in <var>X</var>, <var>y</var> or
+ <code>'Weights'</code> are removed before fitting.  At least two observations
+ must remain and, if <code>'Weights'</code> is given, at least two of them must
+ have a non-zero weight.
+</p>
+<p> A response at the edge of its range on every observation, all failures or
+ all successes for <code>'binomial'</code> and all zeros for <code>'poisson'</code>,
+ has no finite fit.  <var>B</var> is then zero, the intercept places the fitted
+ mean at the limit of its range, and the default <var>Lambda</var> values are all
+ zero, as in MATLAB.  MATLAB&rsquo;s intercept there is about 102.5 in magnitude.
+</p>
 <p> <strong>See also: </strong>
   <a href="lasso.html">lasso</a>, 
   <a href="glmfit.html">glmfit</a>, 
@@ -1179,7 +1214,7 @@
   <a href="cvpartition.html">cvpartition</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/848e0a5/inst/Regression/lassoglm.m">lassoglm</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/1cd743a/inst/Regression/lassoglm.m">lassoglm</a>
 </p>
 </div>
         <div class="card rounded my-4">

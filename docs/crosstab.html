@@ -213,14 +213,17 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="cdfcalc.html" class="text-decoration-none font-monospace"><small>cdfcalc</small></a></li>
 					<li><a href="cl_multinom.html" class="text-decoration-none font-monospace"><small>cl_multinom</small></a></li>
+					<li><a href="cohenKappa.html" class="text-decoration-none font-monospace"><small>cohenKappa</small></a></li>
 					<li><a href="corr.html" class="text-decoration-none font-monospace"><small>corr</small></a></li>
 					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
 					<li><a href="ecdf.html" class="text-decoration-none font-monospace"><small>ecdf</small></a></li>
+					<li><a href="fleissKappa.html" class="text-decoration-none font-monospace"><small>fleissKappa</small></a></li>
 					<li><a href="geomean.html" class="text-decoration-none font-monospace"><small>geomean</small></a></li>
 					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
 					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
 					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
 					<li><a href="ksdensity.html" class="text-decoration-none font-monospace"><small>ksdensity</small></a></li>
+					<li><a href="limitsOfAgreement.html" class="text-decoration-none font-monospace"><small>limitsOfAgreement</small></a></li>
 					<li><a href="mvksdensity.html" class="text-decoration-none font-monospace"><small>mvksdensity</small></a></li>
 					<li><a href="nancov.html" class="text-decoration-none font-monospace"><small>nancov</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
@@ -301,6 +304,7 @@
 					<li><a href="ranksum.html" class="text-decoration-none font-monospace"><small>ranksum</small></a></li>
 					<li><a href="regression_ftest.html" class="text-decoration-none font-monospace"><small>regression_ftest</small></a></li>
 					<li><a href="regression_ttest.html" class="text-decoration-none font-monospace"><small>regression_ttest</small></a></li>
+					<li><a href="rjtest.html" class="text-decoration-none font-monospace"><small>rjtest</small></a></li>
 					<li><a href="runstest.html" class="text-decoration-none font-monospace"><small>runstest</small></a></li>
 					<li><a href="signrank.html" class="text-decoration-none font-monospace"><small>signrank</small></a></li>
 					<li><a href="signtest.html" class="text-decoration-none font-monospace"><small>signtest</small></a></li>
@@ -448,6 +452,7 @@
 					<li><a href="fitrnet.html" class="text-decoration-none font-monospace"><small>fitrnet</small></a></li>
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
 					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
+					<li><a href="fitSVMPosterior.html" class="text-decoration-none font-monospace"><small>fitSVMPosterior</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
@@ -579,8 +584,10 @@
 					<li><a href="princomp.html" class="text-decoration-none font-monospace"><small>princomp</small></a></li>
 					<li><a href="procrustes.html" class="text-decoration-none font-monospace"><small>procrustes</small></a></li>
 					<li><a href="ReconstructionICA.html" class="text-decoration-none font-monospace"><small>ReconstructionICA</small></a></li>
+					<li><a href="relieff.html" class="text-decoration-none font-monospace"><small>relieff</small></a></li>
 					<li><a href="rica.html" class="text-decoration-none font-monospace"><small>rica</small></a></li>
 					<li><a href="rotatefactors.html" class="text-decoration-none font-monospace"><small>rotatefactors</small></a></li>
+					<li><a href="sequentialfs.html" class="text-decoration-none font-monospace"><small>sequentialfs</small></a></li>
 					<li><a href="sparsefilt.html" class="text-decoration-none font-monospace"><small>sparsefilt</small></a></li>
 					<li><a href="SparseFiltering.html" class="text-decoration-none font-monospace"><small>SparseFiltering</small></a></li>
 					<li><a href="tsne.html" class="text-decoration-none font-monospace"><small>tsne</small></a></li>
@@ -1014,6 +1021,7 @@
 					<li><a href="bar3.html" class="text-decoration-none font-monospace"><small>bar3</small></a></li>
 					<li><a href="bar3h.html" class="text-decoration-none font-monospace"><small>bar3h</small></a></li>
 					<li><a href="biplot.html" class="text-decoration-none font-monospace"><small>biplot</small></a></li>
+					<li><a href="blandAltmanPlot.html" class="text-decoration-none font-monospace"><small>blandAltmanPlot</small></a></li>
 					<li><a href="boxchart.html" class="text-decoration-none font-monospace"><small>boxchart</small></a></li>
 					<li><a href="boxplot.html" class="text-decoration-none font-monospace"><small>boxplot</small></a></li>
 					<li><a href="cdfplot.html" class="text-decoration-none font-monospace"><small>cdfplot</small></a></li>
@@ -1090,34 +1098,63 @@
               </div>
             </div>
             <div class="card-body">
+<p class="h5 fs"><code>statistics: <var>t</var> = <b>crosstab</b> (<var>x1</var>)</code></p>
 <p class="h5 fs"><code>statistics: <var>t</var> = <b>crosstab</b> (<var>x1</var>, <var>x2</var>)</code></p>
 <p class="h5 fs"><code>statistics: <var>t</var> = <b>crosstab</b> (<var>x1</var>, &hellip;, <var>xn</var>)</code></p>
-<p class="h5 fs fs-last"><code>statistics: [<var>t</var>, <var>chisq</var>, <var>p</var>, <var>labels</var>] = <b>crosstab</b> (&hellip;)</code></p>
+<p class="h5 fs"><code>statistics: [<var>t</var>, <var>chisq</var>, <var>p</var>, <var>labels</var>] = <b>crosstab</b> (&hellip;)</code></p>
+<p class="h5 fs fs-last"><code>statistics: [&hellip;] = <b>crosstab</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></p>
 <p> Create a cross-tabulation (contingency table) <var>t</var> from data vectors.
 </p>
 <div class="ms-5">
 <p> The inputs <var>x1</var>, <var>x2</var>, ... <var>xn</var> must be vectors of equal length
  with a data type of numeric, logical, char array, categorical, strings,
  datetime, duration, or cell array of character vectors.  Missing values,
- such as <code>NaN</code> or <code>NaT</code>, are not counted.  A <code>NaN</code>
- duration is missing too, whereas MATLAB counts it as a group of its own.
+ such as <code>NaN</code> or <code>NaT</code>, are not counted by default.  A
+ <code>NaN</code> duration is missing too, whereas MATLAB counts it as a group of
+ its own.
+</p>
+<p> The following <code>Name-Value</code> pair is supported:
+</p>
+<div class="table-responsive">
+<table class="table table-striped table-bordered table-sm">
+<thead class="table-primary"><tr><th width="28%"><var>Name</var></th><th width="72%"><var>Value</var></th></tr></thead>
+<tr><td width="28%"><code>'IncludeMissingGroups'</code></td><td width="72%">A real double, single or logical
+ scalar that is not <code>NaN</code> (default <code>false</code>).  When nonzero or
+ <code>true</code>, the missing values are counted as a group of their own, placed
+ after the other groups of every input that holds any.  The name is not case
+ sensitive and may be shortened to <code>'IncludeMissing'</code>; any other text
+ is read as data.  Only its last occurrence counts.</td></tr>
+</table>
+</div>
+
+<p> The label of the missing group is <code>NaN</code> for numeric inputs,
+ <code>&lt;undefined&gt;</code> for categorical, <code>&lt;missing&gt;</code> for strings,
+ <code>{''}</code> for cell arrays of character vectors, <code>NaT</code> for
+ datetime, the text of a <code>NaN</code> element for duration, and the blank row
+ itself for a char array.
 </p>
 <p> As additional return values <code>crosstab</code> returns the chi-square statistics
  <var>chisq</var>, its p-value <var>p</var> and a cell array <var>labels</var>, containing
  the labels of each input argument.
 </p>
+<p> With a single input, <var>t</var> is a column holding the count of each group,
+ and <var>chisq</var> and <var>p</var> are <code>NaN</code>, there being no second variable
+ to test independence against.  A char row is a single observation.
+</p>
 <p> A categorical input has a row or column for every one of its categories,
  an unused one included, holding zeros.  The chi-square statistic and its
  p-value are computed over the rows and columns that hold observations,
  where MATLAB returns <code>NaN</code> for both whenever any row or column is
- empty.
+ empty.  With the missing group counted, it follows every category here,
+ whereas MATLAB returns a table one row longer than its labels when an unused
+ category follows the last used one.
 </p>
 <p> <strong>See also: </strong>
   <a href="grp2idx.html">grp2idx</a>, 
   <a href="tabulate.html">tabulate</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/848e0a5/inst/Data_Manipulation/crosstab.m">crosstab</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/1cd743a/inst/Data_Manipulation/crosstab.m">crosstab</a>
 </p>
 </div>
 
