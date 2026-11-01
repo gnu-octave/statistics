@@ -206,6 +206,11 @@ endfunction
 %!test
 %! p = hygecdf (2*x, 10, [1 2 3 4 5], 2, 'upper');
 %! assert_equal (p, [1, 34/90, 0, 0, 0], 10*eps);
+%!assert_equal (hygecdf (2132, 8658, 5491, 3533), ...
+%! 4.6997816650737797e-07, -1e-14)
+%!assert_equal (hygecdf (2300, 8658, 5491, 3533), 0.99672623672210792, -1e-14)
+%!assert_equal (hygecdf (24500, 200000, 100000, 50000), ...
+%! 1.2417441330510847e-07, -1e-14)
 
 ## Test class of input preserved
 %!assert_equal (hygecdf ([x, NaN], 4, 2, 2), [y, NaN], 5*eps)
