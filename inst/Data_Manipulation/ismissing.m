@@ -68,6 +68,10 @@
 ## @qcode{double} data in @var{A}.
 ## @end itemize
 ##
+## Any other pairing of numeric and @qcode{logical} classes between
+## @var{indicator} and @var{A} is an error, such as an @qcode{int32} indicator
+## with @qcode{single} data in @var{A}.
+##
 ## Note: the generic @code{ismissing} function from the statistics package only
 ## accepts @var{indicator} argument for numeric, @qcode{logical}, and
 ## @qcode{char} arrays, as well as for @qcode{cell} arrays of character vectors.
@@ -95,13 +99,19 @@ function TF = ismissing (A, indicator)
     indicator = {indicator};
   endif
 
-  if ((! isempty (indicator)) &&
-      ((isnumeric (A) && ! (isnumeric (indicator) ||
-       (isa (A, "double") && islogical (indicator)))) ||
-       (iscellstr (A) && ! iscellstr (indicator)) ||
-       (ischar (A) && ! ischar (indicator)) ||
-       (islogical (A) && ! (islogical (indicator) || isnumeric (indicator)))))
-    error ("ismissing: 'indicator' and 'A' must have the same data type.");
+  ## A numeric or logical INDICATOR applies to A of its own class, and a
+  ## double on either side applies to every numeric and logical class
+  if (! isempty (indicator))
+    if (isnumeric (A) || islogical (A))
+      if (! ((isnumeric (indicator) || islogical (indicator)) &&
+             (isa (A, 'double') || isa (indicator, 'double') ||
+              strcmp (class (A), class (indicator)))))
+        error ("ismissing: 'indicator' must be of the class of 'A' or double.");
+      endif
+    elseif ((iscellstr (A) && ! iscellstr (indicator)) ||
+            (ischar (A) && ! ischar (indicator)))
+      error ("ismissing: 'indicator' and 'A' must have the same data type.");
+    endif
   endif
 
   ## main logic
@@ -181,7 +191,7 @@ endfunction
 %!assert_equal (ismissing (double (eye (3)), single (1)), logical (eye (3)))
 %!assert_equal (ismissing (double (eye (3)), int32 (1)), logical (eye (3)))
 %!assert_equal (ismissing (single (eye (3)), double (1)), logical (eye (3)))
-%!assert_equal (ismissing (single (eye (3)), int32 (1)), logical (eye (3)))
+%!assert_equal (ismissing (single (eye (3)), single (1)), logical (eye (3)))
 
 ## test data types without missing values
 %!assert_equal (ismissing ({'123', '', 123}), [false, false, false])
@@ -192,11 +202,8 @@ endfunction
 %!assert_equal (ismissing ([struct struct struct]), [false, false, false])
 %!assert_equal (ismissing (logical (eye (3)), true), logical (eye (3)))
 %!assert_equal (ismissing (logical (eye (3)), double (1)), logical (eye (3)))
-%!assert_equal (ismissing (logical (eye (3)), single (1)), logical (eye (3)))
-%!assert_equal (ismissing (logical (eye (3)), int32 (1)), logical (eye (3)))
 %!assert_equal (ismissing (int32 (eye (3)), int32 (1)), logical (eye (3)))
 %!assert_equal (ismissing (int32 (eye (3)), double (1)), logical (eye (3)))
-%!assert_equal (ismissing (int32 (eye (3)), single (1)), logical (eye (3)))
 
 ## test empty input handling
 %!assert_equal (ismissing ([]), logical ([]))
@@ -223,12 +230,30 @@ endfunction
 ## Test input validation
 %!error ismissing ()
 %!error ismissing (1, 2, 3)
-%!error <ismissing: 'indicator' and 'A' must have the same data type.> ...
+%!error <ismissing: 'indicator' must be of the class of 'A' or double.> ...
 %!       ismissing ([1, 2; 3, 4], 'abc')
+%!error <ismissing: 'indicator' must be of the class of 'A' or double.> ...
+%!       ismissing (1, struct)
+%!error <ismissing: 'indicator' must be of the class of 'A' or double.> ...
+%!       ismissing (single ([1, 0, 2]), int32 (1))
+%!error <ismissing: 'indicator' must be of the class of 'A' or double.> ...
+%!       ismissing (single ([1, 0, 2]), true)
+%!error <ismissing: 'indicator' must be of the class of 'A' or double.> ...
+%!       ismissing (int32 ([1, 0, 2]), single (1))
+%!error <ismissing: 'indicator' must be of the class of 'A' or double.> ...
+%!       ismissing (int32 ([1, 0, 2]), int8 (1))
+%!error <ismissing: 'indicator' must be of the class of 'A' or double.> ...
+%!       ismissing (uint8 ([1, 0, 2]), false)
+%!error <ismissing: 'indicator' must be of the class of 'A' or double.> ...
+%!       ismissing ([true, false, true], single (1))
+%!error <ismissing: 'indicator' must be of the class of 'A' or double.> ...
+%!       ismissing ([true, false, true], int8 (1))
+%!error <ismissing: 'indicator' must be of the class of 'A' or double.> ...
+%!       ismissing ([true, false, true], 'a')
 %!error <ismissing: 'indicator' and 'A' must have the same data type.> ...
 %!       ismissing ({'', '', ''}, 1)
 %!error <ismissing: 'indicator' and 'A' must have the same data type.> ...
-%!       ismissing (1, struct)
+%!       ismissing ('abc', true)
 %!error <ismissing: indicators not supported for data type 'struct'> ...
 %!       ismissing (struct, 1)
 %!error <ismissing: indicators not supported for data type 'cell'> ...

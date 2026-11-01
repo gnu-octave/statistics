@@ -165,7 +165,7 @@ dummyvar
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1589
+# length: 1653
 statistics: D = dummyvar (group)
 Create dummy variables.
 
@@ -173,8 +173,9 @@ D = dummyvar (group) returns a matrix D containing
 the dummy variables associated with the grouping variables in group.
 Each row in D corresponds to the same observation across all variables
 in group and each column in D corresponds to a separate dummy
-variable. D is a numeric matrix of double data type containing
-ones and zeros.
+variable. D is a numeric matrix containing ones and zeros, of
+single data type when group is a single array and of
+double data type otherwise.
 
 The grouping variable in group can be specified in one of the following
 options:
@@ -487,7 +488,7 @@ ismissing
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2116
+# length: 2322
 statistics: TF = ismissing (A)
 statistics: TF = ismissing (A, indicator)
 Find missing data in arrays.
@@ -529,6 +530,12 @@ string and char indicators also match
 categorical data in A.
 char and cellstr indicators also match string
 data in A.
+single, integer, and logical indicators also match
+double data in A.
+
+Any other pairing of numeric and logical classes between
+indicator and A is an error, such as an int32 indicator
+with single data in A.
 
 Note: the generic ismissing function from the statistics package only
 accepts indicator argument for numeric, logical, and
