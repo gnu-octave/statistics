@@ -2178,6 +2178,16 @@ endclassdef
 %! Mdl = fitcnb (table (char (nbT), nbL), 'nbL');
 %! assert_equal (Mdl.CategoricalLevels{1}, [1; 2]);
 
+%!test  # an ordinal column stays categorical here, as measured on R2024a
+%! o = categorical (repmat ({'lo'; 'hi'; 'lo'; 'mid'; 'hi'; 'lo'; 'mid'; ...
+%!                           'hi'; 'lo'; 'mid'; 'hi'; 'lo'}, 2, 1), ...
+%!                   {'lo', 'mid', 'hi'}, 'Ordinal', true);
+%! x = (1:24)';
+%! lab = repmat ({'p'; 'q'; 'p'; 'q'; 'p'; 'q'; 'p'; 'q'; 'p'; 'q'; 'p'; ...
+%!               'q'}, 2, 1);
+%! Mdl = fitcnb (table (o, x, lab), 'lab');
+%! assert_equal (Mdl.CategoricalPredictors, 1);
+
 %!test  # 'Weights' may name a table variable, no predictor then, as R2024a
 %! x1 = (1:12)';
 %! w = [1; 1; 2; 2; 1; 1; 3; 3; 1; 1; 2; 2];

@@ -821,8 +821,9 @@ classdef ClassificationTree < PredictiveModel
       endif
 
       ## A table names its own predictors and says which hold levels
+      ## An ordinal column is a numeric predictor here, as in R2024a
       [this, X, Y, varargin] = resolveTable (this, 'ClassificationTree', ...
-                                             X, Y, varargin);
+                                             X, Y, varargin, true);
 
       if (! (isnumeric (X) && isreal (X) && ismatrix (X) && ! isempty (X)))
         error (strcat ("ClassificationTree: X must be a non-empty real", ...
@@ -3383,6 +3384,20 @@ endfunction
 
 %!error<ClassificationTree.predict: the table holds no predictor 'SW'.> ...
 %! predict (ctM, ctT(:, [1, 3, 4, 5, 6]))
+
+%!test  # an ordinal column is numeric, as measured on R2024a
+%! o = categorical (repmat ({'lo'; 'hi'; 'lo'; 'mid'; 'hi'; 'lo'; 'mid'; ...
+%!                           'hi'; 'lo'; 'mid'; 'hi'; 'lo'}, 2, 1), ...
+%!                   {'lo', 'mid', 'hi'}, 'Ordinal', true);
+%! lab = repmat ({'p'; 'q'; 'q'; 'p'; 'p'; 'q'; 'q'; 'p'; 'p'; 'q'; 'q'; ...
+%!               'p'}, 2, 1);
+%! lab(double (o) == 3) = {'q'};
+%! Mdl = fitctree (table (o, lab), 'lab');
+%! assert_equal (Mdl.CategoricalPredictors, []);
+%! assert_equal (Mdl.CutPoint', [2.5, 1.5, NaN, NaN, NaN]);
+%! N = table (categorical ({'lo'; 'mid'; 'hi'; ''}, {'lo', 'mid', 'hi'}, ...
+%!                          'Ordinal', true), 'VariableNames', {'o'});
+%! assert_equal (predict (Mdl, N), {'p'; 'q'; 'q'; 'q'});
 
 %!test  # a missing value and an unseen level predict as missing, as R2024a
 %! k = categorical (repmat ({'a'; 'b'}, 6, 1));

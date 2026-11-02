@@ -16,7 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {private} {[@var{X}, @var{Y}, @var{args}, @var{lev}, @var{errmsg}] =} tableFrame (@var{X}, @var{Y}, @var{args})
+## @deftypefn  {private} {[@var{X}, @var{Y}, @var{args}, @var{lev}, @var{errmsg}] =} tableFrame (@var{X}, @var{Y}, @var{args})
+## @deftypefnx {private} {[@var{X}, @var{Y}, @var{args}, @var{lev}, @var{errmsg}] =} tableFrame (@var{X}, @var{Y}, @var{args}, @var{ordnum})
 ##
 ## Resolve table input into the predictors and the response a learner takes.
 ##
@@ -41,13 +42,19 @@
 ## row and a missing string are missing, as an undefined categorical value
 ## is: no level, and coded @qcode{NaN}.
 ##
+## An ordinal categorical column is coded by the order of its categories and
+## counts as a categorical predictor, unless @var{ordnum} is true, when it is
+## a numeric one, as in MATLAB's trees, ensembles and generalized additive
+## models.  Naming it in @qcode{'CategoricalPredictors'} still makes it
+## categorical.  @var{ordnum} is false by default.
+##
 ## This runs before any model exists, which is why it is here rather than on
 ## @code{PredictiveModel}: mapping a table onto a model that has already been
 ## fitted is that class's to do.
 ##
 ## @end deftypefn
 
-function [X, Y, args, lev, errmsg] = tableFrame (X, Y, args)
+function [X, Y, args, lev, errmsg] = tableFrame (X, Y, args, ordnum = false)
 
   lev = {};
   errmsg = '';
@@ -149,7 +156,7 @@ function [X, Y, args, lev, errmsg] = tableFrame (X, Y, args)
                                 " column."), pnames{k});
       return;
     endif
-    [Xn(:,k), lev{k}, iscat(k), errmsg] = tfColumn (v, pnames{k});
+    [Xn(:,k), lev{k}, iscat(k), errmsg] = tfColumn (v, pnames{k}, ordnum);
     if (! isempty (errmsg))
       return;
     endif
@@ -170,8 +177,9 @@ function [X, Y, args, lev, errmsg] = tableFrame (X, Y, args)
 endfunction
 
 ## One table variable as the numbers a learner takes, and the levels it was
-## read through where it holds text.
-function [v, lev, iscat, errmsg] = tfColumn (col, name)
+## read through where it holds text.  An ordinal column is numeric where
+## ORDNUM says so, its codes following the order of its categories.
+function [v, lev, iscat, errmsg] = tfColumn (col, name, ordnum)
 
   v = [];
   lev = [];
@@ -190,7 +198,7 @@ function [v, lev, iscat, errmsg] = tfColumn (col, name)
   if (isa (col, 'categorical'))
     lev = categories (col)(:)';
     v = double (col);
-    iscat = true;
+    iscat = ! (ordnum && isordinal (col));
     return;
   endif
   ## Empty text, a blank character row and a missing string are missing, as

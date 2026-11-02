@@ -652,8 +652,9 @@ classdef RegressionTree < PredictiveModel
       endif
 
       ## A table names its own predictors and says which hold levels
+      ## An ordinal column is a numeric predictor here, as in R2024a
       [this, X, Y, varargin] = resolveTable (this, 'RegressionTree', ...
-                                             X, Y, varargin);
+                                             X, Y, varargin, true);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("RegressionTree: name-value arguments must be in", ...
                        " pairs."));
@@ -2591,6 +2592,28 @@ endclassdef
 %! assert_equal (Mdl.PredictorNames, {'x1'});
 %!error<RegressionTree: the table holds no variable 'v'.> ...
 %! fitrtree (wtT, 'y', 'Weights', 'v')
+
+## MATLAB parity: an ordinal categorical column is a numeric predictor,
+## split in the order of its categories, as measured on R2024a
+%!shared orT, orN
+%! o = categorical (repmat ({'lo'; 'hi'; 'lo'; 'mid'; 'hi'; 'lo'; 'mid'; ...
+%!                           'hi'; 'lo'; 'mid'; 'hi'; 'lo'}, 2, 1), ...
+%!                   {'lo', 'mid', 'hi'}, 'Ordinal', true);
+%! y = 10 * double (o) + mod ((1:24)', 3);
+%! orT = table (o, y);
+%! orN = table (categorical ({'lo'; 'mid'; 'hi'; ''}, {'lo', 'mid', 'hi'}, ...
+%!                          'Ordinal', true), 'VariableNames', {'o'});
+%!test  # numeric, cut between the codes of its categories
+%! Mdl = fitrtree (orT, 'y', 'MinParentSize', 2);
+%! assert_equal (Mdl.CategoricalPredictors, []);
+%! assert_equal (Mdl.CutPoint', [1.5, NaN, 2.5, NaN, NaN]);
+%!test  # predictions by level, and the root mean for an undefined value
+%! Mdl = fitrtree (orT, 'y', 'MinParentSize', 2);
+%! assert_equal (predict (Mdl, orN), [10.2; 21; 32; mean(orT.y)], 1e-12);
+%!test  # named in 'CategoricalPredictors', it is categorical
+%! Mdl = fitrtree (orT, 'y', 'MinParentSize', 2, 'CategoricalPredictors', 1);
+%! assert_equal (Mdl.CategoricalPredictors, 1);
+%! assert_equal (Mdl.CutPoint', NaN (1, 5));
 
 ## A table at loss
 %!shared lrtT, lrtM

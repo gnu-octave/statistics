@@ -370,8 +370,9 @@ classdef RegressionEnsemble < PredictiveModel
       endif
 
       ## A table names its own predictors and says which hold levels
+      ## An ordinal column is a numeric predictor here, as in R2024a
       [this, X, Y, varargin] = resolveTable (this, 'RegressionEnsemble', ...
-                                             X, Y, varargin);
+                                             X, Y, varargin, true);
       if (mod (numel (varargin), 2) != 0)
         error ("RegressionEnsemble: name-value arguments must be in pairs.");
       endif
@@ -1556,6 +1557,15 @@ endfunction
 
 %!error<RegressionEnsemble: 'CategoricalPredictors' indices must not exceed the number of predictors.> ...
 %! RegressionEnsemble (X, yr, 'CategoricalPredictors', 3)
+
+%!test  # an ordinal column is a numeric predictor, as measured on R2024a
+%! o = categorical (repmat ({'lo'; 'hi'; 'lo'; 'mid'; 'hi'; 'lo'; 'mid'; ...
+%!                           'hi'; 'lo'; 'mid'; 'hi'; 'lo'}, 2, 1), ...
+%!                   {'lo', 'mid', 'hi'}, 'Ordinal', true);
+%! y = 10 * double (o) + mod ((1:24)', 3);
+%! Mdl = fitrensemble (table (o, y), 'y', 'Method', 'Bag', ...
+%!                     'NumLearningCycles', 3);
+%! assert_equal (Mdl.CategoricalPredictors, []);
 
 ## A table at loss
 %!test  # the response is named, left out, or given beside the table

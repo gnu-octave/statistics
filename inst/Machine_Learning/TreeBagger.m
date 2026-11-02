@@ -605,8 +605,9 @@ classdef TreeBagger < PredictiveModel
       ## class carries no public ResponseName, as MATLAB's does not either,
       ## so the name the table gave the response is kept in the hidden one
       ## rather than passed on to the trees.
+      ## An ordinal column is a numeric predictor here, as in R2024a
       [this, X, Y, varargin] = resolveTable (this, 'TreeBagger', X, Y, ...
-                                             varargin);
+                                             varargin, true);
       for k = numel (varargin) - 1:-1:1
         if (ischar (varargin{k}) && strcmpi (varargin{k}, 'ResponseName'))
           this.ResponseName = varargin{k+1};

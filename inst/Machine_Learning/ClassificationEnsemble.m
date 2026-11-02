@@ -421,8 +421,9 @@ classdef ClassificationEnsemble < PredictiveModel
       endif
 
       ## A table names its own predictors and says which hold levels
+      ## An ordinal column is a numeric predictor here, as in R2024a
       [this, X, Y, varargin] = resolveTable (this, 'ClassificationEnsemble', ...
-                                             X, Y, varargin);
+                                             X, Y, varargin, true);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("ClassificationEnsemble: name-value arguments must", ...
                        " be in pairs."));

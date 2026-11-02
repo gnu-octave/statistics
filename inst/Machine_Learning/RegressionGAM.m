@@ -628,8 +628,9 @@ classdef RegressionGAM < PredictiveModel
       endif
 
       ## A table names its own predictors and says which hold levels
+      ## An ordinal column is a numeric predictor here, as in R2024a
       [this, X, Y, varargin] = resolveTable (this, 'RegressionGAM', ...
-                                             X, Y, varargin);
+                                             X, Y, varargin, true);
 
       ## Get training sample size and number of variables in training data
       nsample = rows (X);
@@ -3395,6 +3396,17 @@ endfunction
 %! Mdl.ResponseTransform = @(x) x .^ 2;
 %! yhat = predict (Mdl, meas([1, 60, 120],2:4));
 %! assert_equal (yhat, raw .^ 2, 1e-12);
+
+%!test  # an ordinal column is a numeric predictor, as measured on R2024a
+%! o = categorical (repmat ({'lo'; 'hi'; 'lo'; 'mid'; 'hi'; 'lo'; 'mid'; ...
+%!                           'hi'; 'lo'; 'mid'; 'hi'; 'lo'}, 2, 1), ...
+%!                   {'lo', 'mid', 'hi'}, 'Ordinal', true);
+%! y = 10 * double (o) + mod ((1:24)', 3);
+%! Mdl = fitrgam (table (o, y), 'y');
+%! assert_equal (Mdl.CategoricalPredictors, []);
+%! N = table (categorical ({'lo'; 'mid'; 'hi'; ''}, {'lo', 'mid', 'hi'}, ...
+%!                          'Ordinal', true), 'VariableNames', {'o'});
+%! assert_equal (predict (Mdl, N), [10.2; 21; 32; mean(y)], 1e-4);
 
 ## A table at loss
 %!test  # the response is named, left out, or given beside the table
