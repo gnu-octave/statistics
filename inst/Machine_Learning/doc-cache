@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 1493
+# columns: 1494
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -49524,6 +49524,122 @@ treepredict
 # elements: 1
 # length: 42
 Fit a binary decision tree for regression.
+
+
+
+# name: <cell-element>
+# type: string
+# elements: 1
+# length: 7
+fscchi2
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4742
+statistics: idx = fscchi2 (Tbl, ResponseVarName)
+statistics: idx = fscchi2 (Tbl, formula)
+statistics: idx = fscchi2 (Tbl, Y)
+statistics: idx = fscchi2 (X, Y)
+statistics: idx = fscchi2 (..., name, value)
+statistics: [idx, scores] = fscchi2 (...)
+Rank the predictors for classification with chi-square tests.
+
+idx = fscchi2 (X, Y) tests each predictor, a
+column of the matrix X, for independence from the class labels
+Y with a chi-square test, and ranks the predictors by the result.
+idx is a row vector of column indices, from the most important
+predictor to the least; predictors of equal score keep their order.
+
+X is a real matrix of type double or single with one row per
+observation. Y holds one class label per row of X: a numeric
+or logical vector, a categorical vector, a cell array of character vectors,
+a string array, or a character matrix with one row per observation.
+
+idx = fscchi2 (Tbl, ResponseVarName) takes the
+predictors and the class labels from the table Tbl:
+ResponseVarName names the variable holding the labels and every other
+variable is a predictor. idx = fscchi2 (Tbl,
+formula) names them with a model formula instead,
+'Y ~ x1 + x2', which holds main effects only, and ranks only the
+predictors it names, idx indexing them in the order the table holds
+them. idx = fscchi2 (Tbl, Y) takes the predictors
+from the table and the labels from Y. A logical, categorical, text
+or string variable of the table is a categorical predictor; an ordinal
+categorical one is continuous, its categories in their order.
+
+[idx, scores] = fscchi2 (...) also returns the score
+of each predictor, a row vector in the order of the predictors, so that
+scores(idx) is in decreasing order. The score is
+-log (p), p being the p-value of the predictor's test, so a
+larger score marks a more important predictor; it is Inf where
+p is 0. A predictor that cannot separate the classes, being
+constant or wholly missing, scores 0, and so does every predictor when the
+labels hold a single class.
+
+A continuous predictor is first binned. Its n known values are
+sorted, the upper edge of bin k is the value at position
+ceil (k * n / NumBins), and a value goes to the
+first bin whose edge it does not exceed. The bins so hold equal numbers of
+observations as nearly as the ties allow, the first ones taking any
+remainder, and equal values always share a bin, which may leave fewer bins
+than asked for. A categorical predictor takes its categories as they
+are. The test is Pearson's chi-square test of
+independence on the table of weighted counts of the bins or categories
+against the classes, the empty ones left out.
+
+Each predictor is tested on the observations it is known for. Their
+weights are scaled within each class so that the class carries its prior
+probability, and over all so that they sum to the number of those
+observations. The empirical prior, the default, is the weighted share of
+each class among those observations, which leaves the weights as given. An
+observation whose class label is missing is left out of every test.
+
+The following Name-Value pairs are supported:
+
+Name Value
+'CategoricalPredictors' The categorical predictors: a
+vector of their indices, a logical vector with one value per predictor, or
+'all'. With a table they are added to those the table makes
+categorical, and they may also be named. The default is none for a matrix.
+'ClassNames' The classes to use, in the type of Y.
+Observations of other classes are left out, and the order of the names is
+the order of a 'Prior' vector. The default is every class of
+Y, sorted.
+'NumBins' The number of bins of a continuous predictor, a
+positive integer. The default is 10.
+'Prior' The prior probabilities of the classes:
+'empirical', the default; 'uniform'; a vector with one
+nonnegative value per class, in the order of the classes; or a structure
+with the fields ClassNames and ClassProbs. The values are
+normalized to sum to 1.
+'UseMissing' false, the default, to test each
+predictor on the observations it is known for, or true to test it
+on every observation, the missing values of a categorical predictor forming
+one more category and those of a continuous predictor one more bin. MATLAB
+R2024a and R2026b document this option but ignore it in fscchi2,
+scoring every predictor alike either way; Octave does what they document.
+'Weights' The observation weights, a nonnegative finite
+vector of type double or single with one value per row, or with a table the
+name of one of its variables, which is then no predictor. The default is
+equal weights.
+
+The option names are not case sensitive but must be given in full. With a
+matrix, the categorical predictors cannot be named, the predictors having no
+names, as in MATLAB.
+
+See also:
+relieff,
+sequentialfs,
+crosstab
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 61
+Rank the predictors for classification with chi-square tests.
 
 
 

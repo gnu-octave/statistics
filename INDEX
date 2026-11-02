@@ -192,6 +192,7 @@ Machine Learning
  fitrsvm
  fitrtree
  fitSVMPosterior
+ fscchi2
  gamboostinter
  gamboostpairs
  gamboostpredict
