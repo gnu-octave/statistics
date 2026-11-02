@@ -73,8 +73,10 @@ classdef ClassificationECOC < PredictiveModel
     ## @deftp {ClassificationECOC} {property} RowsUsed
     ##
     ## A logical column marking the rows of the original data that were
-    ## used, the rest having been dropped as missing.  This property is
-    ## read-only.
+    ## used.  A row is dropped when its class is missing, when every predictor
+    ## is missing, or when its weight is zero; a row missing only some
+    ## predictors is used, each binary learner taking the missing values by
+    ## its own rule.  This property is read-only.
     ##
     ## @end deftp
     RowsUsed              = [];
@@ -360,8 +362,11 @@ classdef ClassificationECOC < PredictiveModel
         error ("ClassificationECOC: %s", errmsg);
       endif
 
+      ## A row missing some predictors is kept, each binary learner taking
+      ## the missing values by its own rule, as in R2024a; a row missing every
+      ## predictor, or of weight zero, is dropped
       F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
-                      'ClassificationECOC', false, 'keep');
+                      'ClassificationECOC', false, 'keep', 'partial');
       K = classCount (F.ClassNames);
 
       ## The coding design, named or given outright.
@@ -1343,3 +1348,48 @@ endclassdef
 %! load fisheriris
 %! ClassificationECOC (meas(51:150, 3:4), species(51:150), ...
 %!                     'Cost', struct ('a', 1));
+
+## MATLAB parity: a row missing some predictors is kept for the binary
+## learners to take by their own rules, and a row missing every predictor, of
+## weight zero, or of missing class is dropped, as measured on R2024a
+%!shared ecX, ecL, ecQ
+%! x1 = mod ((1:30)', 7) + (1:30)' / 10;
+%! x2 = mod ((1:30)', 5) * 2 - (1:30)' / 20;
+%! ecX = [x1, x2];
+%! ecX(2,1) = NaN;
+%! ecX(9,2) = NaN;
+%! ecX(20,:) = NaN;
+%! ecL = repmat ({'p'; 'q'; 'r'; 'p'; 'q'; 'r'}, 5, 1);
+%! ecQ = [3, 1; 5, 4; 7, 2; NaN, 3];
+%!test  # only the row missing every predictor is dropped
+%! Mdl = fitcecoc (ecX, ecL);
+%! assert_equal (Mdl.NumObservations, 29);
+%! assert_equal (find (! Mdl.RowsUsed)', 20);
+%! assert_equal (rows (Mdl.X), 29);
+%!test  # tree learners take the rows missing some predictors
+%! [label, score] = predict (fitcecoc (ecX, ecL, 'Learners', 'tree'), ecQ);
+%! assert_equal (label, {'p'; 'r'; 'r'; 'r'});
+%! assert_equal (score, [-0.183673469387755, -2, -0.326530612244898; ...
+%!                       -1.00694444444444, -0.555555555555556, ...
+%!                       -0.173611111111111; ...
+%!                       -1.00694444444444, -0.555555555555556, ...
+%!                       -0.173611111111111; ...
+%!                       -0.530276816608997, -0.498461597446539, ...
+%!                       -0.474376731301939], 1e-13);
+%!test  # and so do naive Bayes learners
+%! [label, score] = predict (fitcecoc (ecX, ecL, 'Learners', ...
+%!                                     'naivebayes'), ecQ);
+%! assert_equal (label, {'p'; 'q'; 'r'; 'r'});
+%! assert_equal (score, [-0.448479707551261, -0.580029631746784, ...
+%!                       -0.477722073040902; ...
+%!                       -0.588600916657713, -0.433272656977071, ...
+%!                       -0.486316971236823; ...
+%!                       -0.625414076165671, -0.661745551079288, ...
+%!                       -0.277969200170033; ...
+%!                       -0.509550065393847, -0.513266763880489, ...
+%!                       -0.477696597473307], 1e-13);
+%!test  # a row of weight zero is dropped
+%! Mdl = fitcecoc (ecX, ecL, 'Weights', [0; ones(29, 1)]);
+%! assert_equal (Mdl.NumObservations, 28);
+%! assert_equal (Mdl.Prior, [9, 9, 10] / 28, 1e-15);
+

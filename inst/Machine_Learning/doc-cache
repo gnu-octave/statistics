@@ -3154,7 +3154,7 @@ Save a ClassificationDiscriminant object.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 18
 ClassificationECOC
@@ -3647,18 +3647,20 @@ ClassificationECOC.RowsUsed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 177
+# length: 348
 ClassificationECOC: property RowsUsed
 A logical column marking the rows of the original data that were
-used, the rest having been dropped as missing. This property is
-read-only.
+used. A row is dropped when its class is missing, when every predictor
+is missing, or when its weight is zero; a row missing only some
+predictors is used, each binary learner taking the missing values by
+its own rule. This property is read-only.
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 111
-A logical column marking the rows of the original data that were used, the rest having been dropped as missing.
+# length: 70
+A logical column marking the rows of the original data that were used.
 
 
 
