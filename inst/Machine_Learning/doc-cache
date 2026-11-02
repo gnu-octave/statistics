@@ -16653,7 +16653,7 @@ Apply a function to each fold of a cross-validated model.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 17
 ClassificationSVM
@@ -17389,13 +17389,14 @@ ClassificationSVM.Prior
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 541
+# length: 581
 ClassificationSVM: property Prior
 Prior probabilities of the classes
 
 A numeric row vector with one entry per class, in the order of
 ClassNames, summing to one. It defaults to the class
-frequencies of the training data. This property is read-only.
+frequencies of the training data, a row missing some predictors
+included. This property is read-only.
 
 Specified as a row vector with one entry per class, in the order of
 ClassNames, and rescaled to sum to one. It may be given as
@@ -17448,15 +17449,18 @@ ClassificationSVM.RowsUsed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 383
+# length: 572
 ClassificationSVM: property RowsUsed
 Rows used for fitting
 
 A logical column vector with the same length as the observations in the
 original predictor data X, true for each row that was used for
 fitting the ClassificationSVM model. It is empty, [],
-when every observation was used, so a non-empty value means that rows
-holding missing values were dropped. This property is read-only.
+when every observation was used. A row is dropped when its class is
+missing, when every predictor is missing, or when its weight is zero.
+A row missing only some predictors is used: it counts in the prior and
+in W, while the support vector machine is fitted on the complete
+rows, as MATLAB does. This property is read-only.
 
 
 # name: <cell-element>
