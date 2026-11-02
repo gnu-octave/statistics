@@ -32,8 +32,9 @@
 ## @var{m}, @var{k}, and @var{n}.  A scalar input functions as a constant matrix
 ## of the same size as the other inputs.
 ##
-## The parameters @var{m}, @var{k}, and @var{n} must be positive integers
-## with @var{k} and @var{n} not greater than @var{m}.
+## The parameters @var{m}, @var{k}, and @var{n} must be non-negative integers
+## with @var{k} and @var{n} not greater than @var{m}.  A sample of size
+## @qcode{0} contains no marked items, so @var{r} is then @qcode{0}.
 ##
 ## When called with a single size argument, @code{hygernd} returns a square
 ## matrix with the dimension specified.  When called with more than one scalar
@@ -106,7 +107,7 @@ function r = hygernd (m, k, n, varargin)
     cls = 'double';
   endif
 
-  ok = ((m >= 0) & (k >= 0) & (n > 0) & (k <= m) & (n <= m) &
+  ok = ((m >= 0) & (k >= 0) & (n >= 0) & (k <= m) & (n <= m) &
         (m == fix (m)) & (k == fix (k)) & (n == fix (n)));
 
   ## Generate random sample from the hypergeometric distribution
@@ -145,6 +146,12 @@ endfunction
 
 ## Test output
 %!assert_equal (size (hygernd (4, 2, 2)), [1, 1])
+%!assert_equal (hygernd (10, 5, 0), 0)
+%!assert_equal (hygernd (10, 5, 0, 1, 3), [0, 0, 0])
+%!assert_equal (hygernd (0, 0, 0), 0)
+%!assert_equal (hygernd ([10, 0], [5, 0], [0, 0]), [0, 0])
+%!assert_equal (hygernd (10, 0, 3), 0)
+%!assert_equal (hygernd (10, 5, -1), NaN)
 %!assert_equal (size (hygernd (4 * ones (2, 1), 2,2)), [2, 1])
 %!assert_equal (size (hygernd (4 * ones (2, 2), 2,2)), [2, 2])
 %!assert_equal (size (hygernd (4, 2 * ones (2, 1), 2)), [2, 1])

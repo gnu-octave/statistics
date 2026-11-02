@@ -28,7 +28,7 @@
 ## @itemize
 ## @item
 ## @var{m} is the total size of the population of the hypergeometric
-## distribution. The elements of @var{m} must be positive natural numbers.
+## distribution. The elements of @var{m} must be non-negative integers.
 ##
 ## @item
 ## @var{k} is the number of marked items of the hypergeometric distribution.
@@ -36,8 +36,14 @@
 ##
 ## @item
 ## @var{n} is the size of the drawn sample of the hypergeometric
-## distribution. The elements of @var{n} must be positive natural numbers.
+## distribution. The elements of @var{n} must be non-negative integers.
 ## @end itemize
+##
+## A sample of size @qcode{0} contains no marked items, so its mean and variance
+## are @qcode{0}, even for an empty population, where MATLAB returns
+## @qcode{NaN} for both.  A sample from a population of one always holds the
+## same number of marked items, so its variance is @qcode{0}, where MATLAB
+## returns @qcode{NaN}.
 ##
 ## The size of @var{mn} (mean) and @var{v} (variance) is the common size of the
 ## input arguments.  A scalar input functions as a constant matrix of the
@@ -79,7 +85,12 @@ function [mn, v] = hygestat (m, k, n)
   v = (n .* (k ./ m) .* (1 - k ./ m) .* (m - n)) ./ (m - 1);
 
   ## Continue argument check
-  is_nan = find (! (m >= 0) | ! (k >= 0) | ! (n > 0) | ! (m == round (m)) | ...
+  ## An empty sample holds no marked items, and a sample from a population of
+  ## one a fixed number of them; the formulas above divide zero by zero there
+  mn(n == 0) = 0;
+  v(n == 0 | m == 1) = 0;
+
+  is_nan = find (! (m >= 0) | ! (k >= 0) | ! (n >= 0) | ! (m == round (m)) | ...
                  ! (k == round (k)) | ! (n == round (n)) | ! (k <= m) | ...
                  ! (n <= m));
   if (any (is_nan))
@@ -116,6 +127,22 @@ endfunction
 %! expected_v = [0.0000, 0.2400, 0.4000, 0.4898, 0.5357, 0.5556];
 %! assert_equal (mn, expected_mn, 0.001);
 %! assert_equal (v, expected_v, 0.001);
+%!test
+%! [mn, v] = hygestat (10, 5, 0);
+%! assert_equal ([mn, v], [0, 0]);
+%!test
+%! [mn, v] = hygestat (0, 0, 0);
+%! assert_equal ([mn, v], [0, 0]);
+%!test
+%! [mn, v] = hygestat (1, 1, 1);
+%! assert_equal ([mn, v], [1, 0]);
+%!test
+%! [mn, v] = hygestat (1, 0, 1);
+%! assert_equal ([mn, v], [0, 0]);
+%!test
+%! [mn, v] = hygestat ([0, 10, 10], [0, 5, 5], [0, 0, -1]);
+%! assert_equal (mn, [0, 0, NaN]);
+%! assert_equal (v, [0, 0, NaN]);
 %!test
 %! m = 4:9;
 %! k = 0:5;
