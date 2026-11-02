@@ -1044,7 +1044,7 @@ Replace selected values by standard missing values.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 8
 tiedrank
@@ -1053,7 +1053,7 @@ tiedrank
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1773
+# length: 1960
 statistics: [r, tieadj] = tiedrank (x)
 statistics: [r, tieadj] = tiedrank (x, tieflag)
 statistics: [r, tieadj] = tiedrank (x, tieflag, bidir)
@@ -1081,6 +1081,10 @@ tiedrank (x, 0) is the same as tiedrank (x).
 from each end, so that the smallest and largest values get rank 1, the next
 smallest and largest get rank 2, etc. These ranks are used in the
 Ansari-Bradley test.
+
+tieflag and bidir are read as an if reads a condition:
+each is set when it is not empty and all of its elements are nonzero, so an
+empty [] keeps the default, as in tiedrank (x, [], 1).
 
 [r, tieadj] = tiedrank (x, tieflag,
 bidir, tol) treats two values as tied when they lie within a
