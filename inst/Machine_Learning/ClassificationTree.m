@@ -3384,6 +3384,13 @@ endfunction
 %!error<ClassificationTree.predict: the table holds no predictor 'SW'.> ...
 %! predict (ctM, ctT(:, [1, 3, 4, 5, 6]))
 
+%!test  # a missing value and an unseen level predict as missing, as R2024a
+%! k = categorical (repmat ({'a'; 'b'}, 6, 1));
+%! lab = repmat ({'p'; 'q'}, 6, 1);
+%! Mdl = fitctree (table (k, lab), 'lab');
+%! N = table (categorical ({'a'; ''; 'z'}), 'VariableNames', {'k'});
+%! assert_equal (predict (Mdl, N), {'p'; 'p'; 'p'});
+
 %!error<ClassificationTree.predict: the table variable 'SL' no longer holds what it held when the model was fitted.> ...
 %! predict (ctM, setfield (ctT, 'SL', categorical (ctT.SL > 5.8)))
 

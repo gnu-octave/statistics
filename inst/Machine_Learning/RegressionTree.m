@@ -2547,6 +2547,29 @@ endclassdef
 %!error<RegressionTree.predict: the table holds no predictor 'PL'.> ...
 %! predict (rtM, rtT(:, [1, 3, 4, 5]))
 
+## MATLAB parity: a missing value, and a level the model was not fitted on,
+## predict as missing, as measured on R2024a
+%!shared mkM, mtM
+%! k = categorical (repmat ({'a'; 'b'}, 6, 1));
+%! y = repmat ([1; 10], 6, 1);
+%! mkM = fitrtree (table (k, y), 'y', 'MinParentSize', 2);
+%! kt = cellstr (k);
+%! mtM = fitrtree (table (kt, y), 'y', 'MinParentSize', 2);
+%!test  # an undefined categorical value
+%! N = table (categorical ({'a'; ''}), 'VariableNames', {'k'});
+%! assert_equal (predict (mkM, N), [1; 5.5], 1e-14);
+%!test  # a categorical level the model was not fitted on
+%! N = table (categorical ({'b'; 'z'}), 'VariableNames', {'k'});
+%! assert_equal (predict (mkM, N), [10; 5.5], 1e-14);
+%!test  # empty text, and text the model was not fitted on
+%! N = table ({'a'; ''; 'z'}, 'VariableNames', {'kt'});
+%! assert_equal (predict (mtM, N), [1; 5.5; 5.5], 1e-14);
+%!test  # a missing string
+%! s = string ({'a'; 'b'; 'b'});
+%! s(2) = missing;
+%! assert_equal (predict (mtM, table (s, 'VariableNames', {'kt'})), ...
+%!               [1; 5.5; 10], 1e-14);
+
 ## A table at loss
 %!shared lrtT, lrtM
 %! load fisheriris

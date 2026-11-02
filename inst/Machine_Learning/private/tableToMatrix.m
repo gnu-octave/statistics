@@ -25,7 +25,9 @@
 ## one read from numbers.  A variable @var{pnames} does not name is passed
 ## over, one it names and the table does not hold is named in the error, and
 ## a value holding a level is coded as that level was coded before, so a
-## table carrying only some of the levels still codes them the same way.
+## table carrying only some of the levels still codes them the same way.  A
+## missing value, and a level the model was not fitted on, is coded
+## @qcode{NaN}, which the model predicts as missing, as MATLAB does.
 ##
 ## A matrix passes through, its columns taken in the order they come.
 ##
@@ -68,25 +70,29 @@ function Z = tableToMatrix (pnames, lev, T, caller)
 endfunction
 
 ## The codes a column of levels carried when the model was fitted, so that a
-## table holding only some of them still codes them the same way.
+## table holding only some of them still codes them the same way.  A missing
+## value and an unseen level are NaN; a missing categorical or string value is
+## found before conversion, since its text could spell a level.
 function v = ttmLevelCodes (col, lev, caller, name)
 
+  miss = false (rows (col), 1);
   if (isa (col, 'categorical'))
+    miss = isundefined (col(:));
     col = cellstr (col);
-  elseif (ischar (col) || isa (col, 'string'))
+  elseif (isa (col, 'string'))
+    miss = ismissing (col(:));
+    col = cellstr (col);
+  elseif (ischar (col))
     col = cellstr (col);
   endif
   if (! iscellstr (col))
     error (strcat ("%s: the table variable '%s' no longer holds what it", ...
                    " held when the model was fitted."), caller, name);
   endif
-  v = zeros (numel (col), 1);
+  v = NaN (numel (col), 1);
   for k = 1:numel (lev)
     v(strcmp (col(:), lev{k})) = k;
   endfor
-  if (any (v == 0))
-    error (strcat ("%s: the table variable '%s' holds a level the model", ...
-                   " was not fitted on."), caller, name);
-  endif
+  v(miss) = NaN;
 
 endfunction
