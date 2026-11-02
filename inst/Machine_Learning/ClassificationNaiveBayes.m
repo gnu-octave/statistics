@@ -2178,6 +2178,14 @@ endclassdef
 %! Mdl = fitcnb (table (char (nbT), nbL), 'nbL');
 %! assert_equal (Mdl.CategoricalLevels{1}, [1; 2]);
 
+%!test  # 'Weights' may name a table variable, no predictor then, as R2024a
+%! x1 = (1:12)';
+%! w = [1; 1; 2; 2; 1; 1; 3; 3; 1; 1; 2; 2];
+%! lab = repmat ({'p'; 'q'}, 6, 1);
+%! Mdl = fitcnb (table (x1, w, lab), 'lab', 'Weights', 'w');
+%! assert_equal (Mdl.PredictorNames, {'x1'});
+%! assert_equal (Mdl.W, w / 20, 1e-15);
+
 ## A table at loss
 %!test  # the response is named, left out, or given beside the table
 %! load fisheriris

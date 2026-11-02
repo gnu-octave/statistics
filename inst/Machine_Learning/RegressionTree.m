@@ -2570,6 +2570,28 @@ endclassdef
 %! assert_equal (predict (mtM, table (s, 'VariableNames', {'kt'})), ...
 %!               [1; 5.5; 10], 1e-14);
 
+## MATLAB parity: 'Weights' may name a table variable, which is then no
+## predictor, as measured on R2024a
+%!shared wtT, wtW
+%! x1 = (1:12)';
+%! w = [1; 1; 2; 2; 1; 1; 3; 3; 1; 1; 2; 2];
+%! y = x1;
+%! wtT = table (x1, w, y);
+%! wtW = [1; 1; 2; 2; 1; 1; 3; 3; 1; 1; 2; 2] / 20;
+%!test  # the response named
+%! Mdl = fitrtree (wtT, 'y', 'Weights', 'w');
+%! assert_equal (Mdl.PredictorNames, {'x1'});
+%! assert_equal (Mdl.W, wtW, 1e-15);
+%!test  # a model formula
+%! Mdl = fitrtree (wtT, 'y ~ x1', 'Weights', 'w');
+%! assert_equal (Mdl.PredictorNames, {'x1'});
+%! assert_equal (Mdl.W, wtW, 1e-15);
+%!test  # the response given beside the table, and the name as a string
+%! Mdl = fitrtree (wtT(:, [1, 2]), (1:12)', 'Weights', string ('w'));
+%! assert_equal (Mdl.PredictorNames, {'x1'});
+%!error<RegressionTree: the table holds no variable 'v'.> ...
+%! fitrtree (wtT, 'y', 'Weights', 'v')
+
 ## A table at loss
 %!shared lrtT, lrtM
 %! load fisheriris

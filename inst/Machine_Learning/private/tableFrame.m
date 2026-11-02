@@ -32,8 +32,10 @@
 ## they went in, with @var{lev} empty.  Where it is, @var{X} comes back as a
 ## real numeric matrix, @var{Y} as the response, and @var{args} carrying
 ## @qcode{'PredictorNames'}, @qcode{'ResponseName'} and
-## @qcode{'CategoricalPredictors'} as the table gives them.  @var{lev} is one
-## cell per predictor, holding the levels of a predictor read from text and
+## @qcode{'CategoricalPredictors'} as the table gives them.  Where
+## @qcode{'Weights'} names a variable of the table, @var{args} carries that
+## variable's values instead, and the variable is no predictor.  @var{lev} is
+## one cell per predictor, holding the levels of a predictor read from text and
 ## empty for one read from numbers, which is what lets a level map to the code
 ## at prediction that it carried at fitting.  Empty text, a blank character
 ## row and a missing string are missing, as an undefined categorical value
@@ -93,6 +95,22 @@ function [X, Y, args, lev, errmsg] = tableFrame (X, Y, args)
     errmsg = "the table must have one row per response.";
     return;
   endif
+
+  ## Observation weights may name a table variable, which then gives the
+  ## weights and is no predictor, as in MATLAB
+  for j = 1:2:numel (args) - 1
+    w = args{j+1};
+    if (ischar (args{j}) && strcmpi (args{j}, 'Weights')
+        && (ischar (w) && isrow (w) || (isa (w, 'string') && isscalar (w))))
+      wname = char (w);
+      if (! any (strcmp (names, wname)))
+        errmsg = sprintf ("the table holds no variable '%s'.", wname);
+        return;
+      endif
+      args{j+1} = X.(wname);
+      keep(strcmp (names, wname)) = false;
+    endif
+  endfor
 
   ## Whatever is left is a predictor, unless the formula or the call named
   ## a subset; the two together are a conflict, as R2024a calls it one
