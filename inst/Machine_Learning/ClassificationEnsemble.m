@@ -2125,3 +2125,10 @@ endfunction
 %! [label, score] = predict (Mdl, emQ);
 %! assert_equal (label, {'p'; 'q'; 'p'; 'p'});
 %! assert_equal (score(:,1), 1.30134484272219 * [1; -1; 1; 1], 1e-13);
+%!test  # a split's gain where a predictor is missing is MATLAB's documented
+%!      # one, the whole node's impurity over the predictor's share of it
+%! Mdl = fitcensemble (emX, emL, 'Method', 'AdaBoostM1');
+%! [~, score] = predict (Mdl, emQ);
+%! assert_equal (score(:,1), [0.91117618231938; -19.29439242712; ...
+%!                            7.16138723429921; 13.1963181449538], 1e-11);
+
