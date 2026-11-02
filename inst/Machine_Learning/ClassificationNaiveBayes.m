@@ -804,6 +804,10 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ## each observation to each class.  The label of an observation is the
     ## class of least expected cost.
     ##
+    ## A missing predictor is skipped and the observation classified on the
+    ## rest.  Under the @qcode{'mn'} distribution, which describes the whole
+    ## row at once, an observation missing any count has posterior and cost
+    ## @qcode{NaN} and takes the class of largest prior, whatever the cost.
     ##
     ## The new data may be a table, whose variables are matched to the
     ## predictors the model was fitted on by name and not by position:
@@ -861,6 +865,18 @@ classdef ClassificationNaiveBayes < PredictiveModel
       ## Expected misclassification cost, and the label of least cost
       cost = score * this.Cost;
       [~, minIdx] = min (cost, [], 2);
+
+      ## The multinomial describes the whole row at once, so a row missing a
+      ## count has no likelihood: its posterior and cost are NaN and it takes
+      ## the class of largest prior, the cost aside, as R2024a and R2026b do
+      if (ischar (this.DistributionNames))
+        miss = any (isnan (XC), 2);
+        if (any (miss))
+          score(miss,:) = NaN;
+          cost(miss,:) = NaN;
+          [~, minIdx(miss)] = max (this.Prior);
+        endif
+      endif
       label = labelsFromIndex (this.ClassNames, minIdx);
 
       ## The transform is applied once, to the assembled posterior
@@ -2541,4 +2557,24 @@ endclassdef
 %! Mdl.Prior = [0.3, 0.7];
 %! assert_equal (numel (Mdl.W), 23);
 %! assert_equal (sum (Mdl.W), 1, 1e-15);
+
+## MATLAB parity: under the multinomial a query missing a count has posterior
+## and cost NaN and the class of largest prior, the cost aside, as measured
+## on R2024a and R2026b
+%!test  # the class of largest prior
+%! L = repmat ({'p'; 'q'; 'q'; 'p'; 'p'; 'q'; 'p'; 'q'}, 3, 1);
+%! C = [mod((1:24)', 4), mod((1:24)', 3), 1 + mod((1:24)', 5)];
+%! Mdl = fitcnb (C, L, 'DistributionNames', 'mn', 'Prior', [0.3, 0.7]);
+%! [label, score, cost] = predict (Mdl, [1, 2, 3; 2, NaN, 1; NaN, NaN, NaN]);
+%! assert_equal (label, {'q'; 'q'; 'q'});
+%! assert_equal (score(:,1), [0.352213859428937; NaN; NaN], 1e-14);
+%! assert_equal (cost(:,1), [0.647786140571063; NaN; NaN], 1e-14);
+%!test  # the cost does not move it
+%! L = repmat ({'p'; 'q'; 'q'; 'p'; 'p'; 'q'; 'p'; 'q'}, 3, 1);
+%! C = [mod((1:24)', 4), mod((1:24)', 3), 1 + mod((1:24)', 5)];
+%! Mdl = fitcnb (C, L, 'DistributionNames', 'mn', 'Prior', [0.7, 0.3], ...
+%!               'Cost', [0, 1; 5, 0]);
+%! [label, ~, cost] = predict (Mdl, [1, 2, 3; 2, NaN, 1; NaN, NaN, NaN]);
+%! assert_equal (label, {'q'; 'p'; 'p'});
+%! assert_equal (cost(:,1), [1.26254662156491; NaN; NaN], 1e-14);
 

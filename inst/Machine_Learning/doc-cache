@@ -11331,7 +11331,7 @@ ClassificationNaiveBayes.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 892
+# length: 1153
 ClassificationNaiveBayes: label = predict (obj, XC)
 ClassificationNaiveBayes: [label, score, cost] = predict (obj, XC)
 Classify new data with a trained ClassificationNaiveBayes object.
@@ -11345,6 +11345,11 @@ XC) also returns score, the posterior probability of each
 class, and cost, the expected misclassification cost of assigning
 each observation to each class. The label of an observation is the
 class of least expected cost.
+
+A missing predictor is skipped and the observation classified on the
+rest. Under the 'mn' distribution, which describes the whole
+row at once, an observation missing any count has posterior and cost
+NaN and takes the class of largest prior, whatever the cost.
 
 The new data may be a table, whose variables are matched to the
 predictors the model was fitted on by name and not by position:
@@ -23748,7 +23753,7 @@ Save a CompactClassificationGAM object.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 31
 CompactClassificationNaiveBayes
@@ -24379,7 +24384,7 @@ CompactClassificationNaiveBayes.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 645
+# length: 906
 CompactClassificationNaiveBayes: label = predict (obj, XC)
 CompactClassificationNaiveBayes: [label, score, cost] = predict (obj, XC)
 Classify new data with a compact naive Bayes model.
@@ -24387,6 +24392,11 @@ Classify new data with a compact naive Bayes model.
 The same classification the model it came from would give: the label of
 least expected cost, the posterior of each class, and the expected
 misclassification cost of each.
+
+A missing predictor is skipped and the observation classified on the
+rest. Under the 'mn' distribution, which describes the whole
+row at once, an observation missing any count has posterior and cost
+NaN and takes the class of largest prior, whatever the cost.
 
 The new data may be a table, whose variables are matched to the
 predictors the model was fitted on by name and not by position:
