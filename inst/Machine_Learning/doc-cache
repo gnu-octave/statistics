@@ -7061,7 +7061,7 @@ Save a ClassificationGAM object.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 17
 ClassificationKNN
@@ -8010,15 +8010,17 @@ ClassificationKNN.RowsUsed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 383
+# length: 458
 ClassificationKNN: property RowsUsed
 Rows used for fitting
 
 A logical column vector with the same length as the observations in the
 original predictor data X, true for each row that was used for
 fitting the ClassificationKNN model. It is empty, [],
-when every observation was used, so a non-empty value means that rows
-holding missing values were dropped. This property is read-only.
+when every observation was used. A row is dropped when its class is
+missing, when every predictor is missing, or when its weight is zero;
+a row missing only some predictors is used. This property is
+read-only.
 
 
 # name: <cell-element>

@@ -104,8 +104,10 @@ classdef ClassificationKNN < PredictiveModel
     ## A logical column vector with the same length as the observations in the
     ## original predictor data @var{X}, true for each row that was used for
     ## fitting the ClassificationKNN model.  It is empty, @qcode{[]},
-    ## when every observation was used, so a non-empty value means that rows
-    ## holding missing values were dropped.  This property is read-only.
+    ## when every observation was used.  A row is dropped when its class is
+    ## missing, when every predictor is missing, or when its weight is zero;
+    ## a row missing only some predictors is used.  This property is
+    ## read-only.
     ##
     ## @end deftp
     RowsUsed        = [];
@@ -1327,11 +1329,11 @@ classdef ClassificationKNN < PredictiveModel
         gY(! ismember (gY, namedClasses (glY, ClassNames))) = NaN;
       endif
 
-      ## An observation is dropped only when its response is missing.  A row
-      ## whose predictors hold missing values is kept and reported as used,
+      ## An observation is dropped when its response is missing, when every
+      ## predictor is missing, or when its weight is zero, as R2024a drops it.
+      ## A row missing only some predictors is kept and reported as used,
       ## while the fit below draws on the complete observations alone.
-      RowsUsed  = ! isnan (gY);
-      ## A row of zero weight is dropped too, as R2024a drops it.
+      RowsUsed  = ! isnan (gY) & ! all (isnan (X), 2);
       if (! isempty (Weights))
         RowsUsed = RowsUsed & Weights(:) > 0;
       endif
@@ -4762,3 +4764,36 @@ endfunction
 %! Mdl = ClassificationKNN (meas(51:100, 3:4), Y, 'ClassNames', C, ...
 %!                         'Prior', [1, 0]);
 %! assert_equal (cellstr (predict (Mdl, meas(51, 3:4))), {'versicolor'});
+
+## MATLAB parity: a row missing every predictor is dropped, and one missing
+## only some is used, as measured on R2024a
+%!shared knX, knL
+%! knX = [mod((1:24)', 7) + (1:24)' / 10, mod((1:24)', 5) - (1:24)' / 20];
+%! knX(2,1) = NaN;
+%! knL = repmat ({'p'; 'q'; 'q'; 'p'; 'p'; 'q'; 'p'; 'q'}, 3, 1);
+%!test  # a row missing one predictor is used
+%! Mdl = fitcknn (knX, knL);
+%! assert_equal (Mdl.NumObservations, 24);
+%! assert_equal (Mdl.RowsUsed, []);
+%!test  # a row missing every predictor is not
+%! X = knX;
+%! X([7, 15],:) = NaN;
+%! Mdl = fitcknn (X, knL);
+%! assert_equal (Mdl.NumObservations, 22);
+%! assert_equal (find (! Mdl.RowsUsed)', [7, 15]);
+%! assert_equal ([rows(Mdl.X), numel(Mdl.Y), numel(Mdl.W)], [22, 22, 22]);
+%! assert_equal (rows (resubPredict (Mdl)), 22);
+%!test  # the empirical prior counts the rows used
+%! X = knX;
+%! X([7, 15],:) = NaN;
+%! assert_equal (fitcknn (X, knL).Prior, [10, 12] / 22, 1e-15);
+%!test  # a class held only by dropped rows is no class of the model; R2024a
+%!      # lists it in ClassNames but leaves it out of Prior
+%! X = knX;
+%! X([7, 15],:) = NaN;
+%! L = knL;
+%! L([7, 15]) = {'r'};
+%! Mdl = fitcknn (X, L);
+%! assert_equal (Mdl.ClassNames(:)', {'p', 'q'});
+%! assert_equal (Mdl.Prior, [10, 12] / 22, 1e-15);
+
