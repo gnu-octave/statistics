@@ -4788,7 +4788,7 @@ endfunction
 %! X([7, 15],:) = NaN;
 %! assert_equal (fitcknn (X, knL).Prior, [10, 12] / 22, 1e-15);
 %!test  # a class held only by dropped rows is no class of the model; R2024a
-%!      # lists it in ClassNames but leaves it out of Prior
+%!      # lists it in ClassNames with prior 0
 %! X = knX;
 %! X([7, 15],:) = NaN;
 %! L = knL;
