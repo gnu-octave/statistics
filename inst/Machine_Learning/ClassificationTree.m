@@ -1052,11 +1052,23 @@ classdef ClassificationTree < PredictiveModel
         gY(! ismember (gY, namedClasses (glY, ClassNames))) = NaN;
       endif
 
-      ## An observation is dropped only when its response is missing.  A row
-      ## whose predictors hold missing values is kept and reported as used;
-      ## the fit sends it as far down the tree as the predictors it does
-      ## carry allow.
+      ## An observation is dropped when its class is missing, when every
+      ## predictor is missing, or when its weight is zero, as R2024a drops
+      ## it.  A row missing only some predictors is kept and reported as
+      ## used; the fit sends it as far down the tree as the predictors it
+      ## does carry allow.
       RowsUsed = ! isnan (gY);
+      if (! any (RowsUsed))
+        error ("ClassificationTree: no observations with a known class.");
+      endif
+      RowsUsed &= ! all (isnan (X), 2);
+      if (! isempty (Weights))
+        RowsUsed &= Weights(:) != 0;
+      endif
+      if (! any (RowsUsed))
+        error (strcat ("ClassificationTree: no observation has a known", ...
+                       " class, a known predictor and a nonzero weight."));
+      endif
       ## Index the rows and not the elements: a response naming its classes
       ## in the rows of a character matrix has one column per character, and
       ## a linear index would flatten the names into single letters.
@@ -1064,9 +1076,6 @@ classdef ClassificationTree < PredictiveModel
       X = X(RowsUsed, :);
       if (! isempty (Weights))
         Weights = Weights(RowsUsed);
-      endif
-      if (isempty (Y))
-        error ("ClassificationTree: no observations with a known class.");
       endif
 
       this.X = X;
@@ -3554,3 +3563,33 @@ endfunction
 %! delete (fname);
 %! assert_equal (predict (M2, meas([1, 51, 101], :)), ...
 %!               predict (Mdl, meas([1, 51, 101], :)));
+
+## MATLAB parity: a row missing every predictor, or of weight zero, is
+## dropped, and the empirical prior counts only the rows kept, as measured
+## on R2024a
+%!shared trX, trL
+%! x1 = mod ((1:30)', 7) + (1:30)' / 10;
+%! x2 = mod ((1:30)', 5) * 2 - (1:30)' / 20;
+%! trX = [x1, x2];
+%! trX([2, 9, 17], 1) = NaN;
+%! trX(23, 2) = NaN;
+%! trX(27, :) = NaN;
+%! trL = repmat ({'p'; 'q'; 'q'; 'p'; 'p'; 'q'}, 5, 1);
+%!test  # the row missing every predictor is not used
+%! Mdl = fitctree (trX, trL);
+%! assert_equal (Mdl.NumObservations, 29);
+%! assert_equal (find (! Mdl.RowsUsed)', 27);
+%! assert_equal ([rows(Mdl.X), numel(Mdl.W)], [29, 29]);
+%!test  # the empirical prior is taken over the rows kept
+%! Mdl = fitctree (trX, trL);
+%! assert_equal (Mdl.Prior, [15, 14] / 29, 1e-15);
+%!test  # and so are the class probabilities
+%! [~, score] = predict (fitctree (trX, trL), [3, 1; NaN, 3]);
+%! assert_equal (score, [7, 1; 15 * 8 / 29, 14 * 8 / 29] / 8, 1e-15);
+%!test  # a row of weight zero is not used
+%! Mdl = fitctree (trX, trL, 'Weights', [0; ones(29, 1)]);
+%! assert_equal (Mdl.NumObservations, 28);
+%! assert_equal (Mdl.Prior, [0.5, 0.5], 1e-15);
+%!error<ClassificationTree: no observation has a known class, a known predictor and a nonzero weight.> ...
+%! fitctree ([NaN, NaN; NaN, NaN; 1, 2], {'a'; 'b'; 'c'}, 'Weights', [1; 1; 0])
+

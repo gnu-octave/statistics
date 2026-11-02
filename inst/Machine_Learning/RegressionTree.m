@@ -818,18 +818,27 @@ classdef RegressionTree < PredictiveModel
       endif
       this.ExpandedPredictorNames = PredictorNames;
 
-      ## An observation is dropped only when its response is missing.  A row
-      ## whose predictors hold missing values is kept and reported as used;
-      ## the fit sends it as far down the tree as the predictors it does
-      ## carry allow.
+      ## An observation is dropped when its response is missing, when every
+      ## predictor is missing, or when its weight is zero, as R2024a drops
+      ## it.  A row missing only some predictors is kept and reported as
+      ## used; the fit sends it as far down the tree as the predictors it
+      ## does carry allow.
       RowsUsed = ! isnan (Y);
+      if (! any (RowsUsed))
+        error ("RegressionTree: no observations with a known response.");
+      endif
+      RowsUsed &= ! all (isnan (X), 2);
+      if (! isempty (Weights))
+        RowsUsed &= Weights(:) != 0;
+      endif
+      if (! any (RowsUsed))
+        error (strcat ("RegressionTree: no observation has a known", ...
+                       " response, a known predictor and a nonzero weight."));
+      endif
       Y = Y(RowsUsed);
       X = X(RowsUsed, :);
       if (! isempty (Weights))
         Weights = Weights(RowsUsed);
-      endif
-      if (isempty (Y))
-        error ("RegressionTree: no observations with a known response.");
       endif
 
       this.X = X;
@@ -2664,3 +2673,25 @@ endclassdef
 %! A = RegressionTree (X, y, 'Weights', single (w));
 %! B = RegressionTree (X, y, 'Weights', double (single (w)));
 %! assert_equal (predict (A, X), predict (B, X));
+
+## MATLAB parity: a row missing every predictor, or of weight zero, is
+## dropped, as measured on R2024a
+%!shared trX, trY
+%! x1 = mod ((1:30)', 7) + (1:30)' / 10;
+%! x2 = mod ((1:30)', 5) * 2 - (1:30)' / 20;
+%! trX = [x1, x2];
+%! trX([2, 9, 17], 1) = NaN;
+%! trX(23, 2) = NaN;
+%! trX(27, :) = NaN;
+%! trY = 2 * x1 - x2;
+%!test  # the row missing every predictor is not used
+%! Mdl = fitrtree (trX, trY);
+%! assert_equal (Mdl.NumObservations, 29);
+%! assert_equal (find (! Mdl.RowsUsed)', 27);
+%! assert_equal ([rows(Mdl.X), numel(Mdl.W)], [29, 29]);
+%!test  # a row of weight zero is not used
+%! Mdl = fitrtree (trX, trY, 'Weights', [0; ones(29, 1)]);
+%! assert_equal (Mdl.NumObservations, 28);
+%!error<RegressionTree: no observation has a known response, a known predictor and a nonzero weight.> ...
+%! fitrtree ([NaN, NaN; NaN, NaN; 1, 2], [1; 2; 3], 'Weights', [1; 1; 0])
+
