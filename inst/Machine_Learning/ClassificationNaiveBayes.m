@@ -55,8 +55,8 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ## Class labels
     ##
     ## Specified as a logical or numeric column vector, or as a character array
-    ## or a cell array of character vectors with the same number of rows as the
-    ## predictor data.  Each row in @var{Y} is the observed class label for the
+    ## or a cell array of character vectors with the same number of rows as
+    ## @var{X}.  Each row in @var{Y} is the observed class label for the
     ## corresponding row in @var{X}.  This property is read-only.
     ##
     ## @end deftp
@@ -67,9 +67,10 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ##
     ## Predictor data
     ##
-    ## A numeric matrix containing the predictor data.  Each column of @var{X}
-    ## represents one predictor (variable), and each row represents one
-    ## observation.  This property is read-only.
+    ## A numeric matrix containing the predictor data the model was fitted on.
+    ## Each column of @var{X} represents one predictor (variable), and each
+    ## row represents one observation; a row dropped from the fit, as
+    ## @code{RowsUsed} describes, is not kept.  This property is read-only.
     ##
     ## Where the model was fitted from a table, the predictors are the coded
     ## matrix and not the table: a variable holding levels is stored as its
@@ -442,17 +443,13 @@ classdef ClassificationNaiveBayes < PredictiveModel
       this.Prior = P(:)' / sum (P);
       ## The weights follow the prior, so reassigning one re-derives the other.
       ## Weights that were given keep their class in W, computed as double.
-      ## Either way only the rows the model was fitted on carry a weight.
-      used = this.RowsUsed;
-      if (isempty (used))
-        used = true (rows (this.Y), 1);
-      endif
+      ## Y holds the rows the model was fitted on, one weight each.
       if (! isempty (this.RawWeights))
-        gY = labelIndices (this.ClassNames, this.Y(used,:));
+        gY = labelIndices (this.ClassNames, this.Y);
         this.W = cast (priorNormalize (double (this.RawWeights), gY, ...
                                        this.Prior), class (this.RawWeights));
       elseif (! isempty (this.Y))
-        gY = labelIndices (this.ClassNames, this.Y(used,:));
+        gY = labelIndices (this.ClassNames, this.Y);
         keep = gY > 0;
         this.W = priorWeights (this.Prior, gY(keep), sum (keep));
       endif
@@ -611,15 +608,14 @@ classdef ClassificationNaiveBayes < PredictiveModel
       this.DistributionNames = D;
       this.CategoricalPredictors = catidx;
 
-      ## Store the data as supplied, then drop the rows R2024a and R2026b
-      ## drop: a row whose class is missing, one missing every predictor, and
-      ## one of zero or missing weight.  A row missing only some predictors is
-      ## kept, each distribution being fitted on the rows it is known for, and
-      ## the empirical prior counting every row kept.  The multinomial
-      ## describes the whole row at once, so it is fitted on complete rows
-      ## alone, while a row missing some counts still counts in the prior.
-      this.X = X;
-      this.Y = Y;
+      ## Drop the rows R2024a and R2026b drop: a row whose class is missing,
+      ## one missing every predictor, and one of zero or missing weight.  A
+      ## row missing only some predictors is kept, each distribution being
+      ## fitted on the rows it is known for, and the empirical prior counting
+      ## every row kept.  The multinomial describes the whole row at once, so
+      ## it is fitted on complete rows alone, while a row missing some counts
+      ## still counts in the prior.  X and Y hold the rows kept, as in
+      ## R2024a, so that they line up with W and with resubPredict.
       ok = ! isnan (grp2idx (Y)) & ! all (isnan (X), 2);
       if (! isempty (Weights))
         ok &= ! isnan (Weights(:)) & Weights(:) > 0;
@@ -629,6 +625,8 @@ classdef ClassificationNaiveBayes < PredictiveModel
       endif
       Xf = X(ok, :);
       Yf = Y(ok, :);
+      this.X = Xf;
+      this.Y = Yf;
       if (isempty (Xf))
         error (strcat ("ClassificationNaiveBayes: no observation has a", ...
                        " known class, a known predictor and a positive", ...
@@ -675,6 +673,8 @@ classdef ClassificationNaiveBayes < PredictiveModel
         gY = gY(inC);
         ok(ok) = inC;
         this.RowsUsed = ok;
+        this.X = Xf;
+        this.Y = Yf;
         if (isempty (Xf))
           error (strcat ("ClassificationNaiveBayes: no observation", ...
                          " belongs to the named classes."));
@@ -740,6 +740,8 @@ classdef ClassificationNaiveBayes < PredictiveModel
         gY = gY(keep);
         ok(ok) = keep;
         this.RowsUsed = ok;
+        this.X = Xf;
+        this.Y = Yf;
         this.NumObservations = rows (Xf);
         if (! isempty (this.RawWeights))
           this.RawWeights = this.RawWeights(keep);
@@ -953,7 +955,7 @@ classdef ClassificationNaiveBayes < PredictiveModel
       ## The partition covers the observations actually trained on: a row
       ## dropped from the fit is not one the folds can use.  The
       ## response is passed rather than a count so the folds stay stratified.
-      [~, Yused] = nbTrainX (this);
+      Yused = this.Y;
       if (! isempty (CVPartition))
         partition = CVPartition;
       elseif (! isempty (Holdout))
@@ -1259,7 +1261,7 @@ classdef ClassificationNaiveBayes < PredictiveModel
         error (strcat ("ClassificationNaiveBayes.resubPredict:", ...
                        " too few input arguments."));
       endif
-      [label, score, cost] = predict (this, nbTrainX (this));
+      [label, score, cost] = predict (this, this.X);
 
     endfunction
 
@@ -1275,7 +1277,8 @@ classdef ClassificationNaiveBayes < PredictiveModel
         error (strcat ("ClassificationNaiveBayes.resubMargin:", ...
                        " too few input arguments."));
       endif
-      [X, Y] = nbTrainX (this);
+      X = this.X;
+      Y = this.Y;
       m = margin (this, X, Y);
 
     endfunction
@@ -1293,7 +1296,8 @@ classdef ClassificationNaiveBayes < PredictiveModel
                        " too few input arguments."));
       endif
       ## The training data weighs by the model's own weights, as in R2024a
-      [X, Y] = nbTrainX (this);
+      X = this.X;
+      Y = this.Y;
       e = edge (this, X, Y, 'Weights', this.W);
 
     endfunction
@@ -1314,7 +1318,8 @@ classdef ClassificationNaiveBayes < PredictiveModel
                        " too few input arguments."));
       endif
       ## The model's own weights stand unless others are given, as in R2024a
-      [X, Y] = nbTrainX (this);
+      X = this.X;
+      Y = this.Y;
       if (! any (strcmpi (varargin(1:2:end), 'Weights')))
         varargin = [varargin, {'Weights', this.W}];
       endif
@@ -1402,6 +1407,16 @@ classdef ClassificationNaiveBayes < PredictiveModel
     function mdl = load_model (filename, data)
 
       data = decodeLabels (data);
+
+      ## A model saved before X and Y held only the rows used carries every
+      ## row given; keep the rows used, so that Y lines up with W again
+      ## before the prior, which reads Y, is assigned.
+      if (isfield (data, 'RowsUsed') && ! isempty (data.RowsUsed)
+          && rows (data.X) == numel (data.RowsUsed)
+          && rows (data.X) > data.NumObservations)
+        data.X = data.X(data.RowsUsed, :);
+        data.Y = data.Y(data.RowsUsed, :);
+      endif
 
       ## The smallest fit the class accepts, filled property by property
       ## below.  Two observations per class give every distribution something
@@ -2502,4 +2517,28 @@ endclassdef
 %! C = mnC;
 %! C(strcmp (mnL, 'p'), 1) = NaN;
 %! fitcnb (C, mnL, 'DistributionNames', 'mn');
+
+## X and Y hold the rows the model used, lined up with W and resubPredict, as
+## in R2024a, so that cross-validation partitions those same rows
+%!shared alX, alL
+%! alX = [mod((1:24)', 7) + (1:24)' / 10, mod((1:24)', 5) - (1:24)' / 20];
+%! alX(2,1) = NaN;
+%! alX(20,:) = NaN;
+%! alL = repmat ({'p'; 'q'; 'q'; 'p'; 'p'; 'q'; 'p'; 'q'}, 3, 1);
+%!test  # the dropped row is in neither X nor Y
+%! Mdl = fitcnb (alX, alL);
+%! assert_equal ([rows(Mdl.X), rows(Mdl.Y), numel(Mdl.W)], [23, 23, 23]);
+%! assert_equal (numel (resubPredict (Mdl)), 23);
+%! assert_equal (find (! Mdl.RowsUsed)', 20);
+%!test  # cross-validation partitions the rows used
+%! Mdl = fitcnb (alX, alL);
+%! CV = crossval (Mdl, 'KFold', 3);
+%! assert_equal (rows (CV.X), 23);
+%! assert_equal (numel (kfoldPredict (CV)), 23);
+%! assert_equal (isscalar (kfoldLoss (CV)), true);
+%!test  # reassigning the prior keeps one weight per row used
+%! Mdl = fitcnb (alX, alL, 'Weights', 1 + mod ((1:24)', 3));
+%! Mdl.Prior = [0.3, 0.7];
+%! assert_equal (numel (Mdl.W), 23);
+%! assert_equal (sum (Mdl.W), 1, 1e-15);
 

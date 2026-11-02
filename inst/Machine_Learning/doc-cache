@@ -11038,13 +11038,14 @@ ClassificationNaiveBayes.X
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 415
+# length: 503
 ClassificationNaiveBayes: property X
 Predictor data
 
-A numeric matrix containing the predictor data. Each column of X
-represents one predictor (variable), and each row represents one
-observation. This property is read-only.
+A numeric matrix containing the predictor data the model was fitted on.
+Each column of X represents one predictor (variable), and each
+row represents one observation; a row dropped from the fit, as
+RowsUsed describes, is not kept. This property is read-only.
 
 Where the model was fitted from a table, the predictors are the coded
 matrix and not the table: a variable holding levels is stored as its
@@ -11069,13 +11070,13 @@ ClassificationNaiveBayes.Y
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 314
+# length: 297
 ClassificationNaiveBayes: property Y
 Class labels
 
 Specified as a logical or numeric column vector, or as a character array
-or a cell array of character vectors with the same number of rows as the
-predictor data. Each row in Y is the observed class label for the
+or a cell array of character vectors with the same number of rows as
+X. Each row in Y is the observed class label for the
 corresponding row in X. This property is read-only.
 
 
