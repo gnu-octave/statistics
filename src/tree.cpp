@@ -715,11 +715,6 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
           if (nd.nsize < minparent || numsplits >= maxsplits || nothingtosplit)
             continue;
 
-          // The impurity of the whole node, rows missing a predictor included,
-          // which MATLAB's gain starts from where a predictor is missing.
-          const double nodeimp = isreg ? nodemom.sse () / total
-                                       : impurity (tally, total, K, crit);
-
           octave_idx_type bestvar = 0;
           double bestval = std::numeric_limits<double>::quiet_NaN ();
           double bestgain = 0.0;
@@ -767,26 +762,13 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
               const double presentimp = isreg ? presmom.sse () / wp
                                               : impurity (present, wp, K, crit);
 
-              // MATLAB's documented gain where a predictor is missing,
-              //   dI_U = P(T - T_U) i_t - P(T_L) i_tL - P(T_R) i_tR,
-              // takes i_t over the whole node, rows missing the predictor
-              // included.  It is the gain over the rows the predictor is
-              // known for plus this term, which is zero when none is missing.
-              // Adding it only then keeps the arithmetic of complete data as
-              // it was: the node's impurity summed in another order would
-              // break exact ties between predictors that split alike.
-              const double missadj = (have < stop)
-                                     ? wp * (nodeimp - presentimp) / total
-                                     : 0.0;
-
               // A categorical predictor is split into two sets of levels
               if (! o.iscat.empty () && o.iscat[j])
                 {
                   const double g
                     = categorical_split (xj, oj, start, have, y, resp, w, K,
                                          crit, isreg, present, presmom, wp,
-                                         presentimp, total, o, catl, catr)
-                      + missadj;
+                                         presentimp, total, o, catl, catr);
                   if (! catl.empty ()
                       && g > bestgain + std::fabs (bestgain) * GAIN_TIE_TOL)
                     {
@@ -844,12 +826,13 @@ tree_build (const Matrix& X, const ColumnVector& yv, const ColumnVector& wv,
                       impr = impurity (other, wr, K, crit);
                     }
 
-                  // The rows missing this predictor cannot be placed by it and
-                  // stay in the node; missadj makes the gain MATLAB's, the
-                  // node's impurity over the share of the node the predictor
-                  // is known for, less the children's.
+                  // The rows that are missing this predictor cannot be placed
+                  // by it, so the split is judged on the rows it can place and
+                  // then scaled by their share of the node.  Without that
+                  // scaling a predictor known for a handful of rows would beat
+                  // one known for all of them.
                   const double gain = (wp * presentimp - wl * impl - wr * impr)
-                                      / total + missadj;
+                                      / total;
 
                   if (gain > bestgain + std::fabs (bestgain) * GAIN_TIE_TOL)
                     {

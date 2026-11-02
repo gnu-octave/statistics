@@ -41,10 +41,10 @@ classdef ClassificationTree < PredictiveModel
   ## child.  It is counted in that node and in every node above it, and
   ## @code{predict} stops it there and gives it that node's answer, so a row
   ## is never sent down a branch on evidence it does not carry.
-  ## Choosing a split, a predictor known for only part of a node is scored by
-  ## the impurity of the whole node over the share it is known for, less the
-  ## impurity of the two children, as MATLAB documents, so a predictor known
-  ## for few rows is not preferred for that alone.
+  ## Choosing a split, a predictor known for only part of a node is scored on
+  ## the rows it is known for, by how much the split lowers their impurity,
+  ## and that is scaled by their share of the node, as C4.5 does, so a
+  ## predictor known for few rows is not preferred for that alone.
   ##
   ## A categorical predictor is split into two sets of levels, and an
   ## observation whose level a node did not see stops there, as one missing
