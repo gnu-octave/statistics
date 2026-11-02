@@ -87,9 +87,10 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ## original predictor data @var{X}, true for each row that was used for
     ## fitting the model.  It is empty, @qcode{[]}, when every observation was
     ## used.  A row is dropped when its class is missing, when every predictor
-    ## is missing, or when its weight is zero or missing; with the
-    ## @qcode{'mn'} distribution, also when any predictor is missing.  A row
-    ## missing only some predictors is used.  This property is read-only.
+    ## is missing, or when its weight is zero or missing.  A row missing only
+    ## some predictors is used; with the @qcode{'mn'} distribution it counts
+    ## in the prior but not in the multinomial, which describes the whole
+    ## row.  This property is read-only.
     ##
     ## @end deftp
     RowsUsed = [];
@@ -610,21 +611,16 @@ classdef ClassificationNaiveBayes < PredictiveModel
       this.DistributionNames = D;
       this.CategoricalPredictors = catidx;
 
-      ## Store the data as supplied, then drop the rows fitcnb's documentation
-      ## drops, as R2024a drops them: a row whose class is missing, one missing
-      ## every predictor, and one of zero or missing weight.  A row missing
-      ## only some predictors is kept, each predictor being fitted on the rows
-      ## it is observed in, and the empirical prior counting every row kept.
-      ## The multinomial describes the whole row at once, so there a row
-      ## missing any predictor is dropped, as the documentation says.
+      ## Store the data as supplied, then drop the rows R2024a and R2026b
+      ## drop: a row whose class is missing, one missing every predictor, and
+      ## one of zero or missing weight.  A row missing only some predictors is
+      ## kept, each distribution being fitted on the rows it is known for, and
+      ## the empirical prior counting every row kept.  The multinomial
+      ## describes the whole row at once, so it is fitted on complete rows
+      ## alone, while a row missing some counts still counts in the prior.
       this.X = X;
       this.Y = Y;
-      ok = ! isnan (grp2idx (Y));
-      if (ischar (D))
-        ok &= ! any (isnan (X), 2);
-      else
-        ok &= ! all (isnan (X), 2);
-      endif
+      ok = ! isnan (grp2idx (Y)) & ! all (isnan (X), 2);
       if (! isempty (Weights))
         ok &= ! isnan (Weights(:)) & Weights(:) > 0;
       endif
@@ -2478,4 +2474,32 @@ endclassdef
 %! fitcnb (X, nbL, 'CategoricalPredictors', 1);
 %!error<ClassificationNaiveBayes: no observation has a known class, a known predictor and a positive weight.> ...
 %! fitcnb ([NaN, NaN; NaN, NaN], {'p'; 'q'})
+
+## MATLAB parity: with the multinomial a row missing some counts counts in the
+## prior but is left out of the fit, as measured on R2026b
+%!shared mnC, mnL
+%! mnL = repmat ({'p'; 'q'; 'q'; 'p'; 'p'; 'q'; 'p'; 'q'}, 3, 1);
+%! mnC = [mod((1:24)', 4), mod((1:24)', 3), 1 + mod((1:24)', 5)];
+%! mnC(5,2) = NaN;
+%!test  # the row is used
+%! Mdl = fitcnb (mnC, mnL, 'DistributionNames', 'mn');
+%! assert_equal (Mdl.NumObservations, 24);
+%! assert_equal (Mdl.RowsUsed, []);
+%!test  # but the multinomial is fitted on the complete rows
+%! Mdl = fitcnb (mnC, mnL, 'DistributionNames', 'mn');
+%! assert_equal (cell2mat (Mdl.DistributionParameters), ...
+%!               [0.25, 0.183333333333333, 0.566666666666667; ...
+%!                0.289473684210526, 0.171052631578947, ...
+%!                0.539473684210526], 1e-14);
+%!test  # and the prior counts it
+%! C = mnC;
+%! C(9,:) = NaN;
+%! Mdl = fitcnb (C, mnL, 'DistributionNames', 'mn');
+%! assert_equal (Mdl.NumObservations, 23);
+%! [~, score] = predict (Mdl, [1, 2, 3]);
+%! assert_equal (score, [0.534585278127478, 0.465414721872522], 1e-14);
+%!error<ClassificationNaiveBayes: class p has no observation with every count known.> ...
+%! C = mnC;
+%! C(strcmp (mnL, 'p'), 1) = NaN;
+%! fitcnb (C, mnL, 'DistributionNames', 'mn');
 
