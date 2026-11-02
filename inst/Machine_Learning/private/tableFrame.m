@@ -35,7 +35,9 @@
 ## @qcode{'CategoricalPredictors'} as the table gives them.  @var{lev} is one
 ## cell per predictor, holding the levels of a predictor read from text and
 ## empty for one read from numbers, which is what lets a level map to the code
-## at prediction that it carried at fitting.
+## at prediction that it carried at fitting.  Empty text, a blank character
+## row and a missing string are missing, as an undefined categorical value
+## is: no level, and coded @qcode{NaN}.
 ##
 ## This runs before any model exists, which is why it is here rather than on
 ## @code{PredictiveModel}: mapping a table onto a model that has already been
@@ -173,15 +175,18 @@ function [v, lev, iscat, errmsg] = tfColumn (col, name)
     iscat = true;
     return;
   endif
+  ## Empty text, a blank character row and a missing string are missing, as
+  ## in MATLAB, so they are no level and code as NaN, as an undefined
+  ## categorical value does
   if (ischar (col))
     col = cellstr (col);
   elseif (isa (col, 'string'))
     col = cellstr (col);
   endif
   if (iscellstr (col))
-    lev = unique (col(:)')';
-    lev = lev(:)';
-    v = zeros (numel (col), 1);
+    miss = cellfun ('isempty', col(:));
+    lev = unique (col(! miss))';
+    v = NaN (numel (col), 1);
     for k = 1:numel (lev)
       v(strcmp (col(:), lev{k})) = k;
     endfor

@@ -2160,6 +2160,24 @@ endclassdef
 %! assert_equal (Mdl.PredictorNames, {'SL', 'SW'});
 %! assert_equal (Mdl.ResponseName, 'Species');
 
+## MATLAB parity: empty text, a blank character row and a missing string are
+## missing, not a level, as measured on R2024a
+%!shared nbT, nbL
+%! nbT = {'a'; ''; 'b'; 'a'; 'b'; 'a'; ''; 'b'; 'a'; 'b'; 'a'; 'b'};
+%! nbL = repmat ({'p'; 'q'}, 6, 1);
+%!test  # empty text
+%! Mdl = fitcnb (table (nbT, nbL), 'nbL');
+%! assert_equal (Mdl.CategoricalLevels{1}, [1; 2]);
+%! assert_equal (Mdl.DistributionParameters{1,1}, [4; 3] / 7, 1e-15);
+%!test  # an empty and a missing string
+%! s = string (nbT);
+%! s(2) = missing;
+%! Mdl = fitcnb (table (s, nbL), 'nbL');
+%! assert_equal (Mdl.CategoricalLevels{1}, [1; 2]);
+%!test  # a blank character row
+%! Mdl = fitcnb (table (char (nbT), nbL), 'nbL');
+%! assert_equal (Mdl.CategoricalLevels{1}, [1; 2]);
+
 ## A table at loss
 %!test  # the response is named, left out, or given beside the table
 %! load fisheriris
