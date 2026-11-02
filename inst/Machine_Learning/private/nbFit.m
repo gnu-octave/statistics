@@ -102,6 +102,17 @@ function [DP, K, S, W, CL] = nbFit (X, gY, k, D, w, Kernel, Support, ...
         continue;
       endif
 
+      ## Each predictor is fitted on the observations it is known for, so a
+      ## row missing one predictor still informs the others.  A class in
+      ## which a predictor is never known has nothing to fit it on.
+      obs = ! isnan (xij);
+      if (! any (obs))
+        error ("%s: predictor %s has no known value in class %s.", ...
+               classname, PN{j}, nbLabelName (CN, i));
+      endif
+      xij = xij(obs);
+      wij = wij(obs);
+
       switch (D{j})
 
         case 'mvmn'

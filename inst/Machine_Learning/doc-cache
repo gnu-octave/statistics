@@ -10316,7 +10316,7 @@ Keep a subset of the fitted regularization strengths.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 24
 ClassificationNaiveBayes
@@ -10755,13 +10755,14 @@ ClassificationNaiveBayes.NumObservations
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 240
+# length: 333
 ClassificationNaiveBayes: property NumObservations
 Number of observations
 
 A positive integer specifying the number of observations used to train
-the model, after any row holding a missing value has been dropped. This
-property is read-only.
+the model, the rows dropped as RowsUsed describes left out. Each
+predictor is fitted on the rows it is known for, and an empirical prior
+counts every row used. This property is read-only.
 
 
 # name: <cell-element>
@@ -10864,15 +10865,17 @@ ClassificationNaiveBayes.RowsUsed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 372
+# length: 522
 ClassificationNaiveBayes: property RowsUsed
 Rows used for fitting
 
 A logical column vector with the same length as the observations in the
 original predictor data X, true for each row that was used for
 fitting the model. It is empty, [], when every observation was
-used, so a non-empty value means that rows holding missing values were
-dropped. This property is read-only.
+used. A row is dropped when its class is missing, when every predictor
+is missing, or when its weight is zero or missing; with the
+'mn' distribution, also when any predictor is missing. A row
+missing only some predictors is used. This property is read-only.
 
 
 # name: <cell-element>
@@ -11434,13 +11437,13 @@ ClassificationNaiveBayes.resubPredict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 298
+# length: 303
 ClassificationNaiveBayes: label = resubPredict (obj)
 ClassificationNaiveBayes: [label, score, cost] = resubPredict (obj)
 Classify the training data with the trained model.
 
 The same as calling predict on the data the model was fitted on,
-with the rows that were dropped for missing values left out.
+with the rows that were dropped, as RowsUsed describes, left out.
 
 
 # name: <cell-element>
