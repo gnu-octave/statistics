@@ -547,8 +547,10 @@ classdef ClassificationEnsemble < PredictiveModel
         error ("%s: invalid optional paired argument.", caller);
       endif
 
+      ## A row missing some predictors is kept, its learners taking the
+      ## missing values, as in R2024a
       F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, caller, false, ...
-                      'refuse');
+                      'refuse', 'partial');
       K = classCount (F.ClassNames);
 
       ## The method, by default the one MATLAB chooses for the class count.
@@ -2089,3 +2091,37 @@ endfunction
 %! load fisheriris
 %! ClassificationEnsemble (meas(51:150, 3:4), species(51:150), ...
 %!                         'Cost', struct ('a', 1));
+
+## MATLAB parity: a row missing some predictors is kept, and dropped only
+## when every predictor is missing or its weight is zero, as measured on
+## R2024a for every method
+%!shared emX, emL, emQ
+%! x1 = mod ((1:30)', 7) + (1:30)' / 10;
+%! x2 = mod ((1:30)', 5) * 2 - (1:30)' / 20;
+%! emX = [x1, x2];
+%! emX([2, 9, 17], 1) = NaN;
+%! emX(23, 2) = NaN;
+%! emX(27, :) = NaN;
+%! emQ = [3, 1; 5, 4; 7, 2; NaN, 3];
+%! emL = repmat ({'p'; 'q'; 'q'; 'p'; 'p'; 'q'}, 5, 1);
+%!test  # boosting keeps the rows a predictor is missing from
+%! Mdl = fitcensemble (emX, emL, 'Method', 'AdaBoostM1');
+%! assert_equal (Mdl.NumObservations, 29);
+%! assert_equal (Mdl.RowsUsed, [true(26, 1); false; true(3, 1)]);
+%! assert_equal (rows (Mdl.X), 29);
+%!test  # and so does bagging
+%! Mdl = fitcensemble (emX, emL, 'Method', 'Bag');
+%! assert_equal (Mdl.NumObservations, 29);
+%!test  # and the random subspace, whose learners drop such rows themselves
+%! Mdl = fitcensemble (emX, emL, 'Method', 'Subspace', 'Learners', 'knn');
+%! assert_equal (Mdl.NumObservations, 29);
+%!test  # a row of weight zero is dropped
+%! Mdl = fitcensemble (emX, emL, 'Method', 'AdaBoostM1', ...
+%!                     'Weights', [0; ones(29, 1)]);
+%! assert_equal (Mdl.NumObservations, 28);
+%!test  # the first learner sees the rows a predictor is missing from
+%! Mdl = fitcensemble (emX, emL, 'Method', 'AdaBoostM1', ...
+%!                     'NumLearningCycles', 1);
+%! [label, score] = predict (Mdl, emQ);
+%! assert_equal (label, {'p'; 'q'; 'p'; 'p'});
+%! assert_equal (score(:,1), 1.30134484272219 * [1; -1; 1; 1], 1e-13);

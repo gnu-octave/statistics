@@ -16,7 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} {@var{F} =} regFrame (@var{X}, @var{Y}, @var{Weights}, @var{classname})
+## @deftypefn  {Private Function} {@var{F} =} regFrame (@var{X}, @var{Y}, @var{Weights}, @var{classname})
+## @deftypefnx {Private Function} {@var{F} =} regFrame (@var{X}, @var{Y}, @var{Weights}, @var{classname}, @var{rowRule})
 ##
 ## Validate the data of a regression model and resolve its observation
 ## weights.
@@ -31,9 +32,16 @@
 ## weights were given in; @qcode{W}, the same normalized; and @qcode{n} and
 ## @qcode{p}.
 ##
+## @var{rowRule} says which rows are dropped for their predictors.
+## @qcode{'complete'}, the default, drops a row missing any predictor.
+## @qcode{'partial'} keeps it unless every predictor is missing, and drops a
+## row of weight zero, as R2024a's ensembles do, whose learners take the
+## missing values themselves.  A negative weight is left to the caller to
+## refuse.
+##
 ## @end deftypefn
 
-function F = regFrame (X, Y, Weights, classname)
+function F = regFrame (X, Y, Weights, classname, rowRule = 'complete')
 
   if (! (isnumeric (X) && isreal (X) && ismatrix (X) && ndims (X) == 2))
     error ("%s: invalid values in X.", classname);
@@ -66,7 +74,11 @@ function F = regFrame (X, Y, Weights, classname)
   endif
 
   F = struct ();
-  F.RowsUsed = ! (isnan (Y) | any (isnan (X), 2));
+  if (strcmp (rowRule, 'partial'))
+    F.RowsUsed = ! (isnan (Y) | all (isnan (X), 2)) & Weights != 0;
+  else
+    F.RowsUsed = ! (isnan (Y) | any (isnan (X), 2));
+  endif
   F.X = X(F.RowsUsed, :);
   F.Y = Y(F.RowsUsed);
   F.Weights = Weights(F.RowsUsed);

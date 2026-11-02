@@ -19,6 +19,7 @@
 ## @deftypefn  {Private Function} {@var{F} =} classFrame (@var{X}, @var{Y}, @var{ClassNames}, @var{Prior}, @var{Cost}, @var{Weights}, @var{classname})
 ## @deftypefnx {Private Function} {@var{F} =} classFrame (@dots{}, @var{binary})
 ## @deftypefnx {Private Function} {@var{F} =} classFrame (@dots{}, @var{binary}, @var{costRule})
+## @deftypefnx {Private Function} {@var{F} =} classFrame (@dots{}, @var{binary}, @var{costRule}, @var{rowRule})
 ##
 ## Resolve the classes, the prior, the cost and the observation weights of a
 ## classifier.
@@ -32,6 +33,13 @@
 ## @var{binary} says whether exactly two classes are wanted, which is the
 ## default and what the four linear and kernel classifiers want, or two or
 ## more, which is what the ECOC model wants.
+##
+## @var{rowRule} says which rows are dropped for their predictors.
+## @qcode{'complete'}, the default, drops a row missing any predictor.
+## @qcode{'partial'} keeps it unless every predictor is missing, and drops a
+## row of weight zero, as R2024a's ensembles do, whose learners take the
+## missing values themselves.  A negative weight is left to the caller to
+## refuse.
 ##
 ## Fields: @qcode{X} and @qcode{Y}, the retained data; @qcode{RowsUsed}, a
 ## logical over the rows as supplied; @qcode{gY}, the class index of each
@@ -53,7 +61,8 @@
 ## @end deftypefn
 
 function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
-                         classname, binary = true, costRule = 'remove')
+                         classname, binary = true, costRule = 'remove', ...
+                         rowRule = 'complete')
 
   if (! (isnumeric (X) && isreal (X) && ismatrix (X) && ndims (X) == 2))
     error ("%s: invalid values in X.", classname);
@@ -102,7 +111,11 @@ function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
     endif
   endif
 
-  RowsUsed = ! (isnan (gY) | any (isnan (X), 2));
+  if (strcmp (rowRule, 'partial'))
+    RowsUsed = ! (isnan (gY) | all (isnan (X), 2)) & Weights != 0;
+  else
+    RowsUsed = ! (isnan (gY) | any (isnan (X), 2));
+  endif
   ## Index the rows, not the elements: a character matrix of class names has
   ## one row per observation and several columns, and a linear index would
   ## flatten it into single characters.

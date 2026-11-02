@@ -518,7 +518,9 @@ classdef RegressionEnsemble < PredictiveModel
         endif
       endif
 
-      F = regFrame (X, Y, Weights, caller);
+      ## A row missing some predictors is kept, its learners taking the
+      ## missing values, as in R2024a
+      F = regFrame (X, Y, Weights, caller, 'partial');
       if (any (F.Weights < 0) || ! (sum (F.Weights) > 0))
         error (strcat ("%s: 'Weights' must be nonnegative and not all", ...
                        " zero."), caller);
@@ -1595,3 +1597,34 @@ endfunction
 %! Mdl = fitrensemble (X, y, 'Weights', single (w), 'NumLearningCycles', 10);
 %! assert_equal (class (Mdl.W), 'single');
 %! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+
+## MATLAB parity: a row missing some predictors is kept, and dropped only
+## when every predictor or the response is missing, as measured on R2024a
+%!shared emX, emY, emQ
+%! x1 = mod ((1:30)', 7) + (1:30)' / 10;
+%! x2 = mod ((1:30)', 5) * 2 - (1:30)' / 20;
+%! emX = [x1, x2];
+%! emX([2, 9, 17], 1) = NaN;
+%! emX(23, 2) = NaN;
+%! emX(27, :) = NaN;
+%! emQ = [3, 1; 5, 4; 7, 2; NaN, 3];
+%! emY = 2 * x1 - x2;
+%!test  # boosting keeps the rows a predictor is missing from
+%! Mdl = fitrensemble (emX, emY, 'Method', 'LSBoost');
+%! assert_equal (Mdl.NumObservations, 29);
+%! assert_equal (Mdl.RowsUsed, [true(26, 1); false; true(3, 1)]);
+%! assert_equal (rows (Mdl.X), 29);
+%!test  # and so does bagging
+%! Mdl = fitrensemble (emX, emY, 'Method', 'Bag');
+%! assert_equal (Mdl.NumObservations, 29);
+%!test  # a row with a missing response is dropped
+%! y = emY;
+%! y(5) = NaN;
+%! Mdl = fitrensemble (emX, y);
+%! assert_equal (Mdl.NumObservations, 28);
+%! assert_equal (find (! Mdl.RowsUsed)', [5, 27]);
+%!test  # the first two learners see the rows a predictor is missing from
+%! Mdl = fitrensemble (emX, emY, 'Method', 'LSBoost', 'NumLearningCycles', 2);
+%! assert_equal (predict (Mdl, emQ), [6.11640211640212; 6.10571428571429; ...
+%!                                    9.29183673469388; 5.04444114149821], ...
+%!               1e-12);
