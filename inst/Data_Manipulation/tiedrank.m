@@ -55,9 +55,9 @@
 ## @var{tol} is either a scalar or an array the size of @var{x} giving each
 ## element its own tolerance, and two neighbouring values are tied when the gap
 ## between them does not exceed the @strong{sum} of their two tolerances.  The
-## default is @qcode{0}, which is exact comparison.  @code{signrank} uses this
-## to rank differences that are equal to within the precision of the values
-## they came from.
+## default is @qcode{0}, which is exact comparison, and an empty @var{tol} takes
+## it.  @code{signrank} uses this to rank differences that are equal to within
+## the precision of the values they came from.
 ##
 ## @end deftypefn
 
@@ -77,7 +77,7 @@ function [r, tieadj] = tiedrank (x, tieflag, bidir, tol)
   else
     bidir = read_flag (bidir, "BIDIR");
   endif
-  if (nargin < 4)
+  if (nargin < 4 || (isnumeric (tol) && isempty (tol)))
     tol = 0;
   elseif (! isnumeric (tol) || ! isreal (tol) || any (tol(:) < 0))
     error ("tiedrank: TOL must be a non-negative numeric array.");
@@ -237,6 +237,11 @@ endfunction
 %! ## Exact equality still ties whatever TOL says, infinities included
 %! assert_equal (tiedrank ([Inf, Inf, 1]), [2.5, 2.5, 1]);
 %! assert_equal (tiedrank ([Inf, Inf, 1], 0, 0, 0), [2.5, 2.5, 1]);
+%!test
+%! ## An empty TOL takes the default
+%! [r, tieadj] = tiedrank ([10, 20, 30, 40, 20], [], 1, []);
+%! assert_equal (r, [1, 2.5, 2, 1, 2.5]);
+%! assert_equal (tieadj, 3);
 
 %!test
 %! ## An empty flag keeps its default, so BIDIR can be set on its own

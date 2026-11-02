@@ -1053,7 +1053,7 @@ tiedrank
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1960
+# length: 1987
 statistics: [r, tieadj] = tiedrank (x)
 statistics: [r, tieadj] = tiedrank (x, tieflag)
 statistics: [r, tieadj] = tiedrank (x, tieflag, bidir)
@@ -1092,9 +1092,9 @@ tolerance of each other rather than only when they are exactly equal.
 tol is either a scalar or an array the size of x giving each
 element its own tolerance, and two neighbouring values are tied when the gap
 between them does not exceed the sum of their two tolerances. The
-default is 0, which is exact comparison. signrank uses this
-to rank differences that are equal to within the precision of the values
-they came from.
+default is 0, which is exact comparison, and an empty tol takes
+it. signrank uses this to rank differences that are equal to within
+the precision of the values they came from.
 
 
 # name: <cell-element>
