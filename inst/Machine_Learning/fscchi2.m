@@ -77,7 +77,7 @@
 ##
 ## The following @qcode{Name-Value} pairs are supported:
 ##
-## @multitable @columnfractions 0.25 0.75
+## @multitable @columnfractions 0.3 0.7
 ## @headitem @var{Name} @tab @var{Value}
 ##
 ## @item @qcode{'CategoricalPredictors'} @tab The categorical predictors: a
@@ -116,7 +116,7 @@
 ## matrix, the categorical predictors cannot be named, the predictors having no
 ## names, as in MATLAB.
 ##
-## @seealso{relieff, sequentialfs, crosstab}
+## @seealso{fsrftest, relieff, sequentialfs, crosstab}
 ## @end deftypefn
 
 function [idx, scores] = fscchi2 (X, Y, varargin)
