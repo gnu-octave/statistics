@@ -3568,7 +3568,7 @@ Hypergeometric cumulative distribution function (CDF).
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 7
 hygeinv
@@ -3577,22 +3577,27 @@ hygeinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1111
+# length: 1312
 statistics: x = hygeinv (p, m, k, n)
 Inverse of the hypergeometric cumulative distribution function (iCDF).
 
 For each element of p, compute the quantile (the inverse of the CDF) of
 the hypergeometric distribution with parameters m, k, and
-n. The size of x is the common size of p, m, k,
-and
-n. A scalar input functions as a constant matrix of the same size as
-the other inputs.
+n. The size of x is the common size of p, m,
+k, and n. A scalar input functions as a constant matrix of the
+same size as the other inputs.
 
 This is the number of drawn marked items x given a probability p,
 when randomly drawing a sample of size n without replacement from a
 population of total size m containing k marked items. The
-parameters m, k, and n must be positive integers with
-k and n not greater than m.
+parameters m, k, and n must be non-negative integers with
+k and n not greater than m, and m finite unless
+n is 0.
+
+For p = 0 and p = 1, x is the least and the greatest
+number of marked items the sample can hold, max (0, n - (m
+- k)) and min (n, k). MATLAB does not return for
+p = 0.
 
 Further information about the hypergeometric distribution can be found at
 https://en.wikipedia.org/wiki/Hypergeometric_distribution
@@ -3695,7 +3700,7 @@ statistics: r = hygernd (m, k, n, rows, cols, ...)
 statistics: r = hygernd (m, k, n, [sz])
 Random arrays from the hypergeometric distribution.
 
-r = hygernd ((m, k, n returns an array of
+r = hygernd (m, k, n) returns an array of
 random numbers chosen from the hypergeometric distribution with parameters
 m, k, and n. The size of r is the common size of
 m, k, and n. A scalar input functions as a constant matrix

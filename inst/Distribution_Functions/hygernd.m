@@ -26,7 +26,7 @@
 ##
 ## Random arrays from the hypergeometric distribution.
 ##
-## @code{@var{r} = hygernd ((@var{m}, @var{k}, @var{n}} returns an array of
+## @code{@var{r} = hygernd (@var{m}, @var{k}, @var{n})} returns an array of
 ## random numbers chosen from the hypergeometric distribution with parameters
 ## @var{m}, @var{k}, and @var{n}.  The size of @var{r} is the common size of
 ## @var{m}, @var{k}, and @var{n}.  A scalar input functions as a constant matrix
