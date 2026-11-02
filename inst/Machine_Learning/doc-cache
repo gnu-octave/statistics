@@ -18362,7 +18362,7 @@ Save a ClassificationSVM object.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 18
 ClassificationTree
@@ -18371,7 +18371,7 @@ ClassificationTree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1623
+# length: 1886
 statistics: ClassificationTree
 Binary decision tree for classification
 
@@ -18395,6 +18395,10 @@ An observation missing the predictor a node cuts on descends to neither
 child. It is counted in that node and in every node above it, and
 predict stops it there and gives it that node's answer, so a row
 is never sent down a branch on evidence it does not carry.
+Choosing a split, a predictor known for only part of a node is scored by
+the impurity of the whole node over the share it is known for, less the
+impurity of the two children, as MATLAB documents, so a predictor known
+for few rows is not preferred for that alone.
 
 A categorical predictor is split into two sets of levels, and an
 observation whose level a node did not see stops there, as one missing
@@ -19385,15 +19389,16 @@ ClassificationTree.RowsUsed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 388
+# length: 464
 ClassificationTree: property RowsUsed
 Rows used for fitting
 
 A logical column vector with one element per row of the predictor data
 as it was given, true for each row used for fitting. It is empty,
 [], when every row was used, so a non-empty value means that
-rows were dropped. Only a missing response drops a row; a row missing
-some of its predictors is kept. This property is read-only.
+rows were dropped. A row is dropped when its response is missing, when
+every predictor is missing, or when its weight is zero; a row missing
+only some of its predictors is kept. This property is read-only.
 
 
 # name: <cell-element>
@@ -43517,7 +43522,7 @@ Save a support vector regression model to a file.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 14
 RegressionTree
@@ -43526,7 +43531,7 @@ RegressionTree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1868
+# length: 2131
 statistics: RegressionTree
 Binary decision tree for regression
 
@@ -43551,6 +43556,10 @@ An observation missing the predictor a node cuts on descends to neither
 child. It is counted in that node and in every node above it, and
 predict stops it there and gives it that node's answer, so a row
 is never sent down a branch on evidence it does not carry.
+Choosing a split, a predictor known for only part of a node is scored by
+the impurity of the whole node over the share it is known for, less the
+impurity of the two children, as MATLAB documents, so a predictor known
+for few rows is not preferred for that alone.
 
 A categorical predictor is split into two sets of levels by ordering the
 levels by their mean response, and an observation whose level a node did
@@ -44395,15 +44404,16 @@ RegressionTree.RowsUsed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 384
+# length: 460
 RegressionTree: property RowsUsed
 Rows used for fitting
 
 A logical column vector with one element per row of the predictor data
 as it was given, true for each row used for fitting. It is empty,
 [], when every row was used, so a non-empty value means that
-rows were dropped. Only a missing response drops a row; a row missing
-some of its predictors is kept. This property is read-only.
+rows were dropped. A row is dropped when its response is missing, when
+every predictor is missing, or when its weight is zero; a row missing
+only some of its predictors is kept. This property is read-only.
 
 
 # name: <cell-element>
@@ -48526,7 +48536,7 @@ Fit a Support Vector Machine classification model.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 8
 fitctree
@@ -48535,7 +48545,7 @@ fitctree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5835
+# length: 5899
 statistics: Mdl = fitctree (X, Y)
 statistics: Mdl = fitctree (Tbl, ResponseVarName)
 statistics: Mdl = fitctree (Tbl, formula)
@@ -48572,8 +48582,9 @@ PredictorNames and ResponseName come from the table, and a
 level is coded at prediction as it was coded at fitting, so a table given
 to predict may hold only some of the levels.
 
-An observation whose class label is missing is dropped, and the rows kept
-are reported in RowsUsed. An observation missing some of its
+An observation whose class label is missing, which is missing every
+predictor, or whose weight is zero is dropped, and the rows kept are
+reported in RowsUsed. An observation missing only some of its
 predictors is kept: it descends the tree as far as the predictors it does
 carry allow and is answered there.
 
@@ -49376,7 +49387,7 @@ Fit a support vector machine regression model.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 8
 fitrtree
@@ -49385,7 +49396,7 @@ fitrtree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4617
+# length: 4681
 statistics: Mdl = fitrtree (X, Y)
 statistics: Mdl = fitrtree (Tbl, ResponseVarName)
 statistics: Mdl = fitrtree (Tbl, formula)
@@ -49420,10 +49431,11 @@ PredictorNames and ResponseName come from the table, and a
 level is coded at prediction as it was coded at fitting, so a table given
 to predict may hold only some of the levels.
 
-An observation whose response is missing is dropped, and the rows kept are
-reported in RowsUsed. An observation missing some of its predictors
-is kept: it descends the tree as far as the predictors it does carry allow
-and is answered there.
+An observation whose response is missing, which is missing every
+predictor, or whose weight is zero is dropped, and the rows kept are
+reported in RowsUsed. An observation missing only some of its
+predictors is kept: it descends the tree as far as the predictors it does
+carry allow and is answered there.
 
 Mdl = fitrtree (..., name, value) takes the
 options below.

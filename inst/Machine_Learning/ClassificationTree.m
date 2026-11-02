@@ -41,6 +41,10 @@ classdef ClassificationTree < PredictiveModel
   ## child.  It is counted in that node and in every node above it, and
   ## @code{predict} stops it there and gives it that node's answer, so a row
   ## is never sent down a branch on evidence it does not carry.
+  ## Choosing a split, a predictor known for only part of a node is scored by
+  ## the impurity of the whole node over the share it is known for, less the
+  ## impurity of the two children, as MATLAB documents, so a predictor known
+  ## for few rows is not preferred for that alone.
   ##
   ## A categorical predictor is split into two sets of levels, and an
   ## observation whose level a node did not see stops there, as one missing
@@ -105,8 +109,9 @@ classdef ClassificationTree < PredictiveModel
     ## A logical column vector with one element per row of the predictor data
     ## as it was given, true for each row used for fitting.  It is empty,
     ## @qcode{[]}, when every row was used, so a non-empty value means that
-    ## rows were dropped.  Only a missing response drops a row; a row missing
-    ## some of its predictors is kept.  This property is read-only.
+    ## rows were dropped.  A row is dropped when its response is missing, when
+    ## every predictor is missing, or when its weight is zero; a row missing
+    ## only some of its predictors is kept.  This property is read-only.
     ##
     ## @end deftp
     RowsUsed = [];

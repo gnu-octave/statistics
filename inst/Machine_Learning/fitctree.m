@@ -56,8 +56,9 @@
 ## level is coded at prediction as it was coded at fitting, so a table given
 ## to @code{predict} may hold only some of the levels.
 ##
-## An observation whose class label is missing is dropped, and the rows kept
-## are reported in @code{RowsUsed}.  An observation missing some of its
+## An observation whose class label is missing, which is missing every
+## predictor, or whose weight is zero is dropped, and the rows kept are
+## reported in @code{RowsUsed}.  An observation missing only some of its
 ## predictors is kept: it descends the tree as far as the predictors it does
 ## carry allow and is answered there.
 ##
