@@ -111,7 +111,7 @@ function c = nancov (varargin)
     X = [x(:), y(:)];
   else
     if (isequal (size (x), [0, 0]))
-      c = NaN;
+      c = NaN (class (x));
       return;
     endif
     if (isvector (x))
@@ -121,6 +121,10 @@ function c = nancov (varargin)
     endif
   endif
 
+  if (islogical (X))
+    X = double (X);
+  endif
+
   p = columns (X);
 
   if (strcmp (method, 'complete'))
@@ -128,7 +132,7 @@ function c = nancov (varargin)
     Xc = X(good, :);
     n = rows (Xc);
     if (n == 0)
-      c = NaN (p, p);
+      c = NaN (p, p, class (X));
       return;
     endif
     Xd = Xc - mean (Xc, 1);
@@ -139,7 +143,7 @@ function c = nancov (varargin)
     endif
     c = (Xd' * Xd) / d;
   else
-    c = zeros (p, p);
+    c = zeros (p, p, class (X));
     for i = 1:p
       for j = i:p
         rc = ! isnan (X(:,i)) & ! isnan (X(:,j));
@@ -192,6 +196,24 @@ endfunction
 %!assert_equal (nancov (5), 0)
 %!assert_equal (nancov (NaN (3, 2)), NaN (2, 2))
 %!assert_equal (nancov ([], []), NaN (2, 2))
+
+%!test
+%! c = nancov (single ([1 2; 3 5; 4 9]), 'pairwise');
+%! assert_equal (class (c), 'single');
+%! assert_equal (c, single ([2.3333, 5.1667; 5.1667, 12.333]), 1e-3);
+%!test
+%! c = nancov (single (NaN (3, 2)), 'pairwise');
+%! assert_equal (class (c), 'single');
+%! assert_equal (c, single (NaN (2, 2)));
+%!test
+%! c = nancov (single (zeros (0, 3)));
+%! assert_equal (class (c), 'single');
+%! assert_equal (c, single (NaN (3, 3)));
+%!assert_equal (class (nancov (single ([]))), 'single')
+%!test
+%! c = nancov (logical ([1 0; 0 1; 1 1]), 'pairwise');
+%! assert_equal (class (c), 'double');
+%! assert_equal (c, [0.33333, -0.16667; -0.16667, 0.33333], 1e-4);
 
 ## Test input validation
 %!error <Invalid call to nancov> nancov ()
