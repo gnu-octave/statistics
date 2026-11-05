@@ -65,9 +65,6 @@ function f = mvksdensity (x, pts, varargin)
   endif
   n = rows (x);
   d = columns (x);
-  if (n < 2)
-    error ("mvksdensity: X must contain at least two observations.");
-  endif
   if (! (isnumeric (pts) && isreal (pts) && ismatrix (pts) && ndims (pts) == 2))
     error ("mvksdensity: PTS must be a matrix of real values.");
   endif
@@ -111,6 +108,25 @@ function f = mvksdensity (x, pts, varargin)
     error ("mvksdensity: unrecognised 'Function' value.");
   endif
 
+  ## Weights (normalised to sum to one).  Rows with a NaN, in X or in the
+  ## weights, are dropped.
+  if (isempty (weights))
+    weights = ones (n, 1);
+  elseif (! (isnumeric (weights) && isreal (weights) && isvector (weights)
+             && numel (weights) == n && ! any (weights < 0)
+             && any (weights > 0)))
+    error (strcat ("mvksdensity: 'Weights' must be a non-negative vector", ...
+                   " with one element per observation in X."));
+  endif
+  weights = weights(:);
+  keep = ! (any (isnan (x), 2) | isnan (weights));
+  if (! any (keep))
+    error ("mvksdensity: X has no data after removing NaNs.");
+  endif
+  x = x(keep,:);
+  n = rows (x);
+  w = weights(keep) / sum (weights(keep));
+
   ## Bandwidth: normal-reference rule per dimension unless supplied.
   if (isempty (bw))
     bw = default_bw (x, n, d);
@@ -122,17 +138,6 @@ function f = mvksdensity (x, pts, varargin)
                    " or a vector with one element per column of X."));
   else
     bw = bw(:)';
-  endif
-
-  ## Weights (normalised to sum to one).
-  if (isempty (weights))
-    w = ones (n, 1) / n;
-  elseif (isnumeric (weights) && isreal (weights) && isvector (weights)
-          && numel (weights) == n && all (weights >= 0) && any (weights > 0))
-    w = weights(:) / sum (weights);
-  else
-    error (strcat ("mvksdensity: 'Weights' must be a non-negative vector", ...
-                   " with one element per observation in X."));
   endif
 
   ## Evaluate the product-kernel estimate at each query point.
@@ -264,12 +269,52 @@ endfunction
 %! assert_equal (size (f), [2, 1]);
 %! assert_equal (all (f > 0), true);
 
+## Rows with a NaN are dropped before the estimate is computed.
+%!test
+%! xn = X;
+%! xn(3,1) = NaN;
+%! assert_equal (mvksdensity (xn, pts, "Bandwidth", [1 1]), ...
+%!    [0.053502; 0.05931; 0.040328; 0.045141], 1e-6);
+
+## A NaN in any column removes the whole row, including all-NaN rows.
+%!test
+%! xn = X;
+%! xn(3,1) = NaN;
+%! xn = [xn; 2 NaN; NaN NaN];
+%! assert_equal (mvksdensity (xn, pts, "Bandwidth", [1 1]), ...
+%!    mvksdensity (X([1:2, 4:8],:), pts, "Bandwidth", [1 1]), 1e-12);
+
+## The default bandwidth is computed from the rows that remain.
+%!test
+%! xn = X;
+%! xn(3,1) = NaN;
+%! assert_equal (mvksdensity (xn, pts), ...
+%!    mvksdensity (X([1:2, 4:8],:), pts), 1e-12);
+
+## A NaN weight drops its row; the other weights are renormalised.
+%!test
+%! xr = X([1:2, 4:8],:);
+%! wr = [2 1 1 1 1 1 3];
+%! wn = wr;
+%! wn(3) = NaN;
+%! assert_equal (mvksdensity (xr, pts, "Bandwidth", [1 1], "Weights", wn), ...
+%!    mvksdensity (xr([1:2, 4:7],:), pts, "Bandwidth", [1 1], ...
+%!    "Weights", wr([1:2, 4:7])), 1e-12);
+
+## A single observation is valid, also when it is what remains after dropping.
+%!test
+%! f = mvksdensity ([1 1], pts(1:3,:), "Bandwidth", [1 1]);
+%! assert_equal (f, [0.05855; 0.002915; 0.15915], 1e-5);
+%! assert_equal (mvksdensity ([1 1], pts(1:3,:)), f);
+%! assert_equal (mvksdensity ([1 1; NaN 2], pts(1:3,:), ...
+%!    "Bandwidth", [1 1]), f);
+
 ## Test input validation
 %!error <Invalid call to mvksdensity> mvksdensity (ones (3, 2))
 %!error <mvksdensity: X must be a matrix of real values.> ...
 %! mvksdensity (ones (2, 2, 2), [1 1])
-%!error <mvksdensity: X must contain at least two observations.> ...
-%! mvksdensity ([1 2], [1 1])
+%!error <mvksdensity: X has no data after removing NaNs.> ...
+%! mvksdensity ([NaN 1; NaN 2], [1 1])
 %!error <mvksdensity: PTS must have the same number of columns as X.> ...
 %! mvksdensity ([1 1; 2 2], [1 1 1])
 %!error <mvksdensity: optional arguments must be Name-Value pairs.> ...
