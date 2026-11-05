@@ -789,26 +789,31 @@ classdef CompactClassificationEnsemble < PredictiveModel
       T = numel (o.Learners);
       A = zeros (n, K, T);
       V = zeros (n, 1, T);
+      U = false (n, 1, T);
       for j = 1:T
         t = o.Learners(j);
-        u = o.U(:,t);
-        A(:,:,j) = this.TrainedWeights(t) * learnerOutput (this, t, X) .* u;
+        G = learnerOutput (this, t, X);
+        ## A learner with no score for a row does not vote on it
+        u = o.U(:,t) & ! any (isnan (G), 2);
+        G(isnan (G)) = 0;
+        A(:,:,j) = this.TrainedWeights(t) * G .* u;
         V(:,1,j) = this.TrainedWeights(t) * u;
+        U(:,1,j) = u;
       endfor
       average = strcmp (this.CombineWeights, 'WeightedAverage');
       switch (mode)
         case 'ensemble'
           num = sum (A, 3);
           den = sum (V, 3);
-          used = sum (reshape (o.U(:,o.Learners), n, 1, T), 3) > 0;
+          used = any (U, 3);
         case 'cumulative'
           num = cumsum (A, 3);
           den = cumsum (V, 3);
-          used = cumsum (reshape (o.U(:,o.Learners), n, 1, T), 3) > 0;
+          used = cumsum (U, 3) > 0;
         otherwise
           num = A;
           den = V;
-          used = reshape (o.U(:,o.Learners), n, 1, T);
+          used = U;
       endswitch
       if (average)
         S = num ./ den;
@@ -1056,3 +1061,15 @@ endclassdef
 %! loss (compact (fitcensemble ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
 %!                           'NumLearningCycles', 3)), ...
 %!       [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))
+
+## A learner with no score for a row does not vote on it
+%!test
+%! X = [1 2; 2 1; 2 3; 3 2; 6 7; 7 6; 7 8; 8 7; 1 7; 2 8; 2 6; 3 7];
+%! Y = [1 1 1 1 2 2 2 2 3 3 3 3]';
+%! Mdl = fitcensemble (X, Y, 'Method', 'Subspace', 'Learners', ...
+%!                     'discriminant', 'NPredToSample', 1, ...
+%!                     'NumLearningCycles', 'AllPredictorCombinations');
+%! [~, s] = predict (compact (Mdl), [NaN 2; 2 NaN; NaN NaN]);
+%! assert_equal (s(:,1), [0.999999985611734; 0.499999998201467; NaN], ...
+%!               1e-12);
+%! assert_equal (isnan (s(3,:)), true (1, 3));

@@ -2945,7 +2945,7 @@ ClassificationDiscriminant.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1686
+# length: 1778
 ClassificationDiscriminant: label = predict (obj, XC)
 ClassificationDiscriminant: [label, score, cost] = predict (obj, XC)
 Classify new data points into categories using the discriminant
@@ -2966,7 +2966,8 @@ model in obj.
 XC) also returns score, which contains the predicted class
 scores or posterior probabilities for each instance of the corresponding
 unique classes, and cost, which is a matrix containing the expected
-cost of the classifications.
+cost of the classifications. A query with a missing value has
+NaN scores and costs and takes the class of largest prior.
 
 The score matrix contains the posterior probabilities for each
 class, calculated using the multivariate normal probability density
@@ -21432,7 +21433,7 @@ CompactClassificationDiscriminant.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1689
+# length: 1781
 CompactClassificationDiscriminant: label = predict (obj, XC)
 CompactClassificationDiscriminant: [label, score, cost] = predict (obj, XC)
 Classify new data points into categories using the discriminant
@@ -21454,7 +21455,8 @@ model in obj.
 XC) also returns score, which contains the predicted class
 scores or posterior probabilities for each instance of the corresponding
 unique classes, and cost, which is a matrix containing the expected
-cost of the classifications.
+cost of the classifications. A query with a missing value has
+NaN scores and costs and takes the class of largest prior.
 
 The score matrix contains the posterior probabilities for each
 class, calculated using the multivariate normal probability density

@@ -764,7 +764,8 @@ classdef CompactClassificationDiscriminant < PredictiveModel
     ## @var{XC})} also returns @var{score}, which contains the predicted class
     ## scores or posterior probabilities for each instance of the corresponding
     ## unique classes, and @var{cost}, which is a matrix containing the expected
-    ## cost of the classifications.
+    ## cost of the classifications.  A query with a missing value has
+    ## @qcode{NaN} scores and costs and takes the class of largest prior.
     ##
     ## The @var{score} matrix contains the posterior probabilities for each
     ## class, calculated using the multivariate normal probability density
@@ -843,7 +844,6 @@ classdef CompactClassificationDiscriminant < PredictiveModel
       logscore = logscore - max (logscore, [], 2);
       score = exp (logscore);
       score = score ./ sum (score, 2);
-      score(isnan (score)) = 0;
 
       ## Calculate expected classification cost
       for i = 1:numClasses
@@ -852,6 +852,8 @@ classdef CompactClassificationDiscriminant < PredictiveModel
 
       ## Predict the class labels based on the minimum cost
       [~, minIdx] = min (cost, [], 2);
+      ## A query with no posterior takes the class of largest prior
+      [~, minIdx(any (isnan (score), 2))] = max (this.Prior);
       label = labelsFromIndex (this.ClassNames, minIdx);
 
       ## Apply ScoreTransform once to the whole matrix, after the label and
@@ -1034,15 +1036,15 @@ classdef CompactClassificationDiscriminant < PredictiveModel
         endif
       endif
 
-      ## Convert Y to a cell array of strings
+      ## Bring Y to the type of the classes
       if (ischar (Y))
         Y = cellstr (Y);
       elseif (isa (Y, 'string'))
         Y = cellstr (Y);
-      elseif (isnumeric (Y))
-        Y = cellstr (num2str (Y));
-      elseif (islogical (Y))
-        Y = cellstr (num2str (double (Y)));
+      elseif (isnumeric (Y) || islogical (Y))
+        if (iscellstr (this.ClassNames))
+          Y = cellstr (num2str (double (Y)));
+        endif
       elseif (iscell (Y))
         Y = cellfun (@num2str, Y, 'UniformOutput', false);
       elseif (! isa (Y, 'categorical'))
@@ -1143,6 +1145,9 @@ classdef CompactClassificationDiscriminant < PredictiveModel
             f_Xj = scores(i, :);
             gamma_jk = f_Xj * Cost;
             [~, min_cost_class] = min (gamma_jk);
+            if (any (isnan (gamma_jk)))
+              min_cost_class = gLab(i);
+            endif
             cj = Cost(gYidx(i), min_cost_class);
             L = L + Weights(i) * cj;
           endfor
@@ -1238,15 +1243,15 @@ classdef CompactClassificationDiscriminant < PredictiveModel
                        " have the same number of rows as X."));
       endif
 
-      ## Convert Y to a cell array of strings
+      ## Bring Y to the type of the classes
       if (ischar (Y))
         Y = cellstr (Y);
       elseif (isa (Y, 'string'))
         Y = cellstr (Y);
-      elseif (isnumeric (Y))
-        Y = cellstr (num2str (Y));
-      elseif (islogical (Y))
-        Y = cellstr (num2str (double (Y)));
+      elseif (isnumeric (Y) || islogical (Y))
+        if (iscellstr (this.ClassNames))
+          Y = cellstr (num2str (double (Y)));
+        endif
       elseif (iscell (Y))
         Y = cellfun (@num2str, Y, 'UniformOutput', false);
       elseif (! isa (Y, 'categorical'))
@@ -1286,8 +1291,8 @@ classdef CompactClassificationDiscriminant < PredictiveModel
         scores(i, true_class_idx) = -Inf;              # Temporarily
         max_false_class_score = max (scores(i, :));
         if (max_false_class_score == -Inf)
-          m = NaN;
-          return;
+          m(i) = NaN;
+          continue;
         endif
         scores(i, true_class_idx) = true_class_score;  # Restore
 
@@ -2350,3 +2355,23 @@ endclassdef
 %! a = logp (Mdl, meas);
 %! assert_equal (logp (Mdl, T(:,1:4)), a);
 %! assert_equal (logp (Mdl, T(:,[5, 4, 2, 3, 1])), a);
+
+## A query with a missing value has no posterior
+%!test
+%! X = [1 2; 2 1; 2 3; 3 2; 6 7; 7 6; 7 8; 8 7; 1 7; 2 8; 2 6; 3 7];
+%! Y = [1 1 1 1 2 2 2 2 3 3 3 3]';
+%! Mdl = compact (fitcdiscr (X, Y, 'Prior', [0.2 0.5 0.3], ...
+%!                            'Cost', [0 9 1; 1 0 1; 1 9 0]));
+%! [label, score, cost] = predict (Mdl, [NaN 2; 2 NaN; Inf 2; 2 2]);
+%! assert_equal (label, [2; 2; 2; 1]);
+%! assert_equal (isnan (score), [true(3); false(1, 3)]);
+%! assert_equal (isnan (cost), [true(3); false(1, 3)]);
+%!test
+%! X = [1 2; 2 1; 2 3; 3 2; 6 7; 7 6; 7 8; 8 7; 1 7; 2 8; 2 6; 3 7];
+%! Y = [1 1 1 1 2 2 2 2 3 3 3 3]';
+%! Mdl = compact (fitcdiscr (X, Y, 'Prior', [0.2 0.5 0.3]));
+%! q = [NaN 2; 2 NaN; NaN NaN; 2 2];
+%! assert_equal (loss (Mdl, q, [1; 2; 3; 1]), 0.4, 1e-14);
+%! assert_equal (margin (Mdl, q, [1; 2; 3; 1]), ...
+%!               [NaN; NaN; NaN; 0.999999978417601], 1e-12);
+%! assert_equal (edge (Mdl, q, [1; 2; 3; 1]), NaN);
