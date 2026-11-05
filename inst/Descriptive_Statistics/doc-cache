@@ -1103,7 +1103,7 @@ mvksdensity
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1178
+# length: 1502
 statistics: f = mvksdensity (x, pts, Name, Value)
 Multivariate kernel smoothing density estimate.
 
@@ -1112,7 +1112,10 @@ density estimate of the sample in the NxD matrix x, evaluated at
 the points in the MxD matrix pts. Each row of x is a
 single D-dimensional observation, and each row of pts is a point
 at which to evaluate the estimate. The result f is an Mx1
-vector, with one density value per row of pts.
+vector, with one density value per row of pts. Rows of x holding
+a NaN, and rows whose weight is NaN, are removed first, so
+the default bandwidth, the weights and the sample size come from the
+remaining rows. A single observation is valid.
 
 The density estimate uses a product kernel: the multivariate kernel is the
 product of the univariate kernels applied to each dimension, each with its
@@ -1124,14 +1127,16 @@ Name Value
 'Bandwidth' The kernel bandwidth, either a positive scalar
 applied to every dimension or a 1xD vector of positive values, one per
 dimension. The default is a diagonal normal-reference (Silverman) rule
-computed from x.
+computed from x, for any number of columns, although MATLAB requires a
+bandwidth from three columns up.
 'Kernel' The smoothing kernel applied in each dimension:
 'normal' (default), 'box', 'triangle', or
 'epanechnikov'.
 'Function' The function to estimate: 'pdf'
 (default) or 'cdf'.
 'Weights' A vector of non-negative weights, one for each
-row of x. The default weights are all equal.
+row of x, with a positive weight among the rows kept. The default
+weights are all equal.
 
 See also:
 ksdensity
@@ -1863,7 +1868,7 @@ trimmean
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2406
+# length: 2554
 statistics: m = trimmean (x, p)
 statistics: m = trimmean (x, p, flag)
 statistics: m = trimmean (..., 'all')
@@ -1889,7 +1894,9 @@ To specify the operating dimension(s) when x is a matrix or a
 multidimensional array, use the dim or vecdim input argument.
 
 trimmean treats NaN values in x as missing values and
-removes them.
+removes them. Integer, logical and character x is computed and
+returned in double precision, although MATLAB keeps the integer class and
+rounds under 'weighted'.
 
 m = trimmean (x, p, flag) specifies how to
 trim when k, i.e. half the number of outliers, is not an integer.

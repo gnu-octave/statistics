@@ -25,7 +25,10 @@
 ## the points in the @math{M*D} matrix @var{pts}.  Each row of @var{x} is a
 ## single @math{D}-dimensional observation, and each row of @var{pts} is a point
 ## at which to evaluate the estimate.  The result @var{f} is an @math{M*1}
-## vector, with one density value per row of @var{pts}.
+## vector, with one density value per row of @var{pts}.  Rows of @var{x} holding
+## a @qcode{NaN}, and rows whose weight is @qcode{NaN}, are removed first, so
+## the default bandwidth, the weights and the sample size come from the
+## remaining rows.  A single observation is valid.
 ##
 ## The density estimate uses a product kernel: the multivariate kernel is the
 ## product of the univariate kernels applied to each dimension, each with its
@@ -39,7 +42,8 @@
 ## @item @qcode{'Bandwidth'} @tab The kernel bandwidth, either a positive scalar
 ## applied to every dimension or a @math{1*D} vector of positive values, one per
 ## dimension.  The default is a diagonal normal-reference (Silverman) rule
-## computed from @var{x}.
+## computed from @var{x}, for any number of columns, although MATLAB requires a
+## bandwidth from three columns up.
 ##
 ## @item @qcode{'Kernel'} @tab The smoothing kernel applied in each dimension:
 ## @qcode{'normal'} (default), @qcode{'box'}, @qcode{'triangle'}, or
@@ -49,7 +53,8 @@
 ## (default) or @qcode{'cdf'}.
 ##
 ## @item @qcode{'Weights'} @tab A vector of non-negative weights, one for each
-## row of @var{x}.  The default weights are all equal.
+## row of @var{x}, with a positive weight among the rows kept.  The default
+## weights are all equal.
 ## @end multitable
 ##
 ## @seealso{ksdensity}
@@ -113,8 +118,7 @@ function f = mvksdensity (x, pts, varargin)
   if (isempty (weights))
     weights = ones (n, 1);
   elseif (! (isnumeric (weights) && isreal (weights) && isvector (weights)
-             && numel (weights) == n && ! any (weights < 0)
-             && any (weights > 0)))
+             && numel (weights) == n && ! any (weights < 0)))
     error (strcat ("mvksdensity: 'Weights' must be a non-negative vector", ...
                    " with one element per observation in X."));
   endif
@@ -122,6 +126,9 @@ function f = mvksdensity (x, pts, varargin)
   keep = ! (any (isnan (x), 2) | isnan (weights));
   if (! any (keep))
     error ("mvksdensity: X has no data after removing NaNs.");
+  endif
+  if (! any (weights(keep) > 0))
+    error ("mvksdensity: 'Weights' has no positive value in the rows kept.");
   endif
   x = x(keep,:);
   n = rows (x);
@@ -309,12 +316,29 @@ endfunction
 %! assert_equal (mvksdensity ([1 1; NaN 2], pts(1:3,:), ...
 %!    "Bandwidth", [1 1]), f);
 
+## From three columns up the default bandwidth follows the same rule.
+%!test
+%! Xt = [1 2 3; 2 1 4; 4 3 5; 3 4 2; 4 2 6; 5 5 5];
+%! Qt = [2 2 3; 3 3 4];
+%! bw = median (abs (Xt - median (Xt, 1)), 1) / 0.6745;
+%! bw *= (4 / (5 * 6)) ^ (1 / 7);
+%! assert_equal (mvksdensity (Xt, Qt), ...
+%!    mvksdensity (Xt, Qt, "Bandwidth", bw), 1e-14);
+
 ## Test input validation
 %!error <Invalid call to mvksdensity> mvksdensity (ones (3, 2))
 %!error <mvksdensity: X must be a matrix of real values.> ...
 %! mvksdensity (ones (2, 2, 2), [1 1])
 %!error <mvksdensity: X has no data after removing NaNs.> ...
 %! mvksdensity ([NaN 1; NaN 2], [1 1])
+%!error <mvksdensity: X has no data after removing NaNs.> ...
+%! mvksdensity ([1 2; 3 4], [1 1], "Weights", [NaN NaN])
+%!error <mvksdensity: 'Weights' has no positive value in the rows kept.> ...
+%! mvksdensity ([NaN 1; 2 2; 3 3], [1 1], "Weights", [1 0 0])
+%!error <mvksdensity: 'Weights' has no positive value in the rows kept.> ...
+%! mvksdensity ([1 1; 2 2], [1 1], "Weights", [0 0])
+%!error <mvksdensity: 'Weights' has no positive value in the rows kept.> ...
+%! mvksdensity ([1 1; 2 2; 3 3], [1 1], "Weights", [0 0 NaN])
 %!error <mvksdensity: PTS must have the same number of columns as X.> ...
 %! mvksdensity ([1 1; 2 2], [1 1 1])
 %!error <mvksdensity: optional arguments must be Name-Value pairs.> ...
