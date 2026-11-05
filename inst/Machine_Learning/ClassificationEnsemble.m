@@ -1497,7 +1497,7 @@ classdef ClassificationEnsemble < PredictiveModel
               cols = sort (perm(1:this.NPredToSample));
             endif
             largs = [{'PredictorNames', this.PredictorNames(cols), ...
-                      'ClassNames', this.ClassNames, 'Prior', this.Prior, ...
+                      'ClassNames', this.ClassNames, 'Weights', this.W, ...
                       'Cost', this.Cost}, this.TreeArgs];
             if (strcmp (this.LearnerNames{1}, 'KNN'))
               mdl = ClassificationKNN (this.X(:,cols), this.Y, largs{:});
@@ -2125,3 +2125,22 @@ endfunction
 %! [label, score] = predict (Mdl, emQ);
 %! assert_equal (label, {'p'; 'q'; 'p'; 'p'});
 %! assert_equal (score(:,1), 1.30134484272219 * [1; -1; 1; 1], 1e-13);
+
+## A Subspace learner fits the rows it keeps under the ensemble's weights
+%!shared Xs, Ys
+%! Xs = [1 2 3; 2 1 1; NaN NaN 4; 3 2 1; 6 7 5; 7 6 9; 7 NaN NaN; 8 7 6; ...
+%!       1 7 5; 2 8 3; 2 6 5; 3 7 8];
+%! Ys = [1 1 1 1 2 2 2 2 3 3 3 3]';
+%!test
+%! Mdl = fitcensemble (Xs, Ys, 'Method', 'Subspace', 'Learners', ...
+%!                     'discriminant', 'NPredToSample', 2, ...
+%!                     'NumLearningCycles', 'AllPredictorCombinations');
+%! assert_equal (Mdl.Trained{1}.Prior, [3, 4, 4] / 11, 1e-14);
+%! assert_equal (resubLoss (Mdl), 1 / 12, 1e-14);
+%! assert_equal (resubEdge (Mdl), NaN);
+%!test
+%! Mdl = fitcensemble (Xs, Ys, 'Method', 'Subspace', 'Learners', ...
+%!                     'discriminant', 'NPredToSample', 2, ...
+%!                     'NumLearningCycles', 'AllPredictorCombinations', ...
+%!                     'Prior', [0.2, 0.5, 0.3]);
+%! assert_equal (Mdl.Trained{1}.Prior, [0.15, 0.5, 0.3] / 0.95, 1e-14);

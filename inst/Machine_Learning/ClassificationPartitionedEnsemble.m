@@ -421,7 +421,9 @@ classdef ClassificationPartitionedEnsemble
     ## Cross-validated classification loss.
     ##
     ## @var{L} is the loss of the out-of-fold scores, the held-out observations
-    ## weighted by @code{W}, those without scores left out.
+    ## weighted by @code{W}.  An observation no fold held out is left out.  One
+    ## held out but scored by no learner, for its missing values, stays, as in
+    ## @code{CompactClassificationEnsemble.loss}.
     ##
     ## Name-Value arguments:
     ##
@@ -463,8 +465,9 @@ classdef ClassificationPartitionedEnsemble
     ##
     ## Cross-validated classification edge.
     ##
-    ## The weighted mean of the out-of-fold margins, weighted by @code{W}.
-    ## @qcode{'Folds'} and @qcode{'Mode'} are taken as by @code{kfoldLoss}.
+    ## The weighted mean of the out-of-fold margins, weighted by @code{W},
+    ## @code{NaN} if a held-out observation has no score.  @qcode{'Folds'} and
+    ## @qcode{'Mode'} are taken as by @code{kfoldLoss}.
     ##
     ## @seealso{ClassificationPartitionedEnsemble,
     ## ClassificationPartitionedEnsemble.kfoldMargin}
@@ -480,8 +483,7 @@ classdef ClassificationPartitionedEnsemble
         m = marginsOf (this.STfun (S(rows,:,min (i, size (S, 3)))), ...
                        this.gY(rows), 1);
         w = double (this.W(rows));
-        have = ! isnan (m);
-        e(i) = sum (w(have) .* m(have)) / sum (w(have));
+        e(i) = sum (w .* m) / sum (w);
       endfor
 
     endfunction
@@ -592,11 +594,13 @@ classdef ClassificationPartitionedEnsemble
     function [sets, S] = foldSets_ (this, o)
       n = this.NumObservations;
       if (! strcmp (o.Mode, 'cumulative'))
-        sets = foldSets (this.Partition, o.Folds, o.Mode, n);
+        sets = trainedRows (this, foldSets (this.Partition, o.Folds, ...
+                                            o.Mode, n));
         S = foldScores (this, o.Folds);
         return;
       endif
-      pooled = foldSets (this.Partition, o.Folds, 'average', n);
+      pooled = trainedRows (this, foldSets (this.Partition, o.Folds, ...
+                                            'average', n));
       K = classCount (this.ClassNames);
       T = max ([0, this.NumTrainedPerFold(o.Folds)]);
       S = NaN (n, K, T);
@@ -611,26 +615,31 @@ classdef ClassificationPartitionedEnsemble
       sets = repmat (pooled, T, 1);
     endfunction
 
-    ## The weighted loss of the untransformed scores S over ROWS.
-    function L = setLoss (this, S, rows, LossFun)
-      S = this.STfun (S(rows,:));
-      g = this.gY(rows);
-      w = double (this.W(rows));
-      have = ! any (isnan (S), 2);
-      w = w(have);
+    ## The sets without the rows of a fold that trained no learner.
+    function sets = trainedRows (this, sets)
+      none = false (this.NumObservations, 1);
+      for k = find (this.NumTrainedPerFold(:)' == 0)
+        none = none | test (this.Partition, k);
+      endfor
+      sets = cellfun (@(r) r & ! none, sets, 'UniformOutput', false);
+    endfunction
+
+    ## The weighted loss of the untransformed scores S over the rows IDX.
+    function L = setLoss (this, S, idx, LossFun)
+      S = this.STfun (S(idx,:));
+      g = this.gY(idx);
+      w = double (this.W(idx));
       if (! (sum (w) > 0))
         L = NaN;
         return;
       endif
       w /= sum (w);
-      S = S(have,:);
-      g = g(have);
       if (is_function_handle (LossFun))
         C = false (size (S));
         C(sub2ind (size (S), (1:rows (S))', g)) = true;
         L = LossFun (C, S, w, this.Cost);
       else
-        L = classificationLoss (LossFun, S, g, w, this.Cost);
+        L = unscoredLoss (LossFun, S, g, w, this.Cost, this.DefaultIndex);
       endif
     endfunction
 
@@ -790,3 +799,22 @@ endfunction
 %!error<ClassificationPartitionedEnsemble.subsasgn: 'ScoreTransform' must be a character vector or a 'function_handle' object.> ...
 %! M = CV;
 %! M.ScoreTransform = 1;
+
+## A held-out row no learner can score stays; one no fold held out is left out
+%!shared CVn, CVh
+%! X = [1 2 3; 2 1 1; NaN NaN 4; 3 2 1; 6 7 5; 7 6 9; 7 NaN NaN; 8 7 6; ...
+%!      1 7 5; 2 8 3; 2 6 5; 3 7 8];
+%! Y = [1 1 1 1 2 2 2 2 3 3 3 3]';
+%! M = fitcensemble (X, Y, 'Method', 'Subspace', 'Learners', 'discriminant', ...
+%!                   'NPredToSample', 2, 'NumLearningCycles', ...
+%!                   'AllPredictorCombinations');
+%! CVn = crossval (M, 'CVPartition', cvpartition ('CustomPartition', ...
+%!                                                [1 2 3 1 2 3 1 2 3 1 2 3]'));
+%! CVh = crossval (M, 'CVPartition', cvpartition ('CustomPartition', ...
+%!                                 logical ([0 1 1 0 0 1 1 0 0 0 1 0]')));
+%!assert_equal (kfoldLoss (CVn), 1 / 12, 1e-14)
+%!assert_equal (kfoldEdge (CVn), NaN)
+%!assert_equal (kfoldLoss (CVn, 'LossFun', 'hinge'), NaN)
+%!assert_equal (kfoldLoss (CVh), 0.2, 1e-14)
+%!assert_equal (kfoldEdge (CVh), NaN)
+%!assert_equal (kfoldLoss (CVh, 'LossFun', @(C, S, W, Cost) rows (S)), 5)

@@ -14334,13 +14334,14 @@ ClassificationPartitionedEnsemble.kfoldEdge
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 359
+# length: 403
 ClassificationPartitionedEnsemble: e = kfoldEdge (obj)
 ClassificationPartitionedEnsemble: e = kfoldEdge (..., name, value)
 Cross-validated classification edge.
 
-The weighted mean of the out-of-fold margins, weighted by W.
-'Folds' and 'Mode' are taken as by kfoldLoss.
+The weighted mean of the out-of-fold margins, weighted by W,
+NaN if a held-out observation has no score. 'Folds' and
+'Mode' are taken as by kfoldLoss.
 
 See also:
 ClassificationPartitionedEnsemble,
@@ -14365,13 +14366,15 @@ ClassificationPartitionedEnsemble.kfoldLoss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 774
+# length: 900
 ClassificationPartitionedEnsemble: L = kfoldLoss (obj)
 ClassificationPartitionedEnsemble: L = kfoldLoss (..., name, value)
 Cross-validated classification loss.
 
 L is the loss of the out-of-fold scores, the held-out observations
-weighted by W, those without scores left out.
+weighted by W. An observation no fold held out is left out. One
+held out but scored by no learner, for its missing values, stays, as in
+CompactClassificationEnsemble.loss.
 
 Name-Value arguments:
 
@@ -22632,7 +22635,7 @@ CompactClassificationEnsemble.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1632
+# length: 1856
 CompactClassificationEnsemble: L = loss (obj, X, Y)
 CompactClassificationEnsemble: L = loss (obj, Tbl, ResponseVarName)
 CompactClassificationEnsemble: L = loss (obj, Tbl)
@@ -22669,9 +22672,13 @@ element j uses the first j of them, or
 per row. The default is uniform.
 
 'Learners' and 'UseObsForLearner' are taken as by
-predict. A row with NaN scores, which no learner may
-score, is left out and the weights are renormalized over the rest;
-edge does the same.
+predict. A row 'UseObsForLearner' hides from every
+learner used is left out and the weights are renormalized over the rest.
+A row no learner can score for its missing values stays: it counts as
+the class of greatest prior under 'classiferror',
+'classifcost' and 'mincost', and any other loss is
+NaN. edge treats the two alike, its result being
+NaN for the second.
 
 See also:
 CompactClassificationEnsemble,

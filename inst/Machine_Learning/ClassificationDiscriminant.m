@@ -1080,11 +1080,17 @@ classdef ClassificationDiscriminant < PredictiveModel
         gY(! ismember (gY, namedClasses (glY, ClassNames))) = NaN;
       endif
 
-      ## An observation is dropped only when its response is missing.  A row
-      ## whose predictors hold missing values is kept, and each estimate below
-      ## uses whatever part of it is present.
-      ## A row of zero weight is dropped too, as R2024a drops it.
-      RowsUsed  = ! isnan (gY);
+      ## An observation is dropped when its response or every predictor is
+      ## missing, or its weight is zero, as R2024a drops it.  A row missing only
+      ## some predictors is kept, and each estimate below uses whatever part of
+      ## it is present.
+      allmissing = all (isnan (X), 2);
+      if (! isempty (setdiff (gY(allmissing & ! isnan (gY)), ...
+                              gY(! allmissing))))
+        error (strcat ("ClassificationDiscriminant: a class has no", ...
+                       " observation left after removing missing predictors."));
+      endif
+      RowsUsed  = ! isnan (gY) & ! allmissing;
       if (! isempty (Weights))
         RowsUsed = RowsUsed & Weights(:) > 0;
       endif
@@ -4422,3 +4428,17 @@ endclassdef
 %! assert_equal (margin (Mdl, q, [1; 2; 3; 1]), ...
 %!               [NaN; NaN; NaN; 0.999999978417601], 1e-12);
 %! assert_equal (edge (Mdl, q, [1; 2; 3; 1]), NaN);
+
+## A row missing every predictor is dropped, one missing some is kept
+%!test
+%! X = [1 2; 2 1; NaN NaN; 3 2; 6 7; 7 6; 7 NaN; 8 7; 1 7; 2 8; 2 6; 3 7];
+%! Y = [1 1 1 1 2 2 2 2 3 3 3 3]';
+%! Mdl = ClassificationDiscriminant (X, Y);
+%! assert_equal (Mdl.NumObservations, 11);
+%! assert_equal (Mdl.RowsUsed, [true; true; false; true(9, 1)]);
+%! assert_equal (Mdl.Prior, [3, 4, 4] / 11, 1e-14);
+%! assert_equal (Mdl.Sigma, diag ([0.869565217391305, 0.463768115942029]), ...
+%!               1e-14);
+%! assert_equal (size (Mdl.X), [11, 2]);
+%!error<ClassificationDiscriminant: a class has no observation left after removing missing predictors.> ...
+%! ClassificationDiscriminant ([NaN NaN; NaN NaN; 1 2; 2 1], [1; 1; 2; 2])
