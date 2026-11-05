@@ -453,6 +453,8 @@
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
 					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
 					<li><a href="fitSVMPosterior.html" class="text-decoration-none font-monospace"><small>fitSVMPosterior</small></a></li>
+					<li><a href="fscchi2.html" class="text-decoration-none font-monospace"><small>fscchi2</small></a></li>
+					<li><a href="fsrftest.html" class="text-decoration-none font-monospace"><small>fsrftest</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
@@ -1129,7 +1131,7 @@
   <a href="fitcnb.html">fitcnb</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1cd743a/inst/Machine_Learning/ClassificationNaiveBayes.m">ClassificationNaiveBayes</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Machine_Learning/ClassificationNaiveBayes.m">ClassificationNaiveBayes</a>
 </p>
 </div>
         <p class="lead my-3">The <code>ClassificationNaiveBayes</code> class contains the following properties:</p>
@@ -1154,8 +1156,8 @@ Class labels
             <div class="border-bottom py-2">
 <p> </p>
 <p> Specified as a logical or numeric column vector, or as a character array
- or a cell array of character vectors with the same number of rows as the
- predictor data.  Each row in <var>Y</var> is the observed class label for the
+ or a cell array of character vectors with the same number of rows as
+ <var>X</var>.  Each row in <var>Y</var> is the observed class label for the
  corresponding row in <var>X</var>.  This property is read-only.
 </p>
 
@@ -1183,9 +1185,10 @@ Predictor data
           <div class="collapse multi-collapse" id="ClassificationNaiveBayes_X">
             <div class="border-bottom py-2">
 <p> </p>
-<p> A numeric matrix containing the predictor data.  Each column of <var>X</var>
- represents one predictor (variable), and each row represents one
- observation.  This property is read-only.
+<p> A numeric matrix containing the predictor data the model was fitted on.
+ Each column of <var>X</var> represents one predictor (variable), and each
+ row represents one observation; a row dropped from the fit, as
+ <code>RowsUsed</code> describes, is not kept.  This property is read-only.
 </p>
 <p> Where the model was fitted from a table, the predictors are the coded
  matrix and not the table: a variable holding levels is stored as its
@@ -1219,8 +1222,11 @@ Rows used for fitting
 <p> A logical column vector with the same length as the observations in the
  original predictor data <var>X</var>, true for each row that was used for
  fitting the model.  It is empty, <code>[]</code>, when every observation was
- used, so a non-empty value means that rows holding missing values were
- dropped.  This property is read-only.
+ used.  A row is dropped when its class is missing, when every predictor
+ is missing, or when its weight is zero or missing.  A row missing only
+ some predictors is used; with the <code>'mn'</code> distribution it counts
+ in the prior but not in the multinomial, which describes the whole
+ row.  This property is read-only.
 </p>
 
 
@@ -1316,8 +1322,9 @@ Number of observations
             <div class="border-bottom py-2">
 <p> </p>
 <p> A positive integer specifying the number of observations used to train
- the model, after any row holding a missing value has been dropped.  This
- property is read-only.
+ the model, the rows dropped as <code>RowsUsed</code> describes left out.  Each
+ predictor is fitted on the rows it is known for, and an empirical prior
+ counts every row used.  This property is read-only.
 </p>
 
 
@@ -1935,6 +1942,11 @@ Classify new data with a trained <code>ClassificationNaiveBayes</code> object.
  each observation to each class.  The label of an observation is the
  class of least expected cost.
 </p>
+<p> A missing predictor is skipped and the observation classified on the
+ rest.  Under the <code>'mn'</code> distribution, which describes the whole
+ row at once, an observation missing any count has posterior and cost
+ <code>NaN</code> and takes the class of largest prior, whatever the cost.
+</p>
 <p> The new data may be a table, whose variables are matched to the
  predictors the model was fitted on by name and not by position:
  one the model was not fitted on is passed over, one it needs and
@@ -2222,7 +2234,7 @@ Classify the training data with the trained model.
 <p class="h5 fs fs-last"><code>ClassificationNaiveBayes: [<var>label</var>, <var>score</var>, <var>cost</var>] = <b>resubPredict</b> (<var>obj</var>)</code></p>
 <p> </p>
 <p> The same as calling <code>predict</code> on the data the model was fitted on,
- with the rows that were dropped for missing values left out.
+ with the rows that were dropped, as <code>RowsUsed</code> describes, left out.
 </p>
 
 

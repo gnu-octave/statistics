@@ -453,6 +453,8 @@
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
 					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
 					<li><a href="fitSVMPosterior.html" class="text-decoration-none font-monospace"><small>fitSVMPosterior</small></a></li>
+					<li><a href="fscchi2.html" class="text-decoration-none font-monospace"><small>fscchi2</small></a></li>
+					<li><a href="fsrftest.html" class="text-decoration-none font-monospace"><small>fsrftest</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
@@ -1112,7 +1114,9 @@
  is returned.  If <var>x</var> is a multidimensional array, <code>nanstd</code> operates
  along the first nonsingleton dimension.  If a dimension contains fewer than
  two non-<code>NaN</code> values, the standard deviation is returned as 0 for a
- single value and as <code>NaN</code> when all values are <code>NaN</code>.
+ single value and as <code>NaN</code> when all values are <code>NaN</code>.  <var>x</var>
+ must be floating point, as for <code>std</code>, although MATLAB accepts logical
+ too.
 </p>
 <p> <code><var>s</var> = nanstd (<var>x</var>, <var>w</var>)</code> specifies the normalization.  When
  <var>w</var> is 0 (default), the standard deviation is normalized by <em class="math">N-1</em>,
@@ -1143,7 +1147,7 @@ std,
   <a href="nansum.html">nansum</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1cd743a/inst/Descriptive_Statistics/nanstd.m">nanstd</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Descriptive_Statistics/nanstd.m">nanstd</a>
 </p>
 </div>
         <div class="card rounded my-4">

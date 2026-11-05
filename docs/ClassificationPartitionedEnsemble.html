@@ -453,6 +453,8 @@
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
 					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
 					<li><a href="fitSVMPosterior.html" class="text-decoration-none font-monospace"><small>fitSVMPosterior</small></a></li>
+					<li><a href="fscchi2.html" class="text-decoration-none font-monospace"><small>fscchi2</small></a></li>
+					<li><a href="fsrftest.html" class="text-decoration-none font-monospace"><small>fsrftest</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
@@ -1118,7 +1120,7 @@
   <a href="cvpartition.html">cvpartition</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1cd743a/inst/Machine_Learning/ClassificationPartitionedEnsemble.m">ClassificationPartitionedEnsemble</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Machine_Learning/ClassificationPartitionedEnsemble.m">ClassificationPartitionedEnsemble</a>
 </p>
 </div>
         <p class="lead my-3">The <code>ClassificationPartitionedEnsemble</code> class contains the following properties:</p>
@@ -1711,7 +1713,9 @@ Cross-validated classification loss.
 <p class="h5 fs fs-last"><code>ClassificationPartitionedEnsemble: <var>L</var> = <b>kfoldLoss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
 <p> <var>L</var> is the loss of the out-of-fold scores, the held-out observations
- weighted by <code>W</code>, those without scores left out.
+ weighted by <code>W</code>.  An observation no fold held out is left out.  One
+ held out but scored by no learner, for its missing values, stays, as in
+ <code>CompactClassificationEnsemble.loss</code>.
 </p>
 <p> Name-Value arguments:
 </p>
@@ -1761,8 +1765,9 @@ Cross-validated classification edge.
 <p class="h5 fs"><code>ClassificationPartitionedEnsemble: <var>e</var> = <b>kfoldEdge</b> (<var>obj</var>)</code></p>
 <p class="h5 fs fs-last"><code>ClassificationPartitionedEnsemble: <var>e</var> = <b>kfoldEdge</b> (&hellip;, <var>name</var>, <var>value</var>)</code></p>
 <p> </p>
-<p> The weighted mean of the out-of-fold margins, weighted by <code>W</code>.
- <code>'Folds'</code> and <code>'Mode'</code> are taken as by <code>kfoldLoss</code>.
+<p> The weighted mean of the out-of-fold margins, weighted by <code>W</code>,
+ <code>NaN</code> if a held-out observation has no score.  <code>'Folds'</code> and
+ <code>'Mode'</code> are taken as by <code>kfoldLoss</code>.
 </p>
 <p> <strong>See also: </strong>
   <a href="ClassificationPartitionedEnsemble.html">ClassificationPartitionedEnsemble</a>, 

@@ -453,6 +453,8 @@
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
 					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
 					<li><a href="fitSVMPosterior.html" class="text-decoration-none font-monospace"><small>fitSVMPosterior</small></a></li>
+					<li><a href="fscchi2.html" class="text-decoration-none font-monospace"><small>fscchi2</small></a></li>
+					<li><a href="fsrftest.html" class="text-decoration-none font-monospace"><small>fsrftest</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
@@ -1149,7 +1151,7 @@
   <a href="fitcgam.html">fitcgam</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1cd743a/inst/Machine_Learning/ClassificationGAM.m">ClassificationGAM</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Machine_Learning/ClassificationGAM.m">ClassificationGAM</a>
 </p>
 </div>
         <p class="lead my-3">The <code>ClassificationGAM</code> class contains the following properties:</p>
@@ -1207,8 +1209,8 @@ Predictor data
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -1291,8 +1293,8 @@ Class labels
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -1374,8 +1376,8 @@ Number of observations
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -1459,8 +1461,8 @@ Rows used for fitting
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -1542,8 +1544,8 @@ Number of predictors
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -1625,8 +1627,8 @@ Names of predictor variables
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -1707,8 +1709,8 @@ Response variable name
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -1798,8 +1800,8 @@ Names of classes in the response variable
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -1887,8 +1889,8 @@ Prior probability for each class
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -1971,8 +1973,8 @@ Model specification formula
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -2060,8 +2062,8 @@ Two-way interaction terms of the fitted model
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -2142,8 +2144,8 @@ Knots for spline fitting
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -2224,8 +2226,8 @@ Order of spline fitting
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -2306,8 +2308,8 @@ Degrees of freedom for spline fitting
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -2388,8 +2390,8 @@ Learning rate for gradient boosting
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -2470,8 +2472,8 @@ Maximum number of iterations
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -2552,8 +2554,8 @@ Intercept of the fitted model
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -2638,8 +2640,8 @@ Observation weights
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -2720,8 +2722,8 @@ Indices of the categorical predictors
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -2804,8 +2806,8 @@ Names of the expanded predictor variables
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -2888,8 +2890,8 @@ Base model parameters
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -2971,8 +2973,8 @@ Model parameters with interactions
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -3060,8 +3062,8 @@ Every term the model fits
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -3148,8 +3150,8 @@ Bin edges of the predictors
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -3236,8 +3238,8 @@ Bin edges used to detect interactions
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -3334,8 +3336,8 @@ Parameters the model was fitted with
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -3425,8 +3427,8 @@ Why each fitting phase stopped
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -3518,8 +3520,8 @@ Which engine fitted the model
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -3612,8 +3614,8 @@ The fitted shape functions and interaction surfaces
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -3696,8 +3698,8 @@ Results of the hyperparameter optimization
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -3802,8 +3804,8 @@ Cost of Misclassification
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -3920,8 +3922,8 @@ Transformation function for classification scores
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -4100,8 +4102,8 @@ Create a <code>ClassificationGAM</code> class object containing a generalized
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -4205,8 +4207,8 @@ Add interaction terms to a fitted model.
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -4325,8 +4327,8 @@ Predict labels for new data using the Generalized Additive Model (GAM)
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -4438,8 +4440,8 @@ Cross Validate a Generalized Additive Model classification object.
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -4526,8 +4528,8 @@ Create a CompactClassificationGAM object.
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -5121,8 +5123,8 @@ Classify the training data with the generalized additive model it was
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -5206,8 +5208,8 @@ Classification margin of a generalized additive model on its training
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -5291,8 +5293,8 @@ Classification edge of a generalized additive model on its training
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -5377,8 +5379,8 @@ Classification loss of a generalized additive model on its training
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -5469,8 +5471,8 @@ Save a ClassificationGAM object.
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -5571,8 +5573,8 @@ Resume training a generalized additive model.
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3
@@ -5632,8 +5634,8 @@ Train a GAM classifier for binary classification using specific data and plot th
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all')</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">warning: ClassificationGAM: model does not include interaction terms because all interaction terms have p-values greater than the 'MaxPValue' value, or the software was unable to improve the model fit.
 warning: called from
-    fitBoosted at line 2617 column 11
-    ClassificationGAM at line 1342 column 9
+    fitBoosted at line 2618 column 11
+    ClassificationGAM at line 1343 column 9
     fitcgam at line 228 column 3
     __eval_demo__ at line 84 column 9
     __demo_notebook__ at line 43 column 3

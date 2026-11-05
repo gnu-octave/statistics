@@ -453,6 +453,8 @@
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
 					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
 					<li><a href="fitSVMPosterior.html" class="text-decoration-none font-monospace"><small>fitSVMPosterior</small></a></li>
+					<li><a href="fscchi2.html" class="text-decoration-none font-monospace"><small>fscchi2</small></a></li>
+					<li><a href="fsrftest.html" class="text-decoration-none font-monospace"><small>fsrftest</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
@@ -1105,14 +1107,15 @@
 <p> Random arrays from the hypergeometric distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>r</var> = hygernd ((<var>m</var>, <var>k</var>, <var>n</var></code> returns an array of
+<p> <code><var>r</var> = hygernd (<var>m</var>, <var>k</var>, <var>n</var>)</code> returns an array of
  random numbers chosen from the hypergeometric distribution with parameters
  <var>m</var>, <var>k</var>, and <var>n</var>.  The size of <var>r</var> is the common size of
  <var>m</var>, <var>k</var>, and <var>n</var>.  A scalar input functions as a constant matrix
  of the same size as the other inputs.
 </p>
-<p> The parameters <var>m</var>, <var>k</var>, and <var>n</var> must be positive integers
- with <var>k</var> and <var>n</var> not greater than <var>m</var>.
+<p> The parameters <var>m</var>, <var>k</var>, and <var>n</var> must be non-negative integers
+ with <var>k</var> and <var>n</var> not greater than <var>m</var>.  A sample of size
+ <code>0</code> contains no marked items, so <var>r</var> is then <code>0</code>.
 </p>
 <p> When called with a single size argument, <code>hygernd</code> returns a square
  matrix with the dimension specified.  When called with more than one scalar
@@ -1130,7 +1133,7 @@
   <a href="hygestat.html">hygestat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1cd743a/inst/Distribution_Functions/hygernd.m">hygernd</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Distribution_Functions/hygernd.m">hygernd</a>
 </p>
 </div>
 

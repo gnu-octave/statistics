@@ -453,6 +453,8 @@
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
 					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
 					<li><a href="fitSVMPosterior.html" class="text-decoration-none font-monospace"><small>fitSVMPosterior</small></a></li>
+					<li><a href="fscchi2.html" class="text-decoration-none font-monospace"><small>fscchi2</small></a></li>
+					<li><a href="fsrftest.html" class="text-decoration-none font-monospace"><small>fsrftest</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
@@ -1143,8 +1145,14 @@
  <code>categorical</code> data in <var>A</var>.
 </li><li> <code>char</code> and <code>cellstr</code> indicators also match <code>string</code>
  data in <var>A</var>.
+</li><li> <code>single</code>, integer, and <code>logical</code> indicators also match
+ <code>double</code> data in <var>A</var>.
 </li></ul>
 
+<p> Any other pairing of numeric and <code>logical</code> classes between
+ <var>indicator</var> and <var>A</var> is an error, such as an <code>int32</code> indicator
+ with <code>single</code> data in <var>A</var>.
+</p>
 <p> Note: the generic <code>ismissing</code> function from the statistics package only
  accepts <var>indicator</var> argument for numeric, <code>logical</code>, and
  <code>char</code> arrays, as well as for <code>cell</code> arrays of character vectors.
@@ -1158,7 +1166,7 @@
   <a href="standardizeMissing.html">standardizeMissing</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1cd743a/inst/Data_Manipulation/ismissing.m">ismissing</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Data_Manipulation/ismissing.m">ismissing</a>
 </p>
 </div>
 

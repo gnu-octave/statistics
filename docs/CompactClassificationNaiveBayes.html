@@ -453,6 +453,8 @@
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
 					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
 					<li><a href="fitSVMPosterior.html" class="text-decoration-none font-monospace"><small>fitSVMPosterior</small></a></li>
+					<li><a href="fscchi2.html" class="text-decoration-none font-monospace"><small>fscchi2</small></a></li>
+					<li><a href="fsrftest.html" class="text-decoration-none font-monospace"><small>fsrftest</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
@@ -1117,7 +1119,7 @@
   <a href="fitcnb.html">fitcnb</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1cd743a/inst/Machine_Learning/CompactClassificationNaiveBayes.m">CompactClassificationNaiveBayes</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Machine_Learning/CompactClassificationNaiveBayes.m">CompactClassificationNaiveBayes</a>
 </p>
 </div>
         <p class="lead my-3">The <code>CompactClassificationNaiveBayes</code> class contains the following properties:</p>
@@ -1598,6 +1600,11 @@ Classify new data with a compact naive Bayes model.
 <p> The same classification the model it came from would give: the label of
  least expected cost, the posterior of each class, and the expected
  misclassification cost of each.
+</p>
+<p> A missing predictor is skipped and the observation classified on the
+ rest.  Under the <code>'mn'</code> distribution, which describes the whole
+ row at once, an observation missing any count has posterior and cost
+ <code>NaN</code> and takes the class of largest prior, whatever the cost.
 </p>
 <p> The new data may be a table, whose variables are matched to the
  predictors the model was fitted on by name and not by position:

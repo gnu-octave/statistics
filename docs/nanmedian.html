@@ -453,6 +453,8 @@
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
 					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
 					<li><a href="fitSVMPosterior.html" class="text-decoration-none font-monospace"><small>fitSVMPosterior</small></a></li>
+					<li><a href="fscchi2.html" class="text-decoration-none font-monospace"><small>fscchi2</small></a></li>
+					<li><a href="fsrftest.html" class="text-decoration-none font-monospace"><small>fsrftest</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
@@ -1110,7 +1112,8 @@
  returned.  If <var>x</var> is a matrix, a row vector of column medians is
  returned.  If <var>x</var> is a multidimensional array, <code>nanmedian</code> operates
  along the first nonsingleton dimension.  If all values along a dimension are
- <code>NaN</code>, the median is returned as <code>NaN</code>.
+ <code>NaN</code>, the median is returned as <code>NaN</code>.  As in <code>median</code>,
+ <var>m</var> takes the class of <var>x</var>, so an integer median is rounded.
 </p>
 <p> <code><var>m</var> = nanmedian (<var>x</var>, <code>'all'</code>)</code> returns the median of all
  elements of <var>x</var>, after removing <code>NaN</code> values.  It is the equivalent
@@ -1134,7 +1137,7 @@ median,
   <a href="nansum.html">nansum</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1cd743a/inst/Descriptive_Statistics/nanmedian.m">nanmedian</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Descriptive_Statistics/nanmedian.m">nanmedian</a>
 </p>
 </div>
         <div class="card rounded my-4">

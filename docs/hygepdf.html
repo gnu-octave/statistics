@@ -453,6 +453,8 @@
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
 					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
 					<li><a href="fitSVMPosterior.html" class="text-decoration-none font-monospace"><small>fitSVMPosterior</small></a></li>
+					<li><a href="fscchi2.html" class="text-decoration-none font-monospace"><small>fscchi2</small></a></li>
+					<li><a href="fsrftest.html" class="text-decoration-none font-monospace"><small>fsrftest</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
@@ -1112,8 +1114,9 @@
 <p> This is the probability of obtaining <var>x</var> marked items when randomly
  drawing a sample of size <var>n</var> without replacement from a population of
  total size <var>m</var> containing <var>k</var> marked items.  The parameters <var>m</var>,
- <var>k</var>, and <var>n</var> must be positive integers with <var>k</var> and <var>n</var> not
- greater than <var>m</var>.
+ <var>k</var>, and <var>n</var> must be non-negative integers with <var>k</var> and <var>n</var>
+ not greater than <var>m</var>.  A sample of size <code>0</code> contains no marked
+ items, so <var>x</var> = 0 then has probability 1, even from an empty population.
 </p>
 <p> If the optional parameter <code>vectorexpand</code> is provided, <var>x</var> may be an
  array with size different from parameters <var>m</var>, <var>k</var>, and <var>n</var>
@@ -1140,7 +1143,7 @@
   <a href="hygestat.html">hygestat</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1cd743a/inst/Distribution_Functions/hygepdf.m">hygepdf</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Distribution_Functions/hygepdf.m">hygepdf</a>
 </p>
 </div>
         <div class="card rounded my-4">
