@@ -1522,7 +1522,8 @@ classdef GeneralizedLinearModel < PredictiveModel
     ## (default), @qcode{'caseorder'}, @qcode{'fitted'}, @qcode{'lagged'}, or
     ## @qcode{'probability'}.  @qcode{'ResidualType'} picks the residual column
     ## (@qcode{'Raw'} default, @qcode{'Pearson'}, @qcode{'Deviance'},
-    ## @qcode{'Anscombe'}).  Returns the graphics handle.
+    ## @qcode{'Anscombe'}).  Returns the graphics handle.  The histogram shows
+    ## probability density and its handle is a patch.
     ##
     ## @end deftypefn
     function h = plotResiduals (mdl, varargin)
@@ -1542,8 +1543,8 @@ classdef GeneralizedLinearModel < PredictiveModel
       r = mdl.Residuals.(rtype);
       switch (lower (ptype))
         case 'histogram'
-          h = hist (r);
-          xlabel ("Residuals");  ylabel ("Frequency");
+          h = residual_histogram (r);
+          return;
         case 'caseorder'
           h = plot (1:numel (r), r, 'x');
           xlabel ("Row number");  ylabel (sprintf ("%s residuals", rtype));
@@ -2175,6 +2176,37 @@ endfunction
 %! assert_equal (numel (mdl.Coefficients.Estimate), 4);
 %! assert_equal (mdl.Coefficients.Estimate(1), -0.3420955, 1e-6);
 %! assert_equal (mdl.Coefficients.Estimate(2), mdl.Coefficients{2, "Estimate"}, 1e-12);
+
+%!test  # the default residual plot is a density histogram, as R2024a
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   plotResiduals (mdl);
+%!   h = plotResiduals (mdl);
+%!   ax = get (h, "parent");
+%!   assert_equal (numel (get (ax, "children")), 1);
+%!   assert_equal (get (h, "type"), "patch");
+%!   assert_equal (get (h, "xdata"), [-2, -1, 0; -2, -1, 0; -1, 0, 1; -1, 0, 1], ...
+%!                 1e-12);
+%!   assert_equal (get (h, "ydata"), ...
+%!                 [0, 0, 0; 1/16, 3/8, 9/16; 1/16, 3/8, 9/16; 0, 0, 0], 1e-12);
+%!   assert_equal (get (get (ax, "xlabel"), "string"), "Residuals");
+%!   assert_equal (get (get (ax, "ylabel"), "string"), "Probability density");
+%!   assert_equal (get (get (ax, "title"), "string"), "Histogram of residuals");
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # the histogram takes the residual type, as R2024a
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   h = plotResiduals (mdl, "histogram", "ResidualType", "Deviance");
+%!   assert_equal (get (h, "ydata"), ...
+%!                 [0, 0, 0; 1/8, 5/16, 9/16; 1/8, 5/16, 9/16; 0, 0, 0], 1e-12);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
 
 %!test  # the diagnostic and effect plots run without error
 %! mdl = fitglm (X, yp, "Distribution", "poisson");
