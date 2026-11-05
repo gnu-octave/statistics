@@ -30,7 +30,9 @@
 ## is returned.  If @var{x} is a multidimensional array, @code{nanstd} operates
 ## along the first nonsingleton dimension.  If a dimension contains fewer than
 ## two non-@qcode{NaN} values, the standard deviation is returned as 0 for a
-## single value and as @qcode{NaN} when all values are @qcode{NaN}.
+## single value and as @qcode{NaN} when all values are @qcode{NaN}.  @var{x}
+## must be floating point, as for @code{std}, although MATLAB accepts logical
+## too.
 ##
 ## @code{@var{s} = nanstd (@var{x}, @var{w})} specifies the normalization.  When
 ## @var{w} is 0 (default), the standard deviation is normalized by @math{N-1},
@@ -61,8 +63,8 @@ function s = nanstd (x, varargin)
 
   if (nargin < 1 || nargin > 3)
     print_usage ();
-  elseif (! isnumeric (x) && ! islogical (x))
-    error ("nanstd: X must be numeric or logical.");
+  elseif (! isfloat (x))
+    error ("nanstd: X must be floating point.");
   endif
   s = sqrt (nanvar (x, varargin{:}));
 
@@ -101,4 +103,6 @@ endfunction
 
 ## Test input validation
 %!error <Invalid call to nanstd> nanstd ()
-%!error <nanstd: X must be numeric or logical.> nanstd ({3})
+%!error <nanstd: X must be floating point.> nanstd ({3})
+%!error <nanstd: X must be floating point.> nanstd (int8 ([1 2; 3 5]))
+%!error <nanstd: X must be floating point.> nanstd (true (2))

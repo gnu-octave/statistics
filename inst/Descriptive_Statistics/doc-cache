@@ -1155,7 +1155,7 @@ nancov
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1193
+# length: 1268
 statistics: c = nancov (x)
 statistics: c = nancov (x, y)
 statistics: c = nancov (..., normalization)
@@ -1182,6 +1182,9 @@ data that contains a NaN value is removed before the covariance is
 computed. With "pairwise", each element c(i,j) is
 computed using all rows in which both column i and column j are
 non-NaN; the resulting matrix may fail to be positive semidefinite.
+
+x and y must be real floating point, although MATLAB accepts
+logical too.
 
 See also:
 cov,
@@ -1340,7 +1343,7 @@ nanmedian
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1193
+# length: 1264
 statistics: m = nanmedian (x)
 statistics: m = nanmedian (x, 'all')
 statistics: m = nanmedian (x, dim)
@@ -1352,7 +1355,8 @@ removing NaN values. If x is a vector, a scalar value is
 returned. If x is a matrix, a row vector of column medians is
 returned. If x is a multidimensional array, nanmedian operates
 along the first nonsingleton dimension. If all values along a dimension are
-NaN, the median is returned as NaN.
+NaN, the median is returned as NaN. As in median,
+m takes the class of x, so an integer median is rounded.
 
 m = nanmedian (x, 'all') returns the median of all
 elements of x, after removing NaN values. It is the equivalent
@@ -1459,7 +1463,7 @@ nanstd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1638
+# length: 1713
 statistics: s = nanstd (x)
 statistics: s = nanstd (x, w)
 statistics: s = nanstd (x, w, 'all')
@@ -1473,7 +1477,9 @@ returned. If x is a matrix, a row vector of column standard deviations
 is returned. If x is a multidimensional array, nanstd operates
 along the first nonsingleton dimension. If a dimension contains fewer than
 two non-NaN values, the standard deviation is returned as 0 for a
-single value and as NaN when all values are NaN.
+single value and as NaN when all values are NaN. x
+must be floating point, as for std, although MATLAB accepts logical
+too.
 
 s = nanstd (x, w) specifies the normalization. When
 w is 0 (default), the standard deviation is normalized by N-1,
@@ -1580,7 +1586,7 @@ nanvar
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1558
+# length: 1633
 statistics: v = nanvar (x)
 statistics: v = nanvar (x, w)
 statistics: v = nanvar (x, w, 'all')
@@ -1594,7 +1600,8 @@ returned. If x is a matrix, a row vector of column variances is
 returned. If x is a multidimensional array, nanvar operates
 along the first nonsingleton dimension. If a dimension contains fewer than
 two non-NaN values, the variance is returned as 0 for a single value
-and as NaN when all values are NaN.
+and as NaN when all values are NaN. x must be floating
+point, as for var, although MATLAB accepts logical too.
 
 v = nanvar (x, w) specifies the normalization. When
 w is 0 (default), the variance is normalized by N-1, where

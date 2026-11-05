@@ -30,7 +30,8 @@
 ## returned.  If @var{x} is a multidimensional array, @code{nanvar} operates
 ## along the first nonsingleton dimension.  If a dimension contains fewer than
 ## two non-@qcode{NaN} values, the variance is returned as 0 for a single value
-## and as @qcode{NaN} when all values are @qcode{NaN}.
+## and as @qcode{NaN} when all values are @qcode{NaN}.  @var{x} must be floating
+## point, as for @code{var}, although MATLAB accepts logical too.
 ##
 ## @code{@var{v} = nanvar (@var{x}, @var{w})} specifies the normalization.  When
 ## @var{w} is 0 (default), the variance is normalized by @math{N-1}, where
@@ -60,8 +61,8 @@ function v = nanvar (x, w, dim)
   if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
-  if (! isnumeric (x) && ! islogical (x))
-    error ("nanvar: X must be numeric or logical.");
+  if (! isfloat (x))
+    error ("nanvar: X must be floating point.");
   endif
   if (nargin < 3 && isequal (size (x), [0, 0]))
     v = NaN;
@@ -197,7 +198,9 @@ endfunction
 
 ## Test input validation
 %!error <Invalid call to nanvar> nanvar ()
-%!error <nanvar: X must be numeric or logical.> nanvar ({3})
+%!error <nanvar: X must be floating point.> nanvar ({3})
+%!error <nanvar: X must be floating point.> nanvar (int8 ([1 2; 3 5]))
+%!error <nanvar: X must be floating point.> nanvar (true (2))
 %!error <nanvar: W must be 0 or 1 when it is a scalar.> nanvar (ones (3), 2)
 %!error <nanvar: weight vector W must contain nonnegative values.> ...
 %! nanvar (ones (1, 3), [1, -1, 2])

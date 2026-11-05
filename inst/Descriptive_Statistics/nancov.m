@@ -44,6 +44,9 @@
 ## computed using all rows in which both column @var{i} and column @var{j} are
 ## non-@qcode{NaN}; the resulting matrix may fail to be positive semidefinite.
 ##
+## @var{x} and @var{y} must be real floating point, although MATLAB accepts
+## logical too.
+##
 ## @seealso{cov, nanvar, nanstd, nanmean}
 ## @end deftypefn
 
@@ -53,8 +56,8 @@ function c = nancov (varargin)
     print_usage ();
   endif
   x = varargin{1};
-  if (! (isnumeric (x) || islogical (x)) || ! isreal (x))
-    error ("nancov: X must be a real numeric or logical matrix or vector.");
+  if (! (isfloat (x) && isreal (x)))
+    error ("nancov: X must be a real floating point matrix or vector.");
   endif
   args = varargin(2:end);
 
@@ -102,8 +105,8 @@ function c = nancov (varargin)
 
   ## Assemble the data matrix (observations in rows, variables in columns)
   if (y_given)
-    if (! (isnumeric (y) || islogical (y)) || ! isreal (y))
-      error ("nancov: Y must be a real numeric or logical matrix or vector.");
+    if (! (isfloat (y) && isreal (y)))
+      error ("nancov: Y must be a real floating point matrix or vector.");
     endif
     if (numel (x) != numel (y))
       error ("nancov: X and Y must have the same number of elements.");
@@ -119,10 +122,6 @@ function c = nancov (varargin)
     else
       X = x;
     endif
-  endif
-
-  if (islogical (X))
-    X = double (X);
   endif
 
   p = columns (X);
@@ -210,14 +209,24 @@ endfunction
 %! assert_equal (class (c), 'single');
 %! assert_equal (c, single (NaN (3, 3)));
 %!assert_equal (class (nancov (single ([]))), 'single')
-%!test
-%! c = nancov (logical ([1 0; 0 1; 1 1]), 'pairwise');
-%! assert_equal (class (c), 'double');
-%! assert_equal (c, [0.33333, -0.16667; -0.16667, 0.33333], 1e-4);
 
 ## Test input validation
 %!error <Invalid call to nancov> nancov ()
-%!error <nancov: X must be a real numeric or logical matrix or vector.> nancov ({1})
+%!error <nancov: X must be a real floating point matrix or vector.> nancov ({1})
+%!error <nancov: X must be a real floating point matrix or vector.> ...
+%! nancov (int8 ([1 2; 3 5]))
+%!error <nancov: X must be a real floating point matrix or vector.> ...
+%! nancov (int32 ([1 2; 3 5]), 'pairwise')
+%!error <nancov: X must be a real floating point matrix or vector.> ...
+%! nancov (true (2))
+%!error <nancov: X must be a real floating point matrix or vector.> ...
+%! nancov (logical ([]))
+%!error <nancov: X must be a real floating point matrix or vector.> ...
+%! nancov ([1 2; 3 4] + 1i)
+%!error <nancov: Y must be a real floating point matrix or vector.> ...
+%! nancov ([1 2 3], int8 ([1 2 3]))
+%!error <nancov: Y must be a real floating point matrix or vector.> ...
+%! nancov ([1 2 3], [true false true])
 %!error <nancov: METHOD must be 'complete' or 'pairwise'.> ...
 %! nancov ([1 2; 3 4], 'bogus')
 %!error <nancov: X and Y must have the same number of elements.> ...
