@@ -52,11 +52,10 @@
 ## @end itemize
 ##
 ## @code{geomean(@var{x}, "all")} returns the geometric mean of all the elements
-## in @var{x}.  If @var{x} contains any 0, then the returned value is 0.
+## in @var{x}.
 ##
 ## @code{geomean(@var{x}, @var{dim})} returns the geometric mean along the
-## operating dimension @var{dim} of @var{x}.  Calculating the harmonic mean of
-## any subarray containing any 0 will return 0.
+## operating dimension @var{dim} of @var{x}.
 ##
 ## @code{geomean(@var{x}, @var{vecdim})} returns the geometric mean over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x} is
@@ -131,11 +130,6 @@ function m = geomean (x, varargin)
         x = x(! isnan (x));
       endif
 
-      if (any (x == 0))
-        m = 0;
-        return;
-      endif
-
       m = exp (sum (log (x), 1) ./ length (x));
 
     elseif (ndx == 2 && isempty (x) && szx == [0,0])
@@ -206,11 +200,6 @@ function m = geomean (x, varargin)
 
           if (omitnan)
             x = x(! isnan (x));
-          endif
-
-          if (any (x == 0))
-            m = 0;
-            return;
           endif
 
           m = exp (sum (log (x), 1) ./ length (x));
@@ -292,6 +281,14 @@ endfunction
 %! assert_equal (geomean (x, [3 2]), m, 4e-13);
 %! m(2,3) = 14.3292729579901;
 %! assert_equal (geomean (x, [3 2], 'omitnan'), m, 4e-13);
+
+## Test that zeros do not mask NaN, Inf or the class of X
+%!test
+%! assert_equal (geomean ([0 NaN 4], 'all'), NaN);
+%! assert_equal (geomean ([0 Inf NaN 4], 'all', 'omitnan'), NaN);
+%! assert_equal (geomean (single ([0 2 4]), 'all'), single (0));
+%! assert_equal (geomean ([0 NaN; 4 9], [1 2 3]), NaN);
+%! assert_equal (geomean (single ([0 2; 4 9]), [1 2]), single (0));
 
 ## Test errors
 %!error <geomean: X must contain real nonnegative values.> geomean ('char')
