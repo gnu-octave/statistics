@@ -2868,7 +2868,7 @@ meanEffectSize
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 8590
+# length: 8519
 statistics: Effect = meanEffectSize (X)
 statistics: Effect = meanEffectSize (X, Y)
 statistics: Effect = meanEffectSize (..., Name, Value)
@@ -2899,8 +2899,7 @@ takes the following options.
 Name Value
 'Effect' The effect sizes to compute, as a
 character vector, a string array or a cell array of character vectors,
-chosen among those below. A name may be shortened to any prefix that
-names one effect alone, and case does not matter.
+chosen among those below. Case does not matter.
 'meandiff' by default.
 'Mean' The known population mean that one sample
 is compared with, a real scalar, 0 by default. It is ignored where there
