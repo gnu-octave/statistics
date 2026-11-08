@@ -47,7 +47,8 @@
 ## @item If @var{x} is a multidimensional array, then @code{harmmean(@var{x})}
 ## operates along the first nonsingleton dimension of @var{x}.
 ##
-## @item @var{x} must not contain any negative or complex values.
+## @item @var{x} must be of class double or single and must not contain any
+## negative or complex values.
 ## @end itemize
 ##
 ## @code{harmmean(@var{x}, "all")} returns the harmonic mean of all the elements
@@ -81,8 +82,9 @@ function m = harmmean (x, varargin)
     print_usage ();
   endif
 
-  if (! isnumeric (x) || ! isreal (x) || ! all (x(! isnan (x))(:) >= 0))
-    error ("harmmean: X must contain real nonnegative values.");
+  if (! isfloat (x) || ! isreal (x) || ! all (x(! isnan (x))(:) >= 0))
+    error (strcat ("harmmean: X must contain real nonnegative double or", ...
+                   " single values."));
   endif
 
   ## Set initial conditions
@@ -322,8 +324,14 @@ endfunction
 %!assert_equal (harmmean ([], 3), [])
 
 ## Test errors
-%!error <harmmean: X must contain real nonnegative values.> harmmean ('char')
-%!error <harmmean: X must contain real nonnegative values.> harmmean ([1 -1 3])
+%!error <harmmean: X must contain real nonnegative double or single values.> ...
+%! harmmean ('char')
+%!error <harmmean: X must contain real nonnegative double or single values.> ...
+%! harmmean ([1 -1 3])
+%!error <harmmean: X must contain real nonnegative double or single values.> ...
+%! harmmean (int8 ([1 2 3]))
+%!error <harmmean: X must contain real nonnegative double or single values.> ...
+%! harmmean ([true false])
 %!error <harmmean: DIM must be a positive integer scalar or vector.> ...
 %! harmmean (repmat ([1:20;6:25], [5 2 6 3 5]), -1)
 %!error <harmmean: DIM must be a positive integer scalar or vector.> ...

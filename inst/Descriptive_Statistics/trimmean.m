@@ -44,9 +44,7 @@
 ## multidimensional array, use the @var{dim} or @var{vecdim} input argument.
 ##
 ## @code{trimmean} treats @qcode{NaN} values in @var{x} as missing values and
-## removes them.  Integer, logical and character @var{x} is computed and
-## returned in double precision, although MATLAB keeps the integer class and
-## rounds under @qcode{'weighted'}.
+## removes them.  @var{x} must be of class double or single.
 ##
 ## @code{@var{m} = trimmean (@var{x}, @var{p}, @var{flag})} specifies how to
 ## trim when @math{k}, i.e. half the number of outliers, is not an integer.
@@ -91,6 +89,10 @@ function m = trimmean (x, p, varargin)
     print_usage;
   endif
 
+  if (! isfloat (x))
+    error ("trimmean: X must contain double or single values.");
+  endif
+
   ## A non-scalar percentage used to slip through, because each half of the
   ## range test was then itself non-scalar and neither branch was taken: the
   ## trimming ran on a colon built from a vector and returned an untrimmed
@@ -114,11 +116,6 @@ function m = trimmean (x, p, varargin)
   else
     flag = varargin{1};
     dim = varargin{2};
-  endif
-
-  ## Compute in double unless X is floating point
-  if (! isfloat (x))
-    x = double (x);
   endif
 
   ## Get size of X
@@ -385,24 +382,22 @@ endfunction
 %!assert_equal (trimmean ([], 10, 'weighted', 2), zeros (0, 1))
 %!assert_equal (trimmean (single ([]), 10, 1), zeros (1, 0, 'single'))
 
-## Test integer, logical and single X
-%!assert_equal (trimmean (int8 ([1 2; 3 4]), 10, 3), [1, 2; 3, 4])
-%!assert_equal (trimmean (int8 ([1 2; 3 4]), 10, [3, 4]), [1, 2; 3, 4])
-%!assert_equal (trimmean (int8 ([1 2; 3 4]), 10, 2), [1.5; 3.5])
-%!assert_equal (trimmean (int8 (5), 10), 5)
-%!assert_equal (trimmean (true (2), 10, 3), ones (2))
-%!assert_equal (trimmean ('abd', 10), 295 / 3, 1e-13)
-%!assert_equal (trimmean (uint8 ([1 2 3 4 5 100]), 30, 'weighted'), ...
-%!              5.738095238095237, 1e-14)
-%!assert_equal (trimmean (int8 ([1 2; 3 5; 4 9; 7 1; 2 8; 6 3]), 30, ...
-%!              'weighted'), [3.761904761904761, 4.523809523809524], 1e-14)
+## Test single X
 %!assert_equal (trimmean (single ([1 2; 3 4]), 10, 3), single ([1 2; 3 4]))
-%!assert_equal (trimmean (int8 ([]), 10), NaN)
-%!assert_equal (trimmean (logical ([]), 10, 1), zeros (1, 0))
 
 ## Test input validation
 %!error<Invalid call to trimmean.  Correct usage is:> trimmean (1)
 %!error<Invalid call to trimmean.  Correct usage is:> trimmean (1,2,3,4,5)
+%!error<trimmean: X must contain double or single values.> ...
+%! trimmean (int8 ([1 2 3 4]), 10)
+%!error<trimmean: X must contain double or single values.> ...
+%! trimmean (int8 ([]), 10)
+%!error<trimmean: X must contain double or single values.> ...
+%! trimmean ([true false], 10)
+%!error<trimmean: X must contain double or single values.> ...
+%! trimmean (logical ([]), 10, 1)
+%!error<trimmean: X must contain double or single values.> ...
+%! trimmean ('abd', 10)
 %!error<trimmean: PERCENT must be a real scalar in the range \[0, 100\).> ...
 %! trimmean ([1 2 3 4], -10)
 %!error<trimmean: PERCENT must be a real scalar in the range \[0, 100\).> ...
