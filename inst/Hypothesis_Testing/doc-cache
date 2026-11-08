@@ -1350,7 +1350,7 @@ chi2gof
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3723
+# length: 3652
 statistics: h = chi2gof (x)
 statistics: [h, p] = chi2gof (x)
 statistics: [h, p, stats] = chi2gof (x)
@@ -1399,8 +1399,7 @@ stats structure with the following fields:
 
 [...] = chi2gof (x, Name, Value, ...)
 specifies optional Name/Value pair arguments chosen from the following list.
-Names are not case sensitive and can be shortened to any leading part that
-matches only one of them.
+Names are not case sensitive.
 
 Name Value
 'nbins' The number of bins to use. Default is 10.

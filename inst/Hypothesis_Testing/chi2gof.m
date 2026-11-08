@@ -72,8 +72,7 @@
 ##
 ## @code{[@dots{}] = chi2gof (@var{x}, @var{Name}, @var{Value}, @dots{})}
 ## specifies optional Name/Value pair arguments chosen from the following list.
-## Names are not case sensitive and can be shortened to any leading part that
-## matches only one of them.
+## Names are not case sensitive.
 ##
 ## @multitable @columnfractions 0.2 0.75
 ## @headitem Name @tab Value
@@ -130,8 +129,6 @@ function [h, p, stats] = chi2gof (x, varargin)
   frequency = [];
   alpha = 0.05;
   ## Parse additional arguments
-  names = {'nbins', 'ctrs', 'edges', 'cdf', 'expected', 'nparams', 'emin', ...
-           'frequency', 'alpha'};
   numarg = nargin - 1;
   argpos = 1;
   while (numarg)
@@ -139,13 +136,7 @@ function [h, p, stats] = chi2gof (x, varargin)
     if (! (ischar (argname) && isrow (argname)))
       error ("chi2gof: option name must be a character vector.");
     endif
-    match = find (strncmpi (argname, names, numel (argname)));
-    if (isempty (match))
-      error ("chi2gof: invalid parameter name: '%s'.", argname);
-    elseif (numel (match) > 1)
-      error ("chi2gof: ambiguous parameter name: '%s'.", argname);
-    endif
-    switch (names{match})
+    switch (lower (argname))
       case 'nbins'
         nbins = varargin{argpos + 1};
       case 'ctrs'
@@ -164,6 +155,8 @@ function [h, p, stats] = chi2gof (x, varargin)
         frequency = varargin{argpos + 1};
       case 'alpha'
         alpha = varargin{argpos + 1};
+      otherwise
+        error ("chi2gof: invalid parameter name: '%s'.", argname);
     endswitch
     numarg -= 2;
     argpos += 2;
@@ -456,11 +449,6 @@ endfunction
 %!                          'Expected', [4, 8, 8], 'EMin', 0, 'NParams', 0);
 %! assert_equal (p, 0.391605626676799, -1e-14);
 %! assert_equal (stats.O, [5, 5, 10]);
-%!test
-%! ## Shortened names and any case, values from MATLAB R2024a
-%! [~, p] = chi2gof (1:20, 'ED', [0.5, 5.5, 10.5, 20.5], ...
-%!                   'ex', [4, 8, 8], 'Em', 0, 'NP', 0);
-%! assert_equal (p, 0.391605626676799, -1e-14);
 
 ## Test input validation
 %!error chi2gof ()
@@ -475,12 +463,8 @@ endfunction
 %! chi2gof ([1,2,3,4], 'binedges', 1:3)
 %!error <chi2gof: invalid parameter name: 'edgesX'.> ...
 %! chi2gof ([1,2,3,4], 'edgesX', 1:3)
-%!error <chi2gof: ambiguous parameter name: 'E'.> ...
-%! chi2gof ([1,2,3,4], 'E', 1:3)
-%!error <chi2gof: ambiguous parameter name: 'n'.> ...
-%! chi2gof ([1,2,3,4], 'n', 3)
-%!error <chi2gof: ambiguous parameter name: 'C'.> ...
-%! chi2gof ([1,2,3,4], 'C', 1:3)
+%!error <chi2gof: invalid parameter name: 'Ed'.> ...
+%! chi2gof ([1,2,3,4], 'Ed', 1:3)
 %!error chi2gof ([1,2,3,4], 'nbins', 3, 'ctrs', [2,3,4])
 %!error chi2gof ([1,2,3,4], 'frequency', [2,3,2])
 %!error chi2gof ([1,2,3,4], 'frequency', [2,3,2,-2])
