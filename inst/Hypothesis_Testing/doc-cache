@@ -1350,7 +1350,7 @@ chi2gof
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3640
+# length: 3622
 statistics: h = chi2gof (x)
 statistics: [h, p] = chi2gof (x)
 statistics: [p, h, stats] = chi2gof (x)
@@ -1370,7 +1370,7 @@ Bins in either tail with an expected count less than 5 are pooled with
 neighboring bins until the count in each extreme bin is at least 5. If
 bins remain in the interior with counts less than 5, chi2gof displays
 a warning. In that case, you should use fewer bins, or provide bin centers
-or binedges, to increase the expected counts in all bins.
+or edges, to increase the expected counts in all bins.
 
 h = chi2gof (x) performs a chi-square goodness-of-fit test
 that the data in the vector X are a random sample from a normal distribution
@@ -1393,7 +1393,7 @@ stats structure with the following fields:
 
 "chi2stat" Chi-square statistic
 "df" Degrees of freedom
-"binedges" Vector of bin binedges after pooling
+"edges" Vector of bin edges after pooling
 "O" Observed count in each bin
 "E" Expected count in each bin
 
@@ -1402,8 +1402,8 @@ specifies optional Name/Value pair arguments chosen from the following list.
 
 Name Value
 'nbins' The number of bins to use. Default is 10.
-'binctrs' A vector of bin centers.
-'binedges' A vector of bin binedges.
+'ctrs' A vector of bin centers.
+'edges' A vector of bin edges.
 'cdf' A fully specified cumulative distribution
 function or a function handle provided in a cell array whose first element is
 a function handle, and all later elements are its parameter values. The
