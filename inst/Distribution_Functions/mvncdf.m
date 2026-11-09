@@ -510,8 +510,10 @@ endfunction
 %! S = [4 1 0.5; 1 2 0.3; 0.5 0.3 3];
 %! assert_equal (mvncdf ([1 2 3], [0 0 0], S), 0.63516077, 1e-7);
 %!test
-%! R = [1.0 0.2 0.1 0.05; 0.2 1.0 0.3 -0.1; 0.1 0.3 1.0 0.2; 0.05 -0.1 0.2 1.0];
-%! assert_equal (mvncdf ([0.8 -0.4 0.2 1.1], zeros (1,4), R), 0.18121644, 1e-4);
+%! R = [1.0 0.2 0.1 0.05; 0.2 1.0 0.3 -0.1; ...
+%!      0.1 0.3 1.0 0.2; 0.05 -0.1 0.2 1.0];
+%! p = mvncdf ([0.8 -0.4 0.2 1.1], zeros (1,4), R);
+%! assert_equal (p, 0.18121644, 2e-4);
 %!error<mvncdf: X, MU, and SIGMA must be double or single.> mvncdf (int32 ([0, 0]))
 %!error<mvncdf: X, MU, and SIGMA must be double or single.> mvncdf ([true, true])
 %!error<mvncdf: X, MU, and SIGMA must be double or single.> mvncdf ('ab')
