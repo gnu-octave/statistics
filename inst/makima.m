@@ -197,9 +197,9 @@ function yi = makima (x, y, xq, varargin)
 
   W = w1 + w2;
 
-  numer = (w1 .* s_im1 + w2 .* s_i);
-  denom = max (W, eps);
-  d = numer ./ denom;
+  ## Rescale the weights exactly to avoid overflow and underflow
+  [f, e] = log2 (W);
+  d = (pow2 (w1, -e) .* s_im1 + pow2 (w2, -e) .* s_i) ./ f;
 
   zero_mask = (W == 0);
   if (any (zero_mask(:)))
@@ -539,6 +539,13 @@ endfunction
 %! xi = 2.5;
 %! yi = makima (x, y, xi);
 %! assert_equal (yi, 5, 1e-12);
+%!test
+%! ## Slopes independent of the scale of Y
+%! y = [0, 1, 4, 9, 16];
+%! yi = makima (1:5, [y; 1e-20 * y], 2.5) ./ [1; 1e-20];
+%! assert_equal (yi, [2.229166666666667; 2.229166666666667], 1e-12);
+%! yi = makima (1:5, 1e160 * y, 2.5) / 1e160;
+%! assert_equal (yi, 2.229166666666667, 1e-12);
 %!test
 %! ## Extrapolation check.
 %! x = [1; 2; 3];
