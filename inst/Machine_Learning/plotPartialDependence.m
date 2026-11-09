@@ -170,6 +170,55 @@ function pdPlotIce (ax, Mdl, F, pd, x, cond, predArgs)
 
 endfunction
 
+## What a model answers for each observation on its own, one query point of the
+## varied predictor at a time.
+##
+## These are the individual conditional expectation curves, one per row of the
+## observations in F, and they are what plotPartialDependence draws in grey.
+## They come from predict for every model, a decision tree included: a curve
+## belongs to one observation, so there is no distribution to walk.
+##
+## The line drawn over them is their mean, which for a tree, a bagged ensemble
+## or a generalized additive model is not what partialDependence returns unless
+## the observations are the ones the model was fitted on.  MATLAB R2024a draws
+## the mean of the curves here and the walked value where 'Conditional' is
+## 'none', measured 2026-09-17, and this follows it.
+##
+## ice is n-by-numX for a regression model and n-by-numX-by-num for a
+## classifier, the last dimension holding a page per class named.  Only one
+## predictor may be varied, which is what MATLAB requires of a conditional
+## plot.
+function ice = pdIce (Mdl, F, predArgs)
+
+  if (nargin < 3)
+    predArgs = {};
+  endif
+
+  qx = F.QP{1};
+  nx = numel (qx);
+  v1 = F.Vars(1);
+  n = rows (F.X);
+  if (F.IsClass)
+    m = numel (F.LabelIdx);
+  else
+    m = 1;
+  endif
+
+  ice = zeros (n, nx, m);
+  Z = F.X;
+  for ii = 1:nx
+    Z(:,v1) = qx(ii);
+    if (F.IsClass)
+      [~, s] = predict (Mdl, Z, predArgs{:});
+      ice(:,ii,:) = reshape (s(:, F.LabelIdx), n, 1, m);
+    else
+      s = predict (Mdl, Z, predArgs{:});
+      ice(:,ii) = s(:);
+    endif
+  endfor
+
+endfunction
+
 ## What the model answers for each observation as it stands.
 function s = pdScoreAt (Mdl, F, predArgs)
 

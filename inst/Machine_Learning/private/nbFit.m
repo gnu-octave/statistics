@@ -17,7 +17,7 @@
 ##
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} {[@var{DP}, @var{K}, @var{S}, @var{W}] =} nbFit (@var{X}, @var{gY}, @var{k}, @var{D}, @var{w}, @var{Kernel}, @var{Support}, @var{Width}, @var{classname})
+## @deftypefn {Private Function} {[@var{DP}, @var{K}, @var{S}, @var{W}, @var{CL}] =} nbFit (@var{X}, @var{gY}, @var{k}, @var{D}, @var{w}, @var{Kernel}, @var{Support}, @var{Width}, @var{classname}, @var{CN}, @var{PN})
 ##
 ## Fit one univariate density per class and per predictor for a naive Bayes
 ## classifier.
@@ -26,15 +26,17 @@
 ## and @var{k} counts them, @var{D} names the distribution of each predictor
 ## and @var{w} weights each observation.  @var{CN} and @var{PN} name the
 ## classes and the predictors, and are used only to say which combination a
-## refusal is about.  @var{Kernel}, @var{Support} and
-## @var{Width} are the kernel arguments as the caller was given them, each
-## possibly empty.
+## refusal is about.  @var{classname} prefixes any error raised.  @var{Kernel},
+## @var{Support} and @var{Width} are the kernel arguments as the caller was
+## given them, each possibly empty.
 ##
 ## @var{DP} is the class-by-predictor cell of fitted parameters: a column
 ## vector holding the mean and the standard deviation for a @qcode{'normal'}
 ## predictor, and a @code{prob.KernelDistribution} for a @qcode{'kernel'} one.
 ## @var{K}, @var{S} and @var{W} report the kernel, the support and the
 ## bandwidth actually used, empty where a predictor is not a kernel one.
+## @var{CL} is a cell with the levels of each @qcode{'mvmn'} predictor in
+## ascending order, empty for every other predictor.
 ##
 ## The standard deviation is the weighted, bias-corrected one, which reduces
 ## to the sample standard deviation when the weights within a class are equal,
@@ -201,5 +203,110 @@ function [DP, K, S, W, CL] = nbFit (X, gY, k, D, w, Kernel, Support, ...
 
     endfor
   endfor
+
+endfunction
+
+## Resolve the kernel arguments of a naive Bayes classifier into one kernel and
+## one support per predictor, and a bandwidth per class and predictor.
+##
+## Each of Kernel and Support may be given once for every predictor or once per
+## predictor.  W is empty when no bandwidth was given, which leaves each
+## density to choose its own.
+function [K, S, W] = nbKernelArgs (Kernel, Support, Width, k, p, classname)
+
+  known = {'box', 'epanechnikov', 'normal', 'triangle'};
+
+  ## Kernel
+  if (isempty (Kernel))
+    K = repmat ({'normal'}, 1, p);
+  elseif (ischar (Kernel) && isrow (Kernel))
+    kname = lower (Kernel);
+    K = repmat ({kname}, 1, p);
+  elseif (iscellstr (Kernel) && numel (Kernel) == p)
+    K = cellfun (@lower, Kernel(:)', 'UniformOutput', false);
+  else
+    error (strcat (classname, ": 'Kernel' must be a character vector or a", ...
+                   " cell array of character vectors, one per predictor."));
+  endif
+  bad = ! ismember (K, known);
+  if (any (bad))
+    error (strcat (classname, ": unsupported kernel", ...
+                   sprintf (" '%s'.", K{find (bad, 1)})));
+  endif
+
+  ## Support
+  if (isempty (Support))
+    S = repmat ({'unbounded'}, 1, p);
+  elseif (ischar (Support) && isrow (Support))
+    sname = lower (Support);
+    S = repmat ({sname}, 1, p);
+  elseif (isnumeric (Support) && numel (Support) == 2)
+    sbnds = sort (Support(:)');
+    S = repmat ({sbnds}, 1, p);
+  elseif (iscell (Support) && numel (Support) == p)
+    S = Support(:)';
+  else
+    error (strcat (classname, ": 'Support' must be 'unbounded',", ...
+                   " 'positive', a two element numeric vector, or a cell", ...
+                   " array holding one of those per predictor."));
+  endif
+  for j = 1:p
+    if (ischar (S{j}) && ! any (strcmpi (S{j}, {'positive', 'unbounded'})))
+      error (strcat (classname, ": a character vector 'Support' must be", ...
+                     " 'unbounded' or 'positive'."));
+    endif
+  endfor
+
+  ## Width
+  if (isempty (Width))
+    W = [];
+    return;
+  endif
+  if (! (isnumeric (Width) && isreal (Width) && all (Width(:) > 0)))
+    error (strcat (classname, ": 'Width' must be positive and real."));
+  endif
+  if (isscalar (Width))
+    W = repmat (Width, k, p);
+  elseif (isequal (size (Width), [k, p]))
+    W = Width;
+  elseif (isrow (Width) && numel (Width) == p)
+    W = repmat (Width(:)', k, 1);
+  elseif (iscolumn (Width) && numel (Width) == k)
+    W = repmat (Width(:), 1, p);
+  else
+    error (strcat (classname, ": 'Width' must be a scalar, one value per", ...
+                   " predictor, one per class, or a matrix of one per", ...
+                   " class and predictor."));
+  endif
+
+endfunction
+
+## One class's name, as a message should print it.
+##
+## C is the model's ClassNames in any of the forms a response may take, and i
+## indexes it.  A textual class prints as its name and every other kind as its
+## value, which is what MATLAB's own messages do: a numeric response names
+## class 2 where a cellstr one names class beta.
+function s = nbLabelName (C, i)
+
+  if (iscellstr (C))
+    s = C{i};
+  elseif (ischar (C))
+    s = strtrim (C(i,:));
+  elseif (islogical (C))
+    s = mat2str (C(i));
+  else
+    s = num2str (C(i));
+  endif
+
+endfunction
+
+## The distinct levels of one categorical predictor, in ascending order.  The
+## order is the one every per-level quantity is reported in, so it is fixed
+## here once rather than recovered wherever a level is looked up.
+function L = nbLevels (x)
+
+  L = unique (x(:));
+  L = L(! isnan (L));
 
 endfunction

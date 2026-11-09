@@ -1475,6 +1475,117 @@ classdef ClassificationNaiveBayes < PredictiveModel
 
 endclassdef
 
+## Resolve the 'CategoricalPredictors' argument into column indices.
+##
+## val is what the caller was given: empty for none, the character vector
+## 'all', a logical vector with one element per predictor, or a numeric vector
+## of column indices.  p is the number of predictors and classname prefixes any
+## error raised.  idx is a sorted row vector of indices, without repeats.
+function idx = nbCategorical (val, p, classname)
+
+  if (isempty (val))
+    idx = [];
+    return;
+  endif
+
+  if (ischar (val) && isrow (val))
+    if (! strcmpi (val, 'all'))
+      error (strcat (classname, ": a character vector", ...
+                     " 'CategoricalPredictors' must be 'all'."));
+    endif
+    idx = 1:p;
+    return;
+  endif
+
+  if (islogical (val))
+    if (numel (val) != p)
+      error (strcat (classname, ": a logical 'CategoricalPredictors'", ...
+                     " must have one element per predictor."));
+    endif
+    idx = find (val(:)');
+    return;
+  endif
+
+  if (! (isnumeric (val) && isvector (val) && isreal (val)))
+    error (strcat (classname, ": 'CategoricalPredictors' must be 'all', a", ...
+                   " logical vector, or a vector of column indices."));
+  endif
+  idx = sort (unique (val(:)'));
+  if (any (idx != fix (idx)) || any (idx < 1) || any (idx > p))
+    error (strcat (classname, ": 'CategoricalPredictors' must be column", ...
+                   " indices into X."));
+  endif
+
+endfunction
+
+## Resolve the 'DistributionNames' argument of a naive Bayes classifier into
+## one distribution name per predictor.
+##
+## val is what the caller was given, either empty for the default, a character
+## vector naming one distribution for every predictor, or a cell array of
+## character vectors naming one per predictor.  p is the number of predictors
+## and classname prefixes any error raised.
+##
+## D is a cell array with one name per predictor, except for 'mn', which is
+## returned as the character vector it was given as.  The multinomial is a
+## single distribution over the whole predictor vector rather than one per
+## predictor, so it cannot be named for some predictors and not others, and
+## there is no per-predictor list to return.
+function D = nbDistNames (val, p, classname)
+
+  known = {'kernel', 'mvmn', 'normal'};
+
+  if (isempty (val))
+    D = repmat ({'normal'}, 1, p);
+    return;
+  endif
+
+  if (ischar (val) && isrow (val))
+    ## The name goes into a variable first: inside braces a space before a
+    ## call's paren splits it into two elements and the call loses its argument.
+    dname = lower (val);
+    if (strcmp (dname, 'mn'))
+      D = dname;
+      return;
+    endif
+    D = repmat ({dname}, 1, p);
+  elseif (iscellstr (val))
+    if (any (strcmpi (val, 'mn')))
+      error (strcat (classname, ": the 'mn' distribution applies to every", ...
+                     " predictor at once and cannot be named for some", ...
+                     " of them."));
+    endif
+    if (numel (val) != p)
+      error (strcat (classname, ": 'DistributionNames' must name one", ...
+                     " distribution per predictor."));
+    endif
+    D = cellfun (@lower, val(:)', 'UniformOutput', false);
+  else
+    error (strcat (classname, ": 'DistributionNames' must be a character", ...
+                   " vector or a cell array of character vectors."));
+  endif
+
+  bad = ! ismember (D, known);
+  if (any (bad))
+    error (strcat (classname, ": unsupported distribution", ...
+                   sprintf (" '%s'.", D{find (bad, 1)})));
+  endif
+
+endfunction
+
+## The argument as it was given, or the default when it was not given at all.
+## Used to record a naive Bayes model's arguments in ModelParameters, which
+## reports what was asked for rather than what it was resolved to.
+function v = nbGivenOr (given, dflt)
+
+  if (isempty (given))
+    v = dflt;
+  else
+    v = given;
+  endif
+
+endfunction
+
 ## Tests
 %!test  # MATLAB parity: the surface a default fit reports
 %! load fisheriris

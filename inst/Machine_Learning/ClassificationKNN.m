@@ -2581,6 +2581,37 @@ function out = symmetricismax (score)
   out(score != max (score)) = -1;
 endfunction
 
+## Distance parameter a nearest-neighbour metric implies.
+##
+## Three metrics carry one: 'minkowski' the exponent, defaulting to 2;
+## 'seuclidean' a per-predictor scale, the standard deviations of X, or ones
+## where the predictors were standardized already; and 'mahalanobis' the
+## covariance of X.  Every other metric has none and p is empty.
+##
+## It is recomputed rather than carried over whenever Distance changes, which
+## is what the oracle does: a scale belonging to one metric means nothing under
+## another.
+function p = knndistparam (Distance, X, standardized)
+
+  p = [];
+  if (! ischar (Distance))
+    return;
+  endif
+  switch (lower (Distance))
+    case 'minkowski'
+      p = 2;
+    case 'seuclidean'
+      if (standardized)
+        p = ones (1, columns (X));
+      else
+        p = std (X, [], 1);
+      endif
+    case 'mahalanobis'
+      p = cov (X);
+  endswitch
+
+endfunction
+
 %!demo
 %! ## Create a k-nearest neighbor classifier for Fisher's iris data with k = 5.
 %! ## Evaluate some model predictions on new data.

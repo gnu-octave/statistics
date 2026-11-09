@@ -2620,6 +2620,42 @@ classdef ClassificationDiscriminant < PredictiveModel
 
 endclassdef
 
+## Least regularization that leaves a covariance invertible.
+##
+## g is the smallest multiple of eps for which (1 - g) * R + g * I is
+## invertible, where R is S's correlation matrix, and 0 when R already is.
+## Multiples of eps are the quantization the oracle's own readings show, 0 on a
+## well conditioned fit and 8 and 10 times eps on two singular ones.
+##
+## It describes the data rather than any one discriminant type, so it is taken
+## once from the pooled within-class covariance and reported by every type,
+## whether or not that type regularizes.
+function g = discrimmingamma (S)
+
+  g = 0;
+  d = diag (S)';
+  pos = d > 0;
+  if (! any (pos))
+    return;
+  endif
+  dp = d(pos);
+  R = S(pos, pos) ./ sqrt (dp' * dp);
+  R = (R + R') / 2;
+  n = rows (R);
+  I = eye (n);
+  if (rcond (R) > n * eps)
+    return;
+  endif
+  for m = 1:64
+    gm = m * eps;
+    if (rcond (R * (1 - gm) + I * gm) > n * eps)
+      g = gm;
+      return;
+    endif
+  endfor
+
+endfunction
+
 %!demo
 %! ## Create discriminant classifier
 %! ## Evaluate some model predictions on new data.

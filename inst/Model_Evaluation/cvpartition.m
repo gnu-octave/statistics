@@ -1703,6 +1703,105 @@ classdef cvpartition
 
 endclassdef
 
+## Reduce grouping variables to a group index per observation.
+##
+## inds numbers each observation by the group it belongs to, ngroups counts the
+## groups and gsize their sizes.  missidx flags the observations dropped for
+## holding a missing value, and grpvars is returned with those observations
+## removed.
+##
+## One grouping variable is given as a vector, several as a matrix or cell
+## array whose columns are the variables; a row then belongs to a group only if
+## it matches on every one of them.
+function [inds, ngroups, gsize, missidx, grpvars] = __resolve_groups__ (grpvars)
+
+  if (isvector (grpvars))
+    missidx = ismissing (grpvars);
+    if (any (missidx))
+      grpvars(missidx) = [];
+    endif
+    if (isa (grpvars, 'categorical'))
+      [~, idx, inds] = unique (grpvars, 'stable');
+    else
+      [~, idx, inds] = __unique__ (grpvars, 'stable');
+    endif
+  elseif (ismatrix (grpvars))
+    missidx = any (ismissing (grpvars), 2);
+    if (any (missidx))
+      grpvars(missidx, :) = [];
+    endif
+    if (isa (grpvars, 'categorical'))
+      [~, idx, inds] = unique (grpvars, 'rows', 'stable');
+    else
+      [~, idx, inds] = __unique__ (grpvars, 'rows', 'stable');
+    endif
+  else
+    error (strcat ("cvpartition: invalid value for optional", ...
+                   " paired argument 'GroupingVariables'."));
+  endif
+
+  ngroups = numel (idx);
+  gsize = zeros (1, ngroups);
+  for i = 1:ngroups
+    gsize(i) = sum (inds == i);
+  endfor
+
+endfunction
+
+## Assign whole groups to k folds while keeping the class balance even.
+##
+## classes numbers each observation by its class and gidx by its group; folds
+## returns the fold each observation is assigned to.  Every observation of a
+## group lands in the same fold, so no group is split, and the folds are chosen
+## to keep each class spread as evenly as the groups allow.
+##
+## The two demands conflict: once a group is atomic it carries whatever class
+## mix it has, so the class balance can only be approximate.  Groups are placed
+## largest first, each into the fold whose class counts it disturbs least,
+## which is the greedy assignment scikit-learn's StratifiedGroupKFold uses.
+function folds = __stratified_group_folds__ (classes, gidx, k)
+
+  nclasses = max (classes);
+  ngroups = max (gidx);
+
+  ## Class counts of every group
+  gcount = zeros (ngroups, nclasses);
+  for g = 1:ngroups
+    for c = 1:nclasses
+      gcount(g,c) = sum (gidx == g & classes == c);
+    endfor
+  endfor
+
+  ## Largest groups first: they constrain the balance most, so they are placed
+  ## while every fold is still empty enough to take them
+  [~, order] = sort (sum (gcount, 2), 'descend');
+
+  fcount = zeros (k, nclasses);   # class counts accumulated per fold
+  gfold = zeros (ngroups, 1);
+  for i = 1:ngroups
+    g = order(i);
+    best = 1;
+    best_cost = Inf;
+    for f = 1:k
+      trial = fcount;
+      trial(f,:) += gcount(g,:);
+      ## How unevenly each class is spread over the folds, averaged
+      cost = mean (std (trial, 0, 1));
+      ## Break ties toward the emptiest fold, so the folds stay similar in size
+      if (cost < best_cost
+          || (cost == best_cost && sum (trial(f,:)) < sum (fcount(best,:))))
+        best = f;
+        best_cost = cost;
+      endif
+    endfor
+    fcount(best,:) += gcount(g,:);
+    gfold(g) = best;
+  endfor
+
+  folds = gfold(gidx);
+
+endfunction
+
 ## Test output results for custom partition
 %!test
 %! custom = [1, 1, 1, 2, 2, 2, 1, 2, 3, 2, 3, 3, 2, 1, 3]';

@@ -1117,6 +1117,19 @@ classdef RegressionLinear < PredictiveModel
 
 endclassdef
 
+## The weighted median of Y, the value at which half the weight lies on each
+## side.  It is what a fit of the epsilon-insensitive loss starts its intercept
+## from, that loss being an absolute deviation once the band is crossed.
+function m = weightedMedian (Y, W)
+
+  [ys, k] = sort (Y);
+  ws = W(k);
+  c = cumsum (ws) / sum (ws);
+  j = find (c >= 0.5, 1);
+  m = ys(j);
+
+endfunction
+
 %!shared X, Y
 %! load carsmall
 %! X = [Acceleration, Displacement, Horsepower, Weight];
