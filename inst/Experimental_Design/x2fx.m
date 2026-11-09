@@ -241,7 +241,7 @@ endfunction
 %!test
 %! x = [1, 2, 3; 2, 3, 4; 3, 4, 5];
 %! D = x2fx (x, 'linear');
-%! assert_equal (D, [1, 1, 2, 3; 1, 2, 3, 4;, 1, 3, 4, 5]);
+%! assert_equal (D, [1, 1, 2, 3; 1, 2, 3, 4; 1, 3, 4, 5]);
 %! D = x2fx (x, 'interaction');
 %! assert_equal (D(1,:), [1, 1, 2, 3, 2, 3, 6]);
 %! assert_equal (D(2,:), [1, 2, 3, 4, 6, 8, 12]);
