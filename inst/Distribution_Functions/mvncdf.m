@@ -265,7 +265,7 @@ function [p, err] = mvncdf (varargin)
     s = sqrt (diag (sigma))';
     XLo0 = XLo0 ./ s;
     XUp0 = XUp0 ./ s;
-    Rho = sigma ./ (s * s');
+    Rho = sigma ./ (s' * s);
   endif
 
   ## Compute the cdf from standardized values.
@@ -500,6 +500,18 @@ endfunction
 %! assert_equal (mvncdf ([0, 0], [0, 0], rho, o), p, 1e-8);
 %! assert_equal (mvncdf ([0, 0], [0, 0], rho, struct ('Display', 'final')), ...
 %!               p, 1e-8);
+%!test
+%! x = [-0.2 0.5 -0.8]; R = [1 .3 .1; .3 1 -.2; .1 -.2 1];
+%! assert_equal (mvncdf (x, zeros (1,3), R), 0.07013284, 1e-7);
+%!test
+%! S = [1.0 0.3 0.1; 0.3 1.2 -0.2; 0.1 -0.2 0.9];
+%! assert_equal (mvncdf (zeros (1,3), [0.2 -0.5 0.8], S), 0.06429882, 1e-7);
+%!test
+%! S = [4 1 0.5; 1 2 0.3; 0.5 0.3 3];
+%! assert_equal (mvncdf ([1 2 3], [0 0 0], S), 0.63516077, 1e-7);
+%!test
+%! R = [1.0 0.2 0.1 0.05; 0.2 1.0 0.3 -0.1; 0.1 0.3 1.0 0.2; 0.05 -0.1 0.2 1.0];
+%! assert_equal (mvncdf ([0.8 -0.4 0.2 1.1], zeros (1,4), R), 0.18121644, 1e-4);
 %!error<mvncdf: X, MU, and SIGMA must be double or single.> mvncdf (int32 ([0, 0]))
 %!error<mvncdf: X, MU, and SIGMA must be double or single.> mvncdf ([true, true])
 %!error<mvncdf: X, MU, and SIGMA must be double or single.> mvncdf ('ab')
