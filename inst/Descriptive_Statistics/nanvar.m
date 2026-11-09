@@ -29,8 +29,8 @@
 ## returned.  If @var{x} is a matrix, a row vector of column variances is
 ## returned.  If @var{x} is a multidimensional array, @code{nanvar} operates
 ## along the first nonsingleton dimension.  If a dimension contains fewer than
-## two non-@qcode{NaN} values, the variance is returned as 0 for a single value
-## and as @qcode{NaN} when all values are @qcode{NaN}.
+## two non-@qcode{NaN} values, the variance is returned as 0 for a single
+## finite value and as @qcode{NaN} when all values are @qcode{NaN}.
 ##
 ## @code{@var{v} = nanvar (@var{x}, @var{w})} specifies the normalization.  When
 ## @var{w} is 0 (default), the variance is normalized by @math{N-1}, where
@@ -146,14 +146,13 @@ function v = nanvar (x, w, dim)
     x0(! mask) = 0;
     xm = sum (x0, dimarg) ./ n;
     d2 = (x - xm) .^ 2;
-    d2(isnan (d2)) = 0;
+    d2(! mask) = 0;
     ss = sum (d2, dimarg);
     if (w == 1)
       v = ss ./ n;
     else
-      v = ss ./ (n - 1);
+      v = ss ./ max (n - 1, 1);
     endif
-    v(n == 1) = 0;
     v(n == 0) = NaN;
   endif
 
@@ -194,6 +193,11 @@ endfunction
 %! x = reshape (1:24, [2, 4, 3]);
 %! x([5:6, 20]) = NaN;
 %! assert_equal (nanvar (x, 0, 'all'), nanvar (x(! isnan (x))(:)), 1e-12)
+## Test that Inf values give NaN
+%!assert_equal (nanvar ([1 Inf 3; 2 5 NaN; 4 6 8]), [2.3333, NaN, 12.5], 1e-4)
+%!assert_equal (nanvar ([-Inf Inf]), NaN)
+%!assert_equal (nanvar ([Inf NaN]), NaN)
+%!assert_equal (nanvar ([1 Inf 3], 1), NaN)
 
 ## Test input validation
 %!error <Invalid call to nanvar> nanvar ()
