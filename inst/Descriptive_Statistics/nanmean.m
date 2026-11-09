@@ -97,6 +97,12 @@ function y = nanmean (x, dim)
       error ("nanmean: invalid DIM argument.");
     endif
 
+    ## A dimension past the last leaves logical and sparse X as they are
+    if (isscalar (dim) && dim > ndims (x) && (islogical (x) || issparse (x)))
+      y = x;
+      return;
+    endif
+
     na = isnan (x);
     x(na) = 0;
     na = ! na;
@@ -173,6 +179,10 @@ endfunction
 
 ## Test logical input
 %!assert_equal (nanmean (logical ([1, 0, 1; 0, 0, 1])), [0.5, 0, 1])
+
+%!assert_equal (nanmean (sparse ([1 2; 3 4]), 3), sparse ([1 2; 3 4]))
+%!assert_equal (nanmean (true (2), 3), true (2))
+%!assert_equal (nanmean (int8 ([1 2]), 3), [1, 2])
 
 ## Test input validation
 %!error <Invalid call to nanmean> nanmean ()

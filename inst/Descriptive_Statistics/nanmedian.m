@@ -28,7 +28,8 @@
 ## returned.  If @var{x} is a matrix, a row vector of column medians is
 ## returned.  If @var{x} is a multidimensional array, @code{nanmedian} operates
 ## along the first nonsingleton dimension.  If all values along a dimension are
-## @qcode{NaN}, the median is returned as @qcode{NaN}.
+## @qcode{NaN}, the median is returned as @qcode{NaN}.  As in @code{median},
+## @var{m} takes the class of @var{x}, so an integer median is rounded.
 ##
 ## @code{@var{m} = nanmedian (@var{x}, @qcode{'all'})} returns the median of all
 ## elements of @var{x}, after removing @qcode{NaN} values.  It is the equivalent
@@ -57,21 +58,12 @@ function m = nanmedian (x, dim)
   if (! isnumeric (x) && ! islogical (x))
     error ("nanmedian: X must be numeric or logical.");
   endif
-  ## 0 by 0 and no DIM given
-  if (nargin < 2 && isequal (size (x), [0, 0]))
-    m = NaN;
-    return;
-  endif
-
   ## Operating dimension(s)
   if (nargin < 2)
-    dim = find (size (x) != 1, 1);
-    if (isempty (dim))
-      dim = 1;
-    endif
-  elseif (ischar (dim) && strcmpi (dim, 'all'))
-    m = __colmedian__ (x(:).');
+    m = median (x, 'omitnan');
     return;
+  elseif (ischar (dim) && strcmpi (dim, 'all'))
+    dim = 'all';
   elseif (isscalar (dim))
     if (! isnumeric (dim) || ! isfinite (dim) || fix (dim) != dim || dim <= 0)
       error ("nanmedian: DIM must be a positive integer.");
@@ -80,58 +72,14 @@ function m = nanmedian (x, dim)
     if (any (! isfinite (dim)) || any (fix (dim) != dim) || any (dim <= 0))
       error ("nanmedian: VECDIM must be a vector of positive integers.");
     endif
-    dim = sort (dim);
-    if (! all (diff (dim)))
+    if (! all (diff (sort (dim))))
       error ("nanmedian: VECDIM must contain non-repeating positive integers.");
     endif
   else
     error ("nanmedian: invalid DIM argument.");
   endif
 
-  ## Ignore dimensions larger than the array (they are singleton)
-  vecdim = dim;
-  vecdim(vecdim > ndims (x)) = [];
-  if (isempty (vecdim))
-    m = x;
-    return;
-  endif
-
-  szx = size (x);
-  remdims = 1:ndims (x);
-  remdims(vecdim) = [];
-  if (isempty (remdims))
-    m = __colmedian__ (x(:).');
-    return;
-  endif
-
-  ## Permute the operating dimensions to the back and squash them together
-  perm = [remdims, vecdim];
-  xp = permute (x, perm);
-  R = prod (szx(remdims));
-  K = prod (szx(vecdim));
-  xr = reshape (xp, R, K);
-  mr = __colmedian__ (xr);
-
-  ## Restore the original layout with the operating dimensions collapsed
-  m = reshape (mr, [szx(remdims), ones(1, numel (vecdim))]);
-  m = ipermute (m, perm);
-
-endfunction
-
-## Median over the second dimension of a 2-D matrix, ignoring NaN values.
-function m = __colmedian__ (M)
-
-  R = rows (M);
-  Ms = sort (M, 2);              # NaN values are sorted to the end
-  n = sum (! isnan (M), 2);
-  m = NaN (R, 1);
-  v = find (n > 0);
-  nn = n(v);
-  iL = floor ((nn + 1) / 2);
-  iU = ceil ((nn + 1) / 2);
-  linL = v + (iL - 1) * R;
-  linU = v + (iU - 1) * R;
-  m(v) = (Ms(linL) + Ms(linU)) / 2;
+  m = median (x, dim, 'omitnan');
 
 endfunction
 
@@ -166,6 +114,16 @@ endfunction
 %!              [1.5; 5; 8; 11])
 %!assert_equal (nanmedian ([1 NaN; NaN NaN; 3 NaN]), [2, NaN])
 %!assert_equal (nanmedian (reshape (1:12, [2, 3, 2])(:)), 6.5)
+%!assert_equal (nanmedian (single ([1 2 NaN 4])), single (2))
+%!assert_equal (nanmedian (int8 ([2 5; 3 9])), int8 ([3, 7]))
+%!assert_equal (nanmedian (uint8 ([200 250])), uint8 (225))
+%!assert_equal (nanmedian (intmax ('int64') - int64 ([1 3])), ...
+%!              intmax ('int64') - int64 (2))
+%!assert_equal (nanmedian ([true false]), true)
+%!assert_equal (nanmedian (int8 ([])), int8 (0))
+%!assert_equal (nanmedian (sparse ([1 NaN 3])), sparse (2))
+%!assert_equal (nanmedian (int8 ([1 2; 3 4]), 'all'), int8 (3))
+%!assert_equal (nanmedian (single ([1 NaN; 3 4]), [1 2]), single (3))
 %!test
 %! x = reshape (1:24, [2, 4, 3]);
 %! x([5:6, 20]) = NaN;

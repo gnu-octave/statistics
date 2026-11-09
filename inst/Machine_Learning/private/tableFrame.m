@@ -16,7 +16,8 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {private} {[@var{X}, @var{Y}, @var{args}, @var{lev}, @var{errmsg}] =} tableFrame (@var{X}, @var{Y}, @var{args})
+## @deftypefn  {private} {[@var{X}, @var{Y}, @var{args}, @var{lev}, @var{errmsg}] =} tableFrame (@var{X}, @var{Y}, @var{args})
+## @deftypefnx {private} {[@var{X}, @var{Y}, @var{args}, @var{lev}, @var{errmsg}] =} tableFrame (@var{X}, @var{Y}, @var{args}, @var{ordnum})
 ##
 ## Resolve table input into the predictors and the response a learner takes.
 ##
@@ -32,10 +33,20 @@
 ## they went in, with @var{lev} empty.  Where it is, @var{X} comes back as a
 ## real numeric matrix, @var{Y} as the response, and @var{args} carrying
 ## @qcode{'PredictorNames'}, @qcode{'ResponseName'} and
-## @qcode{'CategoricalPredictors'} as the table gives them.  @var{lev} is one
-## cell per predictor, holding the levels of a predictor read from text and
+## @qcode{'CategoricalPredictors'} as the table gives them.  Where
+## @qcode{'Weights'} names a variable of the table, @var{args} carries that
+## variable's values instead, and the variable is no predictor.  @var{lev} is
+## one cell per predictor, holding the levels of a predictor read from text and
 ## empty for one read from numbers, which is what lets a level map to the code
-## at prediction that it carried at fitting.
+## at prediction that it carried at fitting.  Empty text, a blank character
+## row and a missing string are missing, as an undefined categorical value
+## is: no level, and coded @qcode{NaN}.
+##
+## An ordinal categorical column is coded by the order of its categories and
+## counts as a categorical predictor, unless @var{ordnum} is true, when it is
+## a numeric one, as in MATLAB's trees, ensembles and generalized additive
+## models.  Naming it in @qcode{'CategoricalPredictors'} still makes it
+## categorical.  @var{ordnum} is false by default.
 ##
 ## This runs before any model exists, which is why it is here rather than on
 ## @code{PredictiveModel}: mapping a table onto a model that has already been
@@ -43,7 +54,7 @@
 ##
 ## @end deftypefn
 
-function [X, Y, args, lev, errmsg] = tableFrame (X, Y, args)
+function [X, Y, args, lev, errmsg] = tableFrame (X, Y, args, ordnum = false)
 
   lev = {};
   errmsg = '';
@@ -92,6 +103,22 @@ function [X, Y, args, lev, errmsg] = tableFrame (X, Y, args)
     return;
   endif
 
+  ## Observation weights may name a table variable, which then gives the
+  ## weights and is no predictor, as in MATLAB
+  for j = 1:2:numel (args) - 1
+    w = args{j+1};
+    if (ischar (args{j}) && strcmpi (args{j}, 'Weights')
+        && (ischar (w) && isrow (w) || (isa (w, 'string') && isscalar (w))))
+      wname = char (w);
+      if (! any (strcmp (names, wname)))
+        errmsg = sprintf ("the table holds no variable '%s'.", wname);
+        return;
+      endif
+      args{j+1} = X.(wname);
+      keep(strcmp (names, wname)) = false;
+    endif
+  endfor
+
   ## Whatever is left is a predictor, unless the formula or the call named
   ## a subset; the two together are a conflict, as R2024a calls it one
   pnames = names(keep);
@@ -129,7 +156,7 @@ function [X, Y, args, lev, errmsg] = tableFrame (X, Y, args)
                                 " column."), pnames{k});
       return;
     endif
-    [Xn(:,k), lev{k}, iscat(k), errmsg] = tfColumn (v, pnames{k});
+    [Xn(:,k), lev{k}, iscat(k), errmsg] = tfColumn (v, pnames{k}, ordnum);
     if (! isempty (errmsg))
       return;
     endif
@@ -150,8 +177,9 @@ function [X, Y, args, lev, errmsg] = tableFrame (X, Y, args)
 endfunction
 
 ## One table variable as the numbers a learner takes, and the levels it was
-## read through where it holds text.
-function [v, lev, iscat, errmsg] = tfColumn (col, name)
+## read through where it holds text.  An ordinal column is numeric where
+## ORDNUM says so, its codes following the order of its categories.
+function [v, lev, iscat, errmsg] = tfColumn (col, name, ordnum)
 
   v = [];
   lev = [];
@@ -170,18 +198,21 @@ function [v, lev, iscat, errmsg] = tfColumn (col, name)
   if (isa (col, 'categorical'))
     lev = categories (col)(:)';
     v = double (col);
-    iscat = true;
+    iscat = ! (ordnum && isordinal (col));
     return;
   endif
+  ## Empty text, a blank character row and a missing string are missing, as
+  ## in MATLAB, so they are no level and code as NaN, as an undefined
+  ## categorical value does
   if (ischar (col))
     col = cellstr (col);
   elseif (isa (col, 'string'))
     col = cellstr (col);
   endif
   if (iscellstr (col))
-    lev = unique (col(:)')';
-    lev = lev(:)';
-    v = zeros (numel (col), 1);
+    miss = cellfun ('isempty', col(:));
+    lev = unique (col(! miss))';
+    v = NaN (numel (col), 1);
     for k = 1:numel (lev)
       v(strcmp (col(:), lev{k})) = k;
     endfor

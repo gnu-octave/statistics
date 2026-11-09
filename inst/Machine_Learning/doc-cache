@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 1493
+# columns: 1495
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -2945,7 +2945,7 @@ ClassificationDiscriminant.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1686
+# length: 1778
 ClassificationDiscriminant: label = predict (obj, XC)
 ClassificationDiscriminant: [label, score, cost] = predict (obj, XC)
 Classify new data points into categories using the discriminant
@@ -2966,7 +2966,8 @@ model in obj.
 XC) also returns score, which contains the predicted class
 scores or posterior probabilities for each instance of the corresponding
 unique classes, and cost, which is a matrix containing the expected
-cost of the classifications.
+cost of the classifications. A query with a missing value has
+NaN scores and costs and takes the class of largest prior.
 
 The score matrix contains the posterior probabilities for each
 class, calculated using the multivariate normal probability density
@@ -3154,7 +3155,7 @@ Save a ClassificationDiscriminant object.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 18
 ClassificationECOC
@@ -3647,18 +3648,20 @@ ClassificationECOC.RowsUsed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 177
+# length: 348
 ClassificationECOC: property RowsUsed
 A logical column marking the rows of the original data that were
-used, the rest having been dropped as missing. This property is
-read-only.
+used. A row is dropped when its class is missing, when every predictor
+is missing, or when its weight is zero; a row missing only some
+predictors is used, each binary learner taking the missing values by
+its own rule. This property is read-only.
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 111
-A logical column marking the rows of the original data that were used, the rest having been dropped as missing.
+# length: 70
+A logical column marking the rows of the original data that were used.
 
 
 
@@ -7061,7 +7064,7 @@ Save a ClassificationGAM object.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 17
 ClassificationKNN
@@ -8010,15 +8013,17 @@ ClassificationKNN.RowsUsed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 383
+# length: 458
 ClassificationKNN: property RowsUsed
 Rows used for fitting
 
 A logical column vector with the same length as the observations in the
 original predictor data X, true for each row that was used for
 fitting the ClassificationKNN model. It is empty, [],
-when every observation was used, so a non-empty value means that rows
-holding missing values were dropped. This property is read-only.
+when every observation was used. A row is dropped when its class is
+missing, when every predictor is missing, or when its weight is zero;
+a row missing only some predictors is used. This property is
+read-only.
 
 
 # name: <cell-element>
@@ -10316,7 +10321,7 @@ Keep a subset of the fitted regularization strengths.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 24
 ClassificationNaiveBayes
@@ -10755,13 +10760,14 @@ ClassificationNaiveBayes.NumObservations
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 240
+# length: 333
 ClassificationNaiveBayes: property NumObservations
 Number of observations
 
 A positive integer specifying the number of observations used to train
-the model, after any row holding a missing value has been dropped. This
-property is read-only.
+the model, the rows dropped as RowsUsed describes left out. Each
+predictor is fitted on the rows it is known for, and an empirical prior
+counts every row used. This property is read-only.
 
 
 # name: <cell-element>
@@ -10864,15 +10870,18 @@ ClassificationNaiveBayes.RowsUsed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 372
+# length: 567
 ClassificationNaiveBayes: property RowsUsed
 Rows used for fitting
 
 A logical column vector with the same length as the observations in the
 original predictor data X, true for each row that was used for
 fitting the model. It is empty, [], when every observation was
-used, so a non-empty value means that rows holding missing values were
-dropped. This property is read-only.
+used. A row is dropped when its class is missing, when every predictor
+is missing, or when its weight is zero or missing. A row missing only
+some predictors is used; with the 'mn' distribution it counts
+in the prior but not in the multinomial, which describes the whole
+row. This property is read-only.
 
 
 # name: <cell-element>
@@ -11032,13 +11041,14 @@ ClassificationNaiveBayes.X
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 415
+# length: 503
 ClassificationNaiveBayes: property X
 Predictor data
 
-A numeric matrix containing the predictor data. Each column of X
-represents one predictor (variable), and each row represents one
-observation. This property is read-only.
+A numeric matrix containing the predictor data the model was fitted on.
+Each column of X represents one predictor (variable), and each
+row represents one observation; a row dropped from the fit, as
+RowsUsed describes, is not kept. This property is read-only.
 
 Where the model was fitted from a table, the predictors are the coded
 matrix and not the table: a variable holding levels is stored as its
@@ -11063,13 +11073,13 @@ ClassificationNaiveBayes.Y
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 314
+# length: 297
 ClassificationNaiveBayes: property Y
 Class labels
 
 Specified as a logical or numeric column vector, or as a character array
-or a cell array of character vectors with the same number of rows as the
-predictor data. Each row in Y is the observed class label for the
+or a cell array of character vectors with the same number of rows as
+X. Each row in Y is the observed class label for the
 corresponding row in X. This property is read-only.
 
 
@@ -11322,7 +11332,7 @@ ClassificationNaiveBayes.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 892
+# length: 1153
 ClassificationNaiveBayes: label = predict (obj, XC)
 ClassificationNaiveBayes: [label, score, cost] = predict (obj, XC)
 Classify new data with a trained ClassificationNaiveBayes object.
@@ -11336,6 +11346,11 @@ XC) also returns score, the posterior probability of each
 class, and cost, the expected misclassification cost of assigning
 each observation to each class. The label of an observation is the
 class of least expected cost.
+
+A missing predictor is skipped and the observation classified on the
+rest. Under the 'mn' distribution, which describes the whole
+row at once, an observation missing any count has posterior and cost
+NaN and takes the class of largest prior, whatever the cost.
 
 The new data may be a table, whose variables are matched to the
 predictors the model was fitted on by name and not by position:
@@ -11434,13 +11449,13 @@ ClassificationNaiveBayes.resubPredict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 298
+# length: 303
 ClassificationNaiveBayes: label = resubPredict (obj)
 ClassificationNaiveBayes: [label, score, cost] = resubPredict (obj)
 Classify the training data with the trained model.
 
 The same as calling predict on the data the model was fitted on,
-with the rows that were dropped for missing values left out.
+with the rows that were dropped, as RowsUsed describes, left out.
 
 
 # name: <cell-element>
@@ -14319,13 +14334,14 @@ ClassificationPartitionedEnsemble.kfoldEdge
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 359
+# length: 403
 ClassificationPartitionedEnsemble: e = kfoldEdge (obj)
 ClassificationPartitionedEnsemble: e = kfoldEdge (..., name, value)
 Cross-validated classification edge.
 
-The weighted mean of the out-of-fold margins, weighted by W.
-'Folds' and 'Mode' are taken as by kfoldLoss.
+The weighted mean of the out-of-fold margins, weighted by W,
+NaN if a held-out observation has no score. 'Folds' and
+'Mode' are taken as by kfoldLoss.
 
 See also:
 ClassificationPartitionedEnsemble,
@@ -14350,13 +14366,15 @@ ClassificationPartitionedEnsemble.kfoldLoss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 774
+# length: 900
 ClassificationPartitionedEnsemble: L = kfoldLoss (obj)
 ClassificationPartitionedEnsemble: L = kfoldLoss (..., name, value)
 Cross-validated classification loss.
 
 L is the loss of the out-of-fold scores, the held-out observations
-weighted by W, those without scores left out.
+weighted by W. An observation no fold held out is left out. One
+held out but scored by no learner, for its missing values, stays, as in
+CompactClassificationEnsemble.loss.
 
 Name-Value arguments:
 
@@ -16644,7 +16662,7 @@ Apply a function to each fold of a cross-validated model.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 17
 ClassificationSVM
@@ -17380,13 +17398,14 @@ ClassificationSVM.Prior
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 541
+# length: 581
 ClassificationSVM: property Prior
 Prior probabilities of the classes
 
 A numeric row vector with one entry per class, in the order of
 ClassNames, summing to one. It defaults to the class
-frequencies of the training data. This property is read-only.
+frequencies of the training data, a row missing some predictors
+included. This property is read-only.
 
 Specified as a row vector with one entry per class, in the order of
 ClassNames, and rescaled to sum to one. It may be given as
@@ -17439,15 +17458,18 @@ ClassificationSVM.RowsUsed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 383
+# length: 572
 ClassificationSVM: property RowsUsed
 Rows used for fitting
 
 A logical column vector with the same length as the observations in the
 original predictor data X, true for each row that was used for
 fitting the ClassificationSVM model. It is empty, [],
-when every observation was used, so a non-empty value means that rows
-holding missing values were dropped. This property is read-only.
+when every observation was used. A row is dropped when its class is
+missing, when every predictor is missing, or when its weight is zero.
+A row missing only some predictors is used: it counts in the prior and
+in W, while the support vector machine is fitted on the complete
+rows, as MATLAB does. This property is read-only.
 
 
 # name: <cell-element>
@@ -18356,7 +18378,7 @@ Save a ClassificationSVM object.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 18
 ClassificationTree
@@ -18365,7 +18387,7 @@ ClassificationTree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1623
+# length: 1895
 statistics: ClassificationTree
 Binary decision tree for classification
 
@@ -18389,6 +18411,10 @@ An observation missing the predictor a node cuts on descends to neither
 child. It is counted in that node and in every node above it, and
 predict stops it there and gives it that node's answer, so a row
 is never sent down a branch on evidence it does not carry.
+Choosing a split, a predictor known for only part of a node is scored on
+the rows it is known for, by how much the split lowers their impurity,
+and that is scaled by their share of the node, as C4.5 does, so a
+predictor known for few rows is not preferred for that alone.
 
 A categorical predictor is split into two sets of levels, and an
 observation whose level a node did not see stops there, as one missing
@@ -19379,15 +19405,16 @@ ClassificationTree.RowsUsed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 388
+# length: 464
 ClassificationTree: property RowsUsed
 Rows used for fitting
 
 A logical column vector with one element per row of the predictor data
 as it was given, true for each row used for fitting. It is empty,
 [], when every row was used, so a non-empty value means that
-rows were dropped. Only a missing response drops a row; a row missing
-some of its predictors is kept. This property is read-only.
+rows were dropped. A row is dropped when its response is missing, when
+every predictor is missing, or when its weight is zero; a row missing
+only some of its predictors is kept. This property is read-only.
 
 
 # name: <cell-element>
@@ -21409,7 +21436,7 @@ CompactClassificationDiscriminant.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1689
+# length: 1781
 CompactClassificationDiscriminant: label = predict (obj, XC)
 CompactClassificationDiscriminant: [label, score, cost] = predict (obj, XC)
 Classify new data points into categories using the discriminant
@@ -21431,7 +21458,8 @@ model in obj.
 XC) also returns score, which contains the predicted class
 scores or posterior probabilities for each instance of the corresponding
 unique classes, and cost, which is a matrix containing the expected
-cost of the classifications.
+cost of the classifications. A query with a missing value has
+NaN scores and costs and takes the class of largest prior.
 
 The score matrix contains the posterior probabilities for each
 class, calculated using the multivariate normal probability density
@@ -22607,7 +22635,7 @@ CompactClassificationEnsemble.loss
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1632
+# length: 1856
 CompactClassificationEnsemble: L = loss (obj, X, Y)
 CompactClassificationEnsemble: L = loss (obj, Tbl, ResponseVarName)
 CompactClassificationEnsemble: L = loss (obj, Tbl)
@@ -22644,9 +22672,13 @@ element j uses the first j of them, or
 per row. The default is uniform.
 
 'Learners' and 'UseObsForLearner' are taken as by
-predict. A row with NaN scores, which no learner may
-score, is left out and the weights are renormalized over the rest;
-edge does the same.
+predict. A row 'UseObsForLearner' hides from every
+learner used is left out and the weights are renormalized over the rest.
+A row no learner can score for its missing values stays: it counts as
+the class of greatest prior under 'classiferror',
+'classifcost' and 'mincost', and any other loss is
+NaN. edge treats the two alike, its result being
+NaN for the second.
 
 See also:
 CompactClassificationEnsemble,
@@ -23730,7 +23762,7 @@ Save a CompactClassificationGAM object.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 31
 CompactClassificationNaiveBayes
@@ -24361,7 +24393,7 @@ CompactClassificationNaiveBayes.predict
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 645
+# length: 906
 CompactClassificationNaiveBayes: label = predict (obj, XC)
 CompactClassificationNaiveBayes: [label, score, cost] = predict (obj, XC)
 Classify new data with a compact naive Bayes model.
@@ -24369,6 +24401,11 @@ Classify new data with a compact naive Bayes model.
 The same classification the model it came from would give: the label of
 least expected cost, the posterior of each class, and the expected
 misclassification cost of each.
+
+A missing predictor is skipped and the observation classified on the
+rest. Under the 'mn' distribution, which describes the whole
+row at once, an observation missing any count has posterior and cost
+NaN and takes the class of largest prior, whatever the cost.
 
 The new data may be a table, whose variables are matched to the
 predictors the model was fitted on by name and not by position:
@@ -43511,7 +43548,7 @@ Save a support vector regression model to a file.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 14
 RegressionTree
@@ -43520,7 +43557,7 @@ RegressionTree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1868
+# length: 2140
 statistics: RegressionTree
 Binary decision tree for regression
 
@@ -43545,6 +43582,10 @@ An observation missing the predictor a node cuts on descends to neither
 child. It is counted in that node and in every node above it, and
 predict stops it there and gives it that node's answer, so a row
 is never sent down a branch on evidence it does not carry.
+Choosing a split, a predictor known for only part of a node is scored on
+the rows it is known for, by how much the split lowers their impurity,
+and that is scaled by their share of the node, as C4.5 does, so a
+predictor known for few rows is not preferred for that alone.
 
 A categorical predictor is split into two sets of levels by ordering the
 levels by their mean response, and an observation whose level a node did
@@ -44389,15 +44430,16 @@ RegressionTree.RowsUsed
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 384
+# length: 460
 RegressionTree: property RowsUsed
 Rows used for fitting
 
 A logical column vector with one element per row of the predictor data
 as it was given, true for each row used for fitting. It is empty,
 [], when every row was used, so a non-empty value means that
-rows were dropped. Only a missing response drops a row; a row missing
-some of its predictors is kept. This property is read-only.
+rows were dropped. A row is dropped when its response is missing, when
+every predictor is missing, or when its weight is zero; a row missing
+only some of its predictors is kept. This property is read-only.
 
 
 # name: <cell-element>
@@ -48520,7 +48562,7 @@ Fit a Support Vector Machine classification model.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 8
 fitctree
@@ -48529,7 +48571,7 @@ fitctree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 5835
+# length: 5899
 statistics: Mdl = fitctree (X, Y)
 statistics: Mdl = fitctree (Tbl, ResponseVarName)
 statistics: Mdl = fitctree (Tbl, formula)
@@ -48566,8 +48608,9 @@ PredictorNames and ResponseName come from the table, and a
 level is coded at prediction as it was coded at fitting, so a table given
 to predict may hold only some of the levels.
 
-An observation whose class label is missing is dropped, and the rows kept
-are reported in RowsUsed. An observation missing some of its
+An observation whose class label is missing, which is missing every
+predictor, or whose weight is zero is dropped, and the rows kept are
+reported in RowsUsed. An observation missing only some of its
 predictors is kept: it descends the tree as far as the predictors it does
 carry allow and is answered there.
 
@@ -49370,7 +49413,7 @@ Fit a support vector machine regression model.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 8
 fitrtree
@@ -49379,7 +49422,7 @@ fitrtree
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4617
+# length: 4681
 statistics: Mdl = fitrtree (X, Y)
 statistics: Mdl = fitrtree (Tbl, ResponseVarName)
 statistics: Mdl = fitrtree (Tbl, formula)
@@ -49414,10 +49457,11 @@ PredictorNames and ResponseName come from the table, and a
 level is coded at prediction as it was coded at fitting, so a table given
 to predict may hold only some of the levels.
 
-An observation whose response is missing is dropped, and the rows kept are
-reported in RowsUsed. An observation missing some of its predictors
-is kept: it descends the tree as far as the predictors it does carry allow
-and is answered there.
+An observation whose response is missing, which is missing every
+predictor, or whose weight is zero is dropped, and the rows kept are
+reported in RowsUsed. An observation missing only some of its
+predictors is kept: it descends the tree as far as the predictors it does
+carry allow and is answered there.
 
 Mdl = fitrtree (..., name, value) takes the
 options below.
@@ -49489,6 +49533,228 @@ treepredict
 # elements: 1
 # length: 42
 Fit a binary decision tree for regression.
+
+
+
+# name: <cell-element>
+# type: string
+# elements: 1
+# length: 7
+fscchi2
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4752
+statistics: idx = fscchi2 (Tbl, ResponseVarName)
+statistics: idx = fscchi2 (Tbl, formula)
+statistics: idx = fscchi2 (Tbl, Y)
+statistics: idx = fscchi2 (X, Y)
+statistics: idx = fscchi2 (..., name, value)
+statistics: [idx, scores] = fscchi2 (...)
+Rank the predictors for classification with chi-square tests.
+
+idx = fscchi2 (X, Y) tests each predictor, a
+column of the matrix X, for independence from the class labels
+Y with a chi-square test, and ranks the predictors by the result.
+idx is a row vector of column indices, from the most important
+predictor to the least; predictors of equal score keep their order.
+
+X is a real matrix of type double or single with one row per
+observation. Y holds one class label per row of X: a numeric
+or logical vector, a categorical vector, a cell array of character vectors,
+a string array, or a character matrix with one row per observation.
+
+idx = fscchi2 (Tbl, ResponseVarName) takes the
+predictors and the class labels from the table Tbl:
+ResponseVarName names the variable holding the labels and every other
+variable is a predictor. idx = fscchi2 (Tbl,
+formula) names them with a model formula instead,
+'Y ~ x1 + x2', which holds main effects only, and ranks only the
+predictors it names, idx indexing them in the order the table holds
+them. idx = fscchi2 (Tbl, Y) takes the predictors
+from the table and the labels from Y. A logical, categorical, text
+or string variable of the table is a categorical predictor; an ordinal
+categorical one is continuous, its categories in their order.
+
+[idx, scores] = fscchi2 (...) also returns the score
+of each predictor, a row vector in the order of the predictors, so that
+scores(idx) is in decreasing order. The score is
+-log (p), p being the p-value of the predictor's test, so a
+larger score marks a more important predictor; it is Inf where
+p is 0. A predictor that cannot separate the classes, being
+constant or wholly missing, scores 0, and so does every predictor when the
+labels hold a single class.
+
+A continuous predictor is first binned. Its n known values are
+sorted, the upper edge of bin k is the value at position
+ceil (k * n / NumBins), and a value goes to the
+first bin whose edge it does not exceed. The bins so hold equal numbers of
+observations as nearly as the ties allow, the first ones taking any
+remainder, and equal values always share a bin, which may leave fewer bins
+than asked for. A categorical predictor takes its categories as they
+are. The test is Pearson's chi-square test of
+independence on the table of weighted counts of the bins or categories
+against the classes, the empty ones left out.
+
+Each predictor is tested on the observations it is known for. Their
+weights are scaled within each class so that the class carries its prior
+probability, and over all so that they sum to the number of those
+observations. The empirical prior, the default, is the weighted share of
+each class among those observations, which leaves the weights as given. An
+observation whose class label is missing is left out of every test.
+
+The following Name-Value pairs are supported:
+
+Name Value
+'CategoricalPredictors' The categorical predictors: a
+vector of their indices, a logical vector with one value per predictor, or
+'all'. With a table they are added to those the table makes
+categorical, and they may also be named. The default is none for a matrix.
+'ClassNames' The classes to use, in the type of Y.
+Observations of other classes are left out, and the order of the names is
+the order of a 'Prior' vector. The default is every class of
+Y, sorted.
+'NumBins' The number of bins of a continuous predictor, a
+positive integer. The default is 10.
+'Prior' The prior probabilities of the classes:
+'empirical', the default; 'uniform'; a vector with one
+nonnegative value per class, in the order of the classes; or a structure
+with the fields ClassNames and ClassProbs. The values are
+normalized to sum to 1.
+'UseMissing' false, the default, to test each
+predictor on the observations it is known for, or true to test it
+on every observation, the missing values of a categorical predictor forming
+one more category and those of a continuous predictor one more bin. MATLAB
+R2024a and R2026b document this option but ignore it in fscchi2,
+scoring every predictor alike either way; Octave does what they document.
+'Weights' The observation weights, a nonnegative finite
+vector of type double or single with one value per row, or with a table the
+name of one of its variables, which is then no predictor. The default is
+equal weights.
+
+The option names are not case sensitive but must be given in full. With a
+matrix, the categorical predictors cannot be named, the predictors having no
+names, as in MATLAB.
+
+See also:
+fsrftest,
+relieff,
+sequentialfs,
+crosstab
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 61
+Rank the predictors for classification with chi-square tests.
+
+
+
+# name: <cell-element>
+# type: string
+# elements: 1
+# length: 8
+fsrftest
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4080
+statistics: idx = fsrftest (Tbl, ResponseVarName)
+statistics: idx = fsrftest (Tbl, formula)
+statistics: idx = fsrftest (Tbl, Y)
+statistics: idx = fsrftest (X, Y)
+statistics: idx = fsrftest (..., name, value)
+statistics: [idx, scores] = fsrftest (...)
+Rank the predictors for regression with F-tests.
+
+idx = fsrftest (X, Y) tests each predictor, a
+column of the matrix X, with a one-way analysis of variance: whether
+the response Y has the same mean in every group of observations the
+predictor forms. It ranks the predictors by the result. idx is a row
+vector of column indices, from the most important predictor to the least;
+predictors of equal score keep their order.
+
+X is a real matrix of type double or single with one row per
+observation, and Y a real vector of type double or single with one
+response per row of X.
+
+idx = fsrftest (Tbl, ResponseVarName) takes the
+predictors and the response from the table Tbl: ResponseVarName
+names the variable holding the response and every other variable is a
+predictor. idx = fsrftest (Tbl, formula) names
+them with a model formula instead, 'Y ~ x1 + x2', which holds main
+effects only, and ranks only the predictors it names, idx indexing
+them in the order the table holds them. idx = fsrftest
+(Tbl, Y) takes the predictors from the table and the response
+from Y. A logical, categorical, text or string variable of the table
+is a categorical predictor; an ordinal categorical one is continuous, its
+categories in their order.
+
+[idx, scores] = fsrftest (...) also returns the
+score of each predictor, a row vector of type double in the order of the
+predictors, so that scores(idx) is in decreasing order.
+The score is -log (p), p being the p-value of the predictor's
+F-test, so a larger score marks a more important predictor; it is
+Inf where p is 0. A predictor that forms a single group, or
+as many groups as observations, scores 0, and so does every predictor when
+the response is constant.
+
+A continuous predictor is first binned. Its n known values are
+sorted, the upper edge of bin k is the value at position
+ceil (k * n / NumBins), and a value goes to the
+first bin whose edge it does not exceed. The bins so hold equal numbers of
+observations as nearly as the ties allow, the first ones taking any
+remainder, and equal values always share a bin, which may leave fewer bins
+than asked for. A categorical predictor takes its categories as they
+are. The F-test weighs each observation by its weight, scaling the
+weights not mattering.
+
+Each predictor is tested on the observations it is known for. An
+observation whose response is missing is left out of every test.
+
+The following Name-Value pairs are supported:
+
+Name Value
+'CategoricalPredictors' The categorical predictors: a
+vector of their indices, a logical vector with one value per predictor, or
+'all'. With a table they are added to those the table makes
+categorical, and they may also be named. The default is none for a matrix.
+'NumBins' The number of bins of a continuous predictor, a
+positive integer. The default is 10.
+'UseMissing' false, the default, to test each
+predictor on the observations it is known for, or true to test it
+on every observation, the missing values of a categorical predictor forming
+one more category and those of a continuous predictor one more bin. MATLAB
+R2024a and R2026b document this option but ignore it in fsrftest,
+scoring every predictor alike either way; Octave does what they document.
+'Weights' The observation weights, a nonnegative finite
+vector of type double or single with one value per row, or with a table the
+name of one of its variables, which is then no predictor. The default is
+equal weights.
+
+The option names are not case sensitive but must be given in full. With a
+matrix, the categorical predictors cannot be named, the predictors having no
+names, as in MATLAB. The test is computed in double precision whatever the
+type of the data; MATLAB R2024a gives a different score for a response of
+type single than for the same values as double, which Octave does not.
+
+See also:
+fscchi2,
+relieff,
+sequentialfs,
+anova1
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 48
+Rank the predictors for regression with F-tests.
 
 
 

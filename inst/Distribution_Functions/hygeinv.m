@@ -25,16 +25,21 @@
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
 ## the hypergeometric distribution with parameters @var{m}, @var{k}, and
-## @var{n}. The size of @var{x} is the common size of @var{p}, @var{m}, @var{k},
-## and
-## @var{n}.  A scalar input functions as a constant matrix of the same size as
-## the other inputs.
+## @var{n}.  The size of @var{x} is the common size of @var{p}, @var{m},
+## @var{k}, and @var{n}.  A scalar input functions as a constant matrix of the
+## same size as the other inputs.
 ##
 ## This is the number of drawn marked items @var{x} given a probability @var{p},
 ## when randomly drawing a sample of size @var{n} without replacement from a
 ## population of total size @var{m} containing @var{k} marked items.  The
-## parameters @var{m}, @var{k}, and @var{n} must be positive integers with
-## @var{k} and @var{n} not greater than @var{m}.
+## parameters @var{m}, @var{k}, and @var{n} must be non-negative integers with
+## @var{k} and @var{n} not greater than @var{m}, and @var{m} finite unless
+## @var{n} is @qcode{0}.
+##
+## For @var{p} = 0 and @var{p} = 1, @var{x} is the least and the greatest
+## number of marked items the sample can hold, @code{max (0, @var{n} - (@var{m}
+## - @var{k}))} and @code{min (@var{n}, @var{k})}.  MATLAB does not return for
+## @var{p} = 0.
 ##
 ## Further information about the hypergeometric distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Hypergeometric_distribution}
@@ -80,41 +85,40 @@ function x = hygeinv (p, m, k, n)
     x = NaN (size (p));
   endif
 
-  ok = ((m >= 0) & (k >= 0) & (n > 0) & (k <= m) & (n <= m) &
-        (m == fix (m)) & (k == fix (k)) & (n == fix (n)));
+  ## An infinite population has no density, except for an empty sample
+  ok = ((m >= 0) & (k >= 0) & (n >= 0) & (k <= m) & (n <= m) &
+        (m == fix (m)) & (k == fix (k)) & (n == fix (n)) &
+        (isfinite (m) | (n == 0)));
 
-  if (isscalar (m))
-    if (ok)
-      x = discrete_inv (p, 0 : n, hygepdf (0 : n, m, k, n));
-      x(p == 0) = 0;  # Hack to return correct value for start of distribution
-    endif
-  else
-    p_0 = (p == 0);
-    x(ok & p_0) = 0; # set any p=0 to 0 if not already set to output NaN
-    p_0 = (p == 1);
-    x(ok & p_0) = n(ok & p_0);
-    ok &= (p>0 & p<1); # remove 0's and p's outside (0,1), leave unfilled as NaN
+  ## P = 0 and P = 1 give the least and greatest number of marked items the
+  ## sample can hold
+  lo = max (0, n - (m - k));
+  hi = min (n, k);
+  is_lo = ok & (p == 0);
+  x(is_lo) = lo(is_lo);
+  is_hi = ok & (p == 1);
+  x(is_hi) = hi(is_hi);
+  ok &= (p > 0 & p < 1); # P outside [0, 1] is left as NaN
 
-    if (any (ok(:)))
-      n = n(ok);
-      v = 0 : max (n(:));
+  if (any (ok(:)))
+    n = n(ok);
+    v = 0 : max (n(:));
 
-      ## Manually perform discrete_inv to enable vectorizing with array input
-      p_tmp = cumsum (hygepdf (v, m(ok), k(ok), n, 'vectorexpand'), 2);
-      sz_p = size (p_tmp);
-      end_locs = sub2ind (sz_p, [1 : numel(n)]', n(:) + 1);
+    ## Manually perform discrete_inv to enable vectorizing with array input
+    p_tmp = cumsum (hygepdf (v, m(ok), k(ok), n, 'vectorexpand'), 2);
+    sz_p = size (p_tmp);
+    end_locs = sub2ind (sz_p, [1 : numel(n)]', n(:) + 1);
 
-      ## Manual row-wise vectorization of lookup, which returns index of element
-      ## less than or equal to test value, zero if test value less than lowest
-      ## number, and max index if greater than highest number. operated on
-      ## flipped p_tmp, adjusting for different vector lengths in array rows.
-      p_tmp = (p_tmp ./ p_tmp(end_locs))(:, end:-1:1) - p(ok)(:);
-      p_tmp(p_tmp>=0) = NaN;
-      [p_match, p_match_idx] = max (p_tmp, [], 2);
-      p_match_idx(isnan (p_match)) = v(end) + 2;
+    ## Manual row-wise vectorization of lookup, which returns index of element
+    ## less than or equal to test value, zero if test value less than lowest
+    ## number, and max index if greater than highest number. operated on
+    ## flipped p_tmp, adjusting for different vector lengths in array rows.
+    p_tmp = (p_tmp ./ p_tmp(end_locs))(:, end:-1:1) - p(ok)(:);
+    p_tmp(p_tmp>=0) = NaN;
+    [p_match, p_match_idx] = max (p_tmp, [], 2);
+    p_match_idx(isnan (p_match)) = v(end) + 2;
 
-      x(ok) = v(v(end) - p_match_idx + 3);
-    endif
+    x(ok) = v(v(end) - p_match_idx + 3);
   endif
 
 endfunction
@@ -147,6 +151,20 @@ endfunction
 %!assert_equal (hygeinv (p, 4, 2, 2*[1 -1 NaN 1.1 1]), [NaN NaN NaN NaN NaN])
 %!assert_equal (hygeinv (p, 4, 2, 5), [NaN NaN NaN NaN NaN])
 %!assert_equal (hygeinv ([p(1:2) NaN p(4:5)], 4, 2, 2), [NaN 0 NaN 2 NaN])
+%!assert_equal (hygeinv ([0 0.1 0.5 0.9 1], 10, 5, 0), [0 0 0 0 0])
+%!assert_equal (hygeinv (0.5, 0, 0, 0), 0)
+%!assert_equal (hygeinv ([0.1 0.9], [10 0], [5 0], [0 0]), [0 0])
+%!assert_equal (hygeinv (0.5, 10, 0, 3), 0)
+%!assert_equal (hygeinv ([0 1], 10, 0, 3), [0 0])
+%!assert_equal (hygeinv (1, 10, 2, 5), 2)
+%!assert_equal (hygeinv (1, [10 10], [2 5], [5 5]), [2 5])
+%!assert_equal (hygeinv (0, 10, 8, 5), 3)
+%!assert_equal (hygeinv (0, [10 10], [8 5], [5 3]), [3 0])
+%!assert_equal (hygeinv (1e-300, 10, 8, 5), 3)
+%!assert_equal (hygeinv ([1e-300 0.5], [10 10], [8 8], [5 5]), [3 4])
+%!assert_equal (hygeinv (0.5, Inf, 5, 3), NaN)
+%!assert_equal (hygeinv (0.5, Inf, 5, 0), 0)
+%!assert_equal (hygeinv (0.5, 10, 5, -1), NaN)
 
 ## Test class of input preserved
 %!assert_equal (hygeinv ([p, NaN], 4, 2, 2), [NaN 0 1 2 NaN NaN])

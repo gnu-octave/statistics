@@ -94,8 +94,9 @@ classdef ClassificationBaggedEnsemble < ClassificationEnsemble
       endif
 
       ## A table names its own predictors and says which hold levels
+      ## An ordinal column is a numeric predictor here, as in R2024a
       [this, X, Y, varargin] = resolveTable (this, 'ClassificationBaggedEnsemble', ...
-                                             X, Y, varargin);
+                                             X, Y, varargin, true);
       if (! any (cellfun (@(a) ischar (a) && strcmpi (a, 'Method'), ...
                           varargin(1:2:end))))
         varargin(end+1:end+2) = {'Method', 'Bag'};

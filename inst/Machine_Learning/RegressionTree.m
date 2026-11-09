@@ -42,6 +42,10 @@ classdef RegressionTree < PredictiveModel
   ## child.  It is counted in that node and in every node above it, and
   ## @code{predict} stops it there and gives it that node's answer, so a row
   ## is never sent down a branch on evidence it does not carry.
+  ## Choosing a split, a predictor known for only part of a node is scored on
+  ## the rows it is known for, by how much the split lowers their impurity,
+  ## and that is scaled by their share of the node, as C4.5 does, so a
+  ## predictor known for few rows is not preferred for that alone.
   ##
   ## A categorical predictor is split into two sets of levels by ordering the
   ## levels by their mean response, and an observation whose level a node did
@@ -107,8 +111,9 @@ classdef RegressionTree < PredictiveModel
     ## A logical column vector with one element per row of the predictor data
     ## as it was given, true for each row used for fitting.  It is empty,
     ## @qcode{[]}, when every row was used, so a non-empty value means that
-    ## rows were dropped.  Only a missing response drops a row; a row missing
-    ## some of its predictors is kept.  This property is read-only.
+    ## rows were dropped.  A row is dropped when its response is missing, when
+    ## every predictor is missing, or when its weight is zero; a row missing
+    ## only some of its predictors is kept.  This property is read-only.
     ##
     ## @end deftp
     RowsUsed = [];
@@ -652,8 +657,9 @@ classdef RegressionTree < PredictiveModel
       endif
 
       ## A table names its own predictors and says which hold levels
+      ## An ordinal column is a numeric predictor here, as in R2024a
       [this, X, Y, varargin] = resolveTable (this, 'RegressionTree', ...
-                                             X, Y, varargin);
+                                             X, Y, varargin, true);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("RegressionTree: name-value arguments must be in", ...
                        " pairs."));
@@ -817,18 +823,27 @@ classdef RegressionTree < PredictiveModel
       endif
       this.ExpandedPredictorNames = PredictorNames;
 
-      ## An observation is dropped only when its response is missing.  A row
-      ## whose predictors hold missing values is kept and reported as used;
-      ## the fit sends it as far down the tree as the predictors it does
-      ## carry allow.
+      ## An observation is dropped when its response is missing, when every
+      ## predictor is missing, or when its weight is zero, as R2024a drops
+      ## it.  A row missing only some predictors is kept and reported as
+      ## used; the fit sends it as far down the tree as the predictors it
+      ## does carry allow.
       RowsUsed = ! isnan (Y);
+      if (! any (RowsUsed))
+        error ("RegressionTree: no observations with a known response.");
+      endif
+      RowsUsed &= ! all (isnan (X), 2);
+      if (! isempty (Weights))
+        RowsUsed &= Weights(:) != 0;
+      endif
+      if (! any (RowsUsed))
+        error (strcat ("RegressionTree: no observation has a known", ...
+                       " response, a known predictor and a nonzero weight."));
+      endif
       Y = Y(RowsUsed);
       X = X(RowsUsed, :);
       if (! isempty (Weights))
         Weights = Weights(RowsUsed);
-      endif
-      if (isempty (Y))
-        error ("RegressionTree: no observations with a known response.");
       endif
 
       this.X = X;
@@ -2547,6 +2562,73 @@ endclassdef
 %!error<RegressionTree.predict: the table holds no predictor 'PL'.> ...
 %! predict (rtM, rtT(:, [1, 3, 4, 5]))
 
+## MATLAB parity: a missing value, and a level the model was not fitted on,
+## predict as missing, as measured on R2024a
+%!shared mkM, mtM
+%! k = categorical (repmat ({'a'; 'b'}, 6, 1));
+%! y = repmat ([1; 10], 6, 1);
+%! mkM = fitrtree (table (k, y), 'y', 'MinParentSize', 2);
+%! kt = cellstr (k);
+%! mtM = fitrtree (table (kt, y), 'y', 'MinParentSize', 2);
+%!test  # an undefined categorical value
+%! N = table (categorical ({'a'; ''}), 'VariableNames', {'k'});
+%! assert_equal (predict (mkM, N), [1; 5.5], 1e-14);
+%!test  # a categorical level the model was not fitted on
+%! N = table (categorical ({'b'; 'z'}), 'VariableNames', {'k'});
+%! assert_equal (predict (mkM, N), [10; 5.5], 1e-14);
+%!test  # empty text, and text the model was not fitted on
+%! N = table ({'a'; ''; 'z'}, 'VariableNames', {'kt'});
+%! assert_equal (predict (mtM, N), [1; 5.5; 5.5], 1e-14);
+%!test  # a missing string
+%! s = string ({'a'; 'b'; 'b'});
+%! s(2) = missing;
+%! assert_equal (predict (mtM, table (s, 'VariableNames', {'kt'})), ...
+%!               [1; 5.5; 10], 1e-14);
+
+## MATLAB parity: 'Weights' may name a table variable, which is then no
+## predictor, as measured on R2024a
+%!shared wtT, wtW
+%! x1 = (1:12)';
+%! w = [1; 1; 2; 2; 1; 1; 3; 3; 1; 1; 2; 2];
+%! y = x1;
+%! wtT = table (x1, w, y);
+%! wtW = [1; 1; 2; 2; 1; 1; 3; 3; 1; 1; 2; 2] / 20;
+%!test  # the response named
+%! Mdl = fitrtree (wtT, 'y', 'Weights', 'w');
+%! assert_equal (Mdl.PredictorNames, {'x1'});
+%! assert_equal (Mdl.W, wtW, 1e-15);
+%!test  # a model formula
+%! Mdl = fitrtree (wtT, 'y ~ x1', 'Weights', 'w');
+%! assert_equal (Mdl.PredictorNames, {'x1'});
+%! assert_equal (Mdl.W, wtW, 1e-15);
+%!test  # the response given beside the table, and the name as a string
+%! Mdl = fitrtree (wtT(:, [1, 2]), (1:12)', 'Weights', string ('w'));
+%! assert_equal (Mdl.PredictorNames, {'x1'});
+%!error<RegressionTree: the table holds no variable 'v'.> ...
+%! fitrtree (wtT, 'y', 'Weights', 'v')
+
+## MATLAB parity: an ordinal categorical column is a numeric predictor,
+## split in the order of its categories, as measured on R2024a
+%!shared orT, orN
+%! o = categorical (repmat ({'lo'; 'hi'; 'lo'; 'mid'; 'hi'; 'lo'; 'mid'; ...
+%!                           'hi'; 'lo'; 'mid'; 'hi'; 'lo'}, 2, 1), ...
+%!                   {'lo', 'mid', 'hi'}, 'Ordinal', true);
+%! y = 10 * double (o) + mod ((1:24)', 3);
+%! orT = table (o, y);
+%! orN = table (categorical ({'lo'; 'mid'; 'hi'; ''}, {'lo', 'mid', 'hi'}, ...
+%!                          'Ordinal', true), 'VariableNames', {'o'});
+%!test  # numeric, cut between the codes of its categories
+%! Mdl = fitrtree (orT, 'y', 'MinParentSize', 2);
+%! assert_equal (Mdl.CategoricalPredictors, []);
+%! assert_equal (Mdl.CutPoint', [1.5, NaN, 2.5, NaN, NaN]);
+%!test  # predictions by level, and the root mean for an undefined value
+%! Mdl = fitrtree (orT, 'y', 'MinParentSize', 2);
+%! assert_equal (predict (Mdl, orN), [10.2; 21; 32; mean(orT.y)], 1e-12);
+%!test  # named in 'CategoricalPredictors', it is categorical
+%! Mdl = fitrtree (orT, 'y', 'MinParentSize', 2, 'CategoricalPredictors', 1);
+%! assert_equal (Mdl.CategoricalPredictors, 1);
+%! assert_equal (Mdl.CutPoint', NaN (1, 5));
+
 ## A table at loss
 %!shared lrtT, lrtM
 %! load fisheriris
@@ -2596,3 +2678,25 @@ endclassdef
 %! A = RegressionTree (X, y, 'Weights', single (w));
 %! B = RegressionTree (X, y, 'Weights', double (single (w)));
 %! assert_equal (predict (A, X), predict (B, X));
+
+## MATLAB parity: a row missing every predictor, or of weight zero, is
+## dropped, as measured on R2024a
+%!shared trX, trY
+%! x1 = mod ((1:30)', 7) + (1:30)' / 10;
+%! x2 = mod ((1:30)', 5) * 2 - (1:30)' / 20;
+%! trX = [x1, x2];
+%! trX([2, 9, 17], 1) = NaN;
+%! trX(23, 2) = NaN;
+%! trX(27, :) = NaN;
+%! trY = 2 * x1 - x2;
+%!test  # the row missing every predictor is not used
+%! Mdl = fitrtree (trX, trY);
+%! assert_equal (Mdl.NumObservations, 29);
+%! assert_equal (find (! Mdl.RowsUsed)', 27);
+%! assert_equal ([rows(Mdl.X), numel(Mdl.W)], [29, 29]);
+%!test  # a row of weight zero is not used
+%! Mdl = fitrtree (trX, trY, 'Weights', [0; ones(29, 1)]);
+%! assert_equal (Mdl.NumObservations, 28);
+%!error<RegressionTree: no observation has a known response, a known predictor and a nonzero weight.> ...
+%! fitrtree ([NaN, NaN; NaN, NaN; 1, 2], [1; 2; 3], 'Weights', [1; 1; 0])
+

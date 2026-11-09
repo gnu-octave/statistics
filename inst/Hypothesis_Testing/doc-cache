@@ -1350,10 +1350,10 @@ chi2gof
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3640
+# length: 3652
 statistics: h = chi2gof (x)
 statistics: [h, p] = chi2gof (x)
-statistics: [p, h, stats] = chi2gof (x)
+statistics: [h, p, stats] = chi2gof (x)
 statistics: [...] = chi2gof (x, Name, Value, ...)
 Chi-square goodness-of-fit test.
 
@@ -1370,7 +1370,7 @@ Bins in either tail with an expected count less than 5 are pooled with
 neighboring bins until the count in each extreme bin is at least 5. If
 bins remain in the interior with counts less than 5, chi2gof displays
 a warning. In that case, you should use fewer bins, or provide bin centers
-or binedges, to increase the expected counts in all bins.
+or edges, to increase the expected counts in all bins.
 
 h = chi2gof (x) performs a chi-square goodness-of-fit test
 that the data in the vector X are a random sample from a normal distribution
@@ -1393,17 +1393,18 @@ stats structure with the following fields:
 
 "chi2stat" Chi-square statistic
 "df" Degrees of freedom
-"binedges" Vector of bin binedges after pooling
+"edges" Vector of bin edges after pooling
 "O" Observed count in each bin
 "E" Expected count in each bin
 
 [...] = chi2gof (x, Name, Value, ...)
 specifies optional Name/Value pair arguments chosen from the following list.
+Names are not case sensitive.
 
 Name Value
 'nbins' The number of bins to use. Default is 10.
-'binctrs' A vector of bin centers.
-'binedges' A vector of bin binedges.
+'ctrs' A vector of bin centers.
+'edges' A vector of bin edges.
 'cdf' A fully specified cumulative distribution
 function or a function handle provided in a cell array whose first element is
 a function handle, and all later elements are its parameter values. The
@@ -2867,7 +2868,7 @@ meanEffectSize
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 8590
+# length: 8519
 statistics: Effect = meanEffectSize (X)
 statistics: Effect = meanEffectSize (X, Y)
 statistics: Effect = meanEffectSize (..., Name, Value)
@@ -2898,8 +2899,7 @@ takes the following options.
 Name Value
 'Effect' The effect sizes to compute, as a
 character vector, a string array or a cell array of character vectors,
-chosen among those below. A name may be shortened to any prefix that
-names one effect alone, and case does not matter.
+chosen among those below. Case does not matter.
 'meandiff' by default.
 'Mean' The known population mean that one sample
 is compared with, a real scalar, 0 by default. It is ignored where there

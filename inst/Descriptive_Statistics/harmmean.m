@@ -47,7 +47,8 @@
 ## @item If @var{x} is a multidimensional array, then @code{harmmean(@var{x})}
 ## operates along the first nonsingleton dimension of @var{x}.
 ##
-## @item @var{x} must not contain any negative or complex values.
+## @item @var{x} must be of class double or single and must not contain any
+## negative or complex values.
 ## @end itemize
 ##
 ## @code{harmmean(@var{x}, "all")} returns the harmonic mean of all the elements
@@ -81,8 +82,9 @@ function m = harmmean (x, varargin)
     print_usage ();
   endif
 
-  if (! isnumeric (x) || ! isreal (x) || ! all (x(! isnan (x))(:) >= 0))
-    error ("harmmean: X must contain real nonnegative values.");
+  if (! isfloat (x) || ! isreal (x) || ! all (x(! isnan (x))(:) >= 0))
+    error (strcat ("harmmean: X must contain real nonnegative double or", ...
+                   " single values."));
   endif
 
   ## Set initial conditions
@@ -139,15 +141,13 @@ function m = harmmean (x, varargin)
         ## Find the first non-singleton dimension.
         (dim = find (szx != 1, 1)) || (dim = 1);
         n = szx(dim);
-        is_nan = 0;
         if (omitnan)
           idx = isnan (x);
           n = sum (! idx, dim);
-          is_nan = sum (idx, dim);
-          x(idx) = 1;     # remove NaNs by subtracting is_nan below
+          x(idx) = Inf;   # 1 / Inf = 0
         endif
 
-        m = n ./ (sum (1 ./ x, dim) - is_nan);
+        m = n ./ sum (1 ./ x, dim);
       endif
     endif
 
@@ -168,15 +168,13 @@ function m = harmmean (x, varargin)
           m = x;
         else
           n = szx(vecdim);
-          is_nan = 0;
           if (omitnan)
             nanx = isnan (x);
             n = sum (! nanx, vecdim);
-            is_nan = sum (nanx, vecdim);
-            x(nanx) = 1;    # remove NaNs by subtracting is_nan below
+            x(nanx) = Inf;  # 1 / Inf = 0
           endif
 
-          m = n ./ (sum (1 ./ x, vecdim) - is_nan);
+          m = n ./ sum (1 ./ x, vecdim);
         endif
 
       else
@@ -224,14 +222,12 @@ function m = harmmean (x, varargin)
             if (omitnan)
               nanx = isnan (x);
               n = sum (! nanx, 1);
-              is_nan = sum (nanx, 1);
-              x(nanx) = 1;    # remove NaNs by subtracting is_nan below
+              x(nanx) = Inf;  # 1 / Inf = 0
             else
               n = szx(1);
-              is_nan = 0;
             endif
 
-            m = n ./ (sum (1 ./ x, 1) - is_nan);
+            m = n ./ sum (1 ./ x, 1);
 
             ## Inverse permute back to correct dimensions
             m = ipermute (m, perm);
@@ -303,6 +299,14 @@ endfunction
 %! assert_equal (harmmean ([0, NaN], 'omitnan'), 0);
 %! assert_equal (harmmean ([0, NaN], 'all', 'omitnan'), 0);
 
+## Test that "omitnan" keeps full precision
+%!test
+%! assert_equal (harmmean ([1e20, NaN; NaN, NaN], 'omitnan'), [1e20, NaN]);
+%! assert_equal (harmmean ([1e20, NaN], 2, 'omitnan'), 1e20);
+%! assert_equal (harmmean (cat (3, [1e20, NaN], [1e10, NaN]), [1, 2], ...
+%!                         'omitnan'), cat (3, 1e20, 1e10));
+%! assert_equal (harmmean ([Inf, NaN, 1e20], 'omitnan'), 2e20);
+
 ## Test default handling of empty arrays.
 %!test
 %! a = harmmean ([]);
@@ -320,8 +324,14 @@ endfunction
 %!assert_equal (harmmean ([], 3), [])
 
 ## Test errors
-%!error <harmmean: X must contain real nonnegative values.> harmmean ('char')
-%!error <harmmean: X must contain real nonnegative values.> harmmean ([1 -1 3])
+%!error <harmmean: X must contain real nonnegative double or single values.> ...
+%! harmmean ('char')
+%!error <harmmean: X must contain real nonnegative double or single values.> ...
+%! harmmean ([1 -1 3])
+%!error <harmmean: X must contain real nonnegative double or single values.> ...
+%! harmmean (int8 ([1 2 3]))
+%!error <harmmean: X must contain real nonnegative double or single values.> ...
+%! harmmean ([true false])
 %!error <harmmean: DIM must be a positive integer scalar or vector.> ...
 %! harmmean (repmat ([1:20;6:25], [5 2 6 3 5]), -1)
 %!error <harmmean: DIM must be a positive integer scalar or vector.> ...

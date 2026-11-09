@@ -89,8 +89,11 @@ classdef ClassificationSVM < PredictiveModel
     ## A logical column vector with the same length as the observations in the
     ## original predictor data @var{X}, true for each row that was used for
     ## fitting the ClassificationSVM model.  It is empty, @qcode{[]},
-    ## when every observation was used, so a non-empty value means that rows
-    ## holding missing values were dropped.  This property is read-only.
+    ## when every observation was used.  A row is dropped when its class is
+    ## missing, when every predictor is missing, or when its weight is zero.
+    ## A row missing only some predictors is used: it counts in the prior and
+    ## in @code{W}, while the support vector machine is fitted on the complete
+    ## rows, as MATLAB does.  This property is read-only.
     ##
     ## @end deftp
     RowsUsed            = [];
@@ -302,7 +305,8 @@ classdef ClassificationSVM < PredictiveModel
     ##
     ## A numeric row vector with one entry per class, in the order of
     ## @code{ClassNames}, summing to one.  It defaults to the class
-    ## frequencies of the training data.  This property is read-only.
+    ## frequencies of the training data, a row missing some predictors
+    ## included.  This property is read-only.
     ##
     ## Specified as a row vector with one entry per class, in the order of
     ## @qcode{ClassNames}, and rescaled to sum to one.  It may be given as
@@ -926,11 +930,11 @@ classdef ClassificationSVM < PredictiveModel
         gY(! ismember (gY, namedClasses (glY, ClassNames))) = NaN;
       endif
 
-      ## An observation is dropped only when its response is missing.  A row
-      ## whose predictors hold missing values is kept and reported as used,
-      ## while the fit below draws on the complete observations alone.
-      RowsUsed  = ! isnan (gY);
-      ## A row of zero weight is dropped too, as R2024a drops it.
+      ## An observation is dropped when its response is missing, when every
+      ## predictor is missing, or when its weight is zero, as R2024a drops
+      ## it.  A row missing only some predictors is kept and reported as
+      ## used, while the fit below draws on the complete observations alone.
+      RowsUsed  = ! isnan (gY) & ! all (isnan (X), 2);
       if (! isempty (Weights))
         RowsUsed = RowsUsed & Weights(:) > 0;
       endif
@@ -973,7 +977,11 @@ classdef ClassificationSVM < PredictiveModel
         Prior = priorFromStruct (Prior, this.ClassNames, ...
                                  'ClassificationSVM');
       endif
-      freq = accumarray (gY(:), wc, [nclasses, 1])' / sum (wc);
+      ## The empirical prior counts every row kept, a row missing some
+      ## predictors included, as R2024a counts it; the fit then sees the
+      ## complete rows alone, whose weights need not keep that balance.
+      freq = accumarray (gret(:), RawWeights, [nclasses, 1])' ...
+             / sum (RawWeights);
       if (isempty (Prior) || (ischar (Prior) && strcmpi (Prior, 'empirical')))
         Prior = freq;
       elseif (ischar (Prior) && strcmpi (Prior, 'uniform'))
@@ -4324,3 +4332,41 @@ endclassdef
 %! load fisheriris
 %! ClassificationSVM (meas(51:150, 3:4), species(51:150), ...
 %!                    'Cost', struct ('a', 1));
+
+## MATLAB parity: a row missing every predictor is dropped, and one missing
+## only some is used, counting in the prior and in W while the fit sees the
+## complete rows, as measured on R2024a
+%!shared svX, svY, svW
+%! x1 = mod ((1:20)', 7) + (1:20)' / 10;
+%! x2 = mod ((1:20)', 5) * 2 - (1:20)' / 20;
+%! svX = [x1, x2];
+%! svX(2,1) = NaN;
+%! svX(20,:) = NaN;
+%! svY = repmat ({'p'; 'q'}, 10, 1);
+%! svW = 1 + mod ((1:20)', 3);
+%!test  # only the row missing every predictor is dropped
+%! Mdl = fitcsvm (svX, svY);
+%! assert_equal (Mdl.NumObservations, 19);
+%! assert_equal (find (! Mdl.RowsUsed)', 20);
+%! assert_equal ([rows(Mdl.X), numel(Mdl.W)], [19, 19]);
+%!test  # the prior counts the row missing one predictor
+%! Mdl = fitcsvm (svX, svY);
+%! assert_equal (Mdl.Prior, [10, 9] / 19, 1e-15);
+%! assert_equal (Mdl.W, ones (19, 1) / 19, 1e-15);
+%!test  # and so do weights
+%! Mdl = fitcsvm (svX, svY, 'Weights', svW);
+%! assert_equal (Mdl.Prior, [20, 18] / 38, 1e-15);
+%! assert_equal (Mdl.W(1:4)', [2, 3, 1, 2] / 38, 1e-15);
+%!test  # the fit is the complete rows' under that prior
+%! Mdl = fitcsvm (svX, svY);
+%! assert_equal (Mdl.Bias, -1.66405405405405, 1e-5);
+%! assert_equal (Mdl.Beta', [0.314551920341389, 0.163100995732572], 1e-5);
+%! [label, score] = predict (Mdl, [3, 1; 5, 4; 7, 2]);
+%! assert_equal (label, {'p'; 'q'; 'q'});
+%! assert_equal (score(:,1), [0.557297297297318; -0.561109530583184; ...
+%!                            -0.864011379800817], 1e-5);
+%!test  # standardizing weighs every row used
+%! Mdl = fitcsvm (svX, svY, 'Standardize', true);
+%! assert_equal (Mdl.Mu, [4.10657894736842, 3.71315789473684], 1e-14);
+%! assert_equal (Mdl.Bias, -0.75860341301819, 1e-5);
+

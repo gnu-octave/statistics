@@ -453,6 +453,8 @@
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
 					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
 					<li><a href="fitSVMPosterior.html" class="text-decoration-none font-monospace"><small>fitSVMPosterior</small></a></li>
+					<li><a href="fscchi2.html" class="text-decoration-none font-monospace"><small>fscchi2</small></a></li>
+					<li><a href="fsrftest.html" class="text-decoration-none font-monospace"><small>fsrftest</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
@@ -1117,7 +1119,7 @@
   <a href="ClassificationBaggedEnsemble.html">ClassificationBaggedEnsemble</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1cd743a/inst/Machine_Learning/CompactClassificationEnsemble.m">CompactClassificationEnsemble</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Machine_Learning/CompactClassificationEnsemble.m">CompactClassificationEnsemble</a>
 </p>
 </div>
         <p class="lead my-3">The <code>CompactClassificationEnsemble</code> class contains the following properties:</p>
@@ -1616,9 +1618,13 @@ Classification loss of a compact ensemble.
 </div>
 
 <p> <code>'Learners'</code> and <code>'UseObsForLearner'</code> are taken as by
- <code>predict</code>.  A row with <code>NaN</code> scores, which no learner may
- score, is left out and the weights are renormalized over the rest;
- <code>edge</code> does the same.
+ <code>predict</code>.  A row <code>'UseObsForLearner'</code> hides from every
+ learner used is left out and the weights are renormalized over the rest.
+ A row no learner can score for its missing values stays: it counts as
+ the class of greatest prior under <code>'classiferror'</code>,
+ <code>'classifcost'</code> and <code>'mincost'</code>, and any other loss is
+ <code>NaN</code>.  <code>edge</code> treats the two alike, its result being
+ <code>NaN</code> for the second.
 </p>
 <p> <strong>See also: </strong>
   <a href="CompactClassificationEnsemble.html">CompactClassificationEnsemble</a>, 

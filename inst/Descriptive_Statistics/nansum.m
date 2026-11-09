@@ -56,8 +56,8 @@
 function s = nansum (x, dim)
   if (nargin < 1 || nargin > 2)
     print_usage ();
-  elseif (! isnumeric (x) && ! islogical (x))
-    error ("nansum: X must be numeric or logical.");
+  elseif (! (isnumeric (x) || islogical (x) || ischar (x)))
+    error ("nansum: X must be numeric, logical or char.");
   ## 0 by 0 and no DIM given
   elseif (nargin < 2 && isequal (size (x), [0, 0]))
     s = 0;
@@ -198,9 +198,12 @@ endfunction
 
 ## Test logical input
 %!assert_equal (nansum (logical ([1, 0, 1; 0, 0, 1])), [1, 0, 2])
+%!assert_equal (nansum ('abd'), 295)
+%!assert_equal (nansum ('abd', 1), [97, 98, 100])
+%!assert_equal (nansum (''), 0)
 
 ## Test input validation
-%!error <nansum: X must be numeric or logical.> nansum ({3})
+%!error <nansum: X must be numeric, logical or char.> nansum ({3})
 %!error <nansum: DIM must be a positive integer.> nansum (ones (3), 0)
 %!error <nansum: DIM must be a positive integer.> nansum (ones (3), true)
 %!error <nansum: DIM must be a positive integer.> nansum (ones (3), 1.5)

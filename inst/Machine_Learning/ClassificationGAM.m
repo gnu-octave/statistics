@@ -798,8 +798,9 @@ classdef ClassificationGAM < PredictiveModel
       endif
 
       ## A table names its own predictors and says which hold levels
+      ## An ordinal column is a numeric predictor here, as in R2024a
       [this, X, Y, varargin] = resolveTable (this, 'ClassificationGAM', ...
-                                             X, Y, varargin);
+                                             X, Y, varargin, true);
 
       ## Check X and Y have the same number of observations
       if (rows (X) != rows (Y))

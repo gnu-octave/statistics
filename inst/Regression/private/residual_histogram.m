@@ -14,29 +14,34 @@
 ##
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
-##
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} {[@var{X}, @var{Y}] =} nbTrainX (@var{obj})
+## @deftypefn {Private Function} {@var{h} =} residual_histogram (@var{r})
 ##
-## The data a naive Bayes model was fitted on, as it was fitted.
+## Draw the residuals @var{r} with @code{hist} as a histogram of probability
+## density, in bins from the @qcode{'scott'} method of @code{histcounts}, and
+## return its patch @var{h}.  @qcode{NaN} residuals are left out.
 ##
-## @qcode{X} and @qcode{Y} are stored as they were supplied, so the rows that
-## were dropped for holding a missing value, or for belonging to a class the
-## model was not fitted on, are removed here.  Every @code{resub} method goes
-## through this, so none of them can disagree with the fit about which
-## observations the model actually saw.
-##
-## @seealso{ClassificationNaiveBayes}
 ## @end deftypefn
 
-function [X, Y] = nbTrainX (obj)
+function h = residual_histogram (r)
 
-  X = obj.X;
-  Y = obj.Y;
-  if (! isempty (obj.RowsUsed))
-    X = X(obj.RowsUsed, :);
-    Y = Y(obj.RowsUsed, :);
+  r = r(! isnan (r));
+  [~, edges] = histcounts (r, 'BinMethod', 'scott');
+  width = edges(2) - edges(1);
+  centers = edges(1:end-1) + width / 2;
+  ## HIST reads a scalar as a number of bins
+  if (isscalar (centers))
+    centers(2) = centers + width;
   endif
+
+  color = [0.1490, 0.5490, 0.8660];
+  hist (r, centers, 1 / width, 'FaceColor', color);
+  ax = gca ();
+  children = get (ax, 'children');
+  h = children(1);
+  xlabel (ax, 'Residuals');
+  ylabel (ax, 'Probability density');
+  title (ax, 'Histogram of residuals');
 
 endfunction

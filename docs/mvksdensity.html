@@ -453,6 +453,8 @@
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
 					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
 					<li><a href="fitSVMPosterior.html" class="text-decoration-none font-monospace"><small>fitSVMPosterior</small></a></li>
+					<li><a href="fscchi2.html" class="text-decoration-none font-monospace"><small>fscchi2</small></a></li>
+					<li><a href="fsrftest.html" class="text-decoration-none font-monospace"><small>fsrftest</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
@@ -1107,7 +1109,10 @@
  the points in the <em class="math">M&times;D</em> matrix <var>pts</var>.  Each row of <var>x</var> is a
  single <em class="math">D</em>-dimensional observation, and each row of <var>pts</var> is a point
  at which to evaluate the estimate.  The result <var>f</var> is an <em class="math">M&times;1</em>
- vector, with one density value per row of <var>pts</var>.
+ vector, with one density value per row of <var>pts</var>.  Rows of <var>x</var> holding
+ a <code>NaN</code>, and rows whose weight is <code>NaN</code>, are removed first, so
+ the default bandwidth, the weights and the sample size come from the
+ remaining rows.  A single observation is valid.
 </p>
 <p> The density estimate uses a product kernel: the multivariate kernel is the
  product of the univariate kernels applied to each dimension, each with its
@@ -1121,14 +1126,16 @@
 <tr><td width="18%"><code>'Bandwidth'</code></td><td width="82%">The kernel bandwidth, either a positive scalar
  applied to every dimension or a <em class="math">1&times;D</em> vector of positive values, one per
  dimension.  The default is a diagonal normal-reference (Silverman) rule
- computed from <var>x</var>.</td></tr>
+ computed from <var>x</var>, for any number of columns, although MATLAB requires a
+ bandwidth from three columns up.</td></tr>
 <tr><td width="18%"><code>'Kernel'</code></td><td width="82%">The smoothing kernel applied in each dimension:
  <code>'normal'</code> (default), <code>'box'</code>, <code>'triangle'</code>, or
  <code>'epanechnikov'</code>.</td></tr>
 <tr><td width="18%"><code>'Function'</code></td><td width="82%">The function to estimate: <code>'pdf'</code>
  (default) or <code>'cdf'</code>.</td></tr>
 <tr><td width="18%"><code>'Weights'</code></td><td width="82%">A vector of non-negative weights, one for each
- row of <var>x</var>.  The default weights are all equal.</td></tr>
+ row of <var>x</var>, with a positive weight among the rows kept.  The default
+ weights are all equal.</td></tr>
 </table>
 </div>
 
@@ -1136,7 +1143,7 @@
   <a href="ksdensity.html">ksdensity</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1cd743a/inst/Descriptive_Statistics/mvksdensity.m">mvksdensity</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Descriptive_Statistics/mvksdensity.m">mvksdensity</a>
 </p>
 </div>
         <div class="card rounded my-4">

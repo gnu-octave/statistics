@@ -821,6 +821,7 @@ classdef NonLinearModel < PredictiveModel
     ## Plot the model residuals.  @var{plottype} is @qcode{'histogram'}
     ## (default),
     ## @qcode{'fitted'}, @qcode{'caseorder'}, or @qcode{'probability'}.
+    ## The histogram shows probability density and @var{h} is its patch.
     ##
     ## @end deftypefn
     function h = plotResiduals (mdl, plottype, varargin)
@@ -830,8 +831,8 @@ classdef NonLinearModel < PredictiveModel
       r = mdl.Residuals.Raw;
       switch (lower (plottype))
         case 'histogram'
-          h = hist (r);
-          xlabel ("Residuals");  ylabel ("Frequency");
+          h = residual_histogram (r);
+          return;
         case 'fitted'
           h = plot (mdl.Fitted, r, 'o');
           xlabel ("Fitted values");  ylabel ("Residuals");
@@ -1131,6 +1132,24 @@ endfunction
 %! mdl = fitnlm (X, y, modelfun, beta0);
 %! assert_equal (numel (mdl.Coefficients.Estimate), 2);
 %! assert_equal (mdl.Coefficients.Estimate(1), 1.683747025, 1e-6);
+
+%!test  # the default residual plot is a density histogram, as R2024a
+%! mdl = fitnlm (X, y, modelfun, beta0);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   plotResiduals (mdl);
+%!   h = plotResiduals (mdl);
+%!   ax = get (h, "parent");
+%!   assert_equal (numel (get (ax, "children")), 1);
+%!   assert_equal (get (h, "type"), "patch");
+%!   assert_equal (get (h, "xdata"), [-0.3, 0; -0.3, 0; 0, 0.3; 0, 0.3], 1e-12);
+%!   assert_equal (get (h, "ydata"), [0, 0; 2, 4/3; 2, 4/3; 0, 0], 1e-12);
+%!   assert_equal (get (get (ax, "xlabel"), "string"), "Residuals");
+%!   assert_equal (get (get (ax, "ylabel"), "string"), "Probability density");
+%!   assert_equal (get (get (ax, "title"), "string"), "Histogram of residuals");
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
 
 %!test  # the residual and slice plots run without error
 %! mdl = fitnlm (X, y, modelfun, beta0);

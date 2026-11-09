@@ -44,7 +44,7 @@
 ## multidimensional array, use the @var{dim} or @var{vecdim} input argument.
 ##
 ## @code{trimmean} treats @qcode{NaN} values in @var{x} as missing values and
-## removes them.
+## removes them.  @var{x} must be of class double or single.
 ##
 ## @code{@var{m} = trimmean (@var{x}, @var{p}, @var{flag})} specifies how to
 ## trim when @math{k}, i.e. half the number of outliers, is not an integer.
@@ -89,6 +89,10 @@ function m = trimmean (x, p, varargin)
     print_usage;
   endif
 
+  if (! isfloat (x))
+    error ("trimmean: X must contain double or single values.");
+  endif
+
   ## A non-scalar percentage used to slip through, because each half of the
   ## range test was then itself non-scalar and neither branch was taken: the
   ## trimming ran on a colon built from a vector and returned an untrimmed
@@ -118,8 +122,8 @@ function m = trimmean (x, p, varargin)
   szx = size (x);
   ndx = ndims (x);
 
-  ## Handle special case X = []
-  if (isequal (szx, [0, 0]))
+  ## Handle special case X = [] when DIM is not specified
+  if (isempty (dim) && isequal (szx, [0, 0]))
     m = NaN (class (x));
     return
   endif
@@ -169,6 +173,10 @@ function m = trimmean (x, p, varargin)
   ## If DIM is a vector, ignore any value > ndims (x)
   if (numel (dim) > 1)
     dim(dim > ndx) = [];
+    if (isempty (dim))
+      m = x;
+      return
+    endif
   endif
 
   ## Permute dim to simplify all operations along dim1.  At func. end ipermute.
@@ -349,6 +357,7 @@ endfunction
 %!assert_equal (trimmean (reshape (1:40, [5, 4, 2]), 10, 4), reshape (1:40, [5, 4, 2]))
 %!assert_equal (trimmean ([], 10), NaN)
 %!assert_equal (trimmean ([1;2;3;4;5], 10, 2), [1;2;3;4;5])
+%!assert_equal (trimmean ([1, 2, 3; 4, 5, 6], 10, [3, 4]), [1, 2, 3; 4, 5, 6])
 
 %!test
 %! ## Row vector with explicit dimension 1
@@ -366,9 +375,29 @@ endfunction
 %! ## Empty array with non-operating dimension preserved (dim=2)
 %! assert_equal (trimmean (zeros (2, 0), 10, 2), NaN (2, 1));
 
+## Test empty X with explicit DIM
+%!assert_equal (trimmean ([], 10, 1), zeros (1, 0))
+%!assert_equal (trimmean ([], 10, 2), zeros (0, 1))
+%!assert_equal (trimmean ([], 10, 'all'), NaN)
+%!assert_equal (trimmean ([], 10, 'weighted', 2), zeros (0, 1))
+%!assert_equal (trimmean (single ([]), 10, 1), zeros (1, 0, 'single'))
+
+## Test single X
+%!assert_equal (trimmean (single ([1 2; 3 4]), 10, 3), single ([1 2; 3 4]))
+
 ## Test input validation
 %!error<Invalid call to trimmean.  Correct usage is:> trimmean (1)
 %!error<Invalid call to trimmean.  Correct usage is:> trimmean (1,2,3,4,5)
+%!error<trimmean: X must contain double or single values.> ...
+%! trimmean (int8 ([1 2 3 4]), 10)
+%!error<trimmean: X must contain double or single values.> ...
+%! trimmean (int8 ([]), 10)
+%!error<trimmean: X must contain double or single values.> ...
+%! trimmean ([true false], 10)
+%!error<trimmean: X must contain double or single values.> ...
+%! trimmean (logical ([]), 10, 1)
+%!error<trimmean: X must contain double or single values.> ...
+%! trimmean ('abd', 10)
 %!error<trimmean: PERCENT must be a real scalar in the range \[0, 100\).> ...
 %! trimmean ([1 2 3 4], -10)
 %!error<trimmean: PERCENT must be a real scalar in the range \[0, 100\).> ...
@@ -389,4 +418,3 @@ endfunction
 %! trimmean (reshape (1:40, [5, 4, 2]), 10, [-1, 2])
 %!error<trimmean: VECDIM must contain non-repeating positive integers.> ...
 %! trimmean (reshape (1:40, [5, 4, 2]), 10, [1, 2, 2])
-

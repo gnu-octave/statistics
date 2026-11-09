@@ -4150,7 +4150,7 @@ GeneralizedLinearModel.plotResiduals
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 414
+# length: 481
 GeneralizedLinearModel: h = plotResiduals (mdl)
 GeneralizedLinearModel: h = plotResiduals (mdl, plottype)
 GeneralizedLinearModel: h = plotResiduals (..., 'ResidualType', rt)
@@ -4158,7 +4158,8 @@ Plot the model residuals. plottype is one of 'histogram'
 (default), 'caseorder', 'fitted', 'lagged', or
 'probability'. 'ResidualType' picks the residual column
 ('Raw' default, 'Pearson', 'Deviance',
-'Anscombe'). Returns the graphics handle.
+'Anscombe'). Returns the graphics handle. The histogram shows
+probability density and its handle is a patch.
 
 
 # name: <cell-element>
@@ -10162,12 +10163,13 @@ NonLinearModel.plotResiduals
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 191
+# length: 251
 NonLinearModel: h = plotResiduals (mdl)
 NonLinearModel: h = plotResiduals (mdl, plottype)
 Plot the model residuals. plottype is 'histogram'
 (default),
 'fitted', 'caseorder', or 'probability'.
+The histogram shows probability density and h is its patch.
 
 
 # name: <cell-element>

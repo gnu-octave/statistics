@@ -293,10 +293,11 @@ classdef CompactClassificationEnsemble < PredictiveModel
       [gY, w] = ensembleResponse (this, X, Y, o, caller);
       S = this.STfun (ensembleScores (this, X, o, o.Mode));
       L = zeros (size (S, 3), 1);
+      allowed = allowedRows (this, o);
       for k = 1:size (S, 3)
-        ## A row no learner may score has no scores to judge, and is left out
-        ## with its weight, the rest renormalized, as MATLAB does.
-        have = ! any (isnan (S(:,:,k)), 2);
+        ## A row hidden from every learner is left out with its weight, the
+        ## rest renormalized, as MATLAB does.
+        have = allowed(:,k);
         wk = w(have);
         if (! (sum (wk) > 0))
           L(k) = NaN;
@@ -310,7 +311,8 @@ classdef CompactClassificationEnsemble < PredictiveModel
           C(sub2ind (size (Sk), (1:rows (Sk))', gk)) = true;
           L(k) = o.LossFun (C, Sk, wk, this.Cost);
         else
-          L(k) = classificationLoss (o.LossFun, Sk, gk, wk, this.Cost);
+          L(k) = unscoredLoss (o.LossFun, Sk, gk, wk, this.Cost, ...
+                               this.DefaultIndex);
         endif
       endfor
 
@@ -324,8 +326,8 @@ classdef CompactClassificationEnsemble < PredictiveModel
       [gY, w] = ensembleResponse (this, X, Y, o, caller);
       S = this.STfun (ensembleScores (this, X, o, o.Mode));
       m = marginsOf (S, gY, size (S, 3));
-      ## Rows without a margin are left out and the weights renormalized.
-      have = ! isnan (m);
+      ## Rows hidden from every learner are left out, the weights renormalized.
+      have = allowedRows (this, o);
       m(! have) = 0;
       W2 = w .* have;
       e = (sum (W2 .* m, 1) ./ sum (W2, 1))(:);
@@ -467,9 +469,13 @@ classdef CompactClassificationEnsemble < PredictiveModel
     ## @end multitable
     ##
     ## @qcode{'Learners'} and @qcode{'UseObsForLearner'} are taken as by
-    ## @code{predict}.  A row with @code{NaN} scores, which no learner may
-    ## score, is left out and the weights are renormalized over the rest;
-    ## @code{edge} does the same.
+    ## @code{predict}.  A row @qcode{'UseObsForLearner'} hides from every
+    ## learner used is left out and the weights are renormalized over the rest.
+    ## A row no learner can score for its missing values stays: it counts as
+    ## the class of greatest prior under @qcode{'classiferror'},
+    ## @qcode{'classifcost'} and @qcode{'mincost'}, and any other loss is
+    ## @code{NaN}.  @code{edge} treats the two alike, its result being
+    ## @code{NaN} for the second.
     ##
     ## @seealso{CompactClassificationEnsemble,
     ## CompactClassificationEnsemble.edge}
@@ -789,26 +795,31 @@ classdef CompactClassificationEnsemble < PredictiveModel
       T = numel (o.Learners);
       A = zeros (n, K, T);
       V = zeros (n, 1, T);
+      U = false (n, 1, T);
       for j = 1:T
         t = o.Learners(j);
-        u = o.U(:,t);
-        A(:,:,j) = this.TrainedWeights(t) * learnerOutput (this, t, X) .* u;
+        G = learnerOutput (this, t, X);
+        ## A learner with no score for a row does not vote on it
+        u = o.U(:,t) & ! any (isnan (G), 2);
+        G(isnan (G)) = 0;
+        A(:,:,j) = this.TrainedWeights(t) * G .* u;
         V(:,1,j) = this.TrainedWeights(t) * u;
+        U(:,1,j) = u;
       endfor
       average = strcmp (this.CombineWeights, 'WeightedAverage');
       switch (mode)
         case 'ensemble'
           num = sum (A, 3);
           den = sum (V, 3);
-          used = sum (reshape (o.U(:,o.Learners), n, 1, T), 3) > 0;
+          used = any (U, 3);
         case 'cumulative'
           num = cumsum (A, 3);
           den = cumsum (V, 3);
-          used = cumsum (reshape (o.U(:,o.Learners), n, 1, T), 3) > 0;
+          used = cumsum (U, 3) > 0;
         otherwise
           num = A;
           den = V;
-          used = reshape (o.U(:,o.Learners), n, 1, T);
+          used = U;
       endswitch
       if (average)
         S = num ./ den;
@@ -816,6 +827,22 @@ classdef CompactClassificationEnsemble < PredictiveModel
         S = num;
       endif
       S(repmat (! used, 1, K)) = NaN;
+
+    endfunction
+
+    ## Which rows of X each result may see through UseObsForLearner: an Nx1
+    ## mask for O.Mode 'ensemble', NxT otherwise, T being the learners of O.
+    function A = allowedRows (this, o)
+
+      U = o.U(:,o.Learners);
+      switch (o.Mode)
+        case 'ensemble'
+          A = any (U, 2);
+        case 'cumulative'
+          A = cumsum (U, 2) > 0;
+        otherwise
+          A = U;
+      endswitch
 
     endfunction
 
@@ -1056,3 +1083,44 @@ endclassdef
 %! loss (compact (fitcensemble ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], ...
 %!                           'NumLearningCycles', 3)), ...
 %!       [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))
+
+## A learner with no score for a row does not vote on it
+%!test
+%! X = [1 2; 2 1; 2 3; 3 2; 6 7; 7 6; 7 8; 8 7; 1 7; 2 8; 2 6; 3 7];
+%! Y = [1 1 1 1 2 2 2 2 3 3 3 3]';
+%! Mdl = fitcensemble (X, Y, 'Method', 'Subspace', 'Learners', ...
+%!                     'discriminant', 'NPredToSample', 1, ...
+%!                     'NumLearningCycles', 'AllPredictorCombinations');
+%! [~, s] = predict (compact (Mdl), [NaN 2; 2 NaN; NaN NaN]);
+%! assert_equal (s(:,1), [0.999999985611734; 0.499999998201467; NaN], ...
+%!               1e-12);
+%! assert_equal (isnan (s(3,:)), true (1, 3));
+
+## A row no learner can score stays; one hidden from every learner is left out
+%!shared Mf, q, y
+%! X = [1 2; 2 1; 2 3; 3 2; 6 7; 7 6; 7 8; 8 7; 1 7; 2 8; 2 6; 3 7];
+%! Y = [1 1 1 1 2 2 2 2 3 3 3 3]';
+%! Mf = compact (fitcensemble (X, Y, 'Method', 'Subspace', 'Learners', ...
+%!                             'discriminant', 'NPredToSample', 1, ...
+%!                             'NumLearningCycles', ...
+%!                             'AllPredictorCombinations'));
+%! q = [NaN 2; 2 NaN; NaN NaN; 2 2];
+%! y = [1; 2; 3; 1];
+%!assert_equal (loss (Mf, q, y), 2 / 3, 1e-14)
+%!assert_equal (loss (Mf, q, y, 'LossFun', 'mincost'), 2 / 3, 1e-14)
+%!assert_equal (loss (Mf, q, y, 'LossFun', 'classifcost'), 2 / 3, 1e-14)
+%!assert_equal (loss (Mf, q, y, 'LossFun', 'hinge'), NaN)
+%!assert_equal (loss (Mf, q, [1; 2; 1; 1]), 0.5, 1e-14)
+%!assert_equal (edge (Mf, q, y), NaN)
+%!assert_equal (edge (Mf, q, y, 'Mode', 'individual'), [NaN; NaN])
+%!test
+%! U = true (4, 2);
+%! U(3,:) = false;
+%! assert_equal (loss (Mf, q, y, 'UseObsForLearner', U), 0.5, 1e-14);
+%! assert_equal (loss (Mf, [2 2; 7 7; 2 7; 1 1], y, ...
+%!                     'UseObsForLearner', U), 0);
+%! assert_equal (edge (Mf, [2 2; 7 7; 2 7; 1 1], y, ...
+%!                     'UseObsForLearner', U), 0.499999991905108, 1e-12);
+%!test
+%! f = @(C, S, W, Cost) rows (S);
+%! assert_equal (loss (Mf, q, y, 'LossFun', f), 4);

@@ -45,15 +45,19 @@
 ## smallest and largest get rank 2, etc.  These ranks are used in the
 ## Ansari-Bradley test.
 ##
+## @var{tieflag} and @var{bidir} are read as an @code{if} reads a condition:
+## each is set when it is not empty and all of its elements are nonzero, so an
+## empty @qcode{[]} keeps the default, as in @code{tiedrank (@var{x}, [], 1)}.
+##
 ## @code{[@var{r}, @var{tieadj}] = tiedrank (@var{x}, @var{tieflag},
 ## @var{bidir}, @var{tol})} treats two values as tied when they lie within a
 ## tolerance of each other rather than only when they are exactly equal.
 ## @var{tol} is either a scalar or an array the size of @var{x} giving each
 ## element its own tolerance, and two neighbouring values are tied when the gap
 ## between them does not exceed the @strong{sum} of their two tolerances.  The
-## default is @qcode{0}, which is exact comparison.  @code{signrank} uses this
-## to rank differences that are equal to within the precision of the values
-## they came from.
+## default is @qcode{0}, which is exact comparison, and an empty @var{tol} takes
+## it.  @code{signrank} uses this to rank differences that are equal to within
+## the precision of the values they came from.
 ##
 ## @end deftypefn
 
@@ -65,15 +69,15 @@ function [r, tieadj] = tiedrank (x, tieflag, bidir, tol)
 
   if (nargin < 2)
     tieflag = false;
-  elseif (! isscalar (tieflag) || ! (isnumeric (tieflag) || isbool (tieflag)))
-    error ("tiedrank: TIEFLAG must be a numeric or boolean scalar.");
+  else
+    tieflag = read_flag (tieflag, "TIEFLAG");
   endif
   if (nargin < 3)
     bidir = false;
-  elseif (! isscalar (bidir) || ! (isnumeric (bidir) || isbool (bidir)))
-    error ("tiedrank: BIDIR must be a numeric or boolean scalar.");
+  else
+    bidir = read_flag (bidir, "BIDIR");
   endif
-  if (nargin < 4)
+  if (nargin < 4 || (isnumeric (tol) && isempty (tol)))
     tol = 0;
   elseif (! isnumeric (tol) || ! isreal (tol) || any (tol(:) < 0))
     error ("tiedrank: TOL must be a non-negative numeric array.");
@@ -181,6 +185,17 @@ function [r, tieadj] = rank_vector (x, tieflag, bidir, tol)
   r = reshape (r, size (x));
 endfunction
 
+## Read a flag the way IF reads a condition: it is set only when it is not
+## empty and all of its elements are nonzero
+function tf = read_flag (flag, name)
+  if (! (isnumeric (flag) || islogical (flag) || ischar (flag))
+      || iscomplex (flag) || any (isnan (flag(:))))
+    error (strcat ("tiedrank: %s must be a real numeric, logical, or", ...
+                   " character array without NaN values."), name);
+  endif
+  tf = ! isempty (flag) && all (flag(:));
+endfunction
+
 ## testing against mileage data and results from Matlab
 %!test
 %! [r,tieadj] = tiedrank ([10, 20, 30, 40, 20]);
@@ -222,6 +237,33 @@ endfunction
 %! ## Exact equality still ties whatever TOL says, infinities included
 %! assert_equal (tiedrank ([Inf, Inf, 1]), [2.5, 2.5, 1]);
 %! assert_equal (tiedrank ([Inf, Inf, 1], 0, 0, 0), [2.5, 2.5, 1]);
+%!test
+%! ## An empty TOL takes the default
+%! [r, tieadj] = tiedrank ([10, 20, 30, 40, 20], [], 1, []);
+%! assert_equal (r, [1, 2.5, 2, 1, 2.5]);
+%! assert_equal (tieadj, 3);
+
+%!test
+%! ## An empty flag keeps its default, so BIDIR can be set on its own
+%! [r, tieadj] = tiedrank ([10, 20, 30, 40, 20], [], 1);
+%! assert_equal (r, [1, 2.5, 2, 1, 2.5]);
+%! assert_equal (tieadj, 3);
+%!test
+%! ## A flag with a zero element is not set
+%! [~, tieadj] = tiedrank ([10, 20, 30, 40, 20], [1, 0]);
+%! assert_equal (tieadj, 3);
+%!test
+%! ## A flag whose elements are all nonzero is set
+%! [~, tieadj] = tiedrank ([10, 20, 30, 40, 20], [1, 1]);
+%! assert_equal (tieadj, [1; 0; 18]);
+%!test
+%! ## A character flag is read by its character codes
+%! [~, tieadj] = tiedrank ([10, 20, 30, 40, 20], 'A');
+%! assert_equal (tieadj, [1; 0; 18]);
+%!test
+%! ## BIDIR is read the same way
+%! r = tiedrank ([10, 20, 30, 40, 20], 0, [1, 1]);
+%! assert_equal (r, [1, 2.5, 2, 1, 2.5]);
 
 ## Test input validation
 %!test
@@ -259,18 +301,20 @@ endfunction
 %! assert_equal (r(:,:,2), [1, 1; 2, 2]);
 %! assert_equal (size (tieadj), [1, 2, 2]);
 
-%!error <tiedrank: TIEFLAG must be a numeric or boolean scalar.> ...
-%! tiedrank ([1, 2, 3, 4, 5], [1, 1])
-%!error <tiedrank: TIEFLAG must be a numeric or boolean scalar.> ...
-%! tiedrank ([1, 2, 3, 4, 5], 'A')
-%!error <tiedrank: TIEFLAG must be a numeric or boolean scalar.> ...
-%! tiedrank ([1, 2, 3, 4, 5], [true, true])
-%!error <tiedrank: BIDIR must be a numeric or boolean scalar.> ...
-%! tiedrank ([1, 2, 3, 4, 5], 0, [1, 1])
-%!error <tiedrank: BIDIR must be a numeric or boolean scalar.> ...
-%! tiedrank ([1, 2, 3, 4, 5], 0, 'A')
-%!error <tiedrank: BIDIR must be a numeric or boolean scalar.> ...
-%! tiedrank ([1, 2, 3, 4, 5], 0, [true, true])
+%!error <tiedrank: TIEFLAG must be a real numeric, logical, or character array without NaN values.> ...
+%! tiedrank ([1, 2, 3, 4, 5], {})
+%!error <tiedrank: TIEFLAG must be a real numeric, logical, or character array without NaN values.> ...
+%! tiedrank ([1, 2, 3, 4, 5], struct ())
+%!error <tiedrank: TIEFLAG must be a real numeric, logical, or character array without NaN values.> ...
+%! tiedrank ([1, 2, 3, 4, 5], 1i)
+%!error <tiedrank: TIEFLAG must be a real numeric, logical, or character array without NaN values.> ...
+%! tiedrank ([1, 2, 3, 4, 5], [1, NaN])
+%!error <tiedrank: BIDIR must be a real numeric, logical, or character array without NaN values.> ...
+%! tiedrank ([1, 2, 3, 4, 5], 0, {})
+%!error <tiedrank: BIDIR must be a real numeric, logical, or character array without NaN values.> ...
+%! tiedrank ([1, 2, 3, 4, 5], 0, 1i)
+%!error <tiedrank: BIDIR must be a real numeric, logical, or character array without NaN values.> ...
+%! tiedrank ([1, 2, 3, 4, 5], 0, NaN)
 %!error <tiedrank: TOL must be a non-negative numeric array.> ...
 %! tiedrank ([1, 2, 3, 4, 5], 0, 0, -1)
 %!error <tiedrank: TOL must be a non-negative numeric array.> ...

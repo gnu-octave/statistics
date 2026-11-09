@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{h} =} chi2gof (@var{x})
 ## @deftypefnx {statistics} {[@var{h}, @var{p}] =} chi2gof (@var{x})
-## @deftypefnx {statistics} {[@var{p}, @var{h}, @var{stats}] =} chi2gof (@var{x})
+## @deftypefnx {statistics} {[@var{h}, @var{p}, @var{stats}] =} chi2gof (@var{x})
 ## @deftypefnx {statistics} {[@dots{}] =} chi2gof (@var{x}, @var{Name}, @var{Value}, @dots{})
 ##
 ## Chi-square goodness-of-fit test.
@@ -41,7 +41,7 @@
 ## neighboring bins until the count in each extreme bin is at least 5.  If
 ## bins remain in the interior with counts less than 5, @code{chi2gof} displays
 ## a warning.  In that case, you should use fewer bins, or provide bin centers
-## or binedges, to increase the expected counts in all bins.
+## or edges, to increase the expected counts in all bins.
 ##
 ## @code{@var{h} = chi2gof (@var{x})} performs a chi-square goodness-of-fit test
 ## that the data in the vector X are a random sample from a normal distribution
@@ -65,19 +65,20 @@
 ## @multitable @columnfractions 0.3 0.65
 ## @item "chi2stat" @tab Chi-square statistic
 ## @item "df" @tab Degrees of freedom
-## @item "binedges" @tab Vector of bin binedges after pooling
+## @item "edges" @tab Vector of bin edges after pooling
 ## @item "O" @tab Observed count in each bin
 ## @item "E" @tab Expected count in each bin
 ## @end multitable
 ##
 ## @code{[@dots{}] = chi2gof (@var{x}, @var{Name}, @var{Value}, @dots{})}
 ## specifies optional Name/Value pair arguments chosen from the following list.
+## Names are not case sensitive.
 ##
 ## @multitable @columnfractions 0.2 0.75
 ## @headitem Name @tab Value
 ## @item @qcode{'nbins'} @tab The number of bins to use.  Default is 10.
-## @item @qcode{'binctrs'} @tab A vector of bin centers.
-## @item @qcode{'binedges'} @tab A vector of bin binedges.
+## @item @qcode{'ctrs'} @tab A vector of bin centers.
+## @item @qcode{'edges'} @tab A vector of bin edges.
 ## @item @qcode{'cdf'} @tab A fully specified cumulative distribution
 ## function or a function handle provided in a cell array whose first element is
 ## a function handle, and all later elements are its parameter values.  The
@@ -132,6 +133,9 @@ function [h, p, stats] = chi2gof (x, varargin)
   argpos = 1;
   while (numarg)
     argname = varargin{argpos};
+    if (! (ischar (argname) && isrow (argname)))
+      error ("chi2gof: option name must be a character vector.");
+    endif
     switch (lower (argname))
       case 'nbins'
         nbins = varargin{argpos + 1};
@@ -151,6 +155,8 @@ function [h, p, stats] = chi2gof (x, varargin)
         frequency = varargin{argpos + 1};
       case 'alpha'
         alpha = varargin{argpos + 1};
+      otherwise
+        error ("chi2gof: invalid parameter name: '%s'.", argname);
     endswitch
     numarg -= 2;
     argpos += 2;
@@ -422,14 +428,14 @@ endfunction
 %! n = length (x);
 %! binedges = linspace (0, 1, 11);
 %! expectedCounts = n * diff (binedges);
-%! [h, p, stats] = chi2gof (x, 'binedges', binedges, 'expected', expectedCounts)
+%! [h, p, stats] = chi2gof (x, 'edges', binedges, 'expected', expectedCounts)
 %!demo
 %! bins = 0:5;
 %! obsCounts = [6 16 10 12 4 2];
 %! n = sum (obsCounts);
 %! lambdaHat = sum (bins.*obsCounts) / n;
 %! expCounts = n * poisspdf (bins,lambdaHat);
-%! [h, p, stats] = chi2gof (bins, 'binctrs', bins, 'frequency', obsCounts, ...
+%! [h, p, stats] = chi2gof (bins, 'ctrs', bins, 'frequency', obsCounts, ...
 %!                          'expected', expCounts, 'nparams',1)
 %!test
 %! ## Below the resolution of 1 - chi2cdf, values from MATLAB R2024a
@@ -437,10 +443,28 @@ endfunction
 %!                  'Frequency', [500, 300, 300, 300, 600], ...
 %!                  'Expected', 400 * ones (1, 5), 'NParams', 0);
 %! assert_equal (p, 3.75727673578105e-42, -1e-10);
+%!test
+%! ## Values from MATLAB R2024a
+%! [~, p, stats] = chi2gof (1:20, 'Edges', [0.5, 5.5, 10.5, 20.5], ...
+%!                          'Expected', [4, 8, 8], 'EMin', 0, 'NParams', 0);
+%! assert_equal (p, 0.391605626676799, -1e-14);
+%! assert_equal (stats.O, [5, 5, 10]);
 
 ## Test input validation
 %!error chi2gof ()
 %!error chi2gof ([2,3;3,4])
+%!error <chi2gof: option name must be a character vector.> ...
+%! chi2gof ([1,2,3,4], 5, 5)
+%!error <chi2gof: option name must be a character vector.> ...
+%! chi2gof ([1,2,3,4], '', 5)
+%!error <chi2gof: invalid parameter name: 'foo'.> ...
+%! chi2gof ([1,2,3,4], 'foo', 1)
+%!error <chi2gof: invalid parameter name: 'binedges'.> ...
+%! chi2gof ([1,2,3,4], 'binedges', 1:3)
+%!error <chi2gof: invalid parameter name: 'edgesX'.> ...
+%! chi2gof ([1,2,3,4], 'edgesX', 1:3)
+%!error <chi2gof: invalid parameter name: 'Ed'.> ...
+%! chi2gof ([1,2,3,4], 'Ed', 1:3)
 %!error chi2gof ([1,2,3,4], 'nbins', 3, 'ctrs', [2,3,4])
 %!error chi2gof ([1,2,3,4], 'frequency', [2,3,2])
 %!error chi2gof ([1,2,3,4], 'frequency', [2,3,2,-2])

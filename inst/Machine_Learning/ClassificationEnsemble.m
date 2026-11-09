@@ -421,8 +421,9 @@ classdef ClassificationEnsemble < PredictiveModel
       endif
 
       ## A table names its own predictors and says which hold levels
+      ## An ordinal column is a numeric predictor here, as in R2024a
       [this, X, Y, varargin] = resolveTable (this, 'ClassificationEnsemble', ...
-                                             X, Y, varargin);
+                                             X, Y, varargin, true);
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("ClassificationEnsemble: name-value arguments must", ...
                        " be in pairs."));
@@ -546,8 +547,10 @@ classdef ClassificationEnsemble < PredictiveModel
         error ("%s: invalid optional paired argument.", caller);
       endif
 
+      ## A row missing some predictors is kept, its learners taking the
+      ## missing values, as in R2024a
       F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, caller, false, ...
-                      'refuse');
+                      'refuse', 'partial');
       K = classCount (F.ClassNames);
 
       ## The method, by default the one MATLAB chooses for the class count.
@@ -1494,7 +1497,7 @@ classdef ClassificationEnsemble < PredictiveModel
               cols = sort (perm(1:this.NPredToSample));
             endif
             largs = [{'PredictorNames', this.PredictorNames(cols), ...
-                      'ClassNames', this.ClassNames, 'Prior', this.Prior, ...
+                      'ClassNames', this.ClassNames, 'Weights', this.W, ...
                       'Cost', this.Cost}, this.TreeArgs];
             if (strcmp (this.LearnerNames{1}, 'KNN'))
               mdl = ClassificationKNN (this.X(:,cols), this.Y, largs{:});
@@ -2088,3 +2091,56 @@ endfunction
 %! load fisheriris
 %! ClassificationEnsemble (meas(51:150, 3:4), species(51:150), ...
 %!                         'Cost', struct ('a', 1));
+
+## MATLAB parity: a row missing some predictors is kept, and dropped only
+## when every predictor is missing or its weight is zero, as measured on
+## R2024a for every method
+%!shared emX, emL, emQ
+%! x1 = mod ((1:30)', 7) + (1:30)' / 10;
+%! x2 = mod ((1:30)', 5) * 2 - (1:30)' / 20;
+%! emX = [x1, x2];
+%! emX([2, 9, 17], 1) = NaN;
+%! emX(23, 2) = NaN;
+%! emX(27, :) = NaN;
+%! emQ = [3, 1; 5, 4; 7, 2; NaN, 3];
+%! emL = repmat ({'p'; 'q'; 'q'; 'p'; 'p'; 'q'}, 5, 1);
+%!test  # boosting keeps the rows a predictor is missing from
+%! Mdl = fitcensemble (emX, emL, 'Method', 'AdaBoostM1');
+%! assert_equal (Mdl.NumObservations, 29);
+%! assert_equal (Mdl.RowsUsed, [true(26, 1); false; true(3, 1)]);
+%! assert_equal (rows (Mdl.X), 29);
+%!test  # and so does bagging
+%! Mdl = fitcensemble (emX, emL, 'Method', 'Bag');
+%! assert_equal (Mdl.NumObservations, 29);
+%!test  # and the random subspace, whose learners drop such rows themselves
+%! Mdl = fitcensemble (emX, emL, 'Method', 'Subspace', 'Learners', 'knn');
+%! assert_equal (Mdl.NumObservations, 29);
+%!test  # a row of weight zero is dropped
+%! Mdl = fitcensemble (emX, emL, 'Method', 'AdaBoostM1', ...
+%!                     'Weights', [0; ones(29, 1)]);
+%! assert_equal (Mdl.NumObservations, 28);
+%!test  # the first learner sees the rows a predictor is missing from
+%! Mdl = fitcensemble (emX, emL, 'Method', 'AdaBoostM1', ...
+%!                     'NumLearningCycles', 1);
+%! [label, score] = predict (Mdl, emQ);
+%! assert_equal (label, {'p'; 'q'; 'p'; 'p'});
+%! assert_equal (score(:,1), 1.30134484272219 * [1; -1; 1; 1], 1e-13);
+
+## A Subspace learner fits the rows it keeps under the ensemble's weights
+%!shared Xs, Ys
+%! Xs = [1 2 3; 2 1 1; NaN NaN 4; 3 2 1; 6 7 5; 7 6 9; 7 NaN NaN; 8 7 6; ...
+%!       1 7 5; 2 8 3; 2 6 5; 3 7 8];
+%! Ys = [1 1 1 1 2 2 2 2 3 3 3 3]';
+%!test
+%! Mdl = fitcensemble (Xs, Ys, 'Method', 'Subspace', 'Learners', ...
+%!                     'discriminant', 'NPredToSample', 2, ...
+%!                     'NumLearningCycles', 'AllPredictorCombinations');
+%! assert_equal (Mdl.Trained{1}.Prior, [3, 4, 4] / 11, 1e-14);
+%! assert_equal (resubLoss (Mdl), 1 / 12, 1e-14);
+%! assert_equal (resubEdge (Mdl), NaN);
+%!test
+%! Mdl = fitcensemble (Xs, Ys, 'Method', 'Subspace', 'Learners', ...
+%!                     'discriminant', 'NPredToSample', 2, ...
+%!                     'NumLearningCycles', 'AllPredictorCombinations', ...
+%!                     'Prior', [0.2, 0.5, 0.3]);
+%! assert_equal (Mdl.Trained{1}.Prior, [0.15, 0.5, 0.3] / 0.95, 1e-14);

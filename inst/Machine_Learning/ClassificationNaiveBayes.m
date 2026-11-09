@@ -55,8 +55,8 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ## Class labels
     ##
     ## Specified as a logical or numeric column vector, or as a character array
-    ## or a cell array of character vectors with the same number of rows as the
-    ## predictor data.  Each row in @var{Y} is the observed class label for the
+    ## or a cell array of character vectors with the same number of rows as
+    ## @var{X}.  Each row in @var{Y} is the observed class label for the
     ## corresponding row in @var{X}.  This property is read-only.
     ##
     ## @end deftp
@@ -67,9 +67,10 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ##
     ## Predictor data
     ##
-    ## A numeric matrix containing the predictor data.  Each column of @var{X}
-    ## represents one predictor (variable), and each row represents one
-    ## observation.  This property is read-only.
+    ## A numeric matrix containing the predictor data the model was fitted on.
+    ## Each column of @var{X} represents one predictor (variable), and each
+    ## row represents one observation; a row dropped from the fit, as
+    ## @code{RowsUsed} describes, is not kept.  This property is read-only.
     ##
     ## Where the model was fitted from a table, the predictors are the coded
     ## matrix and not the table: a variable holding levels is stored as its
@@ -86,8 +87,11 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ## A logical column vector with the same length as the observations in the
     ## original predictor data @var{X}, true for each row that was used for
     ## fitting the model.  It is empty, @qcode{[]}, when every observation was
-    ## used, so a non-empty value means that rows holding missing values were
-    ## dropped.  This property is read-only.
+    ## used.  A row is dropped when its class is missing, when every predictor
+    ## is missing, or when its weight is zero or missing.  A row missing only
+    ## some predictors is used; with the @qcode{'mn'} distribution it counts
+    ## in the prior but not in the multinomial, which describes the whole
+    ## row.  This property is read-only.
     ##
     ## @end deftp
     RowsUsed = [];
@@ -132,8 +136,9 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ## Number of observations
     ##
     ## A positive integer specifying the number of observations used to train
-    ## the model, after any row holding a missing value has been dropped.  This
-    ## property is read-only.
+    ## the model, the rows dropped as @code{RowsUsed} describes left out.  Each
+    ## predictor is fitted on the rows it is known for, and an empirical prior
+    ## counts every row used.  This property is read-only.
     ##
     ## @end deftp
     NumObservations = [];
@@ -438,17 +443,13 @@ classdef ClassificationNaiveBayes < PredictiveModel
       this.Prior = P(:)' / sum (P);
       ## The weights follow the prior, so reassigning one re-derives the other.
       ## Weights that were given keep their class in W, computed as double.
-      ## Either way only the rows the model was fitted on carry a weight.
-      used = this.RowsUsed;
-      if (isempty (used))
-        used = true (rows (this.Y), 1);
-      endif
+      ## Y holds the rows the model was fitted on, one weight each.
       if (! isempty (this.RawWeights))
-        gY = labelIndices (this.ClassNames, this.Y(used,:));
+        gY = labelIndices (this.ClassNames, this.Y);
         this.W = cast (priorNormalize (double (this.RawWeights), gY, ...
                                        this.Prior), class (this.RawWeights));
       elseif (! isempty (this.Y))
-        gY = labelIndices (this.ClassNames, this.Y(used,:));
+        gY = labelIndices (this.ClassNames, this.Y);
         keep = gY > 0;
         this.W = priorWeights (this.Prior, gY(keep), sum (keep));
       endif
@@ -607,22 +608,29 @@ classdef ClassificationNaiveBayes < PredictiveModel
       this.DistributionNames = D;
       this.CategoricalPredictors = catidx;
 
-      ## Store the data as supplied, then drop the rows that are not complete,
-      ## and those of zero or missing weight, as R2024a drops them
-      this.X = X;
-      this.Y = Y;
-      ok = ! any (isnan (X), 2);
+      ## Drop the rows R2024a and R2026b drop: a row whose class is missing,
+      ## one missing every predictor, and one of zero or missing weight.  A
+      ## row missing only some predictors is kept, each distribution being
+      ## fitted on the rows it is known for, and the empirical prior counting
+      ## every row kept.  The multinomial describes the whole row at once, so
+      ## it is fitted on complete rows alone, while a row missing some counts
+      ## still counts in the prior.  X and Y hold the rows kept, as in
+      ## R2024a, so that they line up with W and with resubPredict.
+      ok = ! isnan (grp2idx (Y)) & ! all (isnan (X), 2);
       if (! isempty (Weights))
-        ok = ok & ! isnan (Weights(:)) & Weights(:) > 0;
+        ok &= ! isnan (Weights(:)) & Weights(:) > 0;
       endif
       if (! all (ok))
         this.RowsUsed = ok;
       endif
       Xf = X(ok, :);
       Yf = Y(ok, :);
+      this.X = Xf;
+      this.Y = Yf;
       if (isempty (Xf))
-        error (strcat ("ClassificationNaiveBayes: no observation is", ...
-                       " free of missing values."));
+        error (strcat ("ClassificationNaiveBayes: no observation has a", ...
+                       " known class, a known predictor and a positive", ...
+                       " weight."));
       endif
 
       ## Resolve the classes.  Naming them keeps only those observations, so
@@ -665,6 +673,8 @@ classdef ClassificationNaiveBayes < PredictiveModel
         gY = gY(inC);
         ok(ok) = inC;
         this.RowsUsed = ok;
+        this.X = Xf;
+        this.Y = Yf;
         if (isempty (Xf))
           error (strcat ("ClassificationNaiveBayes: no observation", ...
                          " belongs to the named classes."));
@@ -730,6 +740,8 @@ classdef ClassificationNaiveBayes < PredictiveModel
         gY = gY(keep);
         ok(ok) = keep;
         this.RowsUsed = ok;
+        this.X = Xf;
+        this.Y = Yf;
         this.NumObservations = rows (Xf);
         if (! isempty (this.RawWeights))
           this.RawWeights = this.RawWeights(keep);
@@ -792,6 +804,10 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ## each observation to each class.  The label of an observation is the
     ## class of least expected cost.
     ##
+    ## A missing predictor is skipped and the observation classified on the
+    ## rest.  Under the @qcode{'mn'} distribution, which describes the whole
+    ## row at once, an observation missing any count has posterior and cost
+    ## @qcode{NaN} and takes the class of largest prior, whatever the cost.
     ##
     ## The new data may be a table, whose variables are matched to the
     ## predictors the model was fitted on by name and not by position:
@@ -849,6 +865,18 @@ classdef ClassificationNaiveBayes < PredictiveModel
       ## Expected misclassification cost, and the label of least cost
       cost = score * this.Cost;
       [~, minIdx] = min (cost, [], 2);
+
+      ## The multinomial describes the whole row at once, so a row missing a
+      ## count has no likelihood: its posterior and cost are NaN and it takes
+      ## the class of largest prior, the cost aside, as R2024a and R2026b do
+      if (ischar (this.DistributionNames))
+        miss = any (isnan (XC), 2);
+        if (any (miss))
+          score(miss,:) = NaN;
+          cost(miss,:) = NaN;
+          [~, minIdx(miss)] = max (this.Prior);
+        endif
+      endif
       label = labelsFromIndex (this.ClassNames, minIdx);
 
       ## The transform is applied once, to the assembled posterior
@@ -941,9 +969,9 @@ classdef ClassificationNaiveBayes < PredictiveModel
       endwhile
 
       ## The partition covers the observations actually trained on: a row
-      ## dropped for a missing value is not one the folds can use.  The
+      ## dropped from the fit is not one the folds can use.  The
       ## response is passed rather than a count so the folds stay stratified.
-      [~, Yused] = nbTrainX (this);
+      Yused = this.Y;
       if (! isempty (CVPartition))
         partition = CVPartition;
       elseif (! isempty (Holdout))
@@ -1240,7 +1268,7 @@ classdef ClassificationNaiveBayes < PredictiveModel
     ## Classify the training data with the trained model.
     ##
     ## The same as calling @code{predict} on the data the model was fitted on,
-    ## with the rows that were dropped for missing values left out.
+    ## with the rows that were dropped, as @code{RowsUsed} describes, left out.
     ##
     ## @end deftypefn
     function [label, score, cost] = resubPredict (this)
@@ -1249,7 +1277,7 @@ classdef ClassificationNaiveBayes < PredictiveModel
         error (strcat ("ClassificationNaiveBayes.resubPredict:", ...
                        " too few input arguments."));
       endif
-      [label, score, cost] = predict (this, nbTrainX (this));
+      [label, score, cost] = predict (this, this.X);
 
     endfunction
 
@@ -1265,7 +1293,8 @@ classdef ClassificationNaiveBayes < PredictiveModel
         error (strcat ("ClassificationNaiveBayes.resubMargin:", ...
                        " too few input arguments."));
       endif
-      [X, Y] = nbTrainX (this);
+      X = this.X;
+      Y = this.Y;
       m = margin (this, X, Y);
 
     endfunction
@@ -1283,7 +1312,8 @@ classdef ClassificationNaiveBayes < PredictiveModel
                        " too few input arguments."));
       endif
       ## The training data weighs by the model's own weights, as in R2024a
-      [X, Y] = nbTrainX (this);
+      X = this.X;
+      Y = this.Y;
       e = edge (this, X, Y, 'Weights', this.W);
 
     endfunction
@@ -1304,7 +1334,8 @@ classdef ClassificationNaiveBayes < PredictiveModel
                        " too few input arguments."));
       endif
       ## The model's own weights stand unless others are given, as in R2024a
-      [X, Y] = nbTrainX (this);
+      X = this.X;
+      Y = this.Y;
       if (! any (strcmpi (varargin(1:2:end), 'Weights')))
         varargin = [varargin, {'Weights', this.W}];
       endif
@@ -1392,6 +1423,16 @@ classdef ClassificationNaiveBayes < PredictiveModel
     function mdl = load_model (filename, data)
 
       data = decodeLabels (data);
+
+      ## A model saved before X and Y held only the rows used carries every
+      ## row given; keep the rows used, so that Y lines up with W again
+      ## before the prior, which reads Y, is assigned.
+      if (isfield (data, 'RowsUsed') && ! isempty (data.RowsUsed)
+          && rows (data.X) == numel (data.RowsUsed)
+          && rows (data.X) > data.NumObservations)
+        data.X = data.X(data.RowsUsed, :);
+        data.Y = data.Y(data.RowsUsed, :);
+      endif
 
       ## The smallest fit the class accepts, filled property by property
       ## below.  Two observations per class give every distribution something
@@ -1663,15 +1704,14 @@ endclassdef
 %! assert_equal (size (Mdl.DistributionParameters), [2, 4]);
 %! assert_equal (Mdl.Prior, [0.5, 0.5], 1e-15);
 
-%!test  # a row holding a missing value is dropped, and RowsUsed says so
+%!test  # a row missing one predictor is kept, as fitcnb's documentation says
 %! load fisheriris
 %! X = meas;
 %! X(3,2) = NaN;
 %! X(77,4) = NaN;
 %! Mdl = fitcnb (X, species);
-%! assert_equal (Mdl.NumObservations, 148);
-%! assert_equal (sum (Mdl.RowsUsed), 148);
-%! assert_equal (Mdl.RowsUsed([3, 77]), [false; false]);
+%! assert_equal (Mdl.NumObservations, 150);
+%! assert_equal (Mdl.RowsUsed, []);
 %! assert_equal (size (Mdl.X), [150, 4]);
 
 %!test  # PredictorNames and ResponseName are carried through
@@ -2160,6 +2200,42 @@ endclassdef
 %! assert_equal (Mdl.PredictorNames, {'SL', 'SW'});
 %! assert_equal (Mdl.ResponseName, 'Species');
 
+## MATLAB parity: empty text, a blank character row and a missing string are
+## missing, not a level, as measured on R2024a
+%!shared nbT, nbL
+%! nbT = {'a'; ''; 'b'; 'a'; 'b'; 'a'; ''; 'b'; 'a'; 'b'; 'a'; 'b'};
+%! nbL = repmat ({'p'; 'q'}, 6, 1);
+%!test  # empty text
+%! Mdl = fitcnb (table (nbT, nbL), 'nbL');
+%! assert_equal (Mdl.CategoricalLevels{1}, [1; 2]);
+%! assert_equal (Mdl.DistributionParameters{1,1}, [4; 3] / 7, 1e-15);
+%!test  # an empty and a missing string
+%! s = string (nbT);
+%! s(2) = missing;
+%! Mdl = fitcnb (table (s, nbL), 'nbL');
+%! assert_equal (Mdl.CategoricalLevels{1}, [1; 2]);
+%!test  # a blank character row
+%! Mdl = fitcnb (table (char (nbT), nbL), 'nbL');
+%! assert_equal (Mdl.CategoricalLevels{1}, [1; 2]);
+
+%!test  # an ordinal column stays categorical here, as measured on R2024a
+%! o = categorical (repmat ({'lo'; 'hi'; 'lo'; 'mid'; 'hi'; 'lo'; 'mid'; ...
+%!                           'hi'; 'lo'; 'mid'; 'hi'; 'lo'}, 2, 1), ...
+%!                   {'lo', 'mid', 'hi'}, 'Ordinal', true);
+%! x = (1:24)';
+%! lab = repmat ({'p'; 'q'; 'p'; 'q'; 'p'; 'q'; 'p'; 'q'; 'p'; 'q'; 'p'; ...
+%!               'q'}, 2, 1);
+%! Mdl = fitcnb (table (o, x, lab), 'lab');
+%! assert_equal (Mdl.CategoricalPredictors, 1);
+
+%!test  # 'Weights' may name a table variable, no predictor then, as R2024a
+%! x1 = (1:12)';
+%! w = [1; 1; 2; 2; 1; 1; 3; 3; 1; 1; 2; 2];
+%! lab = repmat ({'p'; 'q'}, 6, 1);
+%! Mdl = fitcnb (table (x1, w, lab), 'lab', 'Weights', 'w');
+%! assert_equal (Mdl.PredictorNames, {'x1'});
+%! assert_equal (Mdl.W, w / 20, 1e-15);
+
 ## A table at loss
 %!test  # the response is named, left out, or given beside the table
 %! load fisheriris
@@ -2359,3 +2435,146 @@ endclassdef
 %! delete (fname);
 %! assert_equal (predict (M2, meas([1, 51, 101], :)), ...
 %!               predict (Mdl, meas([1, 51, 101], :)));
+
+## MATLAB parity: a row missing only some predictors is kept, each predictor
+## is fitted on the rows it is known for, and the empirical prior counts
+## every row kept; a row with a missing class, one missing every predictor
+## and one of zero or missing weight are dropped, as measured on R2024a
+%!shared nbX, nbL
+%! k = repmat ([1; 2; 3; 1; 2; 3; 1; 2], 3, 1);
+%! x = mod ((1:24)', 7) + (1:24)' / 10;
+%! nbL = repmat ({'p'; 'q'; 'q'; 'p'; 'p'; 'q'; 'p'; 'q'}, 3, 1);
+%! x([2, 7, 15]) = NaN;
+%! k([4, 11]) = NaN;
+%! nbX = [k, x];
+%!test  # every row is kept, and the prior is over all of them
+%! Mdl = fitcnb (nbX, nbL, 'CategoricalPredictors', 1);
+%! assert_equal (Mdl.NumObservations, 24);
+%! assert_equal (Mdl.RowsUsed, []);
+%! assert_equal (Mdl.Prior, [0.5, 0.5]);
+%!test  # a categorical predictor is fitted on the rows it is known for
+%! Mdl = fitcnb (nbX, nbL, 'CategoricalPredictors', 1);
+%! assert_equal (Mdl.DistributionParameters{1,1}, [9; 4; 1] / 14, 1e-15);
+%!test  # and so is a normal one
+%! Mdl = fitcnb (nbX, nbL, 'CategoricalPredictors', 1);
+%! assert_equal (Mdl.DistributionParameters{1,2}, ...
+%!               [4.65; 2.20416272841488], 1e-13);
+%! assert_equal (Mdl.DistributionParameters{2,2}, ...
+%!               [4.28181818181818; 1.83293108534837], 1e-13);
+%!test  # predict skips the predictor a query is missing
+%! Mdl = fitcnb (nbX, nbL, 'CategoricalPredictors', 1);
+%! [~, score] = predict (Mdl, [1, 3; 2, 5; NaN, 7; 3, NaN]);
+%! assert_equal (score(:,1), [0.878375277703031; 0.336285341421947; ...
+%!                            0.585845090044561; 0.142857142857143], 1e-13);
+%!test  # weights shape the fit on the rows a predictor is known for
+%! Mdl = fitcnb (nbX, nbL, 'CategoricalPredictors', 1, ...
+%!               'Weights', 1 + mod ((1:24)', 3));
+%! assert_equal (Mdl.DistributionParameters{1,2}, ...
+%!               [4.96666666666667; 2.14498819553264], 1e-13);
+%!test  # a row missing every predictor is dropped
+%! X = nbX;
+%! X(20,:) = NaN;
+%! Mdl = fitcnb (X, nbL, 'CategoricalPredictors', 1);
+%! assert_equal (Mdl.NumObservations, 23);
+%! assert_equal (find (! Mdl.RowsUsed)', 20);
+%! assert_equal (Mdl.Prior, [11, 12] / 23, 1e-15);
+%!test  # so is a row of weight zero
+%! Mdl = fitcnb (nbX, nbL, 'CategoricalPredictors', 1, ...
+%!               'Weights', [0; ones(23, 1)]);
+%! assert_equal (Mdl.NumObservations, 23);
+%!test  # and of missing weight
+%! Mdl = fitcnb (nbX, nbL, 'CategoricalPredictors', 1, ...
+%!               'Weights', [NaN; ones(23, 1)]);
+%! assert_equal (Mdl.NumObservations, 23);
+%!test  # and a row whose class is missing
+%! L = nbL;
+%! L{6} = '';
+%! Mdl = fitcnb (nbX, L, 'CategoricalPredictors', 1);
+%! assert_equal (Mdl.NumObservations, 23);
+%!test  # a kernel density is fitted on the rows it is known for
+%! Mdl = fitcnb (nbX(:,2), nbL, 'DistributionNames', 'kernel');
+%! assert_equal (Mdl.NumObservations, 21);
+%! pd = Mdl.DistributionParameters{1,1};
+%! assert_equal (pd.Bandwidth, 1.634894517763, 1e-12);
+%! assert_equal (pdf (pd, [2, 4, 6]), ...
+%!               [0.0934400788914836, 0.137172679762077, ...
+%!                0.12969107168089], 1e-13);
+%!error<ClassificationNaiveBayes: predictor x2 has no known value in class p.> ...
+%! X = nbX;
+%! X(strcmp (nbL, 'p'), 2) = NaN;
+%! fitcnb (X, nbL, 'CategoricalPredictors', 1);
+%!error<ClassificationNaiveBayes: no observation has a known class, a known predictor and a positive weight.> ...
+%! fitcnb ([NaN, NaN; NaN, NaN], {'p'; 'q'})
+
+## MATLAB parity: with the multinomial a row missing some counts counts in the
+## prior but is left out of the fit, as measured on R2026b
+%!shared mnC, mnL
+%! mnL = repmat ({'p'; 'q'; 'q'; 'p'; 'p'; 'q'; 'p'; 'q'}, 3, 1);
+%! mnC = [mod((1:24)', 4), mod((1:24)', 3), 1 + mod((1:24)', 5)];
+%! mnC(5,2) = NaN;
+%!test  # the row is used
+%! Mdl = fitcnb (mnC, mnL, 'DistributionNames', 'mn');
+%! assert_equal (Mdl.NumObservations, 24);
+%! assert_equal (Mdl.RowsUsed, []);
+%!test  # but the multinomial is fitted on the complete rows
+%! Mdl = fitcnb (mnC, mnL, 'DistributionNames', 'mn');
+%! assert_equal (cell2mat (Mdl.DistributionParameters), ...
+%!               [0.25, 0.183333333333333, 0.566666666666667; ...
+%!                0.289473684210526, 0.171052631578947, ...
+%!                0.539473684210526], 1e-14);
+%!test  # and the prior counts it
+%! C = mnC;
+%! C(9,:) = NaN;
+%! Mdl = fitcnb (C, mnL, 'DistributionNames', 'mn');
+%! assert_equal (Mdl.NumObservations, 23);
+%! [~, score] = predict (Mdl, [1, 2, 3]);
+%! assert_equal (score, [0.534585278127478, 0.465414721872522], 1e-14);
+%!error<ClassificationNaiveBayes: class p has no observation with every count known.> ...
+%! C = mnC;
+%! C(strcmp (mnL, 'p'), 1) = NaN;
+%! fitcnb (C, mnL, 'DistributionNames', 'mn');
+
+## X and Y hold the rows the model used, lined up with W and resubPredict, as
+## in R2024a, so that cross-validation partitions those same rows
+%!shared alX, alL
+%! alX = [mod((1:24)', 7) + (1:24)' / 10, mod((1:24)', 5) - (1:24)' / 20];
+%! alX(2,1) = NaN;
+%! alX(20,:) = NaN;
+%! alL = repmat ({'p'; 'q'; 'q'; 'p'; 'p'; 'q'; 'p'; 'q'}, 3, 1);
+%!test  # the dropped row is in neither X nor Y
+%! Mdl = fitcnb (alX, alL);
+%! assert_equal ([rows(Mdl.X), rows(Mdl.Y), numel(Mdl.W)], [23, 23, 23]);
+%! assert_equal (numel (resubPredict (Mdl)), 23);
+%! assert_equal (find (! Mdl.RowsUsed)', 20);
+%!test  # cross-validation partitions the rows used
+%! Mdl = fitcnb (alX, alL);
+%! CV = crossval (Mdl, 'KFold', 3);
+%! assert_equal (rows (CV.X), 23);
+%! assert_equal (numel (kfoldPredict (CV)), 23);
+%! assert_equal (isscalar (kfoldLoss (CV)), true);
+%!test  # reassigning the prior keeps one weight per row used
+%! Mdl = fitcnb (alX, alL, 'Weights', 1 + mod ((1:24)', 3));
+%! Mdl.Prior = [0.3, 0.7];
+%! assert_equal (numel (Mdl.W), 23);
+%! assert_equal (sum (Mdl.W), 1, 1e-15);
+
+## MATLAB parity: under the multinomial a query missing a count has posterior
+## and cost NaN and the class of largest prior, the cost aside, as measured
+## on R2024a and R2026b
+%!test  # the class of largest prior
+%! L = repmat ({'p'; 'q'; 'q'; 'p'; 'p'; 'q'; 'p'; 'q'}, 3, 1);
+%! C = [mod((1:24)', 4), mod((1:24)', 3), 1 + mod((1:24)', 5)];
+%! Mdl = fitcnb (C, L, 'DistributionNames', 'mn', 'Prior', [0.3, 0.7]);
+%! [label, score, cost] = predict (Mdl, [1, 2, 3; 2, NaN, 1; NaN, NaN, NaN]);
+%! assert_equal (label, {'q'; 'q'; 'q'});
+%! assert_equal (score(:,1), [0.352213859428937; NaN; NaN], 1e-14);
+%! assert_equal (cost(:,1), [0.647786140571063; NaN; NaN], 1e-14);
+%!test  # the cost does not move it
+%! L = repmat ({'p'; 'q'; 'q'; 'p'; 'p'; 'q'; 'p'; 'q'}, 3, 1);
+%! C = [mod((1:24)', 4), mod((1:24)', 3), 1 + mod((1:24)', 5)];
+%! Mdl = fitcnb (C, L, 'DistributionNames', 'mn', 'Prior', [0.7, 0.3], ...
+%!               'Cost', [0, 1; 5, 0]);
+%! [label, ~, cost] = predict (Mdl, [1, 2, 3; 2, NaN, 1; NaN, NaN, NaN]);
+%! assert_equal (label, {'q'; 'p'; 'p'});
+%! assert_equal (cost(:,1), [1.26254662156491; NaN; NaN], 1e-14);
+

@@ -33,8 +33,9 @@
 ## This is the probability of obtaining @var{x} marked items when randomly
 ## drawing a sample of size @var{n} without replacement from a population of
 ## total size @var{m} containing @var{k} marked items.  The parameters @var{m},
-## @var{k}, and @var{n} must be positive integers with @var{k} and @var{n} not
-## greater than @var{m}.
+## @var{k}, and @var{n} must be non-negative integers with @var{k} and @var{n}
+## not greater than @var{m}.  A sample of size @qcode{0} contains no marked
+## items, so @var{x} = 0 then has probability 1, even from an empty population.
 ##
 ## If the optional parameter @qcode{vectorexpand} is provided, @var{x} may be an
 ## array with size different from parameters @var{m}, @var{k}, and @var{n}
@@ -143,26 +144,31 @@ function y = hygepdf (x, m, k, n, vect_expand)
   endif
 
   ## Everything in nel gives NaN
-  nel = (isnan (x) | (m < 0) | (k < 0) | (n <= 0) | (k > m) | (n > m) |
+  nel = (isnan (x) | (m < 0) | (k < 0) | (n < 0) | (k > m) | (n > m) |
         (m != fix (m)) | (k != fix (k)) | (n != fix (n)));
   ## Everything in zel gives 0 unless in nel
   zel = ((x != fix (x)) | (x < 0) | (x > k) | (n < x) | (n-x > m-k));
 
   y(nel) = NaN;
 
-  ok = ! nel & ! zel;
+  ## An empty sample holds no marked items; computed below, an empty population
+  ## would divide zero by zero
+  y(! nel & ! zel & (n == 0)) = 1;
+
+  ok = ! nel & ! zel & (n != 0);
   if (any (ok(:)))
+    ## Loader's form: the ratio of three binomial densities with ps = n / m,
+    ## whose powers of ps and 1 - ps cancel, each binomial density computed
+    ## by binopdf with Loader's saddle point expansion.
     if (isscalar (m))
-      y(ok) = exp (gammaln (k+1) - gammaln (k-x(ok)+1) - gammaln (x(ok)+1) + ...
-                   gammaln (m-k+1) - gammaln (m-k-n+x(ok)+1) - ...
-                   gammaln (n-x(ok)+1) - gammaln (m+1) + gammaln (m-n+1) + ...
-                   gammaln (n+1));
+      ps = n / m;
+      y(ok) = binopdf (x(ok), k, ps) .* binopdf (n - x(ok), m - k, ps) ...
+              ./ binopdf (n, m, ps);
     else
-      y(ok) = exp (gammaln (k(ok)+1) - gammaln (k(ok)-x(ok)+1) - ...
-                   gammaln (x(ok)+1) + gammaln (m(ok)-k(ok)+1) - ...
-                   gammaln (m(ok)-k(ok)-n(ok)+x(ok)+1) - ...
-                   gammaln (n(ok)-x(ok)+1) - gammaln (m(ok)+1) + ...
-                   gammaln (m(ok)-n(ok)+1) + gammaln (n(ok)+1));
+      ps = n(ok) ./ m(ok);
+      y(ok) = binopdf (x(ok), k(ok), ps) ...
+              .* binopdf (n(ok) - x(ok), m(ok) - k(ok), ps) ...
+              ./ binopdf (n(ok), m(ok), ps);
     endif
   endif
 
@@ -197,12 +203,25 @@ endfunction
 %!assert_equal (hygepdf (x, 4, 2, 2 * [1, -1, NaN, 1.1, 1]), [0, NaN, NaN, NaN, 0])
 %!assert_equal (hygepdf (x, 4, 2, 5), [NaN, NaN, NaN, NaN, NaN], 3 * eps)
 %!assert_equal (hygepdf ([x, NaN], 4, 2, 2), [y, NaN], 3 * eps)
+%!assert_equal (hygepdf (x, 10, 5, 0), [0, 1, 0, 0, 0])
+%!assert_equal (hygepdf (0.5, 10, 5, 0), 0)
+%!assert_equal (hygepdf ([0, 1], 0, 0, 0), [1, 0])
+%!assert_equal (hygepdf ([0, 1], 10, 5, [0, 0]), [1, 0])
+%!assert_equal (hygepdf (0, [10, 10, 10], [0, 5, 10], 0), [1, 1, 1])
+%!assert_equal (hygepdf (0, 10, 5, -1), NaN)
+%!assert_equal (hygepdf (2240, 8658, 5491, 3533), 0.018101314184210973, -1e-14)
+%!assert_equal (hygepdf (25000, 200000, 100000, 50000), ...
+%! 0.0041202358369094626, -1e-14)
+%!assert_equal (hygepdf (2, 1000000, 999990, 3), 2.9999460001620005e-05, -1e-14)
+%!assert_equal (hygepdf (1900, 8658, 5491, 3533), ...
+%! 3.8155743481754629e-54, -1e-12)
 
 ## Test class of input preserved
 %!assert_equal (hygepdf (single ([x, NaN]), 4, 2, 2), single ([y, NaN]), eps ('single'))
 %!assert_equal (hygepdf ([x, NaN], single (4), 2, 2), single ([y, NaN]), eps ('single'))
 %!assert_equal (hygepdf ([x, NaN], 4, single (2), 2), single ([y, NaN]), eps ('single'))
 %!assert_equal (hygepdf ([x, NaN], 4, 2, single (2)), single ([y, NaN]), eps ('single'))
+%!assert_equal (hygepdf (single (0), 10, 5, 0), single (1))
 
 ## Test vector expansion
 %!test

@@ -48,8 +48,7 @@
 ## @headitem @var{Name} @tab @tab @var{Value}
 ## @item @qcode{'Effect'} @tab @tab The effect sizes to compute, as a
 ## character vector, a string array or a cell array of character vectors,
-## chosen among those below.  A name may be shortened to any prefix that
-## names one effect alone, and case does not matter.
+## chosen among those below.  Case does not matter.
 ## @qcode{'meandiff'} by default.
 ## @item @qcode{'Mean'} @tab @tab The known population mean that one sample
 ## is compared with, a real scalar, 0 by default.  It is ignored where there
@@ -405,8 +404,7 @@ function out = matchEffects (in, names)
   endfor
 endfunction
 
-## The option in LIST that VAL names, case free and possibly shortened;
-## empty if none or several match
+## The option in LIST that VAL names, case free; empty if none matches
 function out = matchOption (val, list)
   out = '';
   if (isa (val, 'string') && isscalar (val))
@@ -416,10 +414,7 @@ function out = matchOption (val, list)
     return;
   endif
   idx = strcmpi (val, list);
-  if (! any (idx))
-    idx = strncmpi (val, list, numel (val));
-  endif
-  if (sum (idx) == 1)
+  if (any (idx))
     out = list{idx};
   endif
 endfunction
@@ -904,7 +899,7 @@ endfunction
 %! T = meanEffectSize (x, y, 'Effect', {'cohen', 'cohen'});
 %! assert_equal (T.Properties.RowNames, {'CohensD'});
 %!test
-%! T = meanEffectSize (x, y, 'Effect', 'COH');
+%! T = meanEffectSize (x, y, 'Effect', 'COHEN');
 %! assert_equal (T.Properties.RowNames, {'CohensD'});
 %!test
 %! T = meanEffectSize (x, y, 'Effect', 'cohen', 'Mean', 3);
@@ -1075,6 +1070,8 @@ endfunction
 %!error<meanEffectSize: 'Effect' must be one or more of 'meandiff', 'cohen', 'glass', 'cliff', 'mediandiff', 'robustcohen', 'akpcohen', 'kstest'.> ...
 %! meanEffectSize ([1; 2; 3], 'Effect', 'foo')
 %!error<meanEffectSize: 'Effect' must be one or more of 'meandiff', 'cohen', 'glass', 'cliff', 'mediandiff', 'robustcohen', 'akpcohen', 'kstest'.> ...
+%! meanEffectSize ([1; 2; 3], 'Effect', 'coh')
+%!error<meanEffectSize: 'Effect' must be one or more of 'meandiff', 'cohen', 'glass', 'cliff', 'mediandiff', 'robustcohen', 'akpcohen', 'kstest'.> ...
 %! meanEffectSize ([1; 2; 3], 'Effect', 'c')
 %!error<meanEffectSize: 'Effect' must be one or more of 'meandiff', 'cohen', 'glass', 'cliff', 'mediandiff', 'robustcohen', 'akpcohen', 'kstest'.> ...
 %! meanEffectSize ([1; 2; 3], 'Effect', {})
@@ -1084,6 +1081,8 @@ endfunction
 %! meanEffectSize ([1; 2; 3], [1; 2; 3], 'Paired', 2)
 %!error<meanEffectSize: 'VarianceType' must be 'equal' or 'unequal'.> ...
 %! meanEffectSize ([1; 2; 3], [1; 2; 3], 'VarianceType', 'foo')
+%!error<meanEffectSize: 'VarianceType' must be 'equal' or 'unequal'.> ...
+%! meanEffectSize ([1; 2; 3], [1; 2; 3], 'VarianceType', 'uneq')
 %!error<meanEffectSize: 'Alpha' must be a scalar between 0 and 1.> ...
 %! meanEffectSize ([1; 2; 3], 'Alpha', 1)
 %!error<meanEffectSize: 'ConfidenceIntervalType' must be 'exact', 'bootstrap' or 'none'.> ...

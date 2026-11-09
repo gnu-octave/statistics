@@ -41,6 +41,10 @@ classdef ClassificationTree < PredictiveModel
   ## child.  It is counted in that node and in every node above it, and
   ## @code{predict} stops it there and gives it that node's answer, so a row
   ## is never sent down a branch on evidence it does not carry.
+  ## Choosing a split, a predictor known for only part of a node is scored on
+  ## the rows it is known for, by how much the split lowers their impurity,
+  ## and that is scaled by their share of the node, as C4.5 does, so a
+  ## predictor known for few rows is not preferred for that alone.
   ##
   ## A categorical predictor is split into two sets of levels, and an
   ## observation whose level a node did not see stops there, as one missing
@@ -105,8 +109,9 @@ classdef ClassificationTree < PredictiveModel
     ## A logical column vector with one element per row of the predictor data
     ## as it was given, true for each row used for fitting.  It is empty,
     ## @qcode{[]}, when every row was used, so a non-empty value means that
-    ## rows were dropped.  Only a missing response drops a row; a row missing
-    ## some of its predictors is kept.  This property is read-only.
+    ## rows were dropped.  A row is dropped when its response is missing, when
+    ## every predictor is missing, or when its weight is zero; a row missing
+    ## only some of its predictors is kept.  This property is read-only.
     ##
     ## @end deftp
     RowsUsed = [];
@@ -821,8 +826,9 @@ classdef ClassificationTree < PredictiveModel
       endif
 
       ## A table names its own predictors and says which hold levels
+      ## An ordinal column is a numeric predictor here, as in R2024a
       [this, X, Y, varargin] = resolveTable (this, 'ClassificationTree', ...
-                                             X, Y, varargin);
+                                             X, Y, varargin, true);
 
       if (! (isnumeric (X) && isreal (X) && ismatrix (X) && ! isempty (X)))
         error (strcat ("ClassificationTree: X must be a non-empty real", ...
@@ -1051,11 +1057,23 @@ classdef ClassificationTree < PredictiveModel
         gY(! ismember (gY, namedClasses (glY, ClassNames))) = NaN;
       endif
 
-      ## An observation is dropped only when its response is missing.  A row
-      ## whose predictors hold missing values is kept and reported as used;
-      ## the fit sends it as far down the tree as the predictors it does
-      ## carry allow.
+      ## An observation is dropped when its class is missing, when every
+      ## predictor is missing, or when its weight is zero, as R2024a drops
+      ## it.  A row missing only some predictors is kept and reported as
+      ## used; the fit sends it as far down the tree as the predictors it
+      ## does carry allow.
       RowsUsed = ! isnan (gY);
+      if (! any (RowsUsed))
+        error ("ClassificationTree: no observations with a known class.");
+      endif
+      RowsUsed &= ! all (isnan (X), 2);
+      if (! isempty (Weights))
+        RowsUsed &= Weights(:) != 0;
+      endif
+      if (! any (RowsUsed))
+        error (strcat ("ClassificationTree: no observation has a known", ...
+                       " class, a known predictor and a nonzero weight."));
+      endif
       ## Index the rows and not the elements: a response naming its classes
       ## in the rows of a character matrix has one column per character, and
       ## a linear index would flatten the names into single letters.
@@ -1063,9 +1081,6 @@ classdef ClassificationTree < PredictiveModel
       X = X(RowsUsed, :);
       if (! isempty (Weights))
         Weights = Weights(RowsUsed);
-      endif
-      if (isempty (Y))
-        error ("ClassificationTree: no observations with a known class.");
       endif
 
       this.X = X;
@@ -3384,6 +3399,27 @@ endfunction
 %!error<ClassificationTree.predict: the table holds no predictor 'SW'.> ...
 %! predict (ctM, ctT(:, [1, 3, 4, 5, 6]))
 
+%!test  # an ordinal column is numeric, as measured on R2024a
+%! o = categorical (repmat ({'lo'; 'hi'; 'lo'; 'mid'; 'hi'; 'lo'; 'mid'; ...
+%!                           'hi'; 'lo'; 'mid'; 'hi'; 'lo'}, 2, 1), ...
+%!                   {'lo', 'mid', 'hi'}, 'Ordinal', true);
+%! lab = repmat ({'p'; 'q'; 'q'; 'p'; 'p'; 'q'; 'q'; 'p'; 'p'; 'q'; 'q'; ...
+%!               'p'}, 2, 1);
+%! lab(double (o) == 3) = {'q'};
+%! Mdl = fitctree (table (o, lab), 'lab');
+%! assert_equal (Mdl.CategoricalPredictors, []);
+%! assert_equal (Mdl.CutPoint', [2.5, 1.5, NaN, NaN, NaN]);
+%! N = table (categorical ({'lo'; 'mid'; 'hi'; ''}, {'lo', 'mid', 'hi'}, ...
+%!                          'Ordinal', true), 'VariableNames', {'o'});
+%! assert_equal (predict (Mdl, N), {'p'; 'q'; 'q'; 'q'});
+
+%!test  # a missing value and an unseen level predict as missing, as R2024a
+%! k = categorical (repmat ({'a'; 'b'}, 6, 1));
+%! lab = repmat ({'p'; 'q'}, 6, 1);
+%! Mdl = fitctree (table (k, lab), 'lab');
+%! N = table (categorical ({'a'; ''; 'z'}), 'VariableNames', {'k'});
+%! assert_equal (predict (Mdl, N), {'p'; 'p'; 'p'});
+
 %!error<ClassificationTree.predict: the table variable 'SL' no longer holds what it held when the model was fitted.> ...
 %! predict (ctM, setfield (ctT, 'SL', categorical (ctT.SL > 5.8)))
 
@@ -3532,3 +3568,33 @@ endfunction
 %! delete (fname);
 %! assert_equal (predict (M2, meas([1, 51, 101], :)), ...
 %!               predict (Mdl, meas([1, 51, 101], :)));
+
+## MATLAB parity: a row missing every predictor, or of weight zero, is
+## dropped, and the empirical prior counts only the rows kept, as measured
+## on R2024a
+%!shared trX, trL
+%! x1 = mod ((1:30)', 7) + (1:30)' / 10;
+%! x2 = mod ((1:30)', 5) * 2 - (1:30)' / 20;
+%! trX = [x1, x2];
+%! trX([2, 9, 17], 1) = NaN;
+%! trX(23, 2) = NaN;
+%! trX(27, :) = NaN;
+%! trL = repmat ({'p'; 'q'; 'q'; 'p'; 'p'; 'q'}, 5, 1);
+%!test  # the row missing every predictor is not used
+%! Mdl = fitctree (trX, trL);
+%! assert_equal (Mdl.NumObservations, 29);
+%! assert_equal (find (! Mdl.RowsUsed)', 27);
+%! assert_equal ([rows(Mdl.X), numel(Mdl.W)], [29, 29]);
+%!test  # the empirical prior is taken over the rows kept
+%! Mdl = fitctree (trX, trL);
+%! assert_equal (Mdl.Prior, [15, 14] / 29, 1e-15);
+%!test  # and so are the class probabilities
+%! [~, score] = predict (fitctree (trX, trL), [3, 1; NaN, 3]);
+%! assert_equal (score, [7, 1; 15 * 8 / 29, 14 * 8 / 29] / 8, 1e-15);
+%!test  # a row of weight zero is not used
+%! Mdl = fitctree (trX, trL, 'Weights', [0; ones(29, 1)]);
+%! assert_equal (Mdl.NumObservations, 28);
+%! assert_equal (Mdl.Prior, [0.5, 0.5], 1e-15);
+%!error<ClassificationTree: no observation has a known class, a known predictor and a nonzero weight.> ...
+%! fitctree ([NaN, NaN; NaN, NaN; 1, 2], {'a'; 'b'; 'c'}, 'Weights', [1; 1; 0])
+

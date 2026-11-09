@@ -2167,6 +2167,17 @@ endclassdef
 %! assert_equal (Mdl.PredictorNames, {'SW', 'PL'});
 %! assert_equal (Mdl.ResponseName, 'SL');
 
+%!test  # a missing value and an unseen level predict as missing, as R2024a
+%! k = categorical (repmat ({'a'; 'b'; 'c'}, 8, 1));
+%! x = (1:24)';
+%! y = double (k) * 10 + x / 10;
+%! Mdl = fitrsvm (table (k, x, y), 'y');
+%! N = table (categorical ({'a'; ''; 'z'}), [5; 5; 5], ...
+%!            'VariableNames', {'k', 'x'});
+%! yFit = predict (Mdl, N);
+%! assert_equal (yFit(2:3), predict (Mdl, [NaN, 5; NaN, 5]));
+%! assert_equal (yFit(2:3), [21.1; 21.1], 1e-4);
+
 ## A table at loss
 %!test  # the response is named, left out, or given beside the table
 %! load fisheriris

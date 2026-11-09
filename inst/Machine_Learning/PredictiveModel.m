@@ -63,13 +63,16 @@ classdef (Abstract) PredictiveModel
 
     ## Resolve table input into the predictors and the response, keeping
     ## the levels the coding used.  A constructor calls this before it
-    ## validates anything, and a matrix passes through untouched.
-    function [this, X, Y, args] = resolveTable (this, caller, X, Y, args)
+    ## validates anything, and a matrix passes through untouched.  ORDNUM
+    ## makes an ordinal column a numeric predictor, as MATLAB's trees,
+    ## ensembles and generalized additive models take it.
+    function [this, X, Y, args] = resolveTable (this, caller, X, Y, args, ...
+                                                ordnum = false)
 
       if (! istable (X))
         return;
       endif
-      [X, Y, args, lev, errmsg] = tableFrame (X, Y, args);
+      [X, Y, args, lev, errmsg] = tableFrame (X, Y, args, ordnum);
       if (! isempty (errmsg))
         error ("%s: %s", caller, errmsg);
       endif

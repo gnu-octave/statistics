@@ -453,6 +453,8 @@
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
 					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
 					<li><a href="fitSVMPosterior.html" class="text-decoration-none font-monospace"><small>fitSVMPosterior</small></a></li>
+					<li><a href="fscchi2.html" class="text-decoration-none font-monospace"><small>fscchi2</small></a></li>
+					<li><a href="fsrftest.html" class="text-decoration-none font-monospace"><small>fsrftest</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
@@ -1127,18 +1129,22 @@
  smallest and largest get rank 2, etc.  These ranks are used in the
  Ansari-Bradley test.
 </p>
+<p> <var>tieflag</var> and <var>bidir</var> are read as an <code>if</code> reads a condition:
+ each is set when it is not empty and all of its elements are nonzero, so an
+ empty <code>[]</code> keeps the default, as in <code>tiedrank (<var>x</var>, [], 1)</code>.
+</p>
 <p> <code>[<var>r</var>, <var>tieadj</var>] = tiedrank (<var>x</var>, <var>tieflag</var>,
  <var>bidir</var>, <var>tol</var>)</code> treats two values as tied when they lie within a
  tolerance of each other rather than only when they are exactly equal.
  <var>tol</var> is either a scalar or an array the size of <var>x</var> giving each
  element its own tolerance, and two neighbouring values are tied when the gap
  between them does not exceed the <strong>sum</strong> of their two tolerances.  The
- default is <code>0</code>, which is exact comparison.  <code>signrank</code> uses this
- to rank differences that are equal to within the precision of the values
- they came from.
+ default is <code>0</code>, which is exact comparison, and an empty <var>tol</var> takes
+ it.  <code>signrank</code> uses this to rank differences that are equal to within
+ the precision of the values they came from.
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1cd743a/inst/Data_Manipulation/tiedrank.m">tiedrank</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Data_Manipulation/tiedrank.m">tiedrank</a>
 </p>
 </div>
 

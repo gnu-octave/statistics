@@ -778,7 +778,7 @@ Compute statistics of the half-normal distribution.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 8
 hygestat
@@ -787,7 +787,7 @@ hygestat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 922
+# length: 1187
 statistics: [mn, v] = hygestat (m, k, n)
 Compute statistics of the hypergeometric distribution.
 
@@ -796,13 +796,19 @@ mean and variance of the hypergeometric distribution parameters m,
 k, and n.
 
 m is the total size of the population of the hypergeometric
-distribution. The elements of m must be positive natural numbers.
+distribution. The elements of m must be non-negative integers.
 
 k is the number of marked items of the hypergeometric distribution.
 The elements of k must be natural numbers.
 
 n is the size of the drawn sample of the hypergeometric
-distribution. The elements of n must be positive natural numbers.
+distribution. The elements of n must be non-negative integers.
+
+A sample of size 0 contains no marked items, so its mean and variance
+are 0, even for an empty population, where MATLAB returns
+NaN for both. A sample from a population of one always holds the
+same number of marked items, so its variance is 0, where MATLAB
+returns NaN.
 
 The size of mn (mean) and v (variance) is the common size of the
 input arguments. A scalar input functions as a constant matrix of the

@@ -349,6 +349,10 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
     ## least expected cost, the posterior of each class, and the expected
     ## misclassification cost of each.
     ##
+    ## A missing predictor is skipped and the observation classified on the
+    ## rest.  Under the @qcode{'mn'} distribution, which describes the whole
+    ## row at once, an observation missing any count has posterior and cost
+    ## @qcode{NaN} and takes the class of largest prior, whatever the cost.
     ##
     ## The new data may be a table, whose variables are matched to the
     ## predictors the model was fitted on by name and not by position:
@@ -400,6 +404,18 @@ classdef CompactClassificationNaiveBayes < PredictiveModel
 
       cost = score * this.Cost;
       [~, minIdx] = min (cost, [], 2);
+
+      ## The multinomial describes the whole row at once, so a row missing a
+      ## count has no likelihood: its posterior and cost are NaN and it takes
+      ## the class of largest prior, the cost aside, as R2024a and R2026b do
+      if (ischar (this.DistributionNames))
+        miss = any (isnan (XC), 2);
+        if (any (miss))
+          score(miss,:) = NaN;
+          cost(miss,:) = NaN;
+          [~, minIdx(miss)] = max (this.Prior);
+        endif
+      endif
       label = labelsFromIndex (this.ClassNames, minIdx);
 
       score = this.STfun (score);
@@ -1023,3 +1039,15 @@ endclassdef
 %!error <CompactClassificationNaiveBayes.loss: 'Weights' must be a real vector of class single or double.> ...
 %! loss (compact (fitcnb ([1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2])), ...
 %!       [1, 2; 3, 4; 5, 6; 7, 8], [1; 1; 2; 2], 'Weights', int8 ([1; 1; 1; 1]))
+
+## MATLAB parity: under the multinomial a query missing a count has posterior
+## NaN and the class of largest prior, as measured on R2024a
+%!test
+%! L = repmat ({'p'; 'q'; 'q'; 'p'; 'p'; 'q'; 'p'; 'q'}, 3, 1);
+%! C = [mod((1:24)', 4), mod((1:24)', 3), 1 + mod((1:24)', 5)];
+%! Mdl = compact (fitcnb (C, L, 'DistributionNames', 'mn', ...
+%!                         'Prior', [0.7, 0.3]));
+%! [label, score] = predict (Mdl, [1, 2, 3; 2, NaN, 1; NaN, NaN, NaN]);
+%! assert_equal (label, {'p'; 'p'; 'p'});
+%! assert_equal (score(:,1), [0.747490675687019; NaN; NaN], 1e-14);
+

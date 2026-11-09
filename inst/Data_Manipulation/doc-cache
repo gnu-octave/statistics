@@ -165,7 +165,7 @@ dummyvar
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1589
+# length: 1653
 statistics: D = dummyvar (group)
 Create dummy variables.
 
@@ -173,8 +173,9 @@ D = dummyvar (group) returns a matrix D containing
 the dummy variables associated with the grouping variables in group.
 Each row in D corresponds to the same observation across all variables
 in group and each column in D corresponds to a separate dummy
-variable. D is a numeric matrix of double data type containing
-ones and zeros.
+variable. D is a numeric matrix containing ones and zeros, of
+single data type when group is a single array and of
+double data type otherwise.
 
 The grouping variable in group can be specified in one of the following
 options:
@@ -487,7 +488,7 @@ ismissing
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2116
+# length: 2322
 statistics: TF = ismissing (A)
 statistics: TF = ismissing (A, indicator)
 Find missing data in arrays.
@@ -529,6 +530,12 @@ string and char indicators also match
 categorical data in A.
 char and cellstr indicators also match string
 data in A.
+single, integer, and logical indicators also match
+double data in A.
+
+Any other pairing of numeric and logical classes between
+indicator and A is an error, such as an int32 indicator
+with single data in A.
 
 Note: the generic ismissing function from the statistics package only
 accepts indicator argument for numeric, logical, and
@@ -1037,7 +1044,7 @@ Replace selected values by standard missing values.
 
 
 # name: <cell-element>
-# type: sq_string
+# type: string
 # elements: 1
 # length: 8
 tiedrank
@@ -1046,7 +1053,7 @@ tiedrank
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1773
+# length: 1987
 statistics: [r, tieadj] = tiedrank (x)
 statistics: [r, tieadj] = tiedrank (x, tieflag)
 statistics: [r, tieadj] = tiedrank (x, tieflag, bidir)
@@ -1075,15 +1082,19 @@ from each end, so that the smallest and largest values get rank 1, the next
 smallest and largest get rank 2, etc. These ranks are used in the
 Ansari-Bradley test.
 
+tieflag and bidir are read as an if reads a condition:
+each is set when it is not empty and all of its elements are nonzero, so an
+empty [] keeps the default, as in tiedrank (x, [], 1).
+
 [r, tieadj] = tiedrank (x, tieflag,
 bidir, tol) treats two values as tied when they lie within a
 tolerance of each other rather than only when they are exactly equal.
 tol is either a scalar or an array the size of x giving each
 element its own tolerance, and two neighbouring values are tied when the gap
 between them does not exceed the sum of their two tolerances. The
-default is 0, which is exact comparison. signrank uses this
-to rank differences that are equal to within the precision of the values
-they came from.
+default is 0, which is exact comparison, and an empty tol takes
+it. signrank uses this to rank differences that are equal to within
+the precision of the values they came from.
 
 
 # name: <cell-element>

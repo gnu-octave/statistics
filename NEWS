@@ -230,3 +230,146 @@
  ** statset:
     a 'TolFun', 'MaxIter' or 'MaxFunEvals' of 0 is accepted, as in MATLAB;
     a non-integer count raises an error.
+
+ Summary of important user-visible changes for statistics 2.1.2:
+-------------------------------------------------------------------
+
+ Important Notice: a row missing only some predictors is now kept by fitcsvm,
+                   fitcnb, fitcecoc, fitcensemble and fitrensemble, as in
+                   MATLAB, so fits on data with missing values change.
+
+ Backwards incompatible improvements:
+ ====================================
+
+ ** dummyvar:
+    a single grouping variable gives single dummy variables, as in MATLAB
+    (#538).
+
+ ** ismissing:
+    a numeric or logical indicator applies to data of its own class, and a
+    double on either side to every numeric and logical class, as in MATLAB;
+    other pairings raise an error.
+
+ ** nancov:
+    input must be real floating point; integer and logical input raise an
+    error, where integers failed or gave wrong values under 'pairwise'.
+
+ ** nanmedian:
+    the result takes the class of the input, as for median; single input
+    returned double, and integer medians could saturate.
+
+ ** nanvar, nanstd:
+    input must be floating point, as for var and std; integer and logical input
+    raise an error, where integers gave wrong values.
+
+ New functions and methods:
+ ==========================
+
+ ** fscchi2:
+    rank predictors for classification by chi-square tests of independence,
+    from a matrix or a table.  'UseMissing' tests missing values as one more
+    category or bin, as MATLAB documents; MATLAB itself ignores the option.
+
+ ** fsrftest:
+    rank predictors for regression by one-way F-tests, from a matrix or a
+    table.  'UseMissing' tests missing values as one more category or bin, as
+    MATLAB documents; MATLAB itself ignores the option.
+
+ Bug fixes:
+ ==========
+
+ ** Classification and regression models:
+    fitted from a table, an ordinal predictor is numeric in trees, ensembles
+    and generalized additive models, as in MATLAB; empty text and missing
+    strings are missing, not a category; 'Weights' may name a table variable.
+    predict from a table takes a missing value and a level the model was not
+    fitted on as missing, where it refused them.
+
+ ** ClassificationDiscriminant, CompactClassificationDiscriminant:
+    a query with a missing value has NaN scores and costs and takes the class
+    of largest prior, as in MATLAB, where it had zero scores and the first
+    class; margin returned a single NaN for it.  loss, margin and edge of the
+    compact class failed on numeric or logical labels.
+
+ ** ClassificationEnsemble:
+    under 'Subspace', a learner with no score for a query does not vote on it,
+    and each learner fits its rows under the ensemble's weights, as in MATLAB,
+    where a learner that dropped a row kept the ensemble's prior.
+
+ ** ClassificationEnsemble, CompactClassificationEnsemble,
+    ClassificationPartitionedEnsemble:
+    loss, edge, kfoldLoss and kfoldEdge: a row no learner can score for its
+    missing values counts as the class of greatest prior under 'classiferror',
+    'classifcost' and 'mincost' and makes any other loss and the edge NaN, as
+    in MATLAB, where it was left out, so a loss could contradict predict.
+
+ ** fitcdiscr:
+    a row missing every predictor is dropped, as in MATLAB, where it was
+    counted in NumObservations and the empirical prior, which changed the
+    covariance and every posterior; a class left with no rows raises an error.
+
+ ** fitcecoc, fitcensemble, fitrensemble:
+    a row missing some predictors is kept, as in MATLAB, where it was dropped;
+    a row is dropped only when its response or every predictor is missing or
+    its weight is zero.
+
+ ** fitcknn, fitctree, fitrtree:
+    a row missing every predictor, and for trees one of weight zero, was
+    counted in NumObservations, RowsUsed, X and the empirical prior; it is now
+    dropped, as in MATLAB.
+
+ ** fitcnb:
+    a row missing some predictors is kept, each predictor fitted on the rows it
+    is known for, where it was dropped; a row with a missing class is dropped,
+    where it was a class of its own; X and Y hold the rows used, which fixes
+    cross-validation after a row was dropped.  Under 'mn', a row missing some
+    counts counts in the prior only, and a query missing a count has NaN
+    posterior and cost, as in MATLAB.
+
+ ** fitcsvm:
+    a row missing every predictor is dropped and the prior counts every row
+    kept, as in MATLAB, where a fit with partly missing rows gave another
+    model.
+
+ ** hygeinv:
+    P = 0 and P = 1 give the least and greatest possible count, a sample of
+    size 0 gives 0, and scalar input with no marked items no longer fails.
+
+ ** hygepdf, hygecdf:
+    accurate to about 1e-15 as the population grows, where the relative error
+    reached 1e-9 at a million.
+
+ ** hygepdf, hygernd, hygestat:
+    a sample of size 0 gives probability 1 at x = 0, random values 0, and mean
+    and variance 0, as in MATLAB, where it gave NaN.
+
+ ** ismissing:
+    a logical indicator was refused for double data (#537).
+
+ ** mvksdensity:
+    a row with a NaN in X or in the weights is dropped, as in MATLAB, where
+    every result was NaN or wrong; a single observation is valid (#542);
+    weights with no positive value in the rows kept raise an error.
+
+ ** nancov:
+    single input gives a single result under 'pairwise', for empty input and
+    with no complete rows, as in MATLAB (#541).
+
+ ** nanmean:
+    a sparse X with DIM past the last dimension no longer fails.
+
+ ** tiedrank:
+    TIEFLAG and BIDIR are read as a condition is, as in MATLAB, so [] keeps the
+    default (#539); an empty TOL takes the default.
+
+ ** trimmean:
+    an empty X with DIM gives the right size and checks FLAG and DIM, and a
+    VECDIM past the last dimension returns X (#540); integer, logical and char
+    X is computed and returned in double, where 'weighted' rounded to the
+    integer class, as MATLAB does.
+
+ Improvements:
+ =============
+
+ ** nansum:
+    takes a char array, as sum does.

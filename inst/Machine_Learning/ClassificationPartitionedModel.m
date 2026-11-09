@@ -725,17 +725,11 @@ classdef ClassificationPartitionedModel
           ## on.  Measured on R2024a, where Trained{k} is a
           ## CompactClassificationNaiveBayes.
           ## A model fitted with weights passes each fold the weights of its
-          ## rows: W on the rows the model used and zero on those it left out,
-          ## which fitcnb leaves out in turn.  Within a class W is in
-          ## proportion to the weights given, which is all a fold reads.
+          ## rows, X holding only the rows the model used.  Within a class W
+          ## is in proportion to the weights given, which is all a fold reads.
           wAll = [];
           if (! isempty (Mdl.RawWeights))
-            wAll = zeros (rows (this.X), 1);
-            used = Mdl.RowsUsed;
-            if (isempty (used))
-              used = true (rows (this.X), 1);
-            endif
-            wAll(used) = Mdl.W;
+            wAll = double (Mdl.W(:));
           endif
           for k = 1:this.KFold
             idx = training (this.Partition, k);

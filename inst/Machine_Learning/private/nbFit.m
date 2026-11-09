@@ -64,9 +64,18 @@ function [DP, K, S, W, CL] = nbFit (X, gY, k, D, w, Kernel, Support, ...
       if (isempty (xk))
         continue;
       endif
+      ## The multinomial is fitted on the rows whose every count is known, as
+      ## R2026b fits it; a row missing a count still counts in the prior
+      wk = w(gY == i);
+      full = ! any (isnan (xk), 2);
+      if (! any (full))
+        error ("%s: class %s has no observation with every count known.", ...
+               classname, nbLabelName (CN, i));
+      endif
+      xk = xk(full,:);
+      wk = wk(full);
       ## Weighted counts, the weights scaled to the class's size so that the
       ## smoothing weighs as it does without them, as R2024a counts
-      wk = w(gY == i);
       wk = wk(:) / sum (wk) * rows (xk);
       cnt = sum (wk .* xk, 1);
       tot = sum (cnt) + p;
@@ -101,6 +110,17 @@ function [DP, K, S, W, CL] = nbFit (X, gY, k, D, w, Kernel, Support, ...
       if (isempty (xij))
         continue;
       endif
+
+      ## Each predictor is fitted on the observations it is known for, so a
+      ## row missing one predictor still informs the others.  A class in
+      ## which a predictor is never known has nothing to fit it on.
+      obs = ! isnan (xij);
+      if (! any (obs))
+        error ("%s: predictor %s has no known value in class %s.", ...
+               classname, PN{j}, nbLabelName (CN, i));
+      endif
+      xij = xij(obs);
+      wij = wij(obs);
 
       switch (D{j})
 

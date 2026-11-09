@@ -453,6 +453,8 @@
 					<li><a href="fitrsvm.html" class="text-decoration-none font-monospace"><small>fitrsvm</small></a></li>
 					<li><a href="fitrtree.html" class="text-decoration-none font-monospace"><small>fitrtree</small></a></li>
 					<li><a href="fitSVMPosterior.html" class="text-decoration-none font-monospace"><small>fitSVMPosterior</small></a></li>
+					<li><a href="fscchi2.html" class="text-decoration-none font-monospace"><small>fscchi2</small></a></li>
+					<li><a href="fsrftest.html" class="text-decoration-none font-monospace"><small>fsrftest</small></a></li>
 					<li><a href="gamboostinter.html" class="text-decoration-none font-monospace"><small>gamboostinter</small></a></li>
 					<li><a href="gamboostpairs.html" class="text-decoration-none font-monospace"><small>gamboostpairs</small></a></li>
 					<li><a href="gamboostpredict.html" class="text-decoration-none font-monospace"><small>gamboostpredict</small></a></li>
@@ -1126,6 +1128,9 @@
  computed using all rows in which both column <var>i</var> and column <var>j</var> are
  non-<code>NaN</code>; the resulting matrix may fail to be positive semidefinite.
 </p>
+<p> <var>x</var> and <var>y</var> must be real floating point, although MATLAB accepts
+ logical too.
+</p>
 <p> <strong>See also: </strong>
 cov, 
   <a href="nanvar.html">nanvar</a>, 
@@ -1133,7 +1138,7 @@ cov,
   <a href="nanmean.html">nanmean</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1cd743a/inst/Descriptive_Statistics/nancov.m">nancov</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Descriptive_Statistics/nancov.m">nancov</a>
 </p>
 </div>
         <div class="card rounded my-4">

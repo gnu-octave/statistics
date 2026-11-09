@@ -48,15 +48,15 @@
 ## @item If @var{x} is a multidimensional array, then @code{geomean(@var{x})}
 ## operates along the first nonsingleton dimension of @var{x}.
 ##
-## @item @var{x} must not contain any negative or complex values.
+## @item @var{x} must be of class double or single and must not contain any
+## negative or complex values.
 ## @end itemize
 ##
 ## @code{geomean(@var{x}, "all")} returns the geometric mean of all the elements
-## in @var{x}.  If @var{x} contains any 0, then the returned value is 0.
+## in @var{x}.
 ##
 ## @code{geomean(@var{x}, @var{dim})} returns the geometric mean along the
-## operating dimension @var{dim} of @var{x}.  Calculating the harmonic mean of
-## any subarray containing any 0 will return 0.
+## operating dimension @var{dim} of @var{x}.
 ##
 ## @code{geomean(@var{x}, @var{vecdim})} returns the geometric mean over the
 ## dimensions specified in the vector @var{vecdim}.  For example, if @var{x} is
@@ -82,8 +82,8 @@ function m = geomean (x, varargin)
     print_usage ();
   endif
 
-  if (! isnumeric (x) || ! isreal (x) || ! all (x(! isnan (x))(:) >= 0))
-    error ("geomean: X must contain real nonnegative values.");
+  if (! isfloat (x) || ! isreal (x) || ! all (x(! isnan (x))(:) >= 0))
+    error ("geomean: X must contain real nonnegative double or single values.");
   endif
 
   ## Set initial conditions
@@ -131,11 +131,6 @@ function m = geomean (x, varargin)
         x = x(! isnan (x));
       endif
 
-      if (any (x == 0))
-        m = 0;
-        return;
-      endif
-
       m = exp (sum (log (x), 1) ./ length (x));
 
     elseif (ndx == 2 && isempty (x) && szx == [0,0])
@@ -152,11 +147,14 @@ function m = geomean (x, varargin)
       endif
 
       m = exp (sum (log (x), dim) ./ n);
-      m(m == -Inf) = 0; # handle zeros in X
 
     endif
 
   else
+
+    if (all_flag)
+      error ("geomean: dimension and 'all' flag are mutually exclusive.");
+    endif
 
     ## Two numeric input arguments, dimensions given.  Note scalar is vector!
     vecdim = varargin{1};
@@ -177,7 +175,6 @@ function m = geomean (x, varargin)
         endif
 
         m = exp (sum (log (x), vecdim) ./ n);
-        m(m == -Inf) = 0; # handle zeros in X
 
       endif
 
@@ -208,13 +205,7 @@ function m = geomean (x, varargin)
             x = x(! isnan (x));
           endif
 
-          if (any (x == 0))
-            m = 0;
-            return;
-          endif
-
           m = exp (sum (log (x), 1) ./ length (x));
-          m(m == -Inf) = 0; # handle zeros in X
 
         else
           ## Permute to bring vecdims to front
@@ -238,7 +229,6 @@ function m = geomean (x, varargin)
           endif
 
           m = exp (sum (log (x), 1) ./ n);
-          m(m == -Inf) = 0; # handle zeros in X
 
           ## Inverse permute back to correct dimensions
           m = ipermute (m, perm);
@@ -293,9 +283,27 @@ endfunction
 %! m(2,3) = 14.3292729579901;
 %! assert_equal (geomean (x, [3 2], 'omitnan'), m, 4e-13);
 
+## Test that zeros do not mask NaN, Inf or the class of X
+%!test
+%! assert_equal (geomean ([0 NaN 4], 'all'), NaN);
+%! assert_equal (geomean ([0 Inf NaN 4], 'all', 'omitnan'), NaN);
+%! assert_equal (geomean (single ([0 2 4]), 'all'), single (0));
+%! assert_equal (geomean ([0 NaN; 4 9], [1 2 3]), NaN);
+%! assert_equal (geomean (single ([0 2; 4 9]), [1 2]), single (0));
+
 ## Test errors
-%!error <geomean: X must contain real nonnegative values.> geomean ('char')
-%!error <geomean: X must contain real nonnegative values.> geomean ([1 -1 3])
+%!error <geomean: X must contain real nonnegative double or single values.> ...
+%! geomean ('char')
+%!error <geomean: X must contain real nonnegative double or single values.> ...
+%! geomean ([1 -1 3])
+%!error <geomean: X must contain real nonnegative double or single values.> ...
+%! geomean (int8 ([1 2 3]))
+%!error <geomean: X must contain real nonnegative double or single values.> ...
+%! geomean ([true false])
+%!error <geomean: dimension and 'all' flag are mutually exclusive.> ...
+%! geomean ([1, 2; 3, 4], 1, 'all')
+%!error <geomean: dimension and 'all' flag are mutually exclusive.> ...
+%! geomean ([1, 2; 3, 4], [1, 2], 'all')
 %!error <geomean: DIM must be a positive integer scalar or vector.> ...
 %! geomean (repmat ([1:20;6:25], [5 2 6 3 5]), -1)
 %!error <geomean: DIM must be a positive integer scalar or vector.> ...

@@ -573,7 +573,7 @@ geomean
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1775
+# length: 1684
 statistics: m = geomean (x)
 statistics: m = geomean (x, "all")
 statistics: m = geomean (x, dim)
@@ -590,14 +590,14 @@ If x is a matrix, then geomean(x) returns a row
 vector with the geometric mean of each columns in x.
 If x is a multidimensional array, then geomean(x)
 operates along the first nonsingleton dimension of x.
-x must not contain any negative or complex values.
+x must be of class double or single and must not contain any
+negative or complex values.
 
 geomean(x, "all") returns the geometric mean of all the elements
-in x. If x contains any 0, then the returned value is 0.
+in x.
 
 geomean(x, dim) returns the geometric mean along the
-operating dimension dim of x. Calculating the harmonic mean of
-any subarray containing any 0 will return 0.
+operating dimension dim of x.
 
 geomean(x, vecdim) returns the geometric mean over the
 dimensions specified in the vector vecdim. For example, if x is
@@ -800,7 +800,7 @@ harmmean
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1723
+# length: 1761
 statistics: m = harmmean (x)
 statistics: m = harmmean (x, "all")
 statistics: m = harmmean (x, dim)
@@ -816,7 +816,8 @@ If x is a matrix, then harmmean(x) returns a row
 vector with the harmonic mean of each columns in x.
 If x is a multidimensional array, then harmmean(x)
 operates along the first nonsingleton dimension of x.
-x must not contain any negative or complex values.
+x must be of class double or single and must not contain any
+negative or complex values.
 
 harmmean(x, "all") returns the harmonic mean of all the elements
 in x. If x contains any 0, then the returned value is 0.
@@ -1103,7 +1104,7 @@ mvksdensity
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1178
+# length: 1502
 statistics: f = mvksdensity (x, pts, Name, Value)
 Multivariate kernel smoothing density estimate.
 
@@ -1112,7 +1113,10 @@ density estimate of the sample in the NxD matrix x, evaluated at
 the points in the MxD matrix pts. Each row of x is a
 single D-dimensional observation, and each row of pts is a point
 at which to evaluate the estimate. The result f is an Mx1
-vector, with one density value per row of pts.
+vector, with one density value per row of pts. Rows of x holding
+a NaN, and rows whose weight is NaN, are removed first, so
+the default bandwidth, the weights and the sample size come from the
+remaining rows. A single observation is valid.
 
 The density estimate uses a product kernel: the multivariate kernel is the
 product of the univariate kernels applied to each dimension, each with its
@@ -1124,14 +1128,16 @@ Name Value
 'Bandwidth' The kernel bandwidth, either a positive scalar
 applied to every dimension or a 1xD vector of positive values, one per
 dimension. The default is a diagonal normal-reference (Silverman) rule
-computed from x.
+computed from x, for any number of columns, although MATLAB requires a
+bandwidth from three columns up.
 'Kernel' The smoothing kernel applied in each dimension:
 'normal' (default), 'box', 'triangle', or
 'epanechnikov'.
 'Function' The function to estimate: 'pdf'
 (default) or 'cdf'.
 'Weights' A vector of non-negative weights, one for each
-row of x. The default weights are all equal.
+row of x, with a positive weight among the rows kept. The default
+weights are all equal.
 
 See also:
 ksdensity
@@ -1155,7 +1161,7 @@ nancov
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1193
+# length: 1268
 statistics: c = nancov (x)
 statistics: c = nancov (x, y)
 statistics: c = nancov (..., normalization)
@@ -1182,6 +1188,9 @@ data that contains a NaN value is removed before the covariance is
 computed. With "pairwise", each element c(i,j) is
 computed using all rows in which both column i and column j are
 non-NaN; the resulting matrix may fail to be positive semidefinite.
+
+x and y must be real floating point, although MATLAB accepts
+logical too.
 
 See also:
 cov,
@@ -1340,7 +1349,7 @@ nanmedian
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1193
+# length: 1264
 statistics: m = nanmedian (x)
 statistics: m = nanmedian (x, 'all')
 statistics: m = nanmedian (x, dim)
@@ -1352,7 +1361,8 @@ removing NaN values. If x is a vector, a scalar value is
 returned. If x is a matrix, a row vector of column medians is
 returned. If x is a multidimensional array, nanmedian operates
 along the first nonsingleton dimension. If all values along a dimension are
-NaN, the median is returned as NaN.
+NaN, the median is returned as NaN. As in median,
+m takes the class of x, so an integer median is rounded.
 
 m = nanmedian (x, 'all') returns the median of all
 elements of x, after removing NaN values. It is the equivalent
@@ -1459,7 +1469,7 @@ nanstd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1638
+# length: 1713
 statistics: s = nanstd (x)
 statistics: s = nanstd (x, w)
 statistics: s = nanstd (x, w, 'all')
@@ -1473,7 +1483,9 @@ returned. If x is a matrix, a row vector of column standard deviations
 is returned. If x is a multidimensional array, nanstd operates
 along the first nonsingleton dimension. If a dimension contains fewer than
 two non-NaN values, the standard deviation is returned as 0 for a
-single value and as NaN when all values are NaN.
+single value and as NaN when all values are NaN. x
+must be floating point, as for std, although MATLAB accepts logical
+too.
 
 s = nanstd (x, w) specifies the normalization. When
 w is 0 (default), the standard deviation is normalized by N-1,
@@ -1580,7 +1592,7 @@ nanvar
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1558
+# length: 1633
 statistics: v = nanvar (x)
 statistics: v = nanvar (x, w)
 statistics: v = nanvar (x, w, 'all')
@@ -1594,7 +1606,8 @@ returned. If x is a matrix, a row vector of column variances is
 returned. If x is a multidimensional array, nanvar operates
 along the first nonsingleton dimension. If a dimension contains fewer than
 two non-NaN values, the variance is returned as 0 for a single value
-and as NaN when all values are NaN.
+and as NaN when all values are NaN. x must be floating
+point, as for var, although MATLAB accepts logical too.
 
 v = nanvar (x, w) specifies the normalization. When
 w is 0 (default), the variance is normalized by N-1, where
@@ -1856,7 +1869,7 @@ trimmean
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2406
+# length: 2443
 statistics: m = trimmean (x, p)
 statistics: m = trimmean (x, p, flag)
 statistics: m = trimmean (..., 'all')
@@ -1882,7 +1895,7 @@ To specify the operating dimension(s) when x is a matrix or a
 multidimensional array, use the dim or vecdim input argument.
 
 trimmean treats NaN values in x as missing values and
-removes them.
+removes them. x must be of class double or single.
 
 m = trimmean (x, p, flag) specifies how to
 trim when k, i.e. half the number of outliers, is not an integer.
