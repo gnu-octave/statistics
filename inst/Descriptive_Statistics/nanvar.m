@@ -139,7 +139,7 @@ function v = nanvar (x, w, dim)
     x0 = x;
     x0(! mask) = 0;
     mu = sum (we .* x0, dim) ./ sumw;
-    t = (x0 - mu) .^ 2;
+    t = abs (x0 - mu) .^ 2;
     v = sum (we .* t, dim) ./ sumw;
   else
     mask = ! isnan (x);
@@ -147,7 +147,7 @@ function v = nanvar (x, w, dim)
     x0 = x;
     x0(! mask) = 0;
     xm = sum (x0, dimarg) ./ n;
-    d2 = (x - xm) .^ 2;
+    d2 = abs (x - xm) .^ 2;
     d2(! mask) = 0;
     ss = sum (d2, dimarg);
     if (w == 1)
@@ -200,6 +200,14 @@ endfunction
 %!assert_equal (nanvar ([-Inf Inf]), NaN)
 %!assert_equal (nanvar ([Inf NaN]), NaN)
 %!assert_equal (nanvar ([1 Inf 3], 1), NaN)
+## Test complex input
+%!assert_equal (nanvar ([1+1i, 2-1i]), 2.5, 1e-14)
+%!assert_equal (nanvar ([1+1i, NaN, 2-1i]), 2.5, 1e-14)
+%!assert_equal (nanvar ([1+1i, 2-1i], 1), 1.25, 1e-14)
+%!assert_equal (nanvar ([1+1i, 2-1i], [1, 3]), 0.9375, 1e-14)
+%!assert_equal (nanvar ([1+1i, NaN, 2-1i], [1, 2, 3]), 0.9375, 1e-14)
+%!assert_equal (nanvar ([complex(Inf, 1), 1]), NaN)
+%!assert_equal (nanvar (single ([1+1i, 2-1i])), single (2.5))
 
 ## Test input validation
 %!error <Invalid call to nanvar> nanvar ()

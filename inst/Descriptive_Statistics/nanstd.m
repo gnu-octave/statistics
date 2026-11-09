@@ -30,9 +30,9 @@
 ## is returned.  If @var{x} is a multidimensional array, @code{nanstd} operates
 ## along the first nonsingleton dimension.  If a dimension contains fewer than
 ## two non-@qcode{NaN} values, the standard deviation is returned as 0 for a
-## single value and as @qcode{NaN} when all values are @qcode{NaN}.  @var{x}
-## must be floating point, as for @code{std}, although MATLAB accepts logical
-## too.
+## single finite value, and as @qcode{NaN} for a single infinite value or when
+## all values are @qcode{NaN}.  @var{x} must be floating point, as for
+## @code{std}, although MATLAB accepts logical too.
 ##
 ## @code{@var{s} = nanstd (@var{x}, @var{w})} specifies the normalization.  When
 ## @var{w} is 0 (default), the standard deviation is normalized by @math{N-1},

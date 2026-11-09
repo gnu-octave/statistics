@@ -1469,7 +1469,7 @@ nanstd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1713
+# length: 1752
 statistics: s = nanstd (x)
 statistics: s = nanstd (x, w)
 statistics: s = nanstd (x, w, 'all')
@@ -1483,9 +1483,9 @@ returned. If x is a matrix, a row vector of column standard deviations
 is returned. If x is a multidimensional array, nanstd operates
 along the first nonsingleton dimension. If a dimension contains fewer than
 two non-NaN values, the standard deviation is returned as 0 for a
-single value and as NaN when all values are NaN. x
-must be floating point, as for std, although MATLAB accepts logical
-too.
+single finite value, and as NaN for a single infinite value or when
+all values are NaN. x must be floating point, as for
+std, although MATLAB accepts logical too.
 
 s = nanstd (x, w) specifies the normalization. When
 w is 0 (default), the standard deviation is normalized by N-1,
@@ -1592,7 +1592,7 @@ nanvar
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1633
+# length: 1672
 statistics: v = nanvar (x)
 statistics: v = nanvar (x, w)
 statistics: v = nanvar (x, w, 'all')
@@ -1605,9 +1605,10 @@ removing NaN values. If x is a vector, a scalar value is
 returned. If x is a matrix, a row vector of column variances is
 returned. If x is a multidimensional array, nanvar operates
 along the first nonsingleton dimension. If a dimension contains fewer than
-two non-NaN values, the variance is returned as 0 for a single value
-and as NaN when all values are NaN. x must be floating
-point, as for var, although MATLAB accepts logical too.
+two non-NaN values, the variance is returned as 0 for a single
+finite value, and as NaN for a single infinite value or when all
+values are NaN. x must be floating point, as for var,
+although MATLAB accepts logical too.
 
 v = nanvar (x, w) specifies the normalization. When
 w is 0 (default), the variance is normalized by N-1, where
