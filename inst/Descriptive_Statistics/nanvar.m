@@ -30,9 +30,9 @@
 ## returned.  If @var{x} is a multidimensional array, @code{nanvar} operates
 ## along the first nonsingleton dimension.  If a dimension contains fewer than
 ## two non-@qcode{NaN} values, the variance is returned as 0 for a single
-## finite value and as @qcode{NaN} when all values are @qcode{NaN}.
-## @var{x} must be floating point, as for @code{var}, although MATLAB accepts
-## logical too.
+## finite value, and as @qcode{NaN} for a single infinite value or when all
+## values are @qcode{NaN}.  @var{x} must be floating point, as for @code{var},
+## although MATLAB accepts logical too.
 ##
 ## @code{@var{v} = nanvar (@var{x}, @var{w})} specifies the normalization.  When
 ## @var{w} is 0 (default), the variance is normalized by @math{N-1}, where
@@ -196,7 +196,7 @@ endfunction
 %! x([5:6, 20]) = NaN;
 %! assert_equal (nanvar (x, 0, 'all'), nanvar (x(! isnan (x))(:)), 1e-12)
 ## Test that Inf values give NaN
-%!assert_equal (nanvar ([1 Inf 3; 2 5 NaN; 4 6 8]), [2.3333, NaN, 12.5], 1e-4)
+%!assert_equal (nanvar ([1 Inf 3; 2 5 NaN; 4 6 8]), [7/3, NaN, 12.5], 1e-14)
 %!assert_equal (nanvar ([-Inf Inf]), NaN)
 %!assert_equal (nanvar ([Inf NaN]), NaN)
 %!assert_equal (nanvar ([1 Inf 3], 1), NaN)
