@@ -194,8 +194,9 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
       case 'mctol'
         i = i + 1;
         MCTol = varargin{i};
-        ## Check Monte Carlo tolerance is a numeric scalar greater than 0
-        if (! isempty (MCTol) && (! isscalar (MCTol) || MCTol <= 0))
+        ## Check Monte Carlo tolerance is a real scalar greater than 0
+        if (! isempty (MCTol) && (! isscalar (MCTol) || ! isreal (MCTol) || ...
+                                  isnan (MCTol) || MCTol <= 0))
           error ("adtest: invalid Monte Carlo Tolerance.");
         endif
       case 'asymptotic'
@@ -323,7 +324,7 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
 
     ## Compute p-value and critical values without Monte Carlo simulation
     else
-        [CV, pVal] = adtestMC (ADStat, n, alpha, distribution, mctol);
+      [CV, pVal] = adtestMC (ADStat, n, alpha, distribution, MCTol);
     endif
 
     ## Calculate H
@@ -390,7 +391,7 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
 
     ## Compute p-value and critical values with Monte Carlo simulation
     else
-      [CV, pVal] = adtestMC (ADStat, n, alpha, 'unif', mctol);
+      [CV, pVal] = adtestMC (ADStat, n, alpha, 'unif', MCTol);
     endif
 
     ## Calculate H
@@ -735,6 +736,8 @@ endfunction
 %! adtest (rand (20,1), 'Name', 'norm');
 %!error<adtest: invalid Name argument.> ...
 %! adtest (rand (20,1), 'Name', {'norm', 75, 10});
+%!error<adtest: invalid Monte Carlo Tolerance.> ...
+%! adtest (rand (20,1), 'MCTol', 0.01+1i);
 %!error<adtest: asymptotic option is not valid for the composite> ...
 %! adtest (rand (20,1), 'Distribution', 'norm', 'Asymptotic', true);
 %!error<adtest: asymptotic option is not valid for the composite> ...
@@ -783,3 +786,32 @@ endfunction
 %! [h, pval, adstat, cv] = adtest (x, 'Distribution', {'norm', 75, 10});
 %! assert_equal (h, false);
 %! assert_equal (pval, 0.4687, 1e-4);
+%!test
+%! load examgrades
+%! x = grades(:,1);
+%! [h, pval, adstat, cv] = adtest (x, 'MCTol', 0.01);
+%! assert_equal (h, false);
+%! assert_equal (adstat, 0.5194, 1e-4);
+%! assert (pval, 0.1854, 0.05);
+%! assert (cv, 0.7470, 0.1);
+%!test
+%! load examgrades
+%! x = grades(:,1);
+%! [h, pval, adstat] = adtest (x, 'Distribution', 'ev', 'MCTol', 0.01);
+%! assert_equal (adstat, 0.6926, 1e-4);
+%! assert (pval, 0.0714, 0.05);
+%!test
+%! load examgrades
+%! x = grades(:,1);
+%! [h, pval, adstat] = adtest (x, 'Distribution', 'exp', 'MCTol', 0.01);
+%! assert_equal (h, true);
+%! assert_equal (adstat, 43.1937, 1e-4);
+%! assert (pval < 0.01);
+%!test
+%! load examgrades
+%! x = grades(:,1);
+%! [h, pval, adstat] = adtest (x, 'Distribution', {'norm', 75, 10}, ...
+%!                             'MCTol', 0.01);
+%! assert_equal (h, false);
+%! assert_equal (adstat, 0.8170, 1e-4);
+%! assert (pval, 0.4687, 0.05);
