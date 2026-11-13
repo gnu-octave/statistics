@@ -1102,7 +1102,7 @@
             <div class="card-body">
 <p class="h5 fs"><code>statistics: <var>h</var> = <b>chi2gof</b> (<var>x</var>)</code></p>
 <p class="h5 fs"><code>statistics: [<var>h</var>, <var>p</var>] = <b>chi2gof</b> (<var>x</var>)</code></p>
-<p class="h5 fs"><code>statistics: [<var>p</var>, <var>h</var>, <var>stats</var>] = <b>chi2gof</b> (<var>x</var>)</code></p>
+<p class="h5 fs"><code>statistics: [<var>h</var>, <var>p</var>, <var>stats</var>] = <b>chi2gof</b> (<var>x</var>)</code></p>
 <p class="h5 fs fs-last"><code>statistics: [&hellip;] = <b>chi2gof</b> (<var>x</var>, <var>Name</var>, <var>Value</var>, &hellip;)</code></p>
 <p> Chi-square goodness-of-fit test.
 </p>
@@ -1120,7 +1120,7 @@
  neighboring bins until the count in each extreme bin is at least 5.  If
  bins remain in the interior with counts less than 5, <code>chi2gof</code> displays
  a warning.  In that case, you should use fewer bins, or provide bin centers
- or binedges, to increase the expected counts in all bins.
+ or edges, to increase the expected counts in all bins.
 </p>
 <p> <code><var>h</var> = chi2gof (<var>x</var>)</code> performs a chi-square goodness-of-fit test
  that the data in the vector X are a random sample from a normal distribution
@@ -1145,7 +1145,7 @@
 <table class="table table-striped table-bordered table-sm">
 <tr><td width="30%">&quot;chi2stat&quot;</td><td width="65%">Chi-square statistic</td></tr>
 <tr><td width="30%">&quot;df&quot;</td><td width="65%">Degrees of freedom</td></tr>
-<tr><td width="30%">&quot;binedges&quot;</td><td width="65%">Vector of bin binedges after pooling</td></tr>
+<tr><td width="30%">&quot;edges&quot;</td><td width="65%">Vector of bin edges after pooling</td></tr>
 <tr><td width="30%">&quot;O&quot;</td><td width="65%">Observed count in each bin</td></tr>
 <tr><td width="30%">&quot;E&quot;</td><td width="65%">Expected count in each bin</td></tr>
 </table>
@@ -1153,13 +1153,14 @@
 
 <p> <code>[&hellip;] = chi2gof (<var>x</var>, <var>Name</var>, <var>Value</var>, &hellip;)</code>
  specifies optional Name/Value pair arguments chosen from the following list.
+ Names are not case sensitive.
 </p>
 <div class="table-responsive">
 <table class="table table-striped table-bordered table-sm">
 <thead class="table-primary"><tr><th width="20%">Name</th><th width="75%">Value</th></tr></thead>
 <tr><td width="20%"><code>'nbins'</code></td><td width="75%">The number of bins to use.  Default is 10.</td></tr>
-<tr><td width="20%"><code>'binctrs'</code></td><td width="75%">A vector of bin centers.</td></tr>
-<tr><td width="20%"><code>'binedges'</code></td><td width="75%">A vector of bin binedges.</td></tr>
+<tr><td width="20%"><code>'ctrs'</code></td><td width="75%">A vector of bin centers.</td></tr>
+<tr><td width="20%"><code>'edges'</code></td><td width="75%">A vector of bin edges.</td></tr>
 <tr><td width="20%"><code>'cdf'</code></td><td width="75%">A fully specified cumulative distribution
  function or a function handle provided in a cell array whose first element is
  a function handle, and all later elements are its parameter values.  The
@@ -1190,7 +1191,7 @@
  degrees of freedom for the test is correct.
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Hypothesis_Testing/chi2gof.m">chi2gof</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/30b7657/inst/Hypothesis_Testing/chi2gof.m">chi2gof</a>
 </p>
 </div>
         <div class="card rounded my-4">
@@ -1295,22 +1296,22 @@ stats =
  n = length (x);
  binedges = linspace (0, 1, 11);
  expectedCounts = n * diff (binedges);
- [h, p, stats] = chi2gof (x, 'binedges', binedges, 'expected', expectedCounts)</pre>
+ [h, p, stats] = chi2gof (x, 'edges', binedges, 'expected', expectedCounts)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">h = 0
-p = 0.051942
+p = 0.085587
 stats =
 
   scalar structure containing the fields:
 
-    chi2stat = 16.800
+    chi2stat = 15.200
     df = 9
     edges =
 
-       6.4988e-03   1.0560e-01   2.0471e-01   3.0381e-01   4.0291e-01   5.0202e-01   6.0112e-01   7.0023e-01   7.9933e-01   8.9843e-01   9.9754e-01
+            0   0.1000   0.2000   0.3000   0.4000   0.5000   0.6000   0.7000   0.8000   0.9000   1.0000
 
     O =
 
-       14    5   17   11    3   11   13    6   11    9
+       13    6   17   11    3   11   13    6   11    9
 
     E =
 
@@ -1340,7 +1341,7 @@ stats =
  n = sum (obsCounts);
  lambdaHat = sum (bins.*obsCounts) / n;
  expCounts = n * poisspdf (bins,lambdaHat);
- [h, p, stats] = chi2gof (bins, 'binctrs', bins, 'frequency', obsCounts, ...
+ [h, p, stats] = chi2gof (bins, 'ctrs', bins, 'frequency', obsCounts, ...
                           'expected', expCounts, 'nparams',1)</pre>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">h = 0
 p = 0.4654
@@ -1352,7 +1353,7 @@ stats =
     df = 3
     edges =
 
-       4.9407e-324    8.3333e-01    1.6667e+00    2.5000e+00    3.3333e+00    5.0000e+00
+      -0.5000   0.5000   1.5000   2.5000   3.5000   5.5000
 
     O =
 

@@ -1112,7 +1112,7 @@
   <a href="crossval.html">crossval</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Model_Evaluation/cvpartition.m">cvpartition</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/30b7657/inst/Model_Evaluation/cvpartition.m">cvpartition</a>
 </p>
 </div>
         <p class="lead my-3">The <code>cvpartition</code> class contains the following properties:</p>
@@ -1386,9 +1386,12 @@ Repartition data for cross-validation.
 <p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'KFold'</code>)</code></p>
 <p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'KFold'</code>, <var>k</var>)</code></p>
 <p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'KFold'</code>, <var>k</var>, <code>'Stratify'</code>, <var>opt</var>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'KFold'</code>, <var>k</var>, <code>'GroupingVariables'</code>, <var>grpvars</var>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'KFold'</code>, <var>k</var>, <code>'Stratify'</code>, <var>opt</var>, <code>'GroupingVariables'</code>, <var>grpvars</var>)</code></p>
 <p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'Holdout'</code>)</code></p>
 <p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'Holdout'</code>, <var>p</var>)</code></p>
 <p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'Holdout'</code>, <var>p</var>, <code>'Stratify'</code>, <var>opt</var>)</code></p>
+<p class="h5 fs"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'Holdout'</code>, <var>p</var>, <code>'Stratify'</code>, false, <code>'GroupingVariables'</code>, <var>grpvars</var>)</code></p>
 <p class="h5 fs fs-last"><code>cvpartition: <var>C</var> = <b>cvpartition</b> (<code>'CustomPartition'</code>, <var>testSets</var>)</code></p>
 <p> </p>
 <p> <code><var>C</var> = cvpartition (<var>n</var>, <code>'KFold'</code>)</code> creates a
@@ -1418,18 +1421,24 @@ Repartition data for cross-validation.
  variables specified in <var>grpvars</var> can be one of the following:
 </p>
 <ul>
-<li> A numeric vector, logical vector, categorical vector, character
- array, string array, or cell array of character vectors containing one
- grouping variable.
+<li> A numeric vector, logical vector, categorical vector, datetime or
+ duration vector, character array, string array, or cell array of
+ character vectors containing one grouping variable.
 </li><li> A numeric matrix or cell array containing two or more grouping
  variables. Each column in the matrix or array must correspond to one
  grouping variable.
 </li></ul>
 
-<p> <code>'GroupingVariables'</code> is an Octave extension: MATLAB&rsquo;s
- <code>cvpartition</code> has no such option.  It follows the group-aware
- splitters of scikit-learn, and each partition type takes the analogue of
- its ungrouped self:
+<p> Observations with a missing value in any grouping variable are left out
+ of every training and test set, with a warning, and still counted in
+ <code>NumObservations</code>.
+</p>
+<p> MATLAB supports <code>'GroupingVariables'</code> for <code>'KFold'</code> only,
+ since R2025a.  Grouping a <code>'Holdout'</code> or <code>'Leaveout'</code>
+ partition, combining grouping with <code>'Stratify'</code>, and a cell array
+ whose columns mix text and numbers are Octave extensions, which MATLAB
+ refuses.  They follow the group-aware splitters of scikit-learn, and each
+ partition type takes the analogue of its ungrouped self:
 </p>
 <div class="table-responsive">
 <table class="table table-striped table-bordered table-sm">
@@ -1446,15 +1455,21 @@ Repartition data for cross-validation.
 </div>
 
 <p> Given a stratification variable, <code>'GroupingVariables'</code> may
- follow <code>'Stratify'</code>, as in <code>cvpartition (<var>y</var>,
- <code>'KFold'</code>, <var>k</var>, <code>'Stratify'</code>, true,
- <code>'GroupingVariables'</code>, <var>grpvars</var>)</code>.  Each group is then
- kept whole while the classes of <var>y</var> are spread as evenly over
- the folds as the groups allow, which is scikit-learn&rsquo;s
- <code>StratifiedGroupKFold</code>.  The two demands conflict, since a
- group carries whatever class mix it has, so the balance is
- approximate: groups are placed largest first, each into the fold
- whose class counts it disturbs least.
+ follow <code>'Stratify'</code> or come in its place, as in
+ <code>cvpartition (<var>y</var>, <code>'KFold'</code>, <var>k</var>,
+ <code>'GroupingVariables'</code>, <var>grpvars</var>)</code>.  <code>'Stratify'</code> is then
+ true unless set to false, as it is without grouping, and each group is
+ kept whole while the classes of <var>y</var> are spread as evenly over the
+ folds as the groups allow, which is scikit-learn&rsquo;s
+ <code>StratifiedGroupKFold</code>.  The two demands conflict, since a group
+ carries whatever class mix it has, so the balance is approximate: groups
+ are placed largest first, each into the fold whose class counts it
+ disturbs least.  Such a partition exists for <code>'KFold'</code> only.  With
+ <code>'Stratify'</code> set to false the classes play no part, and the
+ partition, <code>'KFold'</code> or <code>'Holdout'</code>, is the one
+ <code>cvpartition (<var>n</var>, &hellip;, <code>'GroupingVariables'</code>,
+ <var>grpvars</var>)</code> makes.  Either way an observation missing from <var>y</var>
+ or from <var>grpvars</var> is left out.
 </p>
 <p> In every case an observation never appears in both the training and the
  test set as one of its group fellows, which is what makes grouping worth
@@ -1663,7 +1678,10 @@ Summarize stratified or grouped cross-validation partitions.
 <li> <var>tbl</var>
  A <code>table</code> object containing the summary statistics.  The table
  contains one row for every unique label/group in every set (all, train,
- test).  The columns are:
+ test).  A grouped partition is summarized as a stratified one is: the
+ <code>'all'</code> rows come first and every group is listed in every set,
+ with a count of zero where it is absent.  MATLAB leaves out both for a
+ grouped partition.  The columns are:
 <dl compact="compact">
 <dt> <code>Set</code></dt>
 <dd> The specific subset being described.  Values include <code>'all'</code> (the
@@ -1671,9 +1689,17 @@ Summarize stratified or grouped cross-validation partitions.
 <dt> <code>SetSize</code></dt>
 <dd> The total number of observations in that specific set.</dd>
 <dt> <code>Label</code></dt>
-<dd> The class or group identifier.  If <code>c.IsStratified</code> is true, this
- column is named <code>StratificationLabel</code>.  If <code>c.IsGrouped</code> is
- true, it is named <code>GroupLabel</code>.</dd>
+<dd> The class or group identifier, of the same type as the stratification or
+ grouping variable.  If <code>c.IsStratified</code> is true, this column is
+ named <code>StratificationLabel</code>.  If <code>c.IsGrouped</code> is true, it is
+ named <code>GroupLabel</code>; a partition grouped by several variables has
+ one column for each, named <code>GroupLabel1</code>, <code>GroupLabel2</code>, and so
+ on, and a column of numbers given in a cell array is returned as a
+ numeric column.  Within each set, groups are listed in the order
+ <code>grp2idx</code> numbers them: numbers in sorted order, categorical values
+ in the order of their categories, and text in order of first appearance;
+ several grouping variables are ordered by the first, then by the second,
+ and so on.</dd>
 <dt> <code>Count</code></dt>
 <dd> The number of observations of that label within the set.  If stratified,
  this column is named <code>StratificationCount</code>; otherwise,
@@ -1768,42 +1794,42 @@ Summarize stratified or grouped cross-validation partitions.
       Set       SetSize    GroupLabel    GroupCount    PercentInSet    
     ________    _______    __________    __________    ____________    
 
-    "all"            70    "North"               20         28.5714    
-    "all"            70    "South"               15         21.4286    
-    "all"            70    "East"                15         21.4286    
-    "all"            70    "West"                20         28.5714    
-    "train1"         50    "North"                0               0    
-    "train1"         50    "South"               15              30    
-    "train1"         50    "East"                15              30    
-    "train1"         50    "West"                20              40    
-    "test1"          20    "North"               20             100    
-    "test1"          20    "South"                0               0    
-    "test1"          20    "East"                 0               0    
-    "test1"          20    "West"                 0               0    
-    "train2"         55    "North"               20         36.3636    
-    "train2"         55    "South"               15         27.2727    
-    "train2"         55    "East"                 0               0    
-    "train2"         55    "West"                20         36.3636    
-    "test2"          15    "North"                0               0    
-    "test2"          15    "South"                0               0    
-    "test2"          15    "East"                15             100    
-    "test2"          15    "West"                 0               0    
-    "train3"         50    "North"               20              40    
-    "train3"         50    "South"               15              30    
-    "train3"         50    "East"                15              30    
-    "train3"         50    "West"                 0               0    
-    "test3"          20    "North"                0               0    
-    "test3"          20    "South"                0               0    
-    "test3"          20    "East"                 0               0    
-    "test3"          20    "West"                20             100    
-    "train4"         55    "North"               20         36.3636    
-    "train4"         55    "South"                0               0    
-    "train4"         55    "East"                15         27.2727    
-    "train4"         55    "West"                20         36.3636    
-    "test4"          15    "North"                0               0    
-    "test4"          15    "South"               15             100    
-    "test4"          15    "East"                 0               0    
-    "test4"          15    "West"                 0               0</pre>
+    "all"            70    {'North' }            20         28.5714    
+    "all"            70    {'South' }            15         21.4286    
+    "all"            70    {'East'  }            15         21.4286    
+    "all"            70    {'West'  }            20         28.5714    
+    "train1"         50    {'North' }             0               0    
+    "train1"         50    {'South' }            15              30    
+    "train1"         50    {'East'  }            15              30    
+    "train1"         50    {'West'  }            20              40    
+    "test1"          20    {'North' }            20             100    
+    "test1"          20    {'South' }             0               0    
+    "test1"          20    {'East'  }             0               0    
+    "test1"          20    {'West'  }             0               0    
+    "train2"         55    {'North' }            20         36.3636    
+    "train2"         55    {'South' }            15         27.2727    
+    "train2"         55    {'East'  }             0               0    
+    "train2"         55    {'West'  }            20         36.3636    
+    "test2"          15    {'North' }             0               0    
+    "test2"          15    {'South' }             0               0    
+    "test2"          15    {'East'  }            15             100    
+    "test2"          15    {'West'  }             0               0    
+    "train3"         50    {'North' }            20              40    
+    "train3"         50    {'South' }            15              30    
+    "train3"         50    {'East'  }            15              30    
+    "train3"         50    {'West'  }             0               0    
+    "test3"          20    {'North' }             0               0    
+    "test3"          20    {'South' }             0               0    
+    "test3"          20    {'East'  }             0               0    
+    "test3"          20    {'West'  }            20             100    
+    "train4"         55    {'North' }            20         36.3636    
+    "train4"         55    {'South' }             0               0    
+    "train4"         55    {'East'  }            15         27.2727    
+    "train4"         55    {'West'  }            20         36.3636    
+    "test4"          15    {'North' }             0               0    
+    "test4"          15    {'South' }            15             100    
+    "test4"          15    {'East'  }             0               0    
+    "test4"          15    {'West'  }             0               0</pre>
 
             </div>
           </div>
@@ -1841,28 +1867,28 @@ Summarize stratified or grouped cross-validation partitions.
       Set       SetSize    StratificationLabel    StratificationCount    PercentInSet    
     ________    _______    ___________________    ___________________    ____________    
 
-    "all"            50    "ClassA"                                25              50    
-    "all"            50    "ClassB"                                25              50    
-    "train1"         40    "ClassA"                                20              50    
-    "train1"         40    "ClassB"                                20              50    
-    "test1"          10    "ClassA"                                 5              50    
-    "test1"          10    "ClassB"                                 5              50    
-    "train2"         40    "ClassA"                                20              50    
-    "train2"         40    "ClassB"                                20              50    
-    "test2"          10    "ClassA"                                 5              50    
-    "test2"          10    "ClassB"                                 5              50    
-    "train3"         40    "ClassA"                                20              50    
-    "train3"         40    "ClassB"                                20              50    
-    "test3"          10    "ClassA"                                 5              50    
-    "test3"          10    "ClassB"                                 5              50    
-    "train4"         40    "ClassA"                                20              50    
-    "train4"         40    "ClassB"                                20              50    
-    "test4"          10    "ClassA"                                 5              50    
-    "test4"          10    "ClassB"                                 5              50    
-    "train5"         40    "ClassA"                                20              50    
-    "train5"         40    "ClassB"                                20              50    
-    "test5"          10    "ClassA"                                 5              50    
-    "test5"          10    "ClassB"                                 5              50</pre>
+    "all"            50    {'ClassA'         }                     25              50    
+    "all"            50    {'ClassB'         }                     25              50    
+    "train1"         40    {'ClassA'         }                     20              50    
+    "train1"         40    {'ClassB'         }                     20              50    
+    "test1"          10    {'ClassA'         }                      5              50    
+    "test1"          10    {'ClassB'         }                      5              50    
+    "train2"         40    {'ClassA'         }                     20              50    
+    "train2"         40    {'ClassB'         }                     20              50    
+    "test2"          10    {'ClassA'         }                      5              50    
+    "test2"          10    {'ClassB'         }                      5              50    
+    "train3"         40    {'ClassA'         }                     20              50    
+    "train3"         40    {'ClassB'         }                     20              50    
+    "test3"          10    {'ClassA'         }                      5              50    
+    "test3"          10    {'ClassB'         }                      5              50    
+    "train4"         40    {'ClassA'         }                     20              50    
+    "train4"         40    {'ClassB'         }                     20              50    
+    "test4"          10    {'ClassA'         }                      5              50    
+    "test4"          10    {'ClassB'         }                      5              50    
+    "train5"         40    {'ClassA'         }                     20              50    
+    "train5"         40    {'ClassB'         }                     20              50    
+    "test5"          10    {'ClassA'         }                      5              50    
+    "test5"          10    {'ClassB'         }                      5              50</pre>
 
             </div>
           </div>
@@ -1945,8 +1971,8 @@ Summarize stratified or grouped cross-validation partitions.
       Set      SetSize    StratificationLabel    StratificationCount    PercentInSet    
     _______    _______    ___________________    ___________________    ____________    
 
-    "test1"         10    "No"                                     4              40    
-    "test1"         10    "Yes"                                    6              60</pre>
+    "test1"         10    {'No'             }                      4              40    
+    "test1"         10    {'Yes'            }                      6              60</pre>
                 <p>B. Filtering by Partial Match</p>
                 <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> is_test = ! cellfun ('isempty', strfind (cellstr (summaryStrat.Set), 'test'));
  testSummaryTbl = summaryStrat (is_test, :)</pre>
@@ -1956,12 +1982,12 @@ Summarize stratified or grouped cross-validation partitions.
       Set      SetSize    StratificationLabel    StratificationCount    PercentInSet    
     _______    _______    ___________________    ___________________    ____________    
 
-    "test1"         10    "No"                                     4              40    
-    "test1"         10    "Yes"                                    6              60    
-    "test2"         10    "No"                                     3              30    
-    "test2"         10    "Yes"                                    7              70    
-    "test3"         10    "No"                                     3              30    
-    "test3"         10    "Yes"                                    7              70</pre>
+    "test1"         10    {'No'             }                      4              40    
+    "test1"         10    {'Yes'            }                      6              60    
+    "test2"         10    {'No'             }                      3              30    
+    "test2"         10    {'Yes'            }                      7              70    
+    "test3"         10    {'No'             }                      3              30    
+    "test3"         10    {'Yes'            }                      7              70</pre>
 
             </div>
           </div>

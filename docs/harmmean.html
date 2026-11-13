@@ -1117,7 +1117,8 @@
  vector with the harmonic mean of each columns in <var>x</var>.
 </li><li> If <var>x</var> is a multidimensional array, then <code>harmmean(<var>x</var>)</code>
  operates along the first nonsingleton dimension of <var>x</var>.
-</li><li> <var>x</var> must not contain any negative or complex values.
+</li><li> <var>x</var> must be of class double or single and must not contain any
+ negative or complex values.
 </li></ul>
 
 <p> <code>harmmean(<var>x</var>, &quot;all&quot;)</code> returns the harmonic mean of all the elements
@@ -1147,7 +1148,7 @@
 mean
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Descriptive_Statistics/harmmean.m">harmmean</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/30b7657/inst/Descriptive_Statistics/harmmean.m">harmmean</a>
 </p>
 </div>
 

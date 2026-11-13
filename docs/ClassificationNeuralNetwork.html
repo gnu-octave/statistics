@@ -1120,7 +1120,7 @@
   <a href="fitcnet.html">fitcnet</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Machine_Learning/ClassificationNeuralNetwork.m">ClassificationNeuralNetwork</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/30b7657/inst/Machine_Learning/ClassificationNeuralNetwork.m">ClassificationNeuralNetwork</a>
 </p>
 </div>
         <p class="lead my-3">The <code>ClassificationNeuralNetwork</code> class contains the following properties:</p>
@@ -1239,8 +1239,10 @@ Rows used for fitting
 <p> A logical column vector with the same length as the observations in the
  original predictor data <var>X</var>, true for each row that was used for
  fitting the ClassificationNeuralNetwork model.  It is empty, <code>[]</code>,
- when every observation was used, so a non-empty value means that rows
- holding missing values were dropped.  This property is read-only.
+ when every observation was used.  A row is dropped when its class is
+ missing, when every predictor is missing, or when its weight is zero or
+ missing; a row missing only some predictors is used.  This property is
+ read-only.
 </p>
 
 

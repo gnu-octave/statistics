@@ -1128,9 +1128,7 @@
  multidimensional array, use the <var>dim</var> or <var>vecdim</var> input argument.
 </p>
 <p> <code>trimmean</code> treats <code>NaN</code> values in <var>x</var> as missing values and
- removes them.  Integer, logical and character <var>x</var> is computed and
- returned in double precision, although MATLAB keeps the integer class and
- rounds under <code>'weighted'</code>.
+ removes them.  <var>x</var> must be of class double or single.
 </p>
 <p> <code><var>m</var> = trimmean (<var>x</var>, <var>p</var>, <var>flag</var>)</code> specifies how to
  trim when <em class="math">k</em>, i.e. half the number of outliers, is not an integer.
@@ -1173,7 +1171,7 @@
 mean
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Descriptive_Statistics/trimmean.m">trimmean</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/30b7657/inst/Descriptive_Statistics/trimmean.m">trimmean</a>
 </p>
 </div>
 

@@ -1193,9 +1193,9 @@
  probabilities.  <code>UsePredForLearner</code> records the predictors of each
  learner; every combination is taken in the order of <code>nchoosek</code>, which
  MATLAB R2024a reverses for some subset sizes, changing the order of the
- learners but not the scores.  MATLAB takes observation weights here and
- passes them to the learners; the learners in this package take none, so
- weights that are not uniform are refused.
+ learners but not the scores.  The observation weights are passed to the
+ learners, as in MATLAB: each learner is fitted with them, and its prior is
+ the classes&rsquo; share of the weights.
 </p>
 <p> A boosting method resamples when <code>'Resample'</code> is <code>'on'</code> or
  <code>'FResample'</code> or <code>'Replace'</code> is given; RUSBoost and Subspace
@@ -1316,7 +1316,7 @@
   <a href="TreeBagger.html">TreeBagger</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Machine_Learning/fitcensemble.m">fitcensemble</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/30b7657/inst/Machine_Learning/fitcensemble.m">fitcensemble</a>
 </p>
 </div>
         <div class="card rounded my-4">

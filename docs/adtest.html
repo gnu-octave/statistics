@@ -1153,9 +1153,9 @@
  numeric value between 0 and 1.  The default is 0.05 corresponding to the 5%
  significance level.</td></tr>
 <tr><td width="25%">&quot;MCTol&quot;</td><td width="75%">Monte-Carlo standard error for the p-value,
- <var>pval</var>, value. which must be a positive scalar value.  In this case, an
- approximation for the p-value is computed directly, using Monte-Carlo
- simulations.</td></tr>
+ <var>pval</var>, which must be a positive real scalar of type double or single.
+ In this case, the p-value and the critical value, <var>cv</var>, are approximated
+ by Monte-Carlo simulation.</td></tr>
 <tr><td width="25%">&quot;Asymptotic&quot;</td><td width="75%">Method for calculating the p-value of the
  Anderson-Darling test, which can be either true or false logical value.  If
  you specify &rsquo;true&rsquo;, adtest estimates the p-value using the limiting
@@ -1198,7 +1198,7 @@
   <a href="swtest.html">swtest</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Hypothesis_Testing/adtest.m">adtest</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/30b7657/inst/Hypothesis_Testing/adtest.m">adtest</a>
 </p>
 </div>
 

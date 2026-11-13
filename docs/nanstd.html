@@ -1114,9 +1114,9 @@
  is returned.  If <var>x</var> is a multidimensional array, <code>nanstd</code> operates
  along the first nonsingleton dimension.  If a dimension contains fewer than
  two non-<code>NaN</code> values, the standard deviation is returned as 0 for a
- single value and as <code>NaN</code> when all values are <code>NaN</code>.  <var>x</var>
- must be floating point, as for <code>std</code>, although MATLAB accepts logical
- too.
+ single finite value, and as <code>NaN</code> for a single infinite value or when
+ all values are <code>NaN</code>.  <var>x</var> must be floating point, as for
+ <code>std</code>, although MATLAB accepts logical too.
 </p>
 <p> <code><var>s</var> = nanstd (<var>x</var>, <var>w</var>)</code> specifies the normalization.  When
  <var>w</var> is 0 (default), the standard deviation is normalized by <em class="math">N-1</em>,
@@ -1147,7 +1147,7 @@ std,
   <a href="nansum.html">nansum</a>
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Descriptive_Statistics/nanstd.m">nanstd</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/30b7657/inst/Descriptive_Statistics/nanstd.m">nanstd</a>
 </p>
 </div>
         <div class="card rounded my-4">

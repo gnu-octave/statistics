@@ -1118,15 +1118,15 @@
  vector with the geometric mean of each columns in <var>x</var>.
 </li><li> If <var>x</var> is a multidimensional array, then <code>geomean(<var>x</var>)</code>
  operates along the first nonsingleton dimension of <var>x</var>.
-</li><li> <var>x</var> must not contain any negative or complex values.
+</li><li> <var>x</var> must be of class double or single and must not contain any
+ negative or complex values.
 </li></ul>
 
 <p> <code>geomean(<var>x</var>, &quot;all&quot;)</code> returns the geometric mean of all the elements
- in <var>x</var>.  If <var>x</var> contains any 0, then the returned value is 0.
+ in <var>x</var>.
 </p>
 <p> <code>geomean(<var>x</var>, <var>dim</var>)</code> returns the geometric mean along the
- operating dimension <var>dim</var> of <var>x</var>.  Calculating the harmonic mean of
- any subarray containing any 0 will return 0.
+ operating dimension <var>dim</var> of <var>x</var>.
 </p>
 <p> <code>geomean(<var>x</var>, <var>vecdim</var>)</code> returns the geometric mean over the
  dimensions specified in the vector <var>vecdim</var>.  For example, if <var>x</var> is
@@ -1148,7 +1148,7 @@
 mean
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/blob/1e14ad1/inst/Descriptive_Statistics/geomean.m">geomean</a>
+  <a href="https://github.com/gnu-octave/statistics/blob/30b7657/inst/Descriptive_Statistics/geomean.m">geomean</a>
 </p>
 </div>
 
