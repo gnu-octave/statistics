@@ -2703,3 +2703,8 @@ endfunction
 %! Mdl = fitcnb ([1; 2; 1; 2; 1; 2], {'a'; 'a'; 'b'; 'b'; 'c'; 'c'});
 %! assert_equal (loss (Mdl, 1.5, {'a'}, 'LossFun', 'classiferror'), 0);
 %! assert_equal (loss (Mdl, 1.5, {'b'}, 'LossFun', 'classiferror'), 1);
+%!test  # a kernel class of one observation takes a bandwidth of one, as in R2024a
+%! Mdl = fitcnb ([1; 2; 5], {'a'; 'b'; 'c'}, 'DistributionNames', 'kernel');
+%! [label, score] = predict (Mdl, 2);
+%! assert_equal (label, {'b'});
+%! assert_equal (score, [0.3749, 0.6182, 0.0069], 1e-4);

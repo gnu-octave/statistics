@@ -80,8 +80,10 @@ function [f, xi, bw] = ksdensity (x, varargin)
   x = x(! isnan (x));
   x = x(:)';
   n = numel (x);
-  if (n < 2)
-    error ("ksdensity: X must contain at least two non-missing values.");
+  ## A single value has no spread and takes a bandwidth of one below, as in
+  ## MATLAB
+  if (n < 1)
+    error ("ksdensity: X must contain at least one non-missing value.");
   endif
 
   ## Optional positional PTS argument (a numeric vector before any Name-Value).
@@ -538,8 +540,8 @@ endfunction
 ## Test input validation
 %!error <Invalid call to ksdensity> ksdensity ()
 %!error <ksdensity: X must be a vector of real values.> ksdensity (ones (3, 3))
-%!error <ksdensity: X must contain at least two non-missing values.> ...
-%! ksdensity (5)
+%!error <ksdensity: X must contain at least one non-missing value.> ...
+%! ksdensity ([NaN, NaN])
 %!error <ksdensity: unrecognised 'Kernel' value.> ...
 %! ksdensity (1:10, "Kernel", "cosine")
 %!error <ksdensity: unrecognised 'Function' value.> ...
@@ -558,3 +560,16 @@ endfunction
 %! ksdensity (1:10, "Support", "positive", "BoundaryCorrection", "linear")
 %!error <ksdensity: 'Censoring' is not yet supported.> ...
 %! ksdensity (1:10, "Censoring", ones (1, 10))
+%!test  # a single value takes a bandwidth of one, as in R2024a
+%! [f, xi, bw] = ksdensity (5);
+%! assert_equal (bw, 1);
+%! assert_equal ([xi(1), xi(end), numel(xi)], [2, 8, 100]);
+%!test
+%! f = ksdensity (5, [4, 5, 6]);
+%! assert_equal (f, [0.2420, 0.3989, 0.2420], 1e-4);
+%!test
+%! f = ksdensity (5, [0.1, 0.5, 0.9], 'Function', 'icdf');
+%! assert_equal (f, [3.7184, 5, 6.2816], 1e-4);
+%!test
+%! f = ksdensity (5, [4, 5, 6], 'Support', 'positive');
+%! assert_equal (f, [0.0973, 0.0798, 0.0654], 1e-4);

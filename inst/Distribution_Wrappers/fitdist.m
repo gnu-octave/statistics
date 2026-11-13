@@ -786,6 +786,10 @@ endfunction
 %! assert_equal (pd.Kernel, 'normal');
 %! assert_equal (pd.Bandwidth, 0.639566, 1e-4);
 %! assert_equal (pd.InputData.data, x);
+%!test  ## a kernel fit to a single value takes a bandwidth of one, as R2024a
+%! pd = fitdist (5, 'Kernel');
+%! assert_equal (pd.Bandwidth, 1);
+%! assert_equal (pdf (pd, [4, 5, 6]), [0.2420, 0.3989, 0.2420], 1e-4);
 %!test  ## grouped kernel fit returns a cell of prob.KernelDistribution objects
 %! x = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7]';
 %! [pd, gn] = fitdist (x, 'Kernel', 'By', [ones(8, 1); 2*ones(7, 1)]);
