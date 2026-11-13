@@ -2163,6 +2163,18 @@ endfunction
 %! assert_equal (size (test (cv, 'all')), [5, 2]);
 %! assert_equal (sum (test (cv, 'all')), [2, 2]);
 %! assert_equal (sum (test (cv, 'all'), 2), [1; 1; 1; 1; 0]);
+%!test
+%! g = string ({'a'; 'a'; 'b'; 'b'; 'c'; 'c'});
+%! cv = cvpartition (6, 'kfold', 3, 'GroupingVariables', g);
+%! fold = test (cv, 'all') * [1; 2; 3];
+%! assert_equal (fold, fold([2; 1; 4; 3; 6; 5]));
+%! assert_equal (numel (unique (fold)), 3);
+%!test
+%! g = {'a', 1; 'a', 2; 'b', 1; 'b', 1; 'a', 1; 'a', 2};
+%! cv = cvpartition (6, 'kfold', 3, 'GroupingVariables', g);
+%! fold = test (cv, 'all') * [1; 2; 3];
+%! assert_equal (fold, fold([5; 6; 4; 3; 1; 2]));
+%! assert_equal (numel (unique (fold)), 3);
 
 ## Test output results for vector input X
 %!test
@@ -2408,6 +2420,8 @@ endfunction
 %! cvpartition (10, 'kfold', 3, 'Group')
 %!error <cvpartition: missing value for optional paired argument 'GroupingVariables'.> ...
 %! cvpartition (10, 'kfold', 3, 'GroupingVariables')
+%!error <cvpartition: invalid value for optional paired argument 'GroupingVariables'.> ...
+%! cvpartition (2, 'kfold', 2, 'GroupingVariables', {'a'; 1})
 %!error <cvpartition: invalid value for optional paired argument 'GroupingVariables'.> ...
 %! cvpartition (10, 'kfold', 3, 'GroupingVariables', ones (3, 3, 3))
 %!error <cvpartition: grouping variable does not match the number of observations.> ...
@@ -2912,6 +2926,32 @@ endfunction
 %! T_wide = unstack (T_shuffled(:, 1:4), 'StratificationCount', 'StratificationLabel');
 %! mask = strcmp (cellstr (T_wide.Set), 'all');
 %! assert_equal (T_wide.Left(mask) == 2, true);
+%!test
+%! ## 30. Grouping variable given as a numeric row vector
+%! c = cvpartition (6, 'KFold', 3, 'GroupingVariables', [1, 1, 2, 2, 3, 3]);
+%! T = summary (c);
+%! assert_equal (T.GroupLabel(1:3), [1; 2; 3]);
+%! assert_equal (T.GroupCount(1:3), [2; 2; 2]);
+%!test
+%! ## 31. Grouping variable given as a cellstr row vector
+%! g = {'a', 'a', 'b', 'b', 'c', 'c'};
+%! c = cvpartition (6, 'KFold', 3, 'GroupingVariables', g);
+%! T = summary (c);
+%! assert_equal (T.GroupLabel(1:3), string ({'a'; 'b'; 'c'}));
+%! assert_equal (T.GroupCount(1:3), [2; 2; 2]);
+%!test
+%! ## 32. Grouping variable given as a character row vector
+%! c = cvpartition (6, 'KFold', 3, 'GroupingVariables', 'aabbcc');
+%! T = summary (c);
+%! assert_equal (T.GroupLabel(1:3), string ({'a'; 'b'; 'c'}));
+%! assert_equal (T.GroupCount(1:3), [2; 2; 2]);
+%!test
+%! ## 33. Grouping variable given as a string array
+%! g = string ({'a'; 'a'; 'b'; 'b'; 'c'; 'c'});
+%! c = cvpartition (6, 'KFold', 3, 'GroupingVariables', g);
+%! T = summary (c);
+%! assert_equal (T.GroupLabel(1:3), string ({'a'; 'b'; 'c'}));
+%! assert_equal (T.GroupCount(1:3), [2; 2; 2]);
 %!error <cvpartition.summary: partition must be stratified or grouped.>
 %! c = cvpartition (20, 'KFold', 5);
 %! summary (c);
