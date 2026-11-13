@@ -373,3 +373,119 @@
 
  ** nansum:
     takes a char array, as sum does.
+
+ Summary of important user-visible changes for statistics 2.1.3:
+-------------------------------------------------------------------
+
+ Backwards incompatible improvements:
+ ====================================
+
+ ** cvpartition.summary:
+    the label column takes the type of the stratification or grouping
+    variable, as in MATLAB: a cell array of character vectors, a character
+    matrix, or a categorical, logical or integer variable gives labels of that
+    type, where text labels were always strings.  Several grouping variables
+    give one column each, GroupLabel1, GroupLabel2, and so on.
+
+ ** geomean, harmmean, trimmean:
+    only double and single input is accepted, as MATLAB documents; integer,
+    logical and character input raise an error.
+
+ ** meanEffectSize:
+    only full option values are accepted, in any case; shortened values such
+    as 'coh' for 'cohen' raise an error.
+
+ Bug fixes:
+ ==========
+
+ ** adtest:
+    the 'MCTol' option stopped with an error; it now approximates the p-value
+    and the critical value by Monte Carlo simulation, and takes a positive
+    real scalar of type double or single (#548).
+
+ ** chi2gof:
+    an unknown option name raises an error instead of being ignored.  The help
+    text and demos named the options 'binctrs' and 'binedges' and the output
+    field binedges, which do not exist, and gave the outputs in the wrong
+    order.
+
+ ** cvpartition:
+    'GroupingVariables' accepts a string array, and a cell array with text in
+    one column and numbers in another, as documented, and refuses a table or
+    another unusable value with an error of its own.  With a stratification
+    variable, a grouped 'Holdout' ignored the groups: it now keeps them whole
+    with 'Stratify' false and is refused with 'Stratify' true; a grouped
+    'KFold' with 'Stratify' false balances the fold sizes, and a missing value
+    in the stratification variable no longer stops it.  A grouped hold-out
+    counted the observations left out for missing grouping values as training
+    data, and repartition split its groups.  test (C, 'all') of a stratified
+    hold-out with missing values returned too few rows.
+
+ ** cvpartition.summary:
+    no longer fails for a grouping variable given as a row vector or as a
+    categorical array, or for a grouped hold-out with missing grouping values;
+    it lists every class of a stratification variable given as a row vector,
+    and labels a group of several variables by all of them, not the first
+    alone.
+
+ ** fitcensemble:
+    the 'Subspace' method accepts observation weights that are not uniform and
+    fits each learner with them, as in MATLAB, where they were refused.
+
+ ** fitcknn, fitctree, fitcnb, fitcensemble, fitcecoc, fitcnet, TreeBagger:
+    a class whose every observation is dropped, for missing predictors or a
+    zero weight, stays in ClassNames with prior 0, as in MATLAB, where it was
+    left out; fitcensemble with 'AdaBoostM2' and TreeBagger failed on such
+    data.  fitcnet drops a row missing every predictor, and TreeBagger leaves
+    it out of the prior.
+
+ ** geomean:
+    a zero no longer hides a NaN, an Inf or single input under 'all' or a
+    VECDIM covering every dimension, and a dimension given with 'all' raises
+    an error instead of 'all' being ignored (#543).
+
+ ** harmmean:
+    'omitnan' no longer loses precision or returns Inf for large values
+    (#544).
+
+ ** ksdensity:
+    a single value is accepted, with a bandwidth of one, as in MATLAB, and so
+    by fitdist with a 'Kernel' distribution and by fitcnb with a 'kernel'
+    class of one observation; it was refused.
+
+ ** loss:
+    under 'classiferror', the tree, naive Bayes, ECOC, linear, kernel and
+    ensemble classifiers counted an observation whose true class ties for the
+    highest score as misclassified even when predict returns it; a tie now
+    goes to the first of the tied classes, as in MATLAB.
+
+ ** makima:
+    very small data no longer flattens the curve, and very large data no
+    longer gives NaN (#546).
+
+ ** mvncdf:
+    results in three or more dimensions were wrong when SIGMA was not diagonal
+    (#547).
+
+ ** nanvar, nanstd:
+    data holding Inf gives NaN, and complex input gives the real variance, as
+    in MATLAB, where they gave Inf or 0 and a complex number (#545).
+
+ ** plotResiduals:
+    the default histogram of NonLinearModel and GeneralizedLinearModel drew
+    empty axes and returned bin counts; it draws probability density in
+    MATLAB's bins and returns the patch.  For LinearModel,
+    GeneralizedLinearModel, NonLinearModel and MultinomialRegression, equal
+    residuals give one bar around them, where the histogram failed, added an
+    empty bar or drew the bar beside the data, and a second histogram
+    replaces the first unless hold is on.
+
+ Improvements:
+ =============
+
+ ** cvpartition:
+    'GroupingVariables' may follow a stratification variable without
+    'Stratify', which is then true, giving a stratified grouped K-fold
+    partition.  Observations dropped for missing grouping values raise a
+    warning, as in MATLAB, and summary lists groups in the order grp2idx
+    numbers them.
