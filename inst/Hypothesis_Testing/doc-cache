@@ -13,7 +13,7 @@ adtest
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3685
+# length: 3700
 statistics: h = adtest (x)
 statistics: h = adtest (x, Name, Value)
 statistics: [h, pval] = adtest (...)
@@ -57,9 +57,9 @@ Name Value
 numeric value between 0 and 1. The default is 0.05 corresponding to the 5%
 significance level.
 "MCTol" Monte-Carlo standard error for the p-value,
-pval, value. which must be a positive scalar value. In this case, an
-approximation for the p-value is computed directly, using Monte-Carlo
-simulations.
+pval, which must be a positive real scalar of type double or single.
+In this case, the p-value and the critical value, cv, are approximated
+by Monte-Carlo simulation.
 "Asymptotic" Method for calculating the p-value of the
 Anderson-Darling test, which can be either true or false logical value. If
 you specify 'true', adtest estimates the p-value using the limiting

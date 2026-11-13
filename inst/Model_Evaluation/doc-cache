@@ -1359,7 +1359,7 @@ cvpartition.summary
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1451
+# length: 1913
 cvpartition: tbl = summary (c)
 Summarize stratified or grouped cross-validation partitions.
 
@@ -1387,7 +1387,10 @@ Outputs
 tbl
 A table object containing the summary statistics. The table
 contains one row for every unique label/group in every set (all, train,
-test). The columns are:
+test). A grouped partition is summarized as a stratified one is: the
+'all' rows come first and every group is listed in every set,
+with a count of zero where it is absent. MATLAB leaves out both for a
+grouped partition. The columns are:
 
 Set
 The specific subset being described. Values include 'all' (the
@@ -1395,9 +1398,13 @@ full dataset), 'train1', 'test1', etc.
 SetSize
 The total number of observations in that specific set.
 Label
-The class or group identifier. If c.IsStratified is true, this
-column is named StratificationLabel. If c.IsGrouped is
-true, it is named GroupLabel.
+The class or group identifier, of the same type as the stratification or
+grouping variable. If c.IsStratified is true, this column is
+named StratificationLabel. If c.IsGrouped is true, it is
+named GroupLabel; a partition grouped by several variables has
+one column for each, named GroupLabel1, GroupLabel2, and so
+on, and a column of numbers given in a cell array is returned as a
+numeric column.
 Count
 The number of observations of that label within the set. If stratified,
 this column is named StratificationCount; otherwise,

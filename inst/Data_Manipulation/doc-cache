@@ -796,7 +796,7 @@ normalise_distribution
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1874
+# length: 1890
 statistics: NORMALISED = normalise_distribution (DATA)
 statistics: NORMALISED = normalise_distribution (DATA, DISTRIBUTION)
 statistics: NORMALISED = normalise_distribution (DATA, DISTRIBUTION, DIMENSION)
@@ -827,11 +827,15 @@ The empirical CDF will map any two sets of data
 having the same size and their ties in the same places after sorting
 to some permutation of the same normalised data:
 
-normalise_distribution([1 2 2 3 4])
-=> -1.28 0.00 0.00 0.52 1.28
+normalise_distribution ([1 2 2 3 4])
+=> ans =
 
-normalise_distribution([1 10 100 10 1000])
-=> -1.28 0.00 0.52 0.00 1.28
+-1.2816 0 0 0.5244 1.2816
+
+normalise_distribution ([1 10 100 10 1000])
+=> ans =
+
+-1.2816 0 0.5244 0 1.2816
 
 Original source:
 S.J. van Albada, P.A. Robinson
