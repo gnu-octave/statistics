@@ -1721,6 +1721,13 @@ endclassdef
 function [inds, ngroups, gsize, missidx, grpvars, first] = ...
                                               __resolve_groups__ (grpvars)
 
+  if (! (isnumeric (grpvars) || islogical (grpvars) || ischar (grpvars) ||
+         iscell (grpvars) || isstring (grpvars) || iscategorical (grpvars) ||
+         isdatetime (grpvars) || isduration (grpvars)))
+    error (strcat ("cvpartition: invalid value for optional", ...
+                   " paired argument 'GroupingVariables'."));
+  endif
+
   if (isvector (grpvars))
     grpvars = grpvars(:);
   elseif (! ismatrix (grpvars))
@@ -2428,6 +2435,10 @@ endfunction
 %! cvpartition (10, 'kfold', 3, 'GroupingVariables')
 %!error <cvpartition: invalid value for optional paired argument 'GroupingVariables'.> ...
 %! cvpartition (2, 'kfold', 2, 'GroupingVariables', {'a'; 1})
+%!error <cvpartition: invalid value for optional paired argument 'GroupingVariables'.> ...
+%! cvpartition (4, 'kfold', 2, 'GroupingVariables', table ([1; 1; 2; 2]))
+%!error <cvpartition: invalid value for optional paired argument 'GroupingVariables'.> ...
+%! cvpartition (4, 'kfold', 2, 'GroupingVariables', struct ('a', {1; 1; 2; 2}))
 %!error <cvpartition: invalid value for optional paired argument 'GroupingVariables'.> ...
 %! cvpartition (10, 'kfold', 3, 'GroupingVariables', ones (3, 3, 3))
 %!error <cvpartition: grouping variable does not match the number of observations.> ...
