@@ -47320,7 +47320,7 @@ fitcensemble
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 10608
+# length: 10604
 statistics: Mdl = fitcensemble (X, Y)
 statistics: Mdl = fitcensemble (Tbl, ResponseVarName)
 statistics: Mdl = fitcensemble (Tbl, formula)
@@ -47411,9 +47411,9 @@ scores each observation with the plain average of the learners' class
 probabilities. UsePredForLearner records the predictors of each
 learner; every combination is taken in the order of nchoosek, which
 MATLAB R2024a reverses for some subset sizes, changing the order of the
-learners but not the scores. MATLAB takes observation weights here and
-passes them to the learners; the learners in this package take none, so
-weights that are not uniform are refused.
+learners but not the scores. The observation weights are passed to the
+learners, as in MATLAB: each learner is fitted with them, and its prior is
+the classes' share of the weights.
 
 A boosting method resamples when 'Resample' is 'on' or
 'FResample' or 'Replace' is given; RUSBoost and Subspace

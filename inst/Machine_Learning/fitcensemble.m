@@ -109,9 +109,9 @@
 ## probabilities.  @code{UsePredForLearner} records the predictors of each
 ## learner; every combination is taken in the order of @code{nchoosek}, which
 ## MATLAB R2024a reverses for some subset sizes, changing the order of the
-## learners but not the scores.  MATLAB takes observation weights here and
-## passes them to the learners; the learners in this package take none, so
-## weights that are not uniform are refused.
+## learners but not the scores.  The observation weights are passed to the
+## learners, as in MATLAB: each learner is fitted with them, and its prior is
+## the classes' share of the weights.
 ##
 ## A boosting method resamples when @qcode{'Resample'} is @qcode{'on'} or
 ## @qcode{'FResample'} or @qcode{'Replace'} is given; RUSBoost and Subspace

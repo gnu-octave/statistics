@@ -750,12 +750,6 @@ classdef ClassificationEnsemble < PredictiveModel
       this.W = cast (W / sum (W), F.WeightsClass);
       [~, this.DefaultIndex] = max (this.Prior);
       if (issub)
-        ## The nearest neighbour and discriminant learners take no weights,
-        ## so weights that are not uniform cannot reach them.
-        if (max (F.Weights) - min (F.Weights) > 1e-12 * max (F.Weights))
-          error (strcat ("%s: 'Weights' that are not uniform cannot be", ...
-                         " used with the 'Subspace' method."), caller);
-        endif
         if (isempty (NPred))
           NPred = 1;
         endif
@@ -1929,10 +1923,6 @@ endfunction
 %! load fisheriris
 %! ClassificationEnsemble (meas, species, 'Method', 'Subspace', ...
 %!                         'FResample', 0.5)
-%!error<ClassificationEnsemble: 'Weights' that are not uniform cannot be used with the 'Subspace' method.> ...
-%! load fisheriris
-%! ClassificationEnsemble (meas, species, 'Method', 'Subspace', ...
-%!                         'Weights', [5 * ones(50, 1); ones(100, 1)])
 %!error<ClassificationEnsemble.predictorImportance: predictor importance is defined only for ensembles of trees.> ...
 %! load fisheriris
 %! predictorImportance (ClassificationEnsemble (meas, species, ...
@@ -2157,3 +2147,23 @@ endfunction
 %! Mdl = fitcensemble (X, Y, 'Method', 'AdaBoostM2', 'NumLearningCycles', 5);
 %! warning (S);
 %! assert_equal (Mdl.ClassNames(:)', {'a', 'b', 'c'});
+%!test  # Subspace learners are fitted with the weights, as in R2024a
+%! load fisheriris
+%! Mdl = fitcensemble (meas, species, 'Method', 'Subspace', ...
+%!                     'Learners', 'discriminant', 'NPredToSample', 3, ...
+%!                     'NumLearningCycles', 'AllPredictorCombinations', ...
+%!                     'Weights', (1:150)');
+%! [~, score] = predict (Mdl, meas([1, 60, 120], :));
+%! assert_equal (loss (Mdl, meas, species), 0.0200, 1e-4);
+%! assert_equal (score, [1, 0, 0; 0, 0.9893, 0.0107; 0, 0.1902, 0.8098], 1e-4);
+%!test  # so are nearest neighbour learners, whose scores weigh the neighbours
+%! load fisheriris
+%! Mdl = fitcensemble (meas, species, 'Method', 'Subspace', ...
+%!                     'Learners', templateKNN ('NumNeighbors', 5), ...
+%!                     'NPredToSample', 3, ...
+%!                     'NumLearningCycles', 'AllPredictorCombinations', ...
+%!                     'Weights', (1:150)');
+%! [~, score] = predict (Mdl, meas([20, 71, 84, 134], :));
+%! assert_equal (loss (Mdl, meas, species), 0.0377, 1e-4);
+%! assert_equal (score, [1, 0, 0; 0, 0.2764, 0.7236; 0, 0.2624, 0.7376; ...
+%!                       0, 0.4545, 0.5455], 1e-4);
