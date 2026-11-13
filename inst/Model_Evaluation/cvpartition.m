@@ -1708,37 +1708,45 @@ endclassdef
 ## inds numbers each observation by the group it belongs to, ngroups counts the
 ## groups and gsize their sizes.  missidx flags the observations dropped for
 ## holding a missing value, and grpvars is returned with those observations
-## removed.
+## removed, one row per observation.
 ##
 ## One grouping variable is given as a vector, several as a matrix or cell
 ## array whose columns are the variables; a row then belongs to a group only if
-## it matches on every one of them.
+## it matches on every one of them.  A character matrix is one variable whose
+## rows are the labels.  Each variable is coded on its own, so that a cell
+## array may hold text in one column and numbers in another.
 function [inds, ngroups, gsize, missidx, grpvars] = __resolve_groups__ (grpvars)
 
   if (isvector (grpvars))
-    missidx = ismissing (grpvars);
-    if (any (missidx))
-      grpvars(missidx) = [];
-    endif
-    if (isa (grpvars, 'categorical'))
-      [~, idx, inds] = unique (grpvars, 'stable');
-    else
-      [~, idx, inds] = __unique__ (grpvars, 'stable');
-    endif
-  elseif (ismatrix (grpvars))
-    missidx = any (ismissing (grpvars), 2);
-    if (any (missidx))
-      grpvars(missidx, :) = [];
-    endif
-    if (isa (grpvars, 'categorical'))
-      [~, idx, inds] = unique (grpvars, 'rows', 'stable');
-    else
-      [~, idx, inds] = __unique__ (grpvars, 'rows', 'stable');
-    endif
-  else
+    grpvars = grpvars(:);
+  elseif (! ismatrix (grpvars))
     error (strcat ("cvpartition: invalid value for optional", ...
                    " paired argument 'GroupingVariables'."));
   endif
+
+  if (ischar (grpvars))
+    missidx = any (ismissing (grpvars), 2);
+    [~, ~, codes] = unique (grpvars, 'rows');
+  else
+    missidx = false (rows (grpvars), 1);
+    codes = zeros (size (grpvars));
+    for j = 1:columns (grpvars)
+      v = grpvars(:,j);
+      if (iscell (v) && ! iscellstr (v))
+        if (! all ((cellfun ('isnumeric', v) | cellfun ('islogical', v)) &
+                   cellfun ('numel', v) == 1))
+          error (strcat ("cvpartition: invalid value for optional", ...
+                         " paired argument 'GroupingVariables'."));
+        endif
+        v = cell2mat (v);
+      endif
+      missidx |= ismissing (v);
+      [~, ~, codes(:,j)] = unique (v);
+    endfor
+  endif
+  codes(missidx, :) = [];
+  grpvars(missidx, :) = [];
+  [~, idx, inds] = unique (codes, 'rows', 'stable');
 
   ngroups = numel (idx);
   gsize = zeros (1, ngroups);
