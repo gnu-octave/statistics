@@ -48,11 +48,17 @@
 ## having the same size and their ties in the same places after sorting
 ## to some permutation of the same normalised data:
 ## @example
-## @code{normalise_distribution([1 2 2 3 4])}
-## @result{} -1.28  0.00  0.00  0.52  1.28
+## @group
+## normalise_distribution ([1 2 2 3 4])
+## @result{} ans =
 ##
-## @code{normalise_distribution([1 10 100 10 1000])}
-## @result{} -1.28  0.00  0.52  0.00  1.28
+##   -1.2816        0        0   0.5244   1.2816
+##
+## normalise_distribution ([1 10 100 10 1000])
+## @result{} ans =
+##
+##   -1.2816        0   0.5244        0   1.2816
+## @end group
 ## @end example
 ##
 ## Original source:
