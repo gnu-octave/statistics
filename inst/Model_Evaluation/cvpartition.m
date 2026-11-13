@@ -729,6 +729,8 @@ classdef cvpartition
       ## vector is left alone: there each element is already an observation.
       elseif (ischar (X) && ! isvector (X))
         this = cvpartition (cellstr (X), varargin{:});
+        ## The class labels keep the type they were given in
+        this.classID = char (this.classID);
         return;
 
       ## Check first input being a vector for stratification
@@ -788,7 +790,7 @@ classdef cvpartition
             ClassSize(i) = sum (classes == i);
           endfor
           this.classes = classes;
-          this.classID = classID;
+          this.classID = classID(:);
         endif
         X = numel (X);
 
@@ -1099,7 +1101,7 @@ classdef cvpartition
         if (this.IsStratified)
           X = sum (! this.missidx);
           inds = false (X, 1);
-          NumClasses = numel (this.classID);
+          NumClasses = rows (this.classID);
           classes = this.classes;
           for i = 1:NumClasses
             ClassSize(i) = sum (classes == i);
@@ -1153,7 +1155,7 @@ classdef cvpartition
           this.TrainSize = nvec - this.TestSize;
         else  # is stratified
           X = sum (! this.missidx);
-          NumClasses = numel (this.classID);
+          NumClasses = rows (this.classID);
           classes = this.classes;
           for i = 1:NumClasses
             ClassSize(i) = sum (classes == i);
@@ -1263,7 +1265,10 @@ classdef cvpartition
     ## @item @var{tbl}
     ## A @code{table} object containing the summary statistics.  The table
     ## contains one row for every unique label/group in every set (all, train,
-    ## test).  The columns are:
+    ## test).  A grouped partition is summarized as a stratified one is: the
+    ## @qcode{'all'} rows come first and every group is listed in every set,
+    ## with a count of zero where it is absent.  MATLAB leaves out both for a
+    ## grouped partition.  The columns are:
     ## @table @code
     ## @item Set
     ## The specific subset being described.  Values include @qcode{'all'} (the
@@ -1271,9 +1276,13 @@ classdef cvpartition
     ## @item SetSize
     ## The total number of observations in that specific set.
     ## @item Label
-    ## The class or group identifier.  If @code{c.IsStratified} is true, this
-    ## column is named @code{StratificationLabel}.  If @code{c.IsGrouped} is
-    ## true, it is named @code{GroupLabel}.
+    ## The class or group identifier, of the same type as the stratification or
+    ## grouping variable.  If @code{c.IsStratified} is true, this column is
+    ## named @code{StratificationLabel}.  If @code{c.IsGrouped} is true, it is
+    ## named @code{GroupLabel}; a partition grouped by several variables has
+    ## one column for each, named @code{GroupLabel1}, @code{GroupLabel2}, and so
+    ## on, and a column of numbers given in a cell array is returned as a
+    ## numeric column.
     ## @item Count
     ## The number of observations of that label within the set.  If stratified,
     ## this column is named @code{StratificationCount}; otherwise,
@@ -1323,23 +1332,17 @@ classdef cvpartition
       col_Count = zeros (TotalRows, 1);
       col_Percent = zeros (TotalRows, 1);
 
-      ## Determine if Label column is text or numeric
-      if (iscell (UniqueLabels) || isstring (UniqueLabels) ||
-                                   ischar (UniqueLabels))
-        col_Label = cell (TotalRows, 1);
-        is_text_label = true;
-      else
-        col_Label = zeros (TotalRows, 1);
-        is_text_label = false;
-      endif
+      ## Row of UniqueLabels each table row describes, so that the labels keep
+      ## the type of the variable they come from
+      col_Label = zeros (TotalRows, 1);
 
       ## Helper for populating data
       curr_idx = 1;
 
       ## Inline helper function to calculate stats
       function [c_set, c_size, c_lbl, c_cnt, c_pct, idx_next] = ...
-               fill_rows (name, mask, map, u_lbl, n_lbl, ...
-                          c_set, c_size, c_lbl, c_cnt, c_pct, idx_start, is_txt)
+               fill_rows (name, mask, map, n_lbl, ...
+                          c_set, c_size, c_lbl, c_cnt, c_pct, idx_start)
 
         subset_map = map(mask);
         subset_size = numel (subset_map);
@@ -1349,20 +1352,7 @@ classdef cvpartition
 
           c_set{idx_start} = name;
           c_size(idx_start) = subset_size;
-
-          if (is_txt)
-            if (iscell (u_lbl))
-              c_lbl{idx_start} = u_lbl{u};
-            elseif (isstring (u_lbl))
-              ## Convert string object to char for cell storage
-              c_lbl{idx_start} = char (u_lbl(u));
-            else
-              c_lbl{idx_start} = u_lbl(u, :);
-            endif
-          else
-            c_lbl(idx_start) = u_lbl(u);
-          endif
-
+          c_lbl(idx_start) = u;
           c_cnt(idx_start) = count;
           c_pct(idx_start) = (count / subset_size) * 100;
 
@@ -1376,9 +1366,9 @@ classdef cvpartition
       ## --- Set: "all" ---
       all_mask = true (size (DataMap));
       [col_Set, col_SetSize, col_Label, col_Count, col_Percent, curr_idx] = ...
-          fill_rows ('all', all_mask, DataMap, UniqueLabels, NumLabels, ...
+          fill_rows ('all', all_mask, DataMap, NumLabels, ...
                      col_Set, col_SetSize, col_Label, col_Count, col_Percent, ...
-                     curr_idx, is_text_label);
+                     curr_idx);
 
       ## --- Set: Folds ---
       for k = 1:this.NumTestSets
@@ -1390,28 +1380,44 @@ classdef cvpartition
 
         train_name = sprintf ('train%d', k);
         [col_Set, col_SetSize, col_Label, col_Count, col_Percent, curr_idx] = ...
-          fill_rows (train_name, ! test_mask, DataMap, UniqueLabels, NumLabels, ...
+          fill_rows (train_name, ! test_mask, DataMap, NumLabels, ...
                      col_Set, col_SetSize, col_Label, col_Count, col_Percent, ...
-                     curr_idx, is_text_label);
+                     curr_idx);
 
         test_name = sprintf ('test%d', k);
         [col_Set, col_SetSize, col_Label, col_Count, col_Percent, curr_idx] = ...
-          fill_rows (test_name, test_mask, DataMap, UniqueLabels, NumLabels, ...
+          fill_rows (test_name, test_mask, DataMap, NumLabels, ...
                      col_Set, col_SetSize, col_Label, col_Count, col_Percent, ...
-                     curr_idx, is_text_label);
+                     curr_idx);
       endfor
 
       ## Construct Table
       if (exist ('string', 'class'))
         col_Set = string (col_Set);
-        if (is_text_label)
-          col_Label = string (col_Label);
-        endif
       endif
 
-      tbl = table (col_Set, col_SetSize, col_Label, col_Count, col_Percent, ...
-                   'VariableNames', {'Set', 'SetSize', LabelVarName, ...
-                                     CountVarName, 'PercentInSet'});
+      ## One label column per grouping variable, a character matrix being one
+      ## variable whose rows are the labels
+      if (ischar (UniqueLabels) || columns (UniqueLabels) == 1)
+        LabelVars = {UniqueLabels(col_Label, :)};
+        LabelNames = {LabelVarName};
+      else
+        LabelVars = cell (1, columns (UniqueLabels));
+        LabelNames = cell (1, columns (UniqueLabels));
+        for j = 1:columns (UniqueLabels)
+          v = UniqueLabels(col_Label, j);
+          if (iscell (v) && ! iscellstr (v))
+            v = cell2mat (v);
+          endif
+          LabelVars{j} = v;
+          LabelNames{j} = sprintf ('%s%d', LabelVarName, j);
+        endfor
+      endif
+
+      VarNames = [{'Set', 'SetSize'}, LabelNames, ...
+                  {CountVarName, 'PercentInSet'}];
+      tbl = table (col_Set, col_SetSize, LabelVars{:}, col_Count, ...
+                   col_Percent, 'VariableNames', VarNames);
 
     endfunction
 
@@ -2588,15 +2594,10 @@ endfunction
 %!                        'StratificationCount', 'PercentInSet'}, ...
 %!                        T.Properties.VariableNames)), true);
 %!
-%! ## Check Output Type (String Array) and Counts
-%! if (exist ('string', 'class'))
-%!   assert_equal (isa (T.Set, 'string'), true);
-%!   assert_equal (isa (T.StratificationLabel, 'string'), true);
-%!   mask = (T.Set == 'all') & (T.StratificationLabel == 'Setosa');
-%! else
-%!   ## Fallback for older environments
-%!   mask = strcmp (T.Set, 'all') & strcmp (T.StratificationLabel, 'Setosa');
-%! endif
+%! ## Check Output Type and Counts
+%! assert_equal (isa (T.Set, 'string'), true);
+%! assert_equal (iscellstr (T.StratificationLabel), true);
+%! mask = (T.Set == 'all') & strcmp (T.StratificationLabel, 'Setosa');
 %! assert_equal (T.StratificationCount(mask), 10);
 %!test
 %! ## 2. Grouped K-Fold: Basic Numeric Labels
@@ -2736,17 +2737,9 @@ endfunction
 %! species = [repmat({'C1'}, 90, 1); repmat({'C2'}, 10, 1)];
 %! c = cvpartition (species, 'KFold', 2);
 %! T = summary (c);
-%! if (exist ('string', 'class'))
-%!   mask_ts1 = (T.Set == 'test1');
-%!   subT = T(mask_ts1, :);
-%!   c1_count = subT.StratificationCount(subT.StratificationLabel == 'C1');
-%!   c2_count = subT.StratificationCount(subT.StratificationLabel == 'C2');
-%! else
-%!   mask_ts1 = strcmp (T.Set, 'test1');
-%!   subT = T(mask_ts1, :);
-%!   c1_count = subT.StratificationCount(strcmp (subT.StratificationLabel, 'C1'));
-%!   c2_count = subT.StratificationCount(strcmp (subT.StratificationLabel, 'C2'));
-%! endif
+%! subT = T(T.Set == 'test1', :);
+%! c1_count = subT.StratificationCount(strcmp (subT.StratificationLabel, 'C1'));
+%! c2_count = subT.StratificationCount(strcmp (subT.StratificationLabel, 'C2'));
 %! assert_equal (c1_count == 45, true);
 %! assert_equal (c2_count == 5, true);
 %!test
@@ -2780,11 +2773,7 @@ endfunction
 %! groups = ['A'; 'B'];
 %! c = cvpartition (2, 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
-%! if (exist ('string', 'class'))
-%!   assert_equal (isa (T.GroupLabel, 'string'), true);
-%! else
-%!   assert_equal (iscellstr (T.GroupLabel), true);
-%! endif
+%! assert_equal (ischar (T.GroupLabel), true);
 %!test
 %! ## 17. Valid "Blank" Labels (Space) - FIX APPLIED
 %! species = {'A'; 'A'; ' '; ' '};
@@ -2834,13 +2823,8 @@ endfunction
 %! species = {'A'; 'A'; ''; ''};
 %! c = cvpartition (species, 'KFold', 2);
 %! T = summary (c);
-%! if (exist ('string', 'class'))
-%!   assert_equal (! any (T.StratificationLabel == ''), true);
-%!   mask_all = (T.Set == 'all');
-%! else
-%!   assert_equal (! any (strcmp (T.StratificationLabel, '')), true);
-%!   mask_all = strcmp (T.Set, 'all');
-%! endif
+%! assert_equal (! any (strcmp (T.StratificationLabel, '')), true);
+%! mask_all = (T.Set == 'all');
 %! total_rows = T.SetSize(find (mask_all, 1));
 %! assert_equal (total_rows, 2);
 %!test
@@ -2937,13 +2921,13 @@ endfunction
 %! g = {'a', 'a', 'b', 'b', 'c', 'c'};
 %! c = cvpartition (6, 'KFold', 3, 'GroupingVariables', g);
 %! T = summary (c);
-%! assert_equal (T.GroupLabel(1:3), string ({'a'; 'b'; 'c'}));
+%! assert_equal (T.GroupLabel(1:3), {'a'; 'b'; 'c'});
 %! assert_equal (T.GroupCount(1:3), [2; 2; 2]);
 %!test
 %! ## 32. Grouping variable given as a character row vector
 %! c = cvpartition (6, 'KFold', 3, 'GroupingVariables', 'aabbcc');
 %! T = summary (c);
-%! assert_equal (T.GroupLabel(1:3), string ({'a'; 'b'; 'c'}));
+%! assert_equal (T.GroupLabel(1:3), ['a'; 'b'; 'c']);
 %! assert_equal (T.GroupCount(1:3), [2; 2; 2]);
 %!test
 %! ## 33. Grouping variable given as a string array
