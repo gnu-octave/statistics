@@ -88,8 +88,10 @@ classdef ClassificationNeuralNetwork < PredictiveModel
     ## A logical column vector with the same length as the observations in the
     ## original predictor data @var{X}, true for each row that was used for
     ## fitting the ClassificationNeuralNetwork model.  It is empty, @qcode{[]},
-    ## when every observation was used, so a non-empty value means that rows
-    ## holding missing values were dropped.  This property is read-only.
+    ## when every observation was used.  A row is dropped when its class is
+    ## missing, when every predictor is missing, or when its weight is zero or
+    ## missing; a row missing only some predictors is used.  This property is
+    ## read-only.
     ##
     ## @end deftp
     RowsUsed              = [];
@@ -972,18 +974,21 @@ classdef ClassificationNeuralNetwork < PredictiveModel
         gY(! ismember (gY, namedClasses (glY, ClassNames))) = NaN;
       endif
 
-      ## An observation is dropped when its response is missing, or when its
-      ## weight is zero or missing, as R2024a drops it; the weights keep their
-      ## class in the model and every computation runs on them as double.  A row
-      ## whose predictors hold missing values is kept and reported as used,
-      ## while the fit below draws on the complete observations alone.
+      ## An observation is dropped when its response is missing, when every
+      ## predictor is missing, or when its weight is zero or missing, as R2024a
+      ## drops it; the weights keep their class in the model and every
+      ## computation runs on them as double.  A row missing only some
+      ## predictors is kept and reported as used, while the fit below draws on
+      ## the complete observations alone.
       Wclass    = "double";
       Wall      = ones (rows (X), 1);
       if (! isempty (Weights))
         Wclass  = class (Weights);
         Wall    = double (Weights(:));
       endif
-      RowsUsed  = ! isnan (gY) & ! isnan (Wall) & Wall > 0;
+      RowsUsed  = ! isnan (gY) & ! all (isnan (X), 2) & ! isnan (Wall) ...
+                  & Wall > 0;
+      Ylab      = Y(! isnan (gY), :);
       wret      = Wall(RowsUsed);
       ## Index the rows and not the elements: a response naming its
       ## classes in the rows of a character matrix has one column per
@@ -999,10 +1004,11 @@ classdef ClassificationNeuralNetwork < PredictiveModel
       X         = Xret(cobs, :);
       wfit      = wret(cobs);
 
-      ## Renew groups in Y over the retained observations, so a class held
-      ## only by a row with missing predictors is still a class of the model;
-      ## the classes are sorted or in the order ClassNames gives them
-      [this.ClassNames, gret] = classOrder (Yret, ClassNames, exempt);
+      ## The classes are those of every labelled row, so a class whose rows
+      ## were all dropped stays a class of the model with prior 0, as in
+      ## R2024a; they are sorted or in the order ClassNames gives them
+      this.ClassNames = classOrder (Ylab, ClassNames, exempt);
+      gret = labelIndices (this.ClassNames, Yret);
       gY = gret(cobs);
 
       ## Dummy code the categorical predictors on the rows the fit draws on.
@@ -3231,3 +3237,10 @@ endfunction
 %! delete (fname);
 %! [~, score] = predict (M2, meas([1, 51, 101], :));
 %! assert_equal (score(:,2), [0; 0; 0]);
+%!test  # a row missing every predictor is dropped, its class kept, as in R2024a
+%! X = [1, 1; 2, 2; 3, 3; 4, 4; 5, 5; 6, 6; 7, 7; 8, 8; NaN, NaN];
+%! Y = {'a'; 'a'; 'a'; 'a'; 'b'; 'b'; 'b'; 'b'; 'c'};
+%! Mdl = fitcnet (X, Y);
+%! assert_equal (Mdl.NumObservations, 8);
+%! assert_equal (Mdl.ClassNames(:)', {'a', 'b', 'c'});
+%! assert_equal (Mdl.Prior, [0.5, 0.5, 0]);

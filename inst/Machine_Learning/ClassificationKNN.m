@@ -1337,6 +1337,7 @@ classdef ClassificationKNN < PredictiveModel
       if (! isempty (Weights))
         RowsUsed = RowsUsed & Weights(:) > 0;
       endif
+      Ylab      = Y(! isnan (gY), :);
       Yret      = Y(RowsUsed, :);
       Xret      = X(RowsUsed, :);
       this.X    = Xret;
@@ -1351,10 +1352,11 @@ classdef ClassificationKNN < PredictiveModel
       Y         = Yret(cobs, :);
       X         = Xret(cobs, :);
 
-      ## Renew groups in Y over the retained observations, so a class held
-      ## only by a row with missing predictors is still a class of the model;
-      ## the classes are sorted or in the order ClassNames gives them
-      [this.ClassNames, gret] = classOrder (Yret, ClassNames, exempt);
+      ## The classes are those of every labelled row, so a class whose rows
+      ## were all dropped stays a class of the model with prior 0, as in
+      ## R2024a; they are sorted or in the order ClassNames gives them
+      this.ClassNames = classOrder (Ylab, ClassNames, exempt);
+      gret = labelIndices (this.ClassNames, Yret);
       gY = gret(cobs);
 
       ## Check X contains valid data
@@ -4857,13 +4859,12 @@ endfunction
 %! X = knX;
 %! X([7, 15],:) = NaN;
 %! assert_equal (fitcknn (X, knL).Prior, [10, 12] / 22, 1e-15);
-%!test  # a class held only by dropped rows is no class of the model; R2024a
-%!      # lists it in ClassNames with prior 0
+%!test  # a class held only by dropped rows stays, with prior 0, as in R2024a
 %! X = knX;
 %! X([7, 15],:) = NaN;
 %! L = knL;
 %! L([7, 15]) = {'r'};
 %! Mdl = fitcknn (X, L);
-%! assert_equal (Mdl.ClassNames(:)', {'p', 'q'});
-%! assert_equal (Mdl.Prior, [10, 12] / 22, 1e-15);
+%! assert_equal (Mdl.ClassNames(:)', {'p', 'q', 'r'});
+%! assert_equal (Mdl.Prior, [10, 12, 0] / 22, 1e-15);
 

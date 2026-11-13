@@ -1077,6 +1077,7 @@ classdef ClassificationTree < PredictiveModel
       ## Index the rows and not the elements: a response naming its classes
       ## in the rows of a character matrix has one column per character, and
       ## a linear index would flatten the names into single letters.
+      Ylab = Y(! isnan (gY), :);
       Y = Y(RowsUsed, :);
       X = X(RowsUsed, :);
       if (! isempty (Weights))
@@ -1094,8 +1095,11 @@ classdef ClassificationTree < PredictiveModel
       endif
 
       ## The classes, in the type the response was given in, sorted or in the
-      ## order ClassNames gives them
-      [this.ClassNames, gY] = classOrder (Y, ClassNames, exempt);
+      ## order ClassNames gives them.  They are those of every labelled row,
+      ## so a class whose rows were all dropped stays with prior 0, as in
+      ## R2024a.
+      this.ClassNames = classOrder (Ylab, ClassNames, exempt);
+      gY = labelIndices (this.ClassNames, Y);
       K = classCount (this.ClassNames);
 
       ## The raw weights, kept so that reassigning Prior can re-derive W
@@ -3598,3 +3602,15 @@ endfunction
 %!error<ClassificationTree: no observation has a known class, a known predictor and a nonzero weight.> ...
 %! fitctree ([NaN, NaN; NaN, NaN; 1, 2], {'a'; 'b'; 'c'}, 'Weights', [1; 1; 0])
 
+%!test  # a class held only by a dropped row stays, with prior 0, as in R2024a
+%! X = [1, 1; 2, 2; 3, 3; 4, 4; 5, 5; 6, 6; 7, 7; 8, 8; NaN, NaN];
+%! Y = {'a'; 'a'; 'a'; 'a'; 'b'; 'b'; 'b'; 'b'; 'c'};
+%! Mdl = fitctree (X, Y);
+%! assert_equal (Mdl.ClassNames(:)', {'a', 'b', 'c'});
+%! assert_equal (Mdl.Prior, [0.5, 0.5, 0]);
+%!test  # so does one held only by a row of zero weight
+%! X = [1, 1; 2, 2; 3, 3; 4, 4; 5, 5; 6, 6; 7, 7; 8, 8; 9, 9];
+%! Y = {'a'; 'a'; 'a'; 'a'; 'b'; 'b'; 'b'; 'b'; 'c'};
+%! Mdl = fitctree (X, Y, 'Weights', [1; 1; 1; 1; 1; 1; 1; 1; 0]);
+%! assert_equal (Mdl.ClassNames(:)', {'a', 'b', 'c'});
+%! assert_equal (Mdl.Prior, [0.5, 0.5, 0]);

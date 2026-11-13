@@ -2144,3 +2144,16 @@ endfunction
 %!                     'NumLearningCycles', 'AllPredictorCombinations', ...
 %!                     'Prior', [0.2, 0.5, 0.3]);
 %! assert_equal (Mdl.Trained{1}.Prior, [0.15, 0.5, 0.3] / 0.95, 1e-14);
+%!test  # a class held only by a dropped row stays, with prior 0, as in R2024a
+%! X = [1, 1; 2, 2; 3, 3; 4, 4; 5, 5; 6, 6; 7, 7; 8, 8; NaN, NaN];
+%! Y = {'a'; 'a'; 'a'; 'a'; 'b'; 'b'; 'b'; 'b'; 'c'};
+%! Mdl = fitcensemble (X, Y, 'Method', 'Bag', 'NumLearningCycles', 5);
+%! assert_equal (Mdl.ClassNames(:)', {'a', 'b', 'c'});
+%! assert_equal (Mdl.Prior, [0.5, 0.5, 0]);
+%!test  # so AdaBoostM2 still has three classes to fit
+%! X = [1, 1; 2, 2; 3, 3; 4, 4; 5, 5; 6, 6; 7, 7; 8, 8; NaN, NaN];
+%! Y = {'a'; 'a'; 'a'; 'a'; 'b'; 'b'; 'b'; 'b'; 'c'};
+%! S = warning ('off', 'all');
+%! Mdl = fitcensemble (X, Y, 'Method', 'AdaBoostM2', 'NumLearningCycles', 5);
+%! warning (S);
+%! assert_equal (Mdl.ClassNames(:)', {'a', 'b', 'c'});

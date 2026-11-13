@@ -616,7 +616,8 @@ classdef ClassificationNaiveBayes < PredictiveModel
       ## it is fitted on complete rows alone, while a row missing some counts
       ## still counts in the prior.  X and Y hold the rows kept, as in
       ## R2024a, so that they line up with W and with resubPredict.
-      ok = ! isnan (grp2idx (Y)) & ! all (isnan (X), 2);
+      labelled = ! isnan (grp2idx (Y));
+      ok = labelled & ! all (isnan (X), 2);
       if (! isempty (Weights))
         ok &= ! isnan (Weights(:)) & Weights(:) > 0;
       endif
@@ -633,13 +634,16 @@ classdef ClassificationNaiveBayes < PredictiveModel
                        " weight."));
       endif
 
-      ## Resolve the classes.  Naming them keeps only those observations, so
-      ## the rows of the others are dropped exactly as a missing value is.
+      ## Resolve the classes, those of every labelled row, so that a class
+      ## whose rows were all dropped stays with prior 0, as in R2024a.  Naming
+      ## them keeps only those observations, so the rows of the others are
+      ## dropped exactly as a missing value is.
+      Ylab = Y(labelled, :);
       if (isempty (ClassNames))
-        C = uniqueLabels (Yf);
+        C = uniqueLabels (Ylab);
       else
         ## The named classes, in the type of the response
-        U = uniqueLabels (Yf);
+        U = uniqueLabels (Ylab);
         ## A named class with prior 0 is removed below, so it may be absent;
         ## it is added to the labels the classes are drawn from
         exempt = zeroPriorNames (ClassNames, Prior, []);
@@ -650,9 +654,9 @@ classdef ClassificationNaiveBayes < PredictiveModel
         absent = (pos(:) == 0);
         if (any (absent))
           if (ischar (ClassNames))
-            U = uniqueLabels (namesAsLabels (Yf, ClassNames(absent,:)));
+            U = uniqueLabels (namesAsLabels (Ylab, ClassNames(absent,:)));
           else
-            U = uniqueLabels (namesAsLabels (Yf, ClassNames(absent)));
+            U = uniqueLabels (namesAsLabels (Ylab, ClassNames(absent)));
           endif
           pos = namedClasses (U, ClassNames);
         endif
@@ -2689,3 +2693,9 @@ endfunction
 %! assert_equal (label, {'q'; 'p'; 'p'});
 %! assert_equal (cost(:,1), [1.26254662156491; NaN; NaN], 1e-14);
 
+%!test  # a class held only by a dropped row stays, with prior 0, as in R2024a
+%! X = [1, 1; 2, 2; 3, 3; 4, 4; 5, 5; 6, 6; 7, 7; 8, 8; NaN, NaN];
+%! Y = {'a'; 'a'; 'a'; 'a'; 'b'; 'b'; 'b'; 'b'; 'c'};
+%! Mdl = fitcnb (X, Y);
+%! assert_equal (Mdl.ClassNames(:)', {'a', 'b', 'c'});
+%! assert_equal (Mdl.Prior, [0.5, 0.5, 0]);

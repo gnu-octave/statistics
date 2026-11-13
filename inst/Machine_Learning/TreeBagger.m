@@ -854,8 +854,10 @@ classdef TreeBagger < PredictiveModel
           endif
           C = labelsFromIndex (U, loc(:));
         endif
+        ## A row missing every predictor is left out as well, its class
+        ## staying a class of the model, as in R2024a
         gY = labelIndices (C, Y);
-        keep = gY > 0;
+        keep = gY > 0 & ! all (isnan (X), 2);
         if (! any (keep))
           error ("TreeBagger: no observations with a known class.");
         endif
@@ -3010,3 +3012,9 @@ endfunction
 %! Mdl = TreeBagger (5, meas, species, 'Weights', single (w));
 %! assert_equal (class (Mdl.W), 'single');
 %! assert_equal (sum (double (Mdl.W)), 1, 1e-6);
+%!test  # a row missing every predictor leaves the prior, its class kept
+%! X = [1, 1; 2, 2; 3, 3; 4, 4; 5, 5; 6, 6; 7, 7; 8, 8; NaN, NaN];
+%! Y = {'a'; 'a'; 'a'; 'a'; 'b'; 'b'; 'b'; 'b'; 'c'};
+%! Mdl = TreeBagger (5, X, Y);
+%! assert_equal (Mdl.ClassNames(:)', {'a', 'b', 'c'});
+%! assert_equal (Mdl.Prior, [0.5, 0.5, 0]);

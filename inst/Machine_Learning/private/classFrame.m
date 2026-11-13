@@ -129,8 +129,15 @@ function F = classFrame (X, Y, ClassNames, Prior, Cost, Weights, ...
     error ("%s: no complete observations in the data.", classname);
   endif
 
-  ## The classes, sorted or in the order ClassNames gives them.
-  [F.ClassNames, gY] = classOrder (F.Y, ClassNames, exempt);
+  ## The classes, sorted or in the order ClassNames gives them.  A multiclass
+  ## model keeps a class every observation of which was dropped, with prior
+  ## 0, as R2024a does: the classes are those of every labelled row.
+  if (binary)
+    [F.ClassNames, gY] = classOrder (F.Y, ClassNames, exempt);
+  else
+    F.ClassNames = classOrder (Y(! isnan (gY), :), ClassNames, exempt);
+    gY = labelIndices (F.ClassNames, F.Y);
+  endif
   nclasses = classCount (F.ClassNames);
   F.gY = gY;
   [F.n, F.p] = size (F.X);

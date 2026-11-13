@@ -1393,3 +1393,9 @@ endclassdef
 %! assert_equal (Mdl.NumObservations, 28);
 %! assert_equal (Mdl.Prior, [9, 9, 10] / 28, 1e-15);
 
+%!test  # a class held only by a dropped row stays, with prior 0, as in R2024a
+%! X = [1, 1; 2, 2; 3, 3; 4, 4; 5, 5; 6, 6; 7, 7; 8, 8; NaN, NaN];
+%! Y = {'a'; 'a'; 'a'; 'a'; 'b'; 'b'; 'b'; 'b'; 'c'};
+%! Mdl = fitcecoc (X, Y);
+%! assert_equal (Mdl.ClassNames(:)', {'a', 'b', 'c'});
+%! assert_equal (Mdl.Prior, [0.5, 0.5, 0]);
