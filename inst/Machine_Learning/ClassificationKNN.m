@@ -2612,6 +2612,45 @@ function p = knndistparam (Distance, X, standardized)
 
 endfunction
 
+## Parse a nearest-neighbour distance weight.
+##
+## DW is the weight as it is reported, a character vector naming a built-in
+## weight or the func2str form of a supplied handle, and F is the callable
+## that applies it.  The property holds the text, as MATLAB does, and the
+## callable is kept out of sight beside it.
+function [f, dw] = parseDistanceWeight (DistanceWeight, classname)
+
+  if (! (ischar (DistanceWeight) || is_function_handle (DistanceWeight)))
+    error (strcat ("%s: 'DistanceWeight' must be a character vector or a", ...
+                   " function handle."), classname);
+  endif
+
+  if (is_function_handle (DistanceWeight))
+    m = eye (5);
+    if (! isequal (size (m), size (DistanceWeight (m))))
+      error (strcat ("%s: function handle for 'DistanceWeight' must return", ...
+                     " the same size as its input."), classname);
+    endif
+    f = DistanceWeight;
+    dw = func2str (DistanceWeight);
+    return;
+  endif
+
+  switch (lower (DistanceWeight))
+    case 'equal'
+      f = @(d) ones (size (d));
+    case 'inverse'
+      f = @(d) d .^ (-1);
+    case 'squaredinverse'
+      f = @(d) d .^ (-2);
+    otherwise
+      error (strcat ("%s: 'DistanceWeight' must be 'equal', 'inverse',", ...
+                     " 'squaredinverse', or a function handle."), classname);
+  endswitch
+  dw = lower (DistanceWeight);
+
+endfunction
+
 %!demo
 %! ## Create a k-nearest neighbor classifier for Fisher's iris data with k = 5.
 %! ## Evaluate some model predictions on new data.
