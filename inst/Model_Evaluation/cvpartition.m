@@ -2936,6 +2936,40 @@ endfunction
 %! T = summary (c);
 %! assert_equal (T.GroupLabel(1:3), string ({'a'; 'b'; 'c'}));
 %! assert_equal (T.GroupCount(1:3), [2; 2; 2]);
+%!test
+%! ## 34. Categorical stratification keeps its categories and their order
+%! y = categorical ({'a'; 'a'; 'b'; 'b'; 'c'; 'c'}, {'c', 'b', 'a', 'unused'});
+%! T = summary (cvpartition (y, 'KFold', 2));
+%! assert_equal (T.StratificationLabel(1:3), ...
+%!               categorical ({'c'; 'b'; 'a'}, {'c', 'b', 'a', 'unused'}));
+%! assert_equal (categories (T.StratificationLabel), {'c'; 'b'; 'a'; 'unused'});
+%!test
+%! ## 35. Categorical grouping variable gives categorical labels
+%! g = categorical ({'b'; 'b'; 'a'; 'a'; 'c'; 'c'});
+%! T = summary (cvpartition (6, 'KFold', 3, 'GroupingVariables', g));
+%! assert_equal (T.GroupLabel(1:3), categorical ({'b'; 'a'; 'c'}));
+%!test
+%! ## 36. Numeric matrix of grouping variables gives one column each
+%! g = [1, 10; 1, 20; 2, 10; 2, 10; 1, 10; 1, 20];
+%! T = summary (cvpartition (6, 'KFold', 3, 'GroupingVariables', g));
+%! assert_equal (T.GroupLabel1(1:3), [1; 1; 2]);
+%! assert_equal (T.GroupLabel2(1:3), [10; 20; 10]);
+%!test
+%! ## 37. Cell array with a text and a numeric grouping variable
+%! g = {'a', 1; 'a', 2; 'b', 1; 'b', 1; 'a', 1; 'a', 2};
+%! T = summary (cvpartition (6, 'KFold', 3, 'GroupingVariables', g));
+%! assert_equal (T.GroupLabel1(1:3), {'a'; 'a'; 'b'});
+%! assert_equal (T.GroupLabel2(1:3), [1; 2; 1]);
+%!test
+%! ## 38. Character matrix stratification gives character labels
+%! y = ['ab'; 'ab'; 'cd'; 'cd'; 'ef'; 'ef'];
+%! T = summary (cvpartition (y, 'KFold', 2));
+%! assert_equal (T.StratificationLabel(1:3,:), ['ab'; 'cd'; 'ef']);
+%!test
+%! ## 39. Stratification given as a numeric row vector
+%! T = summary (cvpartition ([1, 1, 2, 2, 3, 3], 'KFold', 2));
+%! assert_equal (height (T), 15);
+%! assert_equal (T.StratificationLabel(1:3), [1; 2; 3]);
 %!error <cvpartition.summary: partition must be stratified or grouped.>
 %! c = cvpartition (20, 'KFold', 5);
 %! summary (c);
