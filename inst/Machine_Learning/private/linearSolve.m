@@ -27,8 +27,8 @@
 ## sum (@var{w} .* L (@var{X} * Beta + Bias, @var{y})) + Lambda * R (Beta)
 ## @end example
 ##
-## with @var{w} summing to one, @code{L} the fitted loss of
-## @code{linearLoss}, and @code{R} either @math{||Beta||^2 / 2} for ridge or
+## with @var{w} summing to one, @code{L} the per-observation loss the fit
+## minimizes, and @code{R} either @math{||Beta||^2 / 2} for ridge or
 ## @math{||Beta||_1} for lasso.  The bias is never regularized.
 ##
 ## @var{P} is a scalar struct holding the resolved fitting options; the
@@ -649,6 +649,57 @@ function [code, status] = terminationOfCode (code)
     otherwise
       code = 0;
       status = {'Iteration limit exceeded.'};
+  endswitch
+
+endfunction
+
+## Per-observation fitted loss of a linear model, and its derivative.
+##
+## F is the raw score X * Beta + Bias, Y the response: +1/-1 for the two
+## classification losses and the observed value for the two regression
+## losses.  L is the loss of each observation and DL its derivative with
+## respect to F.
+##
+## The four losses are MATLAB's, and the constants are its own as measured on
+## R2024a rather than the textbook ones: 'mse' carries the factor of one half
+## that makes the reported objective agree, while 'hinge', 'logit' and
+## 'epsiloninsensitive' carry none.  Note that this is the loss the fit
+## minimizes, which is not the loss the loss method reports by default.
+##
+## At the kink of a non-differentiable loss the derivative is taken to be the
+## one-sided value that is zero, which is the subgradient of least norm.
+function [L, dL] = linearLoss (f, y, lossfun, epsilon)
+
+  switch (lossfun)
+
+    case 'hinge'
+      m = 1 - y .* f;
+      active = m > 0;
+      L = m .* active;
+      dL = -y .* active;
+
+    case 'logit'
+      ## log (1 + exp (-y * f)) evaluated so that neither tail overflows:
+      ## log (1 + exp (u)) is max (u, 0) + log1p (exp (-abs (u))).
+      u = -(y .* f);
+      L = max (u, 0) + log1p (exp (-abs (u)));
+      dL = -y ./ (1 + exp (-u));
+
+    case 'mse'
+      r = f - y;
+      L = 0.5 * (r .^ 2);
+      dL = r;
+
+    case 'epsiloninsensitive'
+      r = f - y;
+      m = abs (r) - epsilon;
+      active = m > 0;
+      L = m .* active;
+      dL = sign (r) .* active;
+
+    otherwise
+      error ("linearLoss: unknown loss function '%s'.", lossfun);
+
   endswitch
 
 endfunction
