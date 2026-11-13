@@ -323,7 +323,7 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
         pVal = exp (logPVal);
       endif
 
-    ## Compute p-value and critical values without Monte Carlo simulation
+    ## Compute p-value and critical values with Monte Carlo simulation
     else
       [CV, pVal] = adtestMC (ADStat, n, alpha, distribution, MCTol);
     endif
@@ -641,7 +641,7 @@ endfunction
 
 ## Simulated critical values and p-values for Anderson-Darling test
 function [crit, p] = adtestMC (ADStat, n, alpha, distribution, MCTol)
-  ## Initial values vartol = mctol^2;
+  ## Initial values
   crit = 0;
   p = 0;
   mcRepsTot = 0;
