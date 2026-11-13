@@ -245,9 +245,12 @@ classdef cvpartition
     ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'KFold'})
     ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'KFold'}, @var{k})
     ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'KFold'}, @var{k}, @qcode{'Stratify'}, @var{opt})
+    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'KFold'}, @var{k}, @qcode{'GroupingVariables'}, @var{grpvars})
+    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'KFold'}, @var{k}, @qcode{'Stratify'}, @var{opt}, @qcode{'GroupingVariables'}, @var{grpvars})
     ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'Holdout'})
     ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'Holdout'}, @var{p})
     ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'Holdout'}, @var{p}, @qcode{'Stratify'}, @var{opt})
+    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'Holdout'}, @var{p}, @qcode{'Stratify'}, false, @qcode{'GroupingVariables'}, @var{grpvars})
     ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@qcode{'CustomPartition'}, @var{testSets})
     ##
     ## Repartition data for cross-validation.
@@ -311,15 +314,21 @@ classdef cvpartition
     ## @end multitable
     ##
     ## Given a stratification variable, @qcode{'GroupingVariables'} may
-    ## follow @qcode{'Stratify'}, as in @code{cvpartition (@var{y},
-    ## @qcode{'KFold'}, @var{k}, @qcode{'Stratify'}, true,
-    ## @qcode{'GroupingVariables'}, @var{grpvars})}.  Each group is then
-    ## kept whole while the classes of @var{y} are spread as evenly over
-    ## the folds as the groups allow, which is scikit-learn's
-    ## @code{StratifiedGroupKFold}.  The two demands conflict, since a
-    ## group carries whatever class mix it has, so the balance is
-    ## approximate: groups are placed largest first, each into the fold
-    ## whose class counts it disturbs least.
+    ## follow @qcode{'Stratify'} or come in its place, as in
+    ## @code{cvpartition (@var{y}, @qcode{'KFold'}, @var{k},
+    ## @qcode{'GroupingVariables'}, @var{grpvars})}.  @qcode{'Stratify'} is then
+    ## true unless set to false, as it is without grouping, and each group is
+    ## kept whole while the classes of @var{y} are spread as evenly over the
+    ## folds as the groups allow, which is scikit-learn's
+    ## @code{StratifiedGroupKFold}.  The two demands conflict, since a group
+    ## carries whatever class mix it has, so the balance is approximate: groups
+    ## are placed largest first, each into the fold whose class counts it
+    ## disturbs least.  Such a partition exists for @qcode{'KFold'} only.  With
+    ## @qcode{'Stratify'} set to false the classes play no part, and the
+    ## partition, @qcode{'KFold'} or @qcode{'Holdout'}, is the one
+    ## @code{cvpartition (@var{n}, @dots{}, @qcode{'GroupingVariables'},
+    ## @var{grpvars})} makes.  Either way an observation missing from @var{y}
+    ## or from @var{grpvars} is left out.
     ##
     ## In every case an observation never appears in both the training and the
     ## test set as one of its group fellows, which is what makes grouping worth
@@ -612,8 +621,7 @@ classdef cvpartition
                              " needs every group; leave a group for", ...
                              " training."), p);
             endif
-            inds = false (X, 1);
-            inds(! this.missidx) = held(gidx);
+            inds = held(gidx);
             this.cvptype = 'Group hold-out cross validation partition';
             this.IsGrouped = true;
           else
@@ -744,49 +752,73 @@ classdef cvpartition
         ## Get number of observations (including missing values)
         this.NumObservations = numel (X);
 
-        ## Remove missing values from partitioning.
-        ## Keep missing index to include them in the test indices.
+        ## Missing values are left out of the partition and kept track of, so
+        ## that they belong to no training and no test set
         this.missidx = ismissing (X);
-        X(this.missidx) = [];
 
-        ## Get stratify option
-        if (nargin < 4)
-          this.IsStratified = true;
-        else
-          if (! strcmpi (varargin{3}, 'stratify'))
-              error (strcat ("cvpartition: invalid optional paired", ...
-                             " argument for stratification."));
-          endif
-          if (nargin < 5)
+        ## Get the 'Stratify' option, true unless given, and the grouping
+        ## variables, which may follow it or come in its place
+        this.IsStratified = true;
+        grpvars = [];
+        opts = varargin(3:end);
+        if (! isempty (opts) && ischar (opts{1})
+                             && strcmpi (opts{1}, 'stratify'))
+          if (numel (opts) < 2)
             error (strcat ("cvpartition: missing value for optional", ...
                            " paired argument 'stratify'."));
           endif
-          if (! isscalar (varargin{4}) || ! islogical (varargin{4}))
+          if (! isscalar (opts{2}) || ! islogical (opts{2}))
             error (strcat ("cvpartition: invalid value for optional", ...
                            " paired argument 'stratify'."));
           endif
-          this.IsStratified = varargin{4};
+          this.IsStratified = opts{2};
+          opts(1:2) = [];
+          badopt = strcat ("cvpartition: invalid optional paired", ...
+                           " argument for 'GroupingVariables'.");
+        else
+          badopt = strcat ("cvpartition: invalid optional paired", ...
+                           " argument for stratification.");
         endif
-
-        ## 'GroupingVariables' may follow 'Stratify', giving a partition that
-        ## keeps each group whole and the classes balanced across folds
-        grpvars = [];
-        if (nargin > 5)
-          if (! (ischar (varargin{5})
-                 && strcmpi (varargin{5}, 'groupingvariables')))
-            error (strcat ("cvpartition: invalid optional paired", ...
-                           " argument for 'GroupingVariables'."));
+        if (! isempty (opts))
+          if (! (ischar (opts{1}) && strcmpi (opts{1}, 'groupingvariables')))
+            error (badopt);
           endif
-          if (nargin < 7)
+          if (numel (opts) < 2)
             error (strcat ("cvpartition: missing value for optional", ...
                            " paired argument 'GroupingVariables'."));
           endif
-          grpvars = varargin{6};
+          grpvars = opts{2};
           if (isempty (grpvars))
             error (strcat ("cvpartition: invalid value for optional", ...
                            " paired argument 'GroupingVariables'."));
           endif
         endif
+
+        ## Grouping leaves out the observations missing from either variable
+        if (! isempty (grpvars))
+          [gidx, NumGroups, GroupSize, this.missidx, grpvars] = ...
+                              __resolve_groups__ (grpvars, this.missidx);
+          ## Unstratified, the classes play no part and the partition is the
+          ## one made from the count of the observations left
+          if (! this.IsStratified)
+            if (! any (strcmpi (varargin{1}, {'kfold', 'holdout'})))
+              error ("cvpartition: invalid optional paired argument.");
+            endif
+            missidx = this.missidx;
+            nobs = this.NumObservations;
+            this = cvpartition (numel (gidx), varargin{1}, varargin{2}, ...
+                                'GroupingVariables', grpvars);
+            this.NumObservations = nobs;
+            this.missidx = missidx;
+            return;
+          endif
+          if (! strcmpi (varargin{1}, 'kfold'))
+            error (strcat ("cvpartition: a stratified grouped partition", ...
+                           " is available for 'KFold' only; set", ...
+                           " 'Stratify' to false to hold out whole groups."));
+          endif
+        endif
+        X(this.missidx) = [];
 
         ## Handle stratification
         if (this.IsStratified)
@@ -881,11 +913,6 @@ classdef cvpartition
           this.NumTestSets = k;
           if (this.IsStratified && ! isempty (grpvars))
             ## Both: whole groups, classes balanced across folds
-            [gidx, NumGroups, GroupSize] = __resolve_groups__ (grpvars);
-            if (numel (gidx) != X)
-              error (strcat ("cvpartition: grouping variable does", ...
-                             " not match the number of observations."));
-            endif
             if (k > NumGroups)
               warning (strcat ("cvpartition: number of folds K is greater", ...
                                " than the groups in 'GroupingVariables'.", ...
@@ -968,27 +995,6 @@ classdef cvpartition
               pooled_inds(1) = [];
             endwhile
             this.cvptype = 'Stratified K-fold cross validation partition';
-          elseif (! isempty (grpvars))
-            ## Groups without stratification: whole groups, and the
-            ## stratification variable is not used, as 'Stratify' asked
-            [gidx, NumGroups] = __resolve_groups__ (grpvars);
-            if (numel (gidx) != X)
-              error (strcat ("cvpartition: grouping variable does", ...
-                             " not match the number of observations."));
-            endif
-            if (k > NumGroups)
-              warning (strcat ("cvpartition: number of folds K is greater", ...
-                               " than the groups in 'GroupingVariables'.", ...
-                               " K is set to the number of groups."));
-              k = NumGroups;
-              this.NumTestSets = k;
-            endif
-            this.grpvars = grpvars;
-            gfold = randsample (NumGroups, NumGroups);
-            gfold = mod (gfold - 1, k) + 1;
-            inds = gfold(gidx);
-            this.cvptype = 'Group K-fold cross validation partition';
-            this.IsGrouped = true;
           else
             inds = floor ((0:(X - 1))' * (k / X)) + 1;
             inds = randsample (inds, X);
@@ -1124,6 +1130,22 @@ classdef cvpartition
           elseif (k_check > p)  # remove random elements from test set
             inds(find (inds)(randsample (k_check, k_check - p))) = false;
           endif
+        elseif (this.IsGrouped)
+          ## Whole groups again, drawn until the test set reaches its size
+          [gidx, NumGroups, GroupSize] = __resolve_groups__ (this.grpvars);
+          order = randsample (NumGroups, NumGroups);
+          held = false (NumGroups, 1);
+          ntest = 0;
+          for i = 1:NumGroups
+            if (ntest >= p)
+              break;
+            endif
+            held(order(i)) = true;
+            ntest += GroupSize(order(i));
+          endfor
+          inds = held(gidx);
+          this.TestSize = sum (inds);
+          this.TrainSize = sum (! inds);
         else
           X = this.NumObservations;
           inds = false (X, 1);
@@ -1492,13 +1514,12 @@ classdef cvpartition
                 idx = [idx, cid];
               endfor
             case 'holdout'
-              if (this.IsStratified)
+              if (this.IsStratified || this.IsGrouped)
                 idx = false (this.NumObservations, 1);
                 idx(! this.missidx) = this.indices;
               else
                 idx = this.indices;
               endif
-              idx = this.indices;
             case 'resubstitution' # no stratification
               idx = true (this.NumObservations, 1);
           endswitch
@@ -1559,7 +1580,7 @@ classdef cvpartition
             endfor
           endif
         case 'holdout'
-          if (this.IsStratified)
+          if (this.IsStratified || this.IsGrouped)
             idx = false (this.NumObservations, 1);
             idx(! this.missidx) = this.indices;
           else
@@ -1632,7 +1653,7 @@ classdef cvpartition
                 idx = [idx, cid];
               endfor
             case 'holdout'
-              if (this.IsStratified)
+              if (this.IsStratified || this.IsGrouped)
                 idx = false (this.NumObservations, 1);
                 idx(! this.missidx) = ! this.indices;
               else
@@ -1699,7 +1720,7 @@ classdef cvpartition
             endfor
           endif
         case 'holdout'
-          if (this.IsStratified)
+          if (this.IsStratified || this.IsGrouped)
             idx = false (this.NumObservations, 1);
             idx(! this.missidx) = ! this.indices;
           else
@@ -1733,8 +1754,12 @@ endclassdef
 ## values, datetimes and durations in sorted order, categorical values in the
 ## order of their categories, and text in order of first appearance.  Several
 ## variables order the groups by the first, then by the second, and so on.
+##
+## drop, when given, flags observations to leave out whatever their groups,
+## such as those missing from a stratification variable; they are counted in
+## missidx with the rest, and only missing grouping values raise the warning.
 function [inds, ngroups, gsize, missidx, grpvars, first] = ...
-                                              __resolve_groups__ (grpvars)
+                                        __resolve_groups__ (grpvars, drop)
 
   if (! (isnumeric (grpvars) || islogical (grpvars) || ischar (grpvars) ||
          iscell (grpvars) || isstring (grpvars) || iscategorical (grpvars) ||
@@ -1748,6 +1773,12 @@ function [inds, ngroups, gsize, missidx, grpvars, first] = ...
   elseif (! ismatrix (grpvars))
     error (strcat ("cvpartition: invalid value for optional", ...
                    " paired argument 'GroupingVariables'."));
+  endif
+  if (nargin < 2)
+    drop = false (rows (grpvars), 1);
+  elseif (rows (grpvars) != numel (drop))
+    error (strcat ("cvpartition: grouping variable does", ...
+                   " not match the number of observations."));
   endif
 
   if (ischar (grpvars))
@@ -1774,10 +1805,11 @@ function [inds, ngroups, gsize, missidx, grpvars, first] = ...
       endif
     endfor
   endif
-  if (any (missidx))
+  if (any (missidx & ! drop(:)))
     warning (strcat ("cvpartition: rows in the grouping variables that", ...
                      " have missing values are ignored."));
   endif
+  missidx |= drop(:);
   codes(missidx, :) = [];
   grpvars(missidx, :) = [];
   [~, first, inds] = unique (codes, 'rows', 'first');
@@ -2213,6 +2245,50 @@ endfunction
 %! fold = test (cv, 'all') * [1; 2; 3];
 %! assert_equal (fold, fold([5; 6; 4; 3; 1; 2]));
 %! assert_equal (numel (unique (fold)), 3);
+%!test
+%! y = [1; 1; 2; 2; 1; 1; 2; 2; 1; 2];
+%! g = [1; 1; 1; 2; 2; 3; 3; 3; 3; 4];
+%! cv = cvpartition (y, 'kfold', 2, 'GroupingVariables', g);
+%! assert_equal ([cv.IsStratified, cv.IsGrouped], [true, true]);
+%!test
+%! y = [1; 1; 2; 2; 1; 1; 2; 2; 1; 2];
+%! g = [1; 1; 1; 2; 2; 3; 3; 3; 3; 4];
+%! cv = cvpartition (y, 'kfold', 2, 'Stratify', false, 'GroupingVariables', g);
+%! assert_equal (sort (cv.TestSize), [5, 5]);
+%!test
+%! y = [1; 1; 2; 2; 1; 1; 2; 2; 1; 2];
+%! g = [1; 1; 1; 2; 2; 3; 3; 3; 3; 4];
+%! cv = cvpartition (y, 'holdout', 0.3, 'Stratify', false, ...
+%!                   'GroupingVariables', g);
+%! t = test (cv);
+%! assert_equal (t, t([2; 3; 1; 5; 4; 7; 8; 9; 6; 10]));
+%!test
+%! y = [1; 1; 2; 2; NaN; 1; 2; 2; 1; 2];
+%! g = [1; 1; 1; 2; 2; 3; 3; 3; 3; 4];
+%! cv = cvpartition (y, 'kfold', 2, 'Stratify', false, 'GroupingVariables', g);
+%! assert_equal (any ([test(cv, 'all'), training(cv, 'all')](5,:)), false);
+%! assert_equal (cv.TestSize + cv.TrainSize, [9, 9]);
+%!test
+%! y = [1; 1; 2; 2; NaN; 1; 2; 2; 1; 2];
+%! g = [1; 1; 1; 2; 2; 3; 3; 3; 3; 4];
+%! cv = cvpartition (y, 'kfold', 2, 'GroupingVariables', g);
+%! assert_equal (any ([test(cv, 'all'), training(cv, 'all')](5,:)), false);
+%! assert_equal (cv.TestSize + cv.TrainSize, [9, 9]);
+%!test
+%! g = [1; 1; 1; 2; NaN; 3; 3; 3; 3; 4];
+%! S = warning ('off', 'all');
+%! cv = cvpartition (10, 'holdout', 0.3, 'GroupingVariables', g);
+%! warning (S);
+%! assert_equal (any ([test(cv), training(cv)](5,:)), false);
+%! assert_equal (cv.TestSize + cv.TrainSize, 9);
+%!test
+%! g = [1; 1; 1; 2; 2; 3; 3; 3; 3; 4];
+%! cv = repartition (cvpartition (10, 'holdout', 0.3, 'GroupingVariables', g));
+%! t = test (cv);
+%! assert_equal (t, t([2; 3; 1; 5; 4; 7; 8; 9; 6; 10]));
+%!test
+%! cv = cvpartition ([1; 1; 2; 2; NaN; 1; 2; 2; 1; 2], 'holdout', 0.3);
+%! assert_equal (size (test (cv, 'all')), [10, 1]);
 
 ## Test output results for vector input X
 %!test
@@ -2472,6 +2548,12 @@ endfunction
 %! cvpartition (5, 'kfold', 3, 'GroupingVariables', {'a', 'a', 'a', 'b', 'b'});
 %!warning <cvpartition: rows in the grouping variables that have missing values are ignored.> ...
 %! cvpartition (5, 'kfold', 2, 'GroupingVariables', [1; 1; 2; 2; NaN]);
+%!error <cvpartition: a stratified grouped partition is available for 'KFold' only; set 'Stratify' to false to hold out whole groups.> ...
+%! cvpartition ([1; 1; 2; 2; 1; 2], 'Holdout', 0.3, 'Stratify', true, ...
+%!              'GroupingVariables', [1; 1; 2; 2; 3; 3])
+%!error <cvpartition: a stratified grouped partition is available for 'KFold' only; set 'Stratify' to false to hold out whole groups.> ...
+%! cvpartition ([1; 1; 2; 2; 1; 2], 'Holdout', 0.3, ...
+%!              'GroupingVariables', [1; 1; 2; 2; 3; 3])
 %!error <cvpartition: invalid optional paired argument.> ...
 %! cvpartition (20, 'some')
 %!error <cvpartition: invalid optional paired argument for stratification.> ...
@@ -3022,6 +3104,14 @@ endfunction
 %! g = {'b'; 'b'; 'a'; 'a'; 'c'; 'c'};
 %! T = summary (cvpartition (6, 'KFold', 3, 'GroupingVariables', g));
 %! assert_equal (T.GroupLabel(1:3), {'b'; 'a'; 'c'});
+%!test
+%! ## 42. Grouped hold-out with a missing grouping value
+%! g = [1; 1; 1; 2; NaN; 3; 3; 3; 3; 4];
+%! S = warning ('off', 'all');
+%! c = cvpartition (10, 'Holdout', 0.3, 'GroupingVariables', g);
+%! warning (S);
+%! T = summary (c);
+%! assert_equal (T.GroupCount(1:4), [3; 1; 4; 1]);
 %!error <cvpartition.summary: partition must be stratified or grouped.>
 %! c = cvpartition (20, 'KFold', 5);
 %! summary (c);

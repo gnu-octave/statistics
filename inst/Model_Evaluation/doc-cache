@@ -1118,7 +1118,7 @@ cvpartition.cvpartition
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 7652
+# length: 8266
 cvpartition: C = cvpartition (n, 'KFold')
 cvpartition: C = cvpartition (n, 'KFold', k)
 cvpartition: C = cvpartition (n, 'KFold', k, 'GroupingVariables', grpvars)
@@ -1131,9 +1131,12 @@ cvpartition: C = cvpartition (n, 'Resubstitution')
 cvpartition: C = cvpartition (X, 'KFold')
 cvpartition: C = cvpartition (X, 'KFold', k)
 cvpartition: C = cvpartition (X, 'KFold', k, 'Stratify', opt)
+cvpartition: C = cvpartition (X, 'KFold', k, 'GroupingVariables', grpvars)
+cvpartition: C = cvpartition (X, 'KFold', k, 'Stratify', opt, 'GroupingVariables', grpvars)
 cvpartition: C = cvpartition (X, 'Holdout')
 cvpartition: C = cvpartition (X, 'Holdout', p)
 cvpartition: C = cvpartition (X, 'Holdout', p, 'Stratify', opt)
+cvpartition: C = cvpartition (X, 'Holdout', p, 'Stratify', false, 'GroupingVariables', grpvars)
 cvpartition: C = cvpartition ('CustomPartition', testSets)
 Repartition data for cross-validation.
 
@@ -1192,15 +1195,21 @@ group is held out at a time
 held out of a partition that holds everything
 
 Given a stratification variable, 'GroupingVariables' may
-follow 'Stratify', as in cvpartition (y,
-'KFold', k, 'Stratify', true,
-'GroupingVariables', grpvars). Each group is then
-kept whole while the classes of y are spread as evenly over
-the folds as the groups allow, which is scikit-learn's
-StratifiedGroupKFold. The two demands conflict, since a
-group carries whatever class mix it has, so the balance is
-approximate: groups are placed largest first, each into the fold
-whose class counts it disturbs least.
+follow 'Stratify' or come in its place, as in
+cvpartition (y, 'KFold', k,
+'GroupingVariables', grpvars). 'Stratify' is then
+true unless set to false, as it is without grouping, and each group is
+kept whole while the classes of y are spread as evenly over the
+folds as the groups allow, which is scikit-learn's
+StratifiedGroupKFold. The two demands conflict, since a group
+carries whatever class mix it has, so the balance is approximate: groups
+are placed largest first, each into the fold whose class counts it
+disturbs least. Such a partition exists for 'KFold' only. With
+'Stratify' set to false the classes play no part, and the
+partition, 'KFold' or 'Holdout', is the one
+cvpartition (n, ..., 'GroupingVariables',
+grpvars) makes. Either way an observation missing from y
+or from grpvars is left out.
 
 In every case an observation never appears in both the training and the
 test set as one of its group fellows, which is what makes grouping worth
