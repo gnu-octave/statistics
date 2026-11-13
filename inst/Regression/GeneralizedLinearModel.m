@@ -1543,7 +1543,7 @@ classdef GeneralizedLinearModel < PredictiveModel
       r = mdl.Residuals.(rtype);
       switch (lower (ptype))
         case 'histogram'
-          h = residual_histogram (r);
+          h = residual_histogram (gca (), r);
           return;
         case 'caseorder'
           h = plot (1:numel (r), r, 'x');
@@ -2644,3 +2644,13 @@ endfunction
 %! assert_equal (m.CoefficientNames, {'h2_b', 'h2_c', 'h2_a'});
 %! m = fitglm (tbl, 'linear', 'Distribution', 'poisson', 'Intercept', false);
 %! assert_equal (m.CoefficientNames, {'u', 'h2_b', 'h2_c', 'h2_a'});
+%!test  # residuals all equal: one bin around them, as histogram draws it
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   mdl = fitglm ((1:6)', 5 * ones (6, 1), "constant");
+%!   h = plotResiduals (mdl);
+%!   assert_equal (get (h, "xdata"), [-0.5; -0.5; 0.5; 0.5], 1e-12);
+%!   assert_equal (get (h, "ydata"), [0; 1; 1; 0], 1e-12);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect

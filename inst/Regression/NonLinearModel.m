@@ -831,7 +831,7 @@ classdef NonLinearModel < PredictiveModel
       r = mdl.Residuals.Raw;
       switch (lower (plottype))
         case 'histogram'
-          h = residual_histogram (r);
+          h = residual_histogram (gca (), r);
           return;
         case 'fitted'
           h = plot (mdl.Fitted, r, 'o');
@@ -1176,3 +1176,13 @@ endfunction
 %! NonLinearModel ([1; 2], [1; 2], "bad", [1])
 %!error<NonLinearModel: \(\) indexing is not supported> ...
 %! mdl = fitnlm ([1;2;3;4], [1;2;3;4], @(b, x) b(1) * x, 1); mdl(1);
+%!test  # residuals all equal: one bin around them, as histogram draws it
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   mdl = fitnlm ((1:6)', 5 * ones (6, 1), @(b, x) b(1) + 0 * x, 1);
+%!   h = plotResiduals (mdl);
+%!   assert_equal (get (h, "xdata"), [-0.5; -0.5; 0.5; 0.5], 1e-12);
+%!   assert_equal (get (h, "ydata"), [0; 1; 1; 0], 1e-12);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect

@@ -1259,15 +1259,9 @@ classdef MultinomialRegression < PredictiveModel
       switch (ptype)
 
         case 'histogram'
-          [left, right, dens] = MultinomialRegression.densitybins (r);
-          nb = numel (left);
-          Xp = [left; left; right; right];
-          Yp = [zeros(1, nb); dens; dens; zeros(1, nb)];
-          h = patch (ax, Xp, Yp, fc, 'FaceColor', fc, 'FaceAlpha', fa, ...
-                     'EdgeColor', [0, 0, 0], 'LineWidth', lw);
-          xlabel (ax, 'Residuals');
-          ylabel (ax, 'Probability density');
-          title (ax, 'Histogram of residuals');
+          h = residual_histogram (ax, r, {'FaceColor', fc, 'FaceAlpha', fa, ...
+                                          'EdgeColor', [0, 0, 0], ...
+                                          'LineWidth', lw});
 
         case 'caseorder'
           hold (ax, 'on');
@@ -1921,41 +1915,6 @@ classdef MultinomialRegression < PredictiveModel
       if (isempty (j))
         j = 0;
       endif
-    endfunction
-
-    ## Bins of a histogram of R as a probability density: their left and right
-    ## edges and their heights.  The width is Scott's rule rounded to 1, 2, 3,
-    ## 5 or 10 times a power of ten, and the edges are its multiples.
-    function [left, right, dens] = densitybins (r)
-      r = r(! isnan (r));
-      n = numel (r);
-      s = std (r);
-      if (n <= 1 || s == 0)
-        bw = 1;
-        lo = floor (min (r)) - 0.5;
-        hi = lo + 1;
-      else
-        raw = 3.5 * s / (n ^ (1/3));
-        mag = 10 ^ floor (log10 (raw));
-        f = raw / mag;
-        nice = [1, 2, 3, 5, 10];
-        nice = nice(find (f < [1.5, 2.5, 4, 7.5, Inf], 1));
-        bw = nice * mag;
-        lo = floor (min (r) / bw) * bw;
-        hi = ceil (max (r) / bw) * bw;
-      endif
-      nb = max (1, round ((hi - lo) / bw));
-      left = lo + (0:nb-1) * bw;
-      right = left + bw;
-      counts = zeros (1, nb);
-      for k = 1:nb
-        if (k < nb)
-          counts(k) = sum (r >= left(k) & r < right(k));
-        else
-          counts(k) = sum (r >= left(k) & r <= right(k));
-        endif
-      endfor
-      dens = counts / (n * bw);
     endfunction
 
     ## The text of each element of a categorical predictor

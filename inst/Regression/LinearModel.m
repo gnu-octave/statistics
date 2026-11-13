@@ -2838,40 +2838,8 @@ classdef LinearModel < PredictiveModel
       switch (plottype)
 
         case 'histogram'
-          r_act = r(! isnan (r));
-        n_act = numel (r_act);
-        s     = std (r_act);
-        if (n_act <= 1 || s == 0)
-          bw = 1;
-          lo = floor (min (r_act)) - 0.5;
-          hi = lo + 1;
-        else
-          bw_raw = 3.5 * s / (n_act ^ (1/3));
-          mag    = 10 ^ floor (log10 (bw_raw));
-          frac   = bw_raw / mag;
-          if (frac < 1.5); nice = 1;
-          elseif (frac < 2.5); nice = 2;
-          elseif (frac < 4); nice = 3;
-          elseif (frac < 7.5); nice = 5;
-          else;                nice = 10;
-          endif
-          bw = nice * mag;
-          lo = floor (min (r_act) / bw) * bw;
-          hi = ceil (max (r_act) / bw) * bw;
-        endif
-        n_bins  = max (1, round ((hi - lo) / bw));
-        centers = lo + bw/2 : bw : lo + bw * (n_bins - 0.5);
-        [counts, ~] = hist (r_act, centers);
-        dens  = counts / (n_act * bw);
-        left  = lo + (0:n_bins-1) * bw;
-        right = left + bw;
-          Xp    = [left; left; right; right];
-          Yp    = [zeros(1, n_bins); dens; dens; zeros(1, n_bins)];
-          h     = patch (Xp, Yp, DEF_COLOR, 'FaceColor', DEF_COLOR, ...
-                         nv_remaining{:}, 'Parent', ax);
-          xlabel (ax, 'Residuals');
-          ylabel (ax, 'Probability density');
-          title (ax, 'Histogram of residuals');
+          h = residual_histogram (ax, r, [{'FaceColor', DEF_COLOR}, ...
+                                          nv_remaining]);
 
         case 'fitted'
           fit   = mdl.Fitted;
@@ -8618,9 +8586,10 @@ endfunction
 %! fig = figure ('visible', 'off');
 %! ax  = axes (fig);
 %! h1  = plot (ax, mc);
-%! h2  = plotResiduals (ax, mc);
 %! assert_equal (get (h1(1), 'type'), 'patch');
-%! assert_equal (get (h1(1), 'YData'), get (h2(1), 'YData'));
+%! y1  = get (h1(1), 'YData');
+%! h2  = plotResiduals (ax, mc);
+%! assert_equal (get (h2(1), 'YData'), y1);
 %! assert_equal (get (get (ax, 'Title'), 'String'), 'Histogram of residuals');
 %! close (fig);
 
@@ -9902,3 +9871,23 @@ endfunction
 %! grown = step (mdl, "Verbose", 0);
 %! assert_equal (any (strcmp (grown.PredictorNames, "x4")), true);
 
+%!test  # residuals all equal: one bin around them, as histogram draws it
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   mdl = fitlm ((1:6)', 5 * ones (6, 1), "constant");
+%!   h = plotResiduals (mdl);
+%!   assert_equal (get (h, "xdata"), [-0.5; -0.5; 0.5; 0.5], 1e-12);
+%!   assert_equal (get (h, "ydata"), [0; 1; 1; 0], 1e-12);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+%!test  # a second residual plot replaces the first, unless hold is on
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   mdl = fitlm ((1:10)', [3; 5; 6; 9; 11; 12; 15; 17; 18; 21]);
+%!   plotResiduals (mdl);
+%!   h = plotResiduals (mdl);
+%!   assert_equal (numel (get (get (h, "parent"), "children")), 1);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
