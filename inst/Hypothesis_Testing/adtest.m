@@ -68,9 +68,9 @@
 ## significance level.
 ##
 ## @item "MCTol" @tab Monte-Carlo standard error for the p-value,
-## @var{pval}, value. which must be a positive scalar value.  In this case, an
-## approximation for the p-value is computed directly, using Monte-Carlo
-## simulations.
+## @var{pval}, which must be a positive real scalar of type double or single.
+## In this case, the p-value and the critical value, @var{cv}, are approximated
+## by Monte-Carlo simulation.
 ##
 ## @item "Asymptotic" @tab Method for calculating the p-value of the
 ## Anderson-Darling test, which can be either true or false logical value.  If
@@ -194,9 +194,10 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
       case 'mctol'
         i = i + 1;
         MCTol = varargin{i};
-        ## Check Monte Carlo tolerance is a real scalar greater than 0
-        if (! isempty (MCTol) && (! isscalar (MCTol) || ! isreal (MCTol) || ...
-                                  isnan (MCTol) || MCTol <= 0))
+        ## Check Monte Carlo tolerance is a real floating-point scalar above 0
+        if (! (isfloat (MCTol) && (isempty (MCTol) ||
+                                   (isreal (MCTol) && isscalar (MCTol) &&
+                                    MCTol > 0))))
           error ("adtest: invalid Monte Carlo Tolerance.");
         endif
       case 'asymptotic'
@@ -738,6 +739,18 @@ endfunction
 %! adtest (rand (20,1), 'Name', {'norm', 75, 10});
 %!error<adtest: invalid Monte Carlo Tolerance.> ...
 %! adtest (rand (20,1), 'MCTol', 0.01+1i);
+%!error<adtest: invalid Monte Carlo Tolerance.> ...
+%! adtest (rand (20,1), 'MCTol', NaN);
+%!error<adtest: invalid Monte Carlo Tolerance.> ...
+%! adtest (rand (20,1), 'MCTol', {0.01});
+%!error<adtest: invalid Monte Carlo Tolerance.> ...
+%! adtest (rand (20,1), 'MCTol', 'a');
+%!error<adtest: invalid Monte Carlo Tolerance.> ...
+%! adtest (rand (20,1), 'MCTol', true);
+%!error<adtest: invalid Monte Carlo Tolerance.> ...
+%! adtest (rand (20,1), 'MCTol', int8 (1));
+%!error<adtest: invalid Monte Carlo Tolerance.> ...
+%! adtest (rand (20,1), 'MCTol', '');
 %!error<adtest: asymptotic option is not valid for the composite> ...
 %! adtest (rand (20,1), 'Distribution', 'norm', 'Asymptotic', true);
 %!error<adtest: asymptotic option is not valid for the composite> ...
@@ -792,21 +805,21 @@ endfunction
 %! [h, pval, adstat, cv] = adtest (x, 'MCTol', 0.01);
 %! assert_equal (h, false);
 %! assert_equal (adstat, 0.5194, 1e-4);
-%! assert (pval, 0.1854, 0.05);
-%! assert (cv, 0.7470, 0.1);
+%! assert_equal (pval, 0.1854, 0.05);
+%! assert_equal (cv, 0.7470, 0.1);
 %!test
 %! load examgrades
 %! x = grades(:,1);
 %! [h, pval, adstat] = adtest (x, 'Distribution', 'ev', 'MCTol', 0.01);
 %! assert_equal (adstat, 0.6926, 1e-4);
-%! assert (pval, 0.0714, 0.05);
+%! assert_equal (pval, 0.0714, 0.05);
 %!test
 %! load examgrades
 %! x = grades(:,1);
 %! [h, pval, adstat] = adtest (x, 'Distribution', 'exp', 'MCTol', 0.01);
 %! assert_equal (h, true);
 %! assert_equal (adstat, 43.1937, 1e-4);
-%! assert (pval < 0.01);
+%! assert_equal (pval, 0);
 %!test
 %! load examgrades
 %! x = grades(:,1);
@@ -814,4 +827,4 @@ endfunction
 %!                             'MCTol', 0.01);
 %! assert_equal (h, false);
 %! assert_equal (adstat, 0.8170, 1e-4);
-%! assert (pval, 0.4687, 0.05);
+%! assert_equal (pval, 0.4687, 0.05);
