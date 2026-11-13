@@ -3614,3 +3614,9 @@ endfunction
 %! Mdl = fitctree (X, Y, 'Weights', [1; 1; 1; 1; 1; 1; 1; 1; 0]);
 %! assert_equal (Mdl.ClassNames(:)', {'a', 'b', 'c'});
 %! assert_equal (Mdl.Prior, [0.5, 0.5, 0]);
+%!test  # an exact tie under 'classiferror' goes to the first tied class
+%! Mdl = fitctree ([1; 1; 1], {'a'; 'b'; 'c'}, 'MinParentSize', 10);
+%! assert_equal (loss (Mdl, 1, {'a'}, 'LossFun', 'classiferror'), 0);
+%!test  # and is an error for any later tied class, as in R2024a
+%! Mdl = fitctree ([1; 1; 1], {'a'; 'b'; 'c'}, 'MinParentSize', 10);
+%! assert_equal (loss (Mdl, 1, {'c'}, 'LossFun', 'classiferror'), 1);

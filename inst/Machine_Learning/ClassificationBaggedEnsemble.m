@@ -631,10 +631,8 @@ endfunction
 %! [~, s] = oobPredict (Mdl);
 %! have = ! any (isnan (s), 2);
 %! g = grp2idx (species);
-%! st = s(sub2ind (size (s), (1:150)', g));
-%! so = s;
-%! so(sub2ind (size (s), (1:150)', g)) = -Inf;
-%! miss = st <= max (so, [], 2);
+%! [~, best] = max (s, [], 2);
+%! miss = best != g;
 %! assert_equal (oobLoss (Mdl), mean (miss(have)), 1e-15);
 %! U = ! Mdl.UseObsForLearner;
 %! assert_equal (oobLoss (Mdl, 'Mode', 'cumulative'), ...

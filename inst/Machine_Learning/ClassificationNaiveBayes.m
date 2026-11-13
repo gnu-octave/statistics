@@ -2699,3 +2699,7 @@ endfunction
 %! Mdl = fitcnb (X, Y);
 %! assert_equal (Mdl.ClassNames(:)', {'a', 'b', 'c'});
 %! assert_equal (Mdl.Prior, [0.5, 0.5, 0]);
+%!test  # an exact tie under 'classiferror' goes to the first tied class
+%! Mdl = fitcnb ([1; 2; 1; 2; 1; 2], {'a'; 'a'; 'b'; 'b'; 'c'; 'c'});
+%! assert_equal (loss (Mdl, 1.5, {'a'}, 'LossFun', 'classiferror'), 0);
+%! assert_equal (loss (Mdl, 1.5, {'b'}, 'LossFun', 'classiferror'), 1);

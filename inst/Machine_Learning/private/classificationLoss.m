@@ -51,7 +51,11 @@ function l = classificationLoss (LossFun, s, gY, w, Cost)
   switch (LossFun)
 
     case 'classiferror'
-      l = sum (w .* (strue <= sother));
+      ## Wrong when the class of greatest score is not the true one; a tie goes
+      ## to the first of the tied classes, as max and predict give it, which
+      ## is how R2024a counts it
+      [~, kbest] = max (s, [], 2);
+      l = sum (w .* (kbest != gY));
 
     case 'hinge'
       l = sum (w .* max (0, 1 - strue));

@@ -1399,3 +1399,8 @@ endclassdef
 %! Mdl = fitcecoc (X, Y);
 %! assert_equal (Mdl.ClassNames(:)', {'a', 'b', 'c'});
 %! assert_equal (Mdl.Prior, [0.5, 0.5, 0]);
+%!test  # an exact tie under 'classiferror' goes to the first tied class
+%! Mdl = fitcecoc ([1; 1; 1], {'a'; 'b'; 'c'}, ...
+%!                 'Learners', templateTree ('MinParentSize', 10));
+%! assert_equal (loss (Mdl, 1, {'a'}, 'LossFun', 'classiferror'), 0);
+%! assert_equal (loss (Mdl, 1, {'c'}, 'LossFun', 'classiferror'), 1);
