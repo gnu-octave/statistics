@@ -279,18 +279,24 @@ classdef cvpartition
     ## variables specified in @var{grpvars} can be one of the following:
     ##
     ## @itemize
-    ## @item A numeric vector, logical vector, categorical vector, character
-    ## array, string array, or cell array of character vectors containing one
-    ## grouping variable.
+    ## @item A numeric vector, logical vector, categorical vector, datetime or
+    ## duration vector, character array, string array, or cell array of
+    ## character vectors containing one grouping variable.
     ## @item A numeric matrix or cell array containing two or more grouping
     ## variables. Each column in the matrix or array must correspond to one
     ## grouping variable.
     ## @end itemize
     ##
-    ## @qcode{'GroupingVariables'} is an Octave extension: MATLAB's
-    ## @code{cvpartition} has no such option.  It follows the group-aware
-    ## splitters of scikit-learn, and each partition type takes the analogue of
-    ## its ungrouped self:
+    ## Observations with a missing value in any grouping variable are left out
+    ## of every training and test set, with a warning, and still counted in
+    ## @qcode{NumObservations}.
+    ##
+    ## MATLAB supports @qcode{'GroupingVariables'} for @qcode{'KFold'} only,
+    ## since R2025a.  Grouping a @qcode{'Holdout'} or @qcode{'Leaveout'}
+    ## partition, combining grouping with @qcode{'Stratify'}, and a cell array
+    ## whose columns mix text and numbers are Octave extensions, which MATLAB
+    ## refuses.  They follow the group-aware splitters of scikit-learn, and each
+    ## partition type takes the analogue of its ungrouped self:
     ##
     ## @multitable @columnfractions 0.28 0.34 0.38
     ## @headitem Partition type @tab scikit-learn analogue @tab Effect
@@ -1282,7 +1288,11 @@ classdef cvpartition
     ## named @code{GroupLabel}; a partition grouped by several variables has
     ## one column for each, named @code{GroupLabel1}, @code{GroupLabel2}, and so
     ## on, and a column of numbers given in a cell array is returned as a
-    ## numeric column.
+    ## numeric column.  Within each set, groups are listed in the order
+    ## @code{grp2idx} numbers them: numbers in sorted order, categorical values
+    ## in the order of their categories, and text in order of first appearance;
+    ## several grouping variables are ordered by the first, then by the second,
+    ## and so on.
     ## @item Count
     ## The number of observations of that label within the set.  If stratified,
     ## this column is named @code{StratificationCount}; otherwise,
@@ -1718,6 +1728,11 @@ endclassdef
 ## it matches on every one of them.  A character matrix is one variable whose
 ## rows are the labels.  Each variable is coded on its own, so that a cell
 ## array may hold text in one column and numbers in another.
+##
+## Groups are numbered as grp2idx numbers a grouping variable: numbers, logical
+## values, datetimes and durations in sorted order, categorical values in the
+## order of their categories, and text in order of first appearance.  Several
+## variables order the groups by the first, then by the second, and so on.
 function [inds, ngroups, gsize, missidx, grpvars, first] = ...
                                               __resolve_groups__ (grpvars)
 
@@ -1737,7 +1752,7 @@ function [inds, ngroups, gsize, missidx, grpvars, first] = ...
 
   if (ischar (grpvars))
     missidx = any (ismissing (grpvars), 2);
-    [~, ~, codes] = unique (grpvars, 'rows');
+    [~, ~, codes] = unique (grpvars, 'rows', 'stable');
   else
     missidx = false (rows (grpvars), 1);
     codes = zeros (size (grpvars));
@@ -1752,12 +1767,20 @@ function [inds, ngroups, gsize, missidx, grpvars, first] = ...
         v = cell2mat (v);
       endif
       missidx |= ismissing (v);
-      [~, ~, codes(:,j)] = unique (v);
+      if (iscellstr (v) || isstring (v))
+        [~, ~, codes(:,j)] = unique (v, 'stable');
+      else
+        [~, ~, codes(:,j)] = unique (v);
+      endif
     endfor
+  endif
+  if (any (missidx))
+    warning (strcat ("cvpartition: rows in the grouping variables that", ...
+                     " have missing values are ignored."));
   endif
   codes(missidx, :) = [];
   grpvars(missidx, :) = [];
-  [~, first, inds] = unique (codes, 'rows', 'stable');
+  [~, first, inds] = unique (codes, 'rows', 'first');
 
   ngroups = numel (first);
   gsize = zeros (1, ngroups);
@@ -2085,7 +2108,9 @@ endfunction
 %!test
 %! grpvar = [1, 1, 1, 2, 2, 2, 2, NaN, 2, 3, 3, 3];
 %! rand ('seed', 5);
+%! S = warning ('off', 'all');
 %! cv = cvpartition (12, 'kfold', 2, 'GroupingVariables', grpvar);
+%! warning (S);
 %! assert_equal (cv.Type, 'kfold');
 %! assert_equal (cv.NumObservations, 12);
 %! assert_equal (cv.NumTestSets, 2);
@@ -2445,6 +2470,8 @@ endfunction
 %! cvpartition (10, 'kfold', 3, 'GroupingVariables', {'a', 'a', 'a', 'b', 'b'})
 %!warning <cvpartition: number of folds K is greater than the groups in 'GroupingVariables'. K is set to the number of groups.> ...
 %! cvpartition (5, 'kfold', 3, 'GroupingVariables', {'a', 'a', 'a', 'b', 'b'});
+%!warning <cvpartition: rows in the grouping variables that have missing values are ignored.> ...
+%! cvpartition (5, 'kfold', 2, 'GroupingVariables', [1; 1; 2; 2; NaN]);
 %!error <cvpartition: invalid optional paired argument.> ...
 %! cvpartition (20, 'some')
 %!error <cvpartition: invalid optional paired argument for stratification.> ...
@@ -2735,7 +2762,9 @@ endfunction
 %!test
 %! ## 12. Missing Values in Grouping (NaN)
 %! groups = [1; 1; 2; 2; NaN];
+%! S = warning ('off', 'all');
 %! c = cvpartition (5, 'KFold', 2, 'GroupingVariables', groups);
+%! warning (S);
 %! T = summary (c);
 %! if (exist ('string', 'class'))
 %!   mask_all = (T.Set == 'all');
@@ -2869,7 +2898,9 @@ endfunction
 %!test
 %! ## 24. Unstacking with Missing/NaN Groups
 %! groups = [1; 1; 2; 2; NaN];
+%! S = warning ('off', 'all');
 %! c = cvpartition (5, 'KFold', 2, 'GroupingVariables', groups);
+%! warning (S);
 %! T = summary (c);
 %! T_wide = unstack (T(:, 1:4), 'GroupCount', 'GroupLabel');
 %! ## Should only have columns for 1 and 2, not NaN or 'undefined'
@@ -2955,10 +2986,10 @@ endfunction
 %!               categorical ({'c'; 'b'; 'a'}, {'c', 'b', 'a', 'unused'}));
 %! assert_equal (categories (T.StratificationLabel), {'c'; 'b'; 'a'; 'unused'});
 %!test
-%! ## 35. Categorical grouping variable gives categorical labels
+%! ## 35. Categorical grouping variable: categorical labels in category order
 %! g = categorical ({'b'; 'b'; 'a'; 'a'; 'c'; 'c'});
 %! T = summary (cvpartition (6, 'KFold', 3, 'GroupingVariables', g));
-%! assert_equal (T.GroupLabel(1:3), categorical ({'b'; 'a'; 'c'}));
+%! assert_equal (T.GroupLabel(1:3), categorical ({'a'; 'b'; 'c'}));
 %!test
 %! ## 36. Numeric matrix of grouping variables gives one column each
 %! g = [1, 10; 1, 20; 2, 10; 2, 10; 1, 10; 1, 20];
@@ -2981,6 +3012,16 @@ endfunction
 %! T = summary (cvpartition ([1, 1, 2, 2, 3, 3], 'KFold', 2));
 %! assert_equal (height (T), 15);
 %! assert_equal (T.StratificationLabel(1:3), [1; 2; 3]);
+%!test
+%! ## 40. Numeric groups are listed in sorted order
+%! g = [3; 3; 1; 1; 2; 2];
+%! T = summary (cvpartition (6, 'KFold', 3, 'GroupingVariables', g));
+%! assert_equal (T.GroupLabel(1:3), [1; 2; 3]);
+%!test
+%! ## 41. Text groups are listed in order of first appearance
+%! g = {'b'; 'b'; 'a'; 'a'; 'c'; 'c'};
+%! T = summary (cvpartition (6, 'KFold', 3, 'GroupingVariables', g));
+%! assert_equal (T.GroupLabel(1:3), {'b'; 'a'; 'c'});
 %!error <cvpartition.summary: partition must be stratified or grouped.>
 %! c = cvpartition (20, 'KFold', 5);
 %! summary (c);

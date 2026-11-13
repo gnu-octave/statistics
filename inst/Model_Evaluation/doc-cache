@@ -1118,7 +1118,7 @@ cvpartition.cvpartition
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 7301
+# length: 7652
 cvpartition: C = cvpartition (n, 'KFold')
 cvpartition: C = cvpartition (n, 'KFold', k)
 cvpartition: C = cvpartition (n, 'KFold', k, 'GroupingVariables', grpvars)
@@ -1163,17 +1163,23 @@ stratification: a fold does not contain a proportional mix of the group
 labels, and 'Stratify' is the option for that. The grouping
 variables specified in grpvars can be one of the following:
 
-A numeric vector, logical vector, categorical vector, character
-array, string array, or cell array of character vectors containing one
-grouping variable.
+A numeric vector, logical vector, categorical vector, datetime or
+duration vector, character array, string array, or cell array of
+character vectors containing one grouping variable.
 A numeric matrix or cell array containing two or more grouping
 variables. Each column in the matrix or array must correspond to one
 grouping variable.
 
-'GroupingVariables' is an Octave extension: MATLAB's
-cvpartition has no such option. It follows the group-aware
-splitters of scikit-learn, and each partition type takes the analogue of
-its ungrouped self:
+Observations with a missing value in any grouping variable are left out
+of every training and test set, with a warning, and still counted in
+NumObservations.
+
+MATLAB supports 'GroupingVariables' for 'KFold' only,
+since R2025a. Grouping a 'Holdout' or 'Leaveout'
+partition, combining grouping with 'Stratify', and a cell array
+whose columns mix text and numbers are Octave extensions, which MATLAB
+refuses. They follow the group-aware splitters of scikit-learn, and each
+partition type takes the analogue of its ungrouped self:
 
 Partition type scikit-learn analogue Effect
 'KFold' GroupKFold whole groups fill each
@@ -1359,7 +1365,7 @@ cvpartition.summary
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1913
+# length: 2184
 cvpartition: tbl = summary (c)
 Summarize stratified or grouped cross-validation partitions.
 
@@ -1404,7 +1410,11 @@ named StratificationLabel. If c.IsGrouped is true, it is
 named GroupLabel; a partition grouped by several variables has
 one column for each, named GroupLabel1, GroupLabel2, and so
 on, and a column of numbers given in a cell array is returned as a
-numeric column.
+numeric column. Within each set, groups are listed in the order
+grp2idx numbers them: numbers in sorted order, categorical values
+in the order of their categories, and text in order of first appearance;
+several grouping variables are ordered by the first, then by the second,
+and so on.
 Count
 The number of observations of that label within the set. If stratified,
 this column is named StratificationCount; otherwise,
