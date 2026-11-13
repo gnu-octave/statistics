@@ -1308,12 +1308,8 @@ classdef cvpartition
         ## Grouped
         LabelVarName = 'GroupLabel';
         CountVarName = 'GroupCount';
-        ## Use __unique__ internal helper to ensure stable rows
-        if (isa (this.grpvars, 'categorical'))
-          [UniqueLabels, ~, DataMap] = unique (this.grpvars, 'rows', 'stable');
-        else
-          [UniqueLabels, ~, DataMap] = __unique__ (this.grpvars, 'rows', 'stable');
-        endif
+        [DataMap, ~, ~, ~, ~, first] = __resolve_groups__ (this.grpvars);
+        UniqueLabels = this.grpvars(first, :);
       endif
 
       ## Calculate dimensions for preallocation
@@ -1708,14 +1704,16 @@ endclassdef
 ## inds numbers each observation by the group it belongs to, ngroups counts the
 ## groups and gsize their sizes.  missidx flags the observations dropped for
 ## holding a missing value, and grpvars is returned with those observations
-## removed, one row per observation.
+## removed, one row per observation.  first holds the row of grpvars where
+## each group first appears.
 ##
 ## One grouping variable is given as a vector, several as a matrix or cell
 ## array whose columns are the variables; a row then belongs to a group only if
 ## it matches on every one of them.  A character matrix is one variable whose
 ## rows are the labels.  Each variable is coded on its own, so that a cell
 ## array may hold text in one column and numbers in another.
-function [inds, ngroups, gsize, missidx, grpvars] = __resolve_groups__ (grpvars)
+function [inds, ngroups, gsize, missidx, grpvars, first] = ...
+                                              __resolve_groups__ (grpvars)
 
   if (isvector (grpvars))
     grpvars = grpvars(:);
@@ -1746,9 +1744,9 @@ function [inds, ngroups, gsize, missidx, grpvars] = __resolve_groups__ (grpvars)
   endif
   codes(missidx, :) = [];
   grpvars(missidx, :) = [];
-  [~, idx, inds] = unique (codes, 'rows', 'stable');
+  [~, first, inds] = unique (codes, 'rows', 'stable');
 
-  ngroups = numel (idx);
+  ngroups = numel (first);
   gsize = zeros (1, ngroups);
   for i = 1:ngroups
     gsize(i) = sum (inds == i);
