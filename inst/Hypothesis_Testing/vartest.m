@@ -164,6 +164,8 @@ function [h, pval, ci, stats] = vartest (x, v, varargin)
     endif
   elseif (strcmpi (tail, 'right'))
     pval = gammainc (chisqstat / 2, df / 2, 'upper');
+    ## No variance can be estimated from fewer than two valid values
+    pval(df == 0) = NaN;
     if (nargout > 2)
       ci = cat (dim, sumsq ./ chi2inv (1 - alpha, df), Inf (size (pval)));
     endif
@@ -223,3 +225,29 @@ endfunction
 %! assert_equal (h, 1);
 %! assert_equal (pval, 0.021675433710872, 1e-14);
 %! assert_equal (ci, [51.543; Inf], 1e-3);
+%!test
+%! [h, pval, ci, stats] = vartest ([NaN, NaN, NaN], 1, 'tail', 'right');
+%! assert_equal (h, NaN);
+%! assert_equal (pval, NaN);
+%! assert_equal (ci, [NaN, Inf]);
+%! assert_equal (stats.df, 0);
+%!test
+%! x = [5, 1; NaN, 2; NaN, 4];
+%! [h, pval, ci, stats] = vartest (x, 1, 'tail', 'right');
+%! assert_equal (h, [NaN, 0]);
+%! assert_equal (pval, [NaN, 0.096972], 1e-6);
+%! assert_equal (ci, [NaN, 0.778886; Inf, Inf], 1e-6);
+%! assert_equal (stats.df, [0, 2]);
+%!test
+%! x = [5, NaN; 1, 2];
+%! [h, pval, ci, stats] = vartest (x, 1, 'dim', 2, 'tail', 'right');
+%! assert_equal (h, [NaN; 0]);
+%! assert_equal (pval, [NaN; 0.4795], 1e-6);
+%! assert_equal (ci, [NaN, Inf; 0.130159, Inf], 1e-6);
+%! assert_equal (stats.df, [0; 1]);
+%!test
+%! [h, pval, ci, stats] = vartest ([5, NaN, NaN], 0, 'tail', 'right');
+%! assert_equal (h, NaN);
+%! assert_equal (pval, NaN);
+%! assert_equal (ci, [NaN, Inf]);
+%! assert_equal (stats.df, 0);
